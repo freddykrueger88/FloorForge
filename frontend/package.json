@@ -1,37 +1,35 @@
 {
   "name": "floorforge-frontend",
   "version": "0.1.0",
-  "description": "FloorForge Frontend – Taktik-Tool für Floorball Coaches",
+  "description": "FloorForge Frontend – React/Vite",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "lint": "eslint src/ --ext .js,.jsx,.ts,.tsx",
     "preview": "vite preview",
-    "test": "vitest"
+    "lint": "eslint src"
   },
-  "keywords": ["floorball", "coaching", "tactics"],
-  "license": "MIT",
   "dependencies": {
+    "axios": "^1.7.9",
+    "i18next": "^24.2.0",
+    "i18next-browser-languagedetector": "^8.0.2",
+    "konva": "^9.3.18",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^6.24.1",
-    "konva": "^9.3.6",
+    "react-i18next": "^15.2.0",
     "react-konva": "^18.2.10",
-    "zustand": "^4.5.4",
-    "axios": "^1.7.2",
-    "i18next": "^23.11.5",
-    "react-i18next": "^14.1.2",
-    "react-hot-toast": "^2.4.1",
-    "lucide-react": "^0.400.0"
+    "react-router-dom": "^6.28.2",
+    "zustand": "^5.0.3"
   },
   "devDependencies": {
-    "@types/react": "^18.3.3",
-    "@types/react-dom": "^18.3.0",
-    "@vitejs/plugin-react": "^4.3.1",
-    "eslint": "^9.6.0",
-    "eslint-plugin-react": "^7.34.3",
-    "vite": "^5.3.3",
-    "vitest": "^1.6.0"
+    "@eslint/js": "^9.17.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "eslint": "^9.17.0",
+    "eslint-plugin-react": "^7.37.3",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "vite": "^6.0.7"
+  },
+  "engines": {
+    "node": ">=20.0.0"
   }
 }
