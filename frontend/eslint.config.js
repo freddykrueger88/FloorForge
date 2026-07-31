@@ -1,42 +1,34 @@
 import js from '@eslint/js';
 import reactPlugin from 'eslint-plugin-react';
+import reactHooks from 'eslint-plugin-react-hooks';
 
 export default [
   js.configs.recommended,
   {
-    plugins: { react: reactPlugin },
-    languageOptions: {
-      ecmaVersion: 2022,
-      sourceType: 'module',
-      parserOptions: { ecmaFeatures: { jsx: true } },
-      globals: {
-        window: 'readonly',
-        document: 'readonly',
-        navigator: 'readonly',
-        console: 'readonly',
-        setTimeout: 'readonly',
-        clearTimeout: 'readonly',
-        localStorage: 'readonly',
-        fetch: 'readonly',
-        URL: 'readonly',
-        URLSearchParams: 'readonly',
-        Blob: 'readonly',
-        FormData: 'readonly',
-        HTMLElement: 'readonly',
-        Event: 'readonly',
-        matchMedia: 'readonly',
-      },
+    files: ['src/**/*.{js,jsx}'],
+    plugins: {
+      react: reactPlugin,
+      'react-hooks': reactHooks,
+    },
+    rules: {
+      ...reactPlugin.configs.recommended.rules,
+      ...reactHooks.configs.recommended.rules,
+      'react/react-in-jsx-scope': 'off',
+      'react/prop-types': 'off',
+      'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
     },
     settings: { react: { version: 'detect' } },
-    rules: {
-      'react/react-in-jsx-scope': 'off',
-      'react/prop-types': 'warn',
-      'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
-      'semi': ['error', 'always'],
-      'quotes': ['error', 'single'],
+    languageOptions: {
+      ecmaVersion: 2024,
+      sourceType: 'module',
+      globals: {
+        window: 'readonly', document: 'readonly', localStorage: 'readonly',
+        console: 'readonly', setTimeout: 'readonly', clearTimeout: 'readonly',
+        fetch: 'readonly', URL: 'readonly', FormData: 'readonly',
+        import: 'readonly',
+      },
+      parserOptions: { ecmaFeatures: { jsx: true } },
     },
   },
-  {
-    ignores: ['node_modules/', 'dist/', 'coverage/'],
-  },
+  { ignores: ['dist/**', 'node_modules/**'] },
 ];

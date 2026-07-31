@@ -1,39 +1,20 @@
 import axios from 'axios';
 
-/**
- * FloorForge – Axios API Client
- * Zentraler HTTP-Client mit JWT-Interceptor
- */
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: import.meta.env.VITE_API_URL || '/api',
+  withCredentials: true,
+  headers: { 'Content-Type': 'application/json' },
   timeout: 15000,
-  headers: {
-    'Content-Type': 'application/json',
-  },
 });
 
-// Request Interceptor – JWT Token anhängen
-api.interceptors.request.use(
-  (config) => {
-    // Token aus Zustand-Store holen (zirkularer Import vermeiden via window)
-    const token = window.__floorforgeToken;
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
-
-// Response Interceptor – 401 behandeln
+// 401 → zur Login-Seite
 api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      // Session abgelaufen – zur Login-Seite weiterleiten
+  (res) => res,
+  (err) => {
+    if (err.response?.status === 401) {
       window.location.href = '/login';
     }
-    return Promise.reject(error);
+    return Promise.reject(err);
   }
 );
 

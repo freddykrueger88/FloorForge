@@ -1,4 +1,4 @@
-name: Sync Labels
+name: Label Sync
 
 on:
   push:
@@ -7,50 +7,18 @@ on:
       - '.github/labels.yml'
   workflow_dispatch:
 
+permissions:
+  issues: write
+  pull-requests: write
+
 jobs:
-  sync-labels:
-    name: 🏷️ Sync GitHub Labels
+  sync:
+    name: 🏷️ Sync Labels
     runs-on: ubuntu-latest
-    permissions:
-      issues: write
-      contents: read
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: EndBug/label-sync@v2
         with:
-          node-version: '20'
-
-      - name: Install js-yaml
-        run: npm install js-yaml
-
-      - name: Sync labels via GitHub CLI
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          node - <<'EOF'
-          const fs = require('fs');
-          const yaml = require('js-yaml');
-          const { execSync } = require('child_process');
-
-          const labels = yaml.load(fs.readFileSync('.github/labels.yml', 'utf8'));
-          const repo = process.env.GITHUB_REPOSITORY;
-
-          for (const label of labels) {
-            const name = label.name.replace(/"/g, '\\"');
-            const color = label.color.replace('#', '');
-            const desc = (label.description || '').replace(/"/g, '\\"');
-            try {
-              // Try to update existing label
-              execSync(
-                `gh label create "${name}" --color "${color}" --description "${desc}" --repo "${repo}" --force`,
-                { stdio: 'inherit' }
-              );
-            } catch (e) {
-              console.error(`Failed to sync label: ${name}`, e.message);
-            }
-          }
-          console.log('Label sync complete.');
-          EOF
+          config-file: .github/labels.yml
+          delete-other-labels: false
+        continue-on-error: true

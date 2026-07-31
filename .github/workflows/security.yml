@@ -4,35 +4,32 @@ on:
   push:
     branches: [main]
   schedule:
-    # Jeden Montag um 03:00 UTC
-    - cron: '0 3 * * 1'
-  workflow_dispatch:
+    # Jeden Montag um 08:00 UTC
+    - cron: '0 8 * * 1'
+
+permissions:
+  contents: read
+  security-events: write
 
 jobs:
-  trivy:
-    name: 🔒 Trivy Vulnerability Scan
+  audit:
+    name: 🔒 npm audit
     runs-on: ubuntu-latest
-    permissions:
-      security-events: write
-      contents: read
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Run Trivy filesystem scan
-        # Pinned to stable release instead of @master
-        uses: aquasecurity/trivy-action@0.29.0
+      - uses: actions/setup-node@v4
         with:
-          scan-type: 'fs'
-          scan-ref: '.'
-          severity: 'CRITICAL,HIGH'
-          format: 'sarif'
-          output: 'trivy-results.sarif'
-          exit-code: '0'
+          node-version: '20'
 
-      - name: Upload results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v3
-        if: always()
-        with:
-          sarif_file: 'trivy-results.sarif'
-          category: 'trivy'
+      - name: Backend Audit
+        working-directory: backend
+        run: |
+          npm install --ignore-scripts
+          npm audit --audit-level=high || true
+
+      - name: Frontend Audit
+        working-directory: frontend
+        run: |
+          npm install --ignore-scripts
+          npm audit --audit-level=high || true

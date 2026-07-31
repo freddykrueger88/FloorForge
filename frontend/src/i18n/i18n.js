@@ -1,24 +1,20 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
+import LanguageDetector from 'i18next-browser-languagedetector';
 import de from './locales/de.json';
 import en from './locales/en.json';
 
 i18n
+  .use(LanguageDetector)
   .use(initReactI18next)
   .init({
-    resources: {
-      de: { translation: de },
-      en: { translation: en },
-    },
-    lng: 'de', // Deutsch als Standardsprache
+    resources: { de: { translation: de }, en: { translation: en } },
     fallbackLng: 'de',
-    interpolation: {
-      escapeValue: false, // React escaped automatisch
-    },
-    // Browser-Sprache beim ersten Start erkennen
+    supportedLngs: ['de', 'en'],
+    interpolation: { escapeValue: false },
     detection: {
       order: ['localStorage', 'navigator'],
-      lookupLocalStorage: 'floorforge-lang',
+      caches: ['localStorage'],
     },
   });
 

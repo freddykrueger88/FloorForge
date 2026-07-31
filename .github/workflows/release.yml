@@ -1,72 +1,52 @@
-name: Auto Release & Tag
+name: Release
 
 on:
   push:
-    branches: [main]
-    paths:
-      - 'CHANGELOG.md'
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version (z.B. v0.1.0)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
 
 jobs:
   release:
-    name: 🏥 Create Release
+    name: 🚀 GitHub Release
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Extract version from CHANGELOG
+      - name: Determine version
         id: version
         run: |
-          VERSION=$(grep -m1 '## \[' CHANGELOG.md | sed 's/.*\[\(.*\)\].*/\1/' | grep -v Unreleased || true)
-          if [ -z "$VERSION" ]; then
-            echo "No releasable version found in CHANGELOG.md, skipping."
-            echo "version=" >> $GITHUB_OUTPUT
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "tag=${{ inputs.version }}" >> $GITHUB_OUTPUT
           else
-            echo "version=$VERSION" >> $GITHUB_OUTPUT
-            echo "Extracted version: $VERSION"
+            echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
           fi
 
-      - name: Check if tag already exists
-        id: tag_check
-        if: steps.version.outputs.version != ''
-        run: |
-          if git rev-parse "v${{ steps.version.outputs.version }}" >/dev/null 2>&1; then
-            echo "exists=true" >> $GITHUB_OUTPUT
-            echo "Tag v${{ steps.version.outputs.version }} already exists, skipping."
-          else
-            echo "exists=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Create Git Tag
-        if: steps.version.outputs.version != '' && steps.tag_check.outputs.exists == 'false'
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email 'github-actions[bot]@users.noreply.github.com'
-          git tag -a "v${{ steps.version.outputs.version }}" -m "Release v${{ steps.version.outputs.version }}"
-          git push origin "v${{ steps.version.outputs.version }}"
-
-      - name: Extract Changelog Entry
+      - name: Extract Changelog für diese Version
         id: changelog
-        if: steps.version.outputs.version != '' && steps.tag_check.outputs.exists == 'false'
         run: |
-          VERSION="${{ steps.version.outputs.version }}"
-          NOTES=$(awk "/## \\[${VERSION}\\]/,/## \\[/" CHANGELOG.md | head -n -1 | tail -n +2)
+          VERSION="${{ steps.version.outputs.tag }}"
+          VERSION_NUM="${VERSION#v}"
+          NOTES=$(awk "/^## \[${VERSION_NUM}\]/,/^## \[/" CHANGELOG.md | head -n -1 | tail -n +2)
           echo "notes<<EOF" >> $GITHUB_OUTPUT
           echo "$NOTES" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Create GitHub Release
-        if: steps.version.outputs.version != '' && steps.tag_check.outputs.exists == 'false'
-        # softprops/action-gh-release replaces the deprecated actions/create-release@v1
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: "v${{ steps.version.outputs.version }}"
-          name: "FloorForge v${{ steps.version.outputs.version }}"
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: "FloorForge ${{ steps.version.outputs.tag }}"
           body: ${{ steps.changelog.outputs.notes }}
           draft: false
-          prerelease: ${{ contains(steps.version.outputs.version, '-') }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          prerelease: ${{ contains(steps.version.outputs.tag, '-') }}

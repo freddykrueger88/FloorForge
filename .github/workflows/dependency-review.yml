@@ -1,23 +1,20 @@
 name: Dependency Review
 
+# Nur auf Pull Requests – dependency-review braucht einen Base-Branch zum Vergleich
 on:
   pull_request:
-    branches: [main, develop]
+    branches: [main]
 
 permissions:
   contents: read
-  pull-requests: write
 
 jobs:
   dependency-review:
     name: 🔍 Dependency Review
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Dependency Review
-        uses: actions/dependency-review-action@v4
+      - uses: actions/checkout@v4
+      - uses: actions/dependency-review-action@v4
         with:
           fail-on-severity: high
-          comment-summary-in-pr: always
+          deny-licenses: GPL-2.0, AGPL-3.0

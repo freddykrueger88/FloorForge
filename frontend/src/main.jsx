@@ -1,27 +1,16 @@
-import React from 'react';
+import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import App from './App';
-import './i18n/i18n';
+import './i18n/i18n.js';
 import './styles/tokens.css';
 import './styles/base.css';
+import App from './App.jsx';
 
-// Theme aus localStorage oder System-Präferenz
-const savedTheme = (() => {
-  try {
-    return localStorage.getItem('floorforge-theme');
-  } catch {
-    return null;
-  }
-})();
-const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-document.documentElement.setAttribute(
-  'data-theme',
-  savedTheme || (systemDark ? 'dark' : 'light')
-);
+// Theme aus localStorage wiederherstellen
+const savedTheme = localStorage.getItem('floorforge-theme') || 'dark';
+document.documentElement.setAttribute('data-theme', savedTheme);
 
-const root = createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
+createRoot(document.getElementById('root')).render(
+  <StrictMode>
     <App />
-  </React.StrictMode>
+  </StrictMode>
 );
