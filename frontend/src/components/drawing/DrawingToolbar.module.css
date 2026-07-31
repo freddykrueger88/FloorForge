@@ -1,0 +1,153 @@
+.toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  min-width: 52px;
+  align-items: center;
+  user-select: none;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  align-items: center;
+  width: 100%;
+}
+
+.divider {
+  width: 80%;
+  height: 1px;
+  background: var(--color-divider);
+  margin: var(--space-1) 0;
+}
+
+/* ── Tool-Buttons ── */
+.toolBtn {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  transition: all var(--transition-interactive);
+}
+.toolBtn:hover {
+  background: var(--color-surface-offset);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+.toolBtn.active {
+  background: var(--color-primary-highlight);
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.icon { font-size: 1.1rem; line-height: 1; }
+.shortcut {
+  font-size: 0.55rem;
+  color: var(--color-text-faint);
+  font-family: monospace;
+  text-transform: uppercase;
+  line-height: 1;
+}
+.toolBtn.active .shortcut { color: var(--color-primary); opacity: 0.7; }
+
+/* ── Farb-Buttons ── */
+.colorBtn {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-full);
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform var(--transition-interactive), border-color var(--transition-interactive);
+}
+.colorBtn:hover { transform: scale(1.15); }
+.colorActive {
+  border-color: var(--color-text) !important;
+  transform: scale(1.2);
+  box-shadow: 0 0 0 2px var(--color-primary);
+}
+
+.colorPickerLabel {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-offset);
+  border: 1px dashed var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.75rem;
+  position: relative;
+}
+.colorInput {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ── Linienstärke ── */
+.strokeBtn {
+  width: 40px;
+  height: 28px;
+  border-radius: var(--radius-md);
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-interactive);
+}
+.strokeBtn:hover { background: var(--color-surface-offset); color: var(--color-text); }
+.strokeBtn.active {
+  background: var(--color-primary-highlight);
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+/* ── Action-Buttons ── */
+.actionBtn {
+  width: 40px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all var(--transition-interactive);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.actionBtn:hover:not(:disabled) {
+  background: var(--color-surface-offset);
+  color: var(--color-text);
+}
+.actionBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+.clearBtn:hover:not(:disabled) {
+  background: var(--color-error-highlight);
+  color: var(--color-error);
+  border-color: var(--color-error);
+}
