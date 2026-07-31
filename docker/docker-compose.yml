@@ -1,0 +1,90 @@
+version: '3.9'
+
+services:
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    container_name: floorforge-backend
+    restart: unless-stopped
+    env_file: ../.env
+    environment:
+      - NODE_ENV=production
+    ports:
+      - "${BACKEND_PORT:-3001}:3001"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - exports_data:/app/exports
+      - uploads_data:/app/uploads
+    networks:
+      - floorforge
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    container_name: floorforge-frontend
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-3000}:80"
+    depends_on:
+      - backend
+    networks:
+      - floorforge
+
+  db:
+    image: postgres:16-alpine
+    container_name: floorforge-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-floorforge}
+      POSTGRES_USER: ${DB_USER:-floorforge}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-floorforge}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - floorforge
+
+  redis:
+    image: redis:7-alpine
+    container_name: floorforge-redis
+    restart: unless-stopped
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - floorforge
+
+  ffmpeg:
+    image: jrottenberg/ffmpeg:6.0-alpine
+    container_name: floorforge-ffmpeg
+    restart: unless-stopped
+    volumes:
+      - exports_data:/exports
+    networks:
+      - floorforge
+    entrypoint: ["/bin/sh", "-c", "while true; do sleep 3600; done"]
+
+volumes:
+  postgres_data:
+  redis_data:
+  exports_data:
+  uploads_data:
+
+networks:
+  floorforge:
+    driver: bridge
