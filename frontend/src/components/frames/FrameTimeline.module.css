@@ -1,0 +1,146 @@
+.timeline {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+  min-height: 72px;
+  flex-shrink: 0;
+}
+
+/* ── Frame-Liste ── */
+.list {
+  display: flex;
+  gap: var(--space-2);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.frameItem {
+  position: relative;
+  flex-shrink: 0;
+  transition: opacity var(--transition-interactive), transform var(--transition-interactive);
+}
+.frameItem.dragging { opacity: 0.4; transform: scale(0.95); }
+
+/* ── Frame-Button (Thumbnail) ── */
+.frameBtn {
+  position: relative;
+  width: 56px;
+  height: 52px;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-offset);
+  border: 2px solid var(--color-border);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: var(--space-1);
+  transition: border-color var(--transition-interactive), background var(--transition-interactive);
+  overflow: hidden;
+}
+.frameBtn:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-highlight);
+}
+.frameItem.active .frameBtn {
+  border-color: var(--color-primary);
+  background: var(--color-primary-highlight);
+  box-shadow: 0 0 0 2px var(--color-primary);
+}
+
+.thumbNumber {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1;
+}
+.thumbLabel {
+  font-size: 0.55rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 48px;
+  text-align: center;
+}
+.dragHandle {
+  position: absolute;
+  top: 2px;
+  right: 3px;
+  font-size: 0.6rem;
+  color: var(--color-text-faint);
+  cursor: grab;
+  line-height: 1;
+}
+.frameBtn:active .dragHandle { cursor: grabbing; }
+
+/* ── Löschen-Button ── */
+.deleteBtn {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 18px;
+  height: 18px;
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-size: 0.65rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity var(--transition-interactive), background var(--transition-interactive);
+  z-index: 1;
+}
+.frameItem:hover .deleteBtn { opacity: 1; }
+.deleteBtn:hover {
+  background: var(--color-error-highlight);
+  border-color: var(--color-error);
+  color: var(--color-error);
+}
+
+/* ── + Frame Button ── */
+.addBtn {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  width: 56px;
+  height: 52px;
+  border-radius: var(--radius-md);
+  background: transparent;
+  border: 2px dashed var(--color-border);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: border-color var(--transition-interactive), color var(--transition-interactive);
+}
+.addBtn:hover:not(:disabled) {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+.addBtn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+.addLabel { font-size: 0.6rem; font-weight: 600; line-height: 1; }
+
+/* ── Zähler ── */
+.counter {
+  font-size: var(--text-xs);
+  color: var(--color-text-faint);
+  white-space: nowrap;
+  margin-left: var(--space-2);
+  font-variant-numeric: tabular-nums;
+}
