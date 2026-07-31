@@ -1,0 +1,34 @@
+name: "📚 Dokumentation"
+description: "Dokumentation hinzufügen oder verbessern"
+labels: ["documentation"]
+body:
+  - type: markdown
+    attributes:
+      value: "## 📚 Dokumentations-Aufgabe"
+  - type: input
+    id: title
+    attributes:
+      label: "Titel"
+      placeholder: "Was soll dokumentiert werden?"
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: "Beschreibung"
+      placeholder: "Was fehlt oder muss verbessert werden?"
+    validations:
+      required: true
+  - type: dropdown
+    id: type
+    attributes:
+      label: "Dokumentationstyp"
+      options:
+        - "README"
+        - "Wiki"
+        - "API-Dokumentation"
+        - "Code-Kommentare"
+        - "CHANGELOG"
+        - "Benutzerhandbuch"
+    validations:
+      required: true

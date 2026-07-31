@@ -1,0 +1,48 @@
+name: "📋 Aufgabe (Task)"
+description: "Eine Entwicklungsaufgabe anlegen"
+labels: ["task"]
+body:
+  - type: markdown
+    attributes:
+      value: "## 📋 Entwicklungsaufgabe"
+  - type: input
+    id: title
+    attributes:
+      label: "Aufgabentitel"
+      placeholder: "Was muss gemacht werden?"
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: "Beschreibung"
+      placeholder: "Detaillierte Beschreibung der Aufgabe..."
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: "Akzeptanzkriterien"
+      placeholder: "- [ ] Kriterium 1\n- [ ] Kriterium 2"
+    validations:
+      required: true
+  - type: dropdown
+    id: component
+    attributes:
+      label: "Komponente"
+      options:
+        - "Backend"
+        - "Frontend"
+        - "Docker / Infrastruktur"
+        - "CI/CD"
+        - "Dokumentation"
+        - "Sicherheit"
+        - "Barrierefreiheit"
+        - "Sonstiges"
+    validations:
+      required: true
+  - type: input
+    id: milestone
+    attributes:
+      label: "Zugehöriges Milestone / Version"
+      placeholder: "z.B. v0.1.0"

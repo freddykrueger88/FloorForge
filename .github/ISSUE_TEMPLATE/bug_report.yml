@@ -1,0 +1,50 @@
+name: "🐛 Bug Report"
+description: "Einen Fehler melden"
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: "## 🐛 Bug Report\nDanke für deinen Bericht! Bitte fülle alle Felder so genau wie möglich aus."
+  - type: input
+    id: title
+    attributes:
+      label: "Kurzbeschreibung"
+      placeholder: "Was ist passiert?"
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: "Schritte zum Reproduzieren"
+      placeholder: "1. Gehe zu...\n2. Klicke auf...\n3. Sieh den Fehler..."
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: "Erwartetes Verhalten"
+      placeholder: "Was sollte passieren?"
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: "Tatsächliches Verhalten"
+      placeholder: "Was ist stattdessen passiert?"
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: "FloorForge Version"
+      placeholder: "z.B. v0.2.1"
+  - type: textarea
+    id: environment
+    attributes:
+      label: "Umgebung"
+      placeholder: "Browser, OS, Docker-Version..."
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: "Screenshots / Logs"
+      placeholder: "Falls vorhanden..."
