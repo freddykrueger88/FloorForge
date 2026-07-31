@@ -1,41 +1,53 @@
 {
-  "a11y": {
-    "skipToContent": "Zum Inhalt springen"
-  },
-  "auth": {
-    "loginTitle": "Anmelden",
-    "registerTitle": "Registrieren",
-    "email": "E-Mail-Adresse",
-    "password": "Passwort",
-    "name": "Name (optional)",
-    "namePlaceholder": "Dein Name",
-    "passwordHint": "Min. 8 Zeichen, Groß- und Kleinbuchstaben, eine Zahl",
-    "loginBtn": "Anmelden",
-    "loggingIn": "Wird angemeldet…",
-    "registerBtn": "Konto erstellen",
-    "registering": "Wird erstellt…",
-    "loginError": "Anmeldung fehlgeschlagen",
-    "registerError": "Registrierung fehlgeschlagen",
-    "noAccount": "Noch kein Konto?",
-    "hasAccount": "Bereits registriert?",
-    "registerLink": "Jetzt registrieren",
-    "loginLink": "Zum Login",
-    "firstUserAdmin": "Der erste registrierte Benutzer erhält Admin-Rechte."
+  "app": {
+    "name": "FloorForge",
+    "tagline": "Taktik-Tool für Floorball Coaches"
   },
   "nav": {
     "dashboard": "Dashboard",
     "boards": "Spielfelder",
-    "tactics": "Taktiken",
     "settings": "Einstellungen",
     "logout": "Abmelden"
   },
-  "common": {
-    "loading": "Lädt…",
-    "save": "Speichern",
-    "cancel": "Abbrechen",
-    "delete": "Löschen",
-    "edit": "Bearbeiten",
-    "confirm": "Bestätigen",
-    "back": "Zurück"
+  "field": {
+    "large": "Großfeld (40×20m)",
+    "small": "Kleinfeld (24×14m)",
+    "street": "Street Floorball",
+    "threeVsThree": "3 vs 3",
+    "grid": "Raster",
+    "gridSize": "Rastergröße",
+    "showGrid": "Raster anzeigen",
+    "zoom": "Zoom",
+    "resetZoom": "Zoom zurücksetzen"
+  },
+  "teams": {
+    "home": "Heimteam",
+    "away": "Auswärtsteam",
+    "goalkeeper": "Torwart",
+    "defender": "Verteidiger",
+    "midfielder": "Mittelfeld",
+    "forward": "Stürmer"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "theme": "Theme",
+    "dark": "Dunkel",
+    "light": "Hell",
+    "vikings": "TB Uphusen Vikings",
+    "iff": "IFF Official",
+    "fieldType": "Spielfeld-Typ",
+    "ballColor": "Ballfarbe",
+    "homeColor": "Heimteam-Farbe",
+    "awayColor": "Auswärtsteam-Farbe",
+    "language": "Sprache"
+  },
+  "accessibility": {
+    "skipToContent": "Zum Inhalt springen",
+    "fieldCanvas": "Floorball-Spielfeld Canvas",
+    "themeToggle": "Theme wechseln"
+  },
+  "errors": {
+    "generic": "Ein Fehler ist aufgetreten.",
+    "notFound": "Seite nicht gefunden."
   }
 }

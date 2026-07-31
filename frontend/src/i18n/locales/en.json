@@ -1,41 +1,53 @@
 {
-  "a11y": {
-    "skipToContent": "Skip to content"
-  },
-  "auth": {
-    "loginTitle": "Sign in",
-    "registerTitle": "Create account",
-    "email": "Email address",
-    "password": "Password",
-    "name": "Name (optional)",
-    "namePlaceholder": "Your name",
-    "passwordHint": "Min. 8 characters, upper & lowercase, one number",
-    "loginBtn": "Sign in",
-    "loggingIn": "Signing in…",
-    "registerBtn": "Create account",
-    "registering": "Creating account…",
-    "loginError": "Sign in failed",
-    "registerError": "Registration failed",
-    "noAccount": "No account yet?",
-    "hasAccount": "Already registered?",
-    "registerLink": "Register now",
-    "loginLink": "Sign in",
-    "firstUserAdmin": "The first registered user will receive admin rights."
+  "app": {
+    "name": "FloorForge",
+    "tagline": "Tactics Tool for Floorball Coaches"
   },
   "nav": {
     "dashboard": "Dashboard",
     "boards": "Boards",
-    "tactics": "Tactics",
     "settings": "Settings",
-    "logout": "Sign out"
+    "logout": "Logout"
   },
-  "common": {
-    "loading": "Loading…",
-    "save": "Save",
-    "cancel": "Cancel",
-    "delete": "Delete",
-    "edit": "Edit",
-    "confirm": "Confirm",
-    "back": "Back"
+  "field": {
+    "large": "Full Field (40×20m)",
+    "small": "Small Field (24×14m)",
+    "street": "Street Floorball",
+    "threeVsThree": "3 vs 3",
+    "grid": "Grid",
+    "gridSize": "Grid Size",
+    "showGrid": "Show Grid",
+    "zoom": "Zoom",
+    "resetZoom": "Reset Zoom"
+  },
+  "teams": {
+    "home": "Home Team",
+    "away": "Away Team",
+    "goalkeeper": "Goalkeeper",
+    "defender": "Defender",
+    "midfielder": "Midfielder",
+    "forward": "Forward"
+  },
+  "settings": {
+    "title": "Settings",
+    "theme": "Theme",
+    "dark": "Dark",
+    "light": "Light",
+    "vikings": "TB Uphusen Vikings",
+    "iff": "IFF Official",
+    "fieldType": "Field Type",
+    "ballColor": "Ball Color",
+    "homeColor": "Home Team Color",
+    "awayColor": "Away Team Color",
+    "language": "Language"
+  },
+  "accessibility": {
+    "skipToContent": "Skip to content",
+    "fieldCanvas": "Floorball field canvas",
+    "themeToggle": "Toggle theme"
+  },
+  "errors": {
+    "generic": "An error occurred.",
+    "notFound": "Page not found."
   }
 }
