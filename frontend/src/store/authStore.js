@@ -1,24 +1,31 @@
 import { create } from 'zustand';
+import api from '../utils/api.js';
 
-/**
- * FloorForge – Auth Store (Zustand)
- * Vollständige Auth-Logik folgt in Issue #4
- */
-export const useAuthStore = create((set) => ({
+const useAuthStore = create((set) => ({
   user: null,
-  token: null,
-  isAuthenticated: false,
+  loading: false,
 
-  login: (user, token) => {
-    // Token im Memory halten (nicht localStorage wegen Docker-Sandbox)
-    set({ user, token, isAuthenticated: true });
+  setUser: (user) => set({ user }),
+
+  logout: async () => {
+    try {
+      await api.post('/auth/logout');
+    } catch (_) {
+      // Fehler ignorieren – immer ausloggen
+    } finally {
+      set({ user: null });
+    }
   },
 
-  logout: () => {
-    set({ user: null, token: null, isAuthenticated: false });
-  },
-
-  updateUser: (updates) => {
-    set((state) => ({ user: { ...state.user, ...updates } }));
+  fetchMe: async () => {
+    set({ loading: true });
+    try {
+      const res = await api.get('/auth/me');
+      set({ user: res.data.data.user, loading: false });
+    } catch (_) {
+      set({ user: null, loading: false });
+    }
   },
 }));
+
+export default useAuthStore;

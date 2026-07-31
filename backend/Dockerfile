@@ -1,31 +1,51 @@
-FROM node:20-alpine AS builder
+# ================================================
+# FloorForge Backend – Multi-Stage Dockerfile
+# ================================================
 
+# ── Base ─────────────────────────────────────────
+FROM node:20-alpine AS base
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm ci --only=production
+# Systemabhängigkeiten (für bcrypt native bindings)
+RUN apk add --no-cache python3 make g++
 
+# Abhängigkeiten zuerst kopieren (Layer-Cache nutzen)
+COPY package*.json ./
+
+# ── Development ──────────────────────────────────
+FROM base AS development
+RUN npm ci
+COPY . .
+# Non-root User
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+USER appuser
+EXPOSE 3001
+CMD ["npm", "run", "dev"]
+
+# ── Builder ──────────────────────────────────────
+FROM base AS builder
+RUN npm ci --omit=dev
 COPY . .
 
-# --- Runtime ---
-FROM node:20-alpine
-
-# FFmpeg für Export-Funktionen
-RUN apk add --no-cache ffmpeg
-
+# ── Production ───────────────────────────────────
+FROM node:20-alpine AS production
 WORKDIR /app
 
+# Nur Produktions-Abhängigkeiten
 COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app .
+COPY --from=builder /app/src ./src
+COPY --from=builder /app/package.json ./package.json
 
-# Non-root user
-RUN addgroup -S floorforge && adduser -S floorforge -G floorforge
-RUN mkdir -p /app/exports /app/uploads && chown -R floorforge:floorforge /app
-USER floorforge
+# Export-Ordner anlegen
+RUN mkdir -p /app/exports
+
+# Non-root User
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup \
+    && chown -R appuser:appgroup /app
+USER appuser
 
 EXPOSE 3001
-
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:3001/health || exit 1
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD wget -qO- http://localhost:3001/health || exit 1
 
 CMD ["node", "src/server.js"]

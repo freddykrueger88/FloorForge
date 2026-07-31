@@ -1,47 +1,38 @@
 /**
- * FloorForge – JWT Authentication Middleware
- * Vollständige Implementierung folgt in Issue #4
+ * FloorForge – Auth Middleware
  */
-const jwt = require('jsonwebtoken');
+import jwt from 'jsonwebtoken';
+import redisClient from '../db/redis.js';
+import { error } from '../utils/apiResponse.js';
 
-/**
- * Authentifizierung prüfen – JWT aus Authorization Header
- */
-const authenticate = (req, res, next) => {
-  const authHeader = req.headers.authorization;
+export async function authenticate(req, res, next) {
+  const token = req.cookies?.token || req.headers.authorization?.replace('Bearer ', '');
 
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({
-      error: 'Unauthorized',
-      message: 'Kein gültiger Authorization-Header gefunden.',
-    });
+  if (!token) {
+    return res.status(401).json(error('Nicht authentifiziert'));
   }
-
-  const token = authHeader.split(' ')[1];
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
-    return next();
+    // Token-Blacklist prüfen
+    const blacklisted = await redisClient.get(`blacklist:${token}`);
+    if (blacklisted) {
+      return res.status(401).json(error('Token ungültig (ausgeloggt)'));
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET, { algorithms: ['HS256'] });
+    req.user = { id: decoded.sub, role: decoded.role };
+    next();
   } catch (err) {
-    return res.status(401).json({
-      error: 'Unauthorized',
-      message: 'Token ungültig oder abgelaufen.',
-    });
+    if (err.name === 'TokenExpiredError') {
+      return res.status(401).json(error('Token abgelaufen'));
+    }
+    return res.status(401).json(error('Ungültiger Token'));
   }
-};
+}
 
-/**
- * Admin-Rolle prüfen – nach authenticate() einsetzen
- */
-const requireAdmin = (req, res, next) => {
-  if (!req.user || req.user.role !== 'admin') {
-    return res.status(403).json({
-      error: 'Forbidden',
-      message: 'Administratorrechte erforderlich.',
-    });
+export function requireAdmin(req, res, next) {
+  if (req.user?.role !== 'admin') {
+    return res.status(403).json(error('Keine Berechtigung'));
   }
-  return next();
-};
-
-module.exports = { authenticate, requireAdmin };
+  next();
+}

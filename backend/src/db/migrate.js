@@ -1,44 +1,61 @@
 /**
- * FloorForge – Datenbank Migration
- * Vollständige Schema-Migration folgt in Issue #5
+ * FloorForge – Datenbankmigrationen
+ * Wird beim Start des Backends automatisch ausgeführt.
  */
-require('dotenv').config();
-const { pool } = require('./pool');
+import pool from './pool.js';
+import logger from '../utils/logger.js';
 
-const migrate = async () => {
+export async function runMigrations() {
   const client = await pool.connect();
   try {
-    console.log('[MIGRATE] Starte Datenbank-Migration...');
+    logger.info('Running database migrations...');
 
     await client.query('BEGIN');
 
-    // UUID Extension aktivieren
-    await client.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"');
-    await client.query('CREATE EXTENSION IF NOT EXISTS "pgcrypto"');
+    // UUID Extension
+    await client.query(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`);
 
-    // Users Tabelle (Basis, vollständig in Issue #4 & #5)
+    // ── users ──────────────────────────────────────────
     await client.query(`
       CREATE TABLE IF NOT EXISTS users (
-        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-        email VARCHAR(255) UNIQUE NOT NULL,
-        password_hash VARCHAR(255) NOT NULL,
-        display_name VARCHAR(100) NOT NULL,
-        role VARCHAR(20) DEFAULT 'user' CHECK (role IN ('user', 'admin')),
-        created_at TIMESTAMPTZ DEFAULT NOW(),
-        updated_at TIMESTAMPTZ DEFAULT NOW()
-      )
+        id            UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        email         TEXT UNIQUE NOT NULL,
+        password_hash TEXT NOT NULL,
+        role          TEXT NOT NULL DEFAULT 'user' CHECK (role IN ('admin', 'user')),
+        name          TEXT,
+        created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        updated_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      );
     `);
 
+    // updated_at Trigger
+    await client.query(`
+      CREATE OR REPLACE FUNCTION update_updated_at_column()
+      RETURNS TRIGGER AS $$
+      BEGIN
+        NEW.updated_at = NOW();
+        RETURN NEW;
+      END;
+      $$ language 'plpgsql';
+    `);
+
+    await client.query(`
+      DROP TRIGGER IF EXISTS update_users_updated_at ON users;
+      CREATE TRIGGER update_users_updated_at
+        BEFORE UPDATE ON users
+        FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+    `);
+
+    // ── sessions (Token-Blacklist via Redis – keine DB-Tabelle nötig) ──
+    // Redis übernimmt die Token-Invalidierung, kein DB-Overhead.
+
     await client.query('COMMIT');
-    console.log('[MIGRATE] Migration erfolgreich abgeschlossen.');
+    logger.info('Database migrations completed successfully.');
   } catch (err) {
     await client.query('ROLLBACK');
-    console.error('[MIGRATE] Fehler:', err.message);
+    logger.error('Migration failed, rolled back:', err);
     throw err;
   } finally {
     client.release();
-    await pool.end();
   }
-};
-
-migrate().catch(() => process.exit(1));
+}

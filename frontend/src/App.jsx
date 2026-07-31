@@ -1,46 +1,47 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { Toaster } from 'react-hot-toast';
-import { useAuthStore } from '@store/authStore';
+import { Suspense, lazy } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import useAuthStore from './store/authStore.js';
+import './styles/tokens.css';
+import './styles/base.css';
+import './styles/auth.css';
 
-// Pages (werden in späteren Issues implementiert)
-import Dashboard from '@pages/Dashboard';
-import LoginPage from '@pages/LoginPage';
-import NotFound from '@pages/NotFound';
+const LoginPage    = lazy(() => import('./pages/LoginPage.jsx'));
+const RegisterPage = lazy(() => import('./pages/RegisterPage.jsx'));
+const Dashboard    = lazy(() => import('./pages/Dashboard.jsx'));
+const NotFound     = lazy(() => import('./pages/NotFound.jsx'));
 
-// Geschützte Route
-const PrivateRoute = ({ children }) => {
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
-  return isAuthenticated ? children : <Navigate to="/login" replace />;
-};
+function PrivateRoute({ children }) {
+  const user = useAuthStore((s) => s.user);
+  const location = useLocation();
+  if (!user) return <Navigate to="/login" state={{ from: location }} replace />;
+  return children;
+}
+
+function PublicRoute({ children }) {
+  const user = useAuthStore((s) => s.user);
+  if (user) return <Navigate to="/dashboard" replace />;
+  return children;
+}
+
+const Loader = () => (
+  <div className="page-loader" role="status" aria-live="polite">
+    <span className="sr-only">Wird geladen…</span>
+    <div className="spinner" aria-hidden="true" />
+  </div>
+);
 
 export default function App() {
   return (
     <BrowserRouter>
-      <Toaster
-        position="top-right"
-        toastOptions={{
-          duration: 4000,
-          style: {
-            background: 'var(--color-surface-2)',
-            color: 'var(--color-text)',
-            border: '1px solid var(--color-border)',
-          },
-        }}
-      />
-      <Routes>
-        {/* Öffentliche Routen */}
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/share/:token" element={<div>Share-View (Issue #16)</div>} />
-
-        {/* Geschützte Routen */}
-        <Route path="/" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-        <Route path="/board/:id" element={<PrivateRoute><div>Board Editor (Issue #6)</div></PrivateRoute>} />
-        <Route path="/settings" element={<PrivateRoute><div>Einstellungen (Issue #18)</div></PrivateRoute>} />
-        <Route path="/settings/:section" element={<PrivateRoute><div>Einstellungen (Issue #18)</div></PrivateRoute>} />
-
-        {/* 404 */}
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <Suspense fallback={<Loader />}>
+        <Routes>
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/login"    element={<PublicRoute><LoginPage /></PublicRoute>} />
+          <Route path="/register" element={<PublicRoute><RegisterPage /></PublicRoute>} />
+          <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 }

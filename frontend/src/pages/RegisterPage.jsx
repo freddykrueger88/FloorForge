@@ -1,17 +1,15 @@
 import { useState } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import api from '../utils/api.js';
 import useAuthStore from '../store/authStore.js';
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const location = useLocation();
   const setUser = useAuthStore((s) => s.setUser);
-  const from = location.state?.from?.pathname || '/dashboard';
 
-  const [form, setForm] = useState({ email: '', password: '' });
+  const [form, setForm] = useState({ email: '', password: '', name: '' });
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState(null);
 
@@ -20,11 +18,11 @@ export default function LoginPage() {
     setLoading(true);
     setErr(null);
     try {
-      const res = await api.post('/auth/login', form);
+      const res = await api.post('/auth/register', form);
       setUser(res.data.data.user);
-      navigate(from, { replace: true });
+      navigate('/dashboard', { replace: true });
     } catch (e) {
-      setErr(e.response?.data?.message || t('auth.loginError'));
+      setErr(e.response?.data?.message || t('auth.registerError'));
     } finally {
       setLoading(false);
     }
@@ -35,7 +33,6 @@ export default function LoginPage() {
       <a href="#main-content" className="sr-only sr-only-focusable">{t('a11y.skipToContent')}</a>
 
       <div className="auth-card" id="main-content">
-        {/* Logo */}
         <div className="auth-logo" aria-label="FloorForge">
           <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
             <rect width="48" height="48" rx="10" fill="var(--color-primary)"/>
@@ -45,7 +42,8 @@ export default function LoginPage() {
           <span className="auth-app-name">FloorForge</span>
         </div>
 
-        <h1 className="auth-title">{t('auth.loginTitle')}</h1>
+        <h1 className="auth-title">{t('auth.registerTitle')}</h1>
+        <p className="auth-hint">{t('auth.firstUserAdmin')}</p>
 
         {err && (
           <div role="alert" className="auth-error">
@@ -54,6 +52,18 @@ export default function LoginPage() {
         )}
 
         <form onSubmit={handleSubmit} noValidate>
+          <div className="form-group">
+            <label htmlFor="name">{t('auth.name')}</label>
+            <input
+              id="name"
+              type="text"
+              autoComplete="name"
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              placeholder={t('auth.namePlaceholder')}
+            />
+          </div>
+
           <div className="form-group">
             <label htmlFor="email">{t('auth.email')}</label>
             <input
@@ -64,7 +74,6 @@ export default function LoginPage() {
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
               placeholder="coach@example.com"
-              aria-describedby={err ? 'auth-error' : undefined}
             />
           </div>
 
@@ -73,22 +82,23 @@ export default function LoginPage() {
             <input
               id="password"
               type="password"
-              autoComplete="current-password"
+              autoComplete="new-password"
               required
               value={form.password}
               onChange={(e) => setForm({ ...form, password: e.target.value })}
               placeholder="••••••••"
             />
+            <span className="form-hint">{t('auth.passwordHint')}</span>
           </div>
 
           <button type="submit" className="btn btn-primary btn-full" disabled={loading}>
-            {loading ? t('auth.loggingIn') : t('auth.loginBtn')}
+            {loading ? t('auth.registering') : t('auth.registerBtn')}
           </button>
         </form>
 
         <p className="auth-switch">
-          {t('auth.noAccount')}{' '}
-          <Link to="/register">{t('auth.registerLink')}</Link>
+          {t('auth.hasAccount')}{' '}
+          <Link to="/login">{t('auth.loginLink')}</Link>
         </p>
       </div>
     </main>

@@ -1,32 +1,19 @@
 /**
- * FloorForge – API Routes Index
- * Routen werden in späteren Issues aktiviert
+ * FloorForge – Route Index
  */
-const express = require('express');
-const router = express.Router();
+import { Router } from 'express';
+import authRoutes from './auth.js';
+// import boardRoutes from './boards.js';    // Issue #5
+// import tacticsRoutes from './tactics.js'; // Issue #7
+// import exportRoutes from './exports.js';  // Issue #13
+// import settingsRoutes from './settings.js'; // Issue #15
 
-// API Version Info
-router.get('/', (req, res) => {
-  res.json({
-    name: 'FloorForge API',
-    version: process.env.npm_package_version || '0.1.0',
-    status: 'running',
-    docs: '/api/docs', // Swagger – folgt in späterem Issue
-  });
-});
+const router = Router();
 
-// Routen werden schrittweise aktiviert:
-// Issue #4: Authentication
-// router.use('/auth', require('./auth'));
-// Issue #9: Boards
-// router.use('/boards', require('./boards'));
-// Issue #15: Export
-// router.use('/export', require('./export'));
-// Issue #16: Share
-// router.use('/share', require('./share'));
-// Issue #26: Admin
-// router.use('/admin', require('./admin'));
-// Issue #20: User/DSGVO
-// router.use('/user', require('./user'));
+router.use('/auth', authRoutes);
+// router.use('/boards', boardRoutes);
+// router.use('/tactics', tacticsRoutes);
+// router.use('/exports', exportRoutes);
+// router.use('/settings', settingsRoutes);
 
-module.exports = router;
+export default router;
