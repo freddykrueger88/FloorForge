@@ -13,11 +13,43 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### In Arbeit (v0.3.x)
+- Animations-Playback: Play / Pause / Stop / Geschwindigkeit (#11)
+- Spieler-Interpolation zwischen Frames (#12)
+- Postcard-Galerie: Board-Übersicht als Postkarten mit Spielfeld-Miniatur (#30)
+
 ### Geplant
-- Spieler auf dem Feld platzieren und bewegen (v0.2.0)
-- Pfeil-/Linien-Editor für Spielzüge (v0.3.0)
-- Frame-by-Frame Animation (v0.4.0)
-- Export (GIF, Video, Link) (v0.5.0)
+- Lines-System: Sturmreihen, Defensivreihen, Farben (#16)
+- Export: GIF, PNG, MP4, Link (v0.5.0)
+- Barrierefreiheit: WCAG 2.1 AA vollständig (v0.7.0)
+
+---
+
+## [0.3.0-dev] – 2026-08-01 (in Entwicklung)
+
+### Added
+- **Frame-System** (Issue #10)
+  - `FrameSchema` als Sub-Document im Board-Modell: Felder `order`, `label`, `players`, `elements`, `duration`
+  - `framesController.js`: 5 REST-Endpunkte (GET, POST, PUT, DELETE, Reorder)
+  - `frames.js` Router mit express-validator Validierung
+  - Max. 50 Frames pro Board (server- und clientseitig erzwungen)
+  - `useFrames.js` Hook: vollständiges State-Management (CRUD, Reihenfolge, aktiver Frame, goNext/goPrev, optimistisches Reorder + Rollback)
+  - `FrameTimeline.jsx`: Timeline-Komponente am unteren Spielfeldrand
+    - Drag & Drop zum Sortieren
+    - Hover-Delete (× Button)
+    - „+ Frame“ Button
+    - Frame-Zähler (1 / 5)
+    - Barrierefreiheit: aria-label, aria-pressed, aria-live
+  - `FrameTimeline.module.css`: vollständiges Styling mit CSS-Variablen
+- **Board Model** (Issues #5, #7, #10)
+  - `notes`-Feld ergänzt (max. 500 Zeichen) für Coach-Notizen
+  - `frames[]` Sub-Array für Frame-by-Frame System
+  - `activeFrameIndex` persistiert
+  - `lines[]` Sub-Schema für Lines-System vorbereitet
+- **Postcard-Galerie** geplant (Issue #30)
+  - Board-Übersicht: Postkarten-Layout (Spielfeld-Miniatur links, Notizen rechts)
+  - Notizen nur lesbar in der Galerie, editierbar nur im Board selbst
+  - Toggle Galerie ↔ Kompakt-Ansicht
 
 ---
 
@@ -38,7 +70,7 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 - i18n Locale-Dateien: `de.json` + `en.json` (vollständig)
 - CSS Design-Tokens: alle 4 Themes (dark, light, vikings, iff)
 - CI-Workflows repariert: fehlende Dateien, ESLint-Configs, Jest-Setup
-- `index.html` + `main.jsx` als Vite-Einstiegspunkte
+- `index.html` + `main.jsx` als Vite-Einsteigspunkte
 - `base.css` + `tokens.css` als CSS-Grundlage
 
 ### Fixed
