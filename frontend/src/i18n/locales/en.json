@@ -1,0 +1,82 @@
+{
+  "app": {
+    "name": "FloorForge",
+    "tagline": "Tactics Tool for Floorball Coaches"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "newBoard": "New Board",
+    "settings": "Settings",
+    "logout": "Sign out"
+  },
+  "auth": {
+    "login": "Sign in",
+    "logout": "Sign out",
+    "register": "Register",
+    "email": "Email address",
+    "password": "Password",
+    "displayName": "Display name",
+    "loginError": "Invalid email or password.",
+    "sessionExpired": "Your session has expired. Please sign in again."
+  },
+  "dashboard": {
+    "title": "My Boards",
+    "empty": "No boards yet.",
+    "emptyHint": "Create your first board and start planning tactics.",
+    "createFirst": "Create first board",
+    "newBoard": "New board"
+  },
+  "board": {
+    "title": "Board",
+    "unnamed": "Unnamed Board",
+    "save": "Save",
+    "delete": "Delete",
+    "export": "Export",
+    "addFrame": "Add frame",
+    "playAnimation": "Play animation",
+    "stopAnimation": "Stop"
+  },
+  "positions": {
+    "GK": "Goalkeeper",
+    "RD": "Right Defender",
+    "LD": "Left Defender",
+    "RM": "Right Midfielder",
+    "LM": "Left Midfielder",
+    "FW": "Forward"
+  },
+  "settings": {
+    "title": "Settings",
+    "theme": "Appearance",
+    "language": "Language",
+    "accessibility": "Accessibility",
+    "account": "Account",
+    "backup": "Backup & Export",
+    "danger": "Danger Zone"
+  },
+  "themes": {
+    "dark": "Dark",
+    "light": "Light",
+    "vikings": "TB Uphusen Vikings",
+    "iff": "IFF Official"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "confirm": "Confirm",
+    "loading": "Loading…",
+    "error": "Error",
+    "success": "Success",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "errors": {
+    "notFound": "Page not found",
+    "notFoundHint": "The page you requested does not exist.",
+    "backHome": "Back to dashboard",
+    "generic": "Something went wrong. Please try again."
+  }
+}

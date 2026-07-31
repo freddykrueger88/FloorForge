@@ -1,0 +1,82 @@
+{
+  "app": {
+    "name": "FloorForge",
+    "tagline": "Taktik-Tool für Floorball Coaches"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "newBoard": "Neues Spielfeld",
+    "settings": "Einstellungen",
+    "logout": "Abmelden"
+  },
+  "auth": {
+    "login": "Anmelden",
+    "logout": "Abmelden",
+    "register": "Registrieren",
+    "email": "E-Mail-Adresse",
+    "password": "Passwort",
+    "displayName": "Anzeigename",
+    "loginError": "E-Mail oder Passwort falsch.",
+    "sessionExpired": "Deine Sitzung ist abgelaufen. Bitte melde dich erneut an."
+  },
+  "dashboard": {
+    "title": "Meine Spielfelder",
+    "empty": "Noch keine Spielfelder vorhanden.",
+    "emptyHint": "Erstelle dein erstes Spielfeld und beginne mit der Taktikplanung.",
+    "createFirst": "Erstes Spielfeld erstellen",
+    "newBoard": "Neues Spielfeld"
+  },
+  "board": {
+    "title": "Spielfeld",
+    "unnamed": "Unbenanntes Spielfeld",
+    "save": "Speichern",
+    "delete": "Löschen",
+    "export": "Exportieren",
+    "addFrame": "Frame hinzufügen",
+    "playAnimation": "Animation abspielen",
+    "stopAnimation": "Stoppen"
+  },
+  "positions": {
+    "GK": "Torwart",
+    "RD": "Rechter Verteidiger",
+    "LD": "Linker Verteidiger",
+    "RM": "Rechtes Mittelfeld",
+    "LM": "Linkes Mittelfeld",
+    "FW": "Stürmer"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "theme": "Design",
+    "language": "Sprache",
+    "accessibility": "Barrierefreiheit",
+    "account": "Konto",
+    "backup": "Backup & Export",
+    "danger": "Gefahrenzone"
+  },
+  "themes": {
+    "dark": "Dunkel",
+    "light": "Hell",
+    "vikings": "TB Uphusen Vikings",
+    "iff": "IFF Official"
+  },
+  "common": {
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "confirm": "Bestätigen",
+    "loading": "Wird geladen…",
+    "error": "Fehler",
+    "success": "Erfolgreich",
+    "close": "Schließen",
+    "back": "Zurück",
+    "next": "Weiter",
+    "yes": "Ja",
+    "no": "Nein"
+  },
+  "errors": {
+    "notFound": "Seite nicht gefunden",
+    "notFoundHint": "Die aufgerufene Seite existiert nicht.",
+    "backHome": "Zurück zum Dashboard",
+    "generic": "Etwas ist schiefgelaufen. Bitte versuche es erneut."
+  }
+}
