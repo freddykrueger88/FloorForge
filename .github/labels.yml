@@ -1,0 +1,122 @@
+# FloorForge GitHub Labels
+# Wird via label-sync Workflow automatisch synchronisiert
+
+# --- Typ ---
+- name: bug
+  color: "d73a4a"
+  description: "Etwas funktioniert nicht"
+
+- name: enhancement
+  color: "a2eeef"
+  description: "Neues Feature oder Verbesserung"
+
+- name: task
+  color: "0075ca"
+  description: "Entwicklungsaufgabe"
+
+- name: documentation
+  color: "0075ca"
+  description: "Verbesserungen oder Ergänzungen der Dokumentation"
+
+- name: question
+  color: "d876e3"
+  description: "Weitere Informationen benötigt"
+
+- name: duplicate
+  color: "cfd3d7"
+  description: "Dieses Issue existiert bereits"
+
+- name: wontfix
+  color: "ffffff"
+  description: "Wird nicht bearbeitet"
+
+- name: triage
+  color: "e4e669"
+  description: "Muss eingeschätzt werden"
+
+# --- Komponente ---
+- name: backend
+  color: "1d76db"
+  description: "Backend (Node.js/Express)"
+
+- name: frontend
+  color: "5319e7"
+  description: "Frontend (React/Vite)"
+
+- name: docker
+  color: "0052cc"
+  description: "Docker / Infrastruktur"
+
+- name: infrastructure
+  color: "006b75"
+  description: "Infrastruktur & DevOps"
+
+- name: database
+  color: "e4e669"
+  description: "Datenbank (PostgreSQL)"
+
+# --- Thema ---
+- name: security
+  color: "b60205"
+  description: "Sicherheit & Authentifizierung"
+
+- name: dsgvo
+  color: "b60205"
+  description: "Datenschutz & DSGVO"
+
+- name: accessibility
+  color: "0e8a16"
+  description: "Barrierefreiheit (a11y)"
+
+- name: animation
+  color: "fbca04"
+  description: "Animations-System"
+
+- name: spielfeld
+  color: "006b75"
+  description: "Spielfeld & Canvas"
+
+- name: export
+  color: "e99695"
+  description: "Export-Funktionen (GIF, MP4, PDF, Link)"
+
+- name: design
+  color: "cc317c"
+  description: "Design & Themes"
+
+- name: i18n
+  color: "c2e0c6"
+  description: "Internationalisierung / Übersetzungen"
+
+# --- Version ---
+- name: v0.1.0
+  color: "ededed"
+  description: "Milestone: v0.1.0 Grundstruktur"
+
+- name: v0.2.0
+  color: "ededed"
+  description: "Milestone: v0.2.0 Spielfeld"
+
+- name: v0.3.0
+  color: "ededed"
+  description: "Milestone: v0.3.0 Animation"
+
+- name: v0.4.0
+  color: "ededed"
+  description: "Milestone: v0.4.0 Lines & Varianten"
+
+- name: v0.5.0
+  color: "ededed"
+  description: "Milestone: v0.5.0 Export GIF & Link"
+
+- name: v0.6.0
+  color: "ededed"
+  description: "Milestone: v0.6.0 Themes & Einstellungen"
+
+- name: v0.7.0
+  color: "ededed"
+  description: "Milestone: v0.7.0 Barrierefreiheit & DSGVO"
+
+- name: v0.8.0
+  color: "ededed"
+  description: "Milestone: v0.8.0 MP4, PDF, EN"
