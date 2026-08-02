@@ -24,7 +24,9 @@ export default function LoginPage() {
       setUser(res.data.data.user);
       navigate(from, { replace: true });
     } catch (e) {
-      setErr(e.response?.data?.message || t('auth.loginError'));
+      const details = e.response?.data?.details;
+      const detailMsg = Array.isArray(details) ? details.map((d) => d.message).join(' ') : null;
+      setErr(detailMsg || e.response?.data?.message || t('auth.loginError'));
     } finally {
       setLoading(false);
     }

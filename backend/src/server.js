@@ -17,6 +17,9 @@ import logger from './utils/logger.js';
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// Backend läuft hinter dem Nginx-Reverse-Proxy (docker-compose) – erster Hop vertrauenswürdig
+app.set('trust proxy', 1);
+
 // ── Security ──────────────────────────────────
 app.use(helmet({
   crossOriginEmbedderPolicy: false, // Konva.js

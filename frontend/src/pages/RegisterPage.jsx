@@ -22,7 +22,9 @@ export default function RegisterPage() {
       setUser(res.data.data.user);
       navigate('/dashboard', { replace: true });
     } catch (e) {
-      setErr(e.response?.data?.message || t('auth.registerError'));
+      const details = e.response?.data?.details;
+      const detailMsg = Array.isArray(details) ? details.map((d) => d.message).join(' ') : null;
+      setErr(detailMsg || e.response?.data?.message || t('auth.registerError'));
     } finally {
       setLoading(false);
     }
