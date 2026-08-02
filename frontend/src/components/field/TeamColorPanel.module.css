@@ -1,0 +1,138 @@
+.wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.toggleBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: var(--toolbar-btn-bg, #23272e);
+  border: 1px solid var(--toolbar-btn-border, #3a3f4b);
+  border-radius: 6px;
+  color: var(--toolbar-btn-color, #e2e8f0);
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background 0.15s;
+}
+.toggleBtn:hover { background: var(--toolbar-btn-bg-hover, #2d3340); }
+
+.colorDot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.25);
+}
+
+.panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 200;
+  min-width: 220px;
+  background: #1e2128;
+  border: 1px solid #3a3f4b;
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  padding: 0 0 12px 0;
+  color: #e2e8f0;
+}
+
+.panelHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px 8px;
+  border-bottom: 1px solid #2d3340;
+}
+.panelTitle { font-size: 0.88rem; font-weight: 600; }
+.closeBtn {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0 2px;
+}
+.closeBtn:hover { color: #e2e8f0; }
+
+.section {
+  padding: 10px 14px 4px;
+}
+.sectionLabel {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  margin-bottom: 6px;
+}
+
+.colorRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.colorField {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.colorFieldLabel {
+  font-size: 0.82rem;
+  color: #94a3b8;
+}
+.colorInput {
+  width: 32px;
+  height: 28px;
+  padding: 1px 2px;
+  border: 1px solid #3a3f4b;
+  border-radius: 5px;
+  background: #23272e;
+  cursor: pointer;
+}
+.resetBtn {
+  background: none;
+  border: 1px solid #3a3f4b;
+  border-radius: 5px;
+  color: #94a3b8;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 2px 7px;
+  transition: color 0.15s;
+}
+.resetBtn:hover { color: #e2e8f0; }
+
+.ballPresets {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+.ballPreset {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.1s;
+  border: none;
+  outline: none;
+}
+.ballPreset:hover { transform: scale(1.15); }
+.ballPresetActive {
+  box-shadow: 0 0 0 2.5px #60a5fa;
+  transform: scale(1.15);
+}
+
+.hint {
+  font-size: 0.74rem;
+  color: #64748b;
+  margin: 4px 0 0;
+  line-height: 1.4;
+}
