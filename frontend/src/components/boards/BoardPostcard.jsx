@@ -9,14 +9,8 @@
  * innerhalb der geöffneten Board-Ansicht (NotesPanel).
  */
 import FieldMiniature from '../field/FieldMiniature.jsx';
+import { FIELD_TYPE_LABELS } from '../../constants/fieldConfig.js';
 import styles from './BoardPostcard.module.css';
-
-const FIELD_TYPE_LABELS = {
-  large:          'Großfeld',
-  small:          'Kleinfeld',
-  street:         'Street',
-  three_v_three:  '3vs3',
-};
 
 function formatDate(iso) {
   if (!iso) return '';

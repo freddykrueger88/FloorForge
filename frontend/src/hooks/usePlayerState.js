@@ -9,47 +9,11 @@
  *   - Feldgrenzen-Clamping
  */
 import { useState, useCallback } from 'react';
-import { IFF_FIELDS, DEFAULT_POSITIONS_LARGE } from '../constants/fieldConfig.js';
-
-// Standard-Positionen je Feldtyp
-const DEFAULT_POSITIONS = {
-  large:        DEFAULT_POSITIONS_LARGE,
-  small:        buildMirroredPositions(4, 14, 24),
-  street:       buildMirroredPositions(3, 10, 20),
-  threeVsThree: buildMirroredPositions(3, 9, 18),
-};
-
-function buildMirroredPositions(count, fieldHeight, fieldWidth) {
-  const mid = fieldHeight / 2;
-  const homeBase = [
-    { id: 'h1', role: 'TW', x: fieldWidth * 0.07,  y: mid },
-    { id: 'h2', role: 'V',  x: fieldWidth * 0.20,  y: mid - mid * 0.35 },
-    { id: 'h3', role: 'V',  x: fieldWidth * 0.20,  y: mid + mid * 0.35 },
-    { id: 'h4', role: 'M',  x: fieldWidth * 0.38,  y: mid },
-    { id: 'h5', role: 'S',  x: fieldWidth * 0.50,  y: mid - mid * 0.3  },
-    { id: 'h6', role: 'S',  x: fieldWidth * 0.50,  y: mid + mid * 0.3  },
-  ].slice(0, count + 1); // +1 für TW
-
-  const awayBase = homeBase.map((p) => ({
-    ...p,
-    id: p.id.replace('h', 'a'),
-    x: fieldWidth - p.x,
-  }));
-
-  return { home: homeBase, away: awayBase };
-}
-
-// Spieler-Array aus Config aufbauen
-function buildPlayers(fieldType) {
-  const positions = DEFAULT_POSITIONS[fieldType] ?? DEFAULT_POSITIONS.large;
-  const home = (positions.home ?? []).map((p) => ({ ...p, team: 'home' }));
-  const away = (positions.away ?? []).map((p) => ({ ...p, team: 'away' }));
-  return [...home, ...away];
-}
+import { IFF_FIELDS, buildDefaultPlayers } from '../constants/fieldConfig.js';
 
 export function usePlayerState(fieldType = 'large') {
   const field          = IFF_FIELDS[fieldType] ?? IFF_FIELDS.large;
-  const [players,     setPlayers]     = useState(() => buildPlayers(fieldType));
+  const [players,     setPlayers]     = useState(() => buildDefaultPlayers(fieldType));
   const [selectedId,  setSelectedId]  = useState(null);
   // Issue #29 – Spielername auf Token
   const [showNames,    setShowNames]    = useState(false);
@@ -59,7 +23,7 @@ export function usePlayerState(fieldType = 'large') {
 
   // Spielfeld wechseln → Positionen neu initialisieren
   const resetForField = useCallback((newFieldType) => {
-    setPlayers(buildPlayers(newFieldType));
+    setPlayers(buildDefaultPlayers(newFieldType));
     setSelectedId(null);
   }, []);
 
@@ -78,7 +42,7 @@ export function usePlayerState(fieldType = 'large') {
 
   // Einen Spieler zurücksetzen
   const resetPlayer = useCallback((id) => {
-    const defaults = buildPlayers(fieldType);
+    const defaults = buildDefaultPlayers(fieldType);
     const original = defaults.find((p) => p.id === id);
     if (!original) return;
     setPlayers((prev) => prev.map((p) => p.id === id ? original : p));
@@ -86,7 +50,7 @@ export function usePlayerState(fieldType = 'large') {
 
   // Alle Spieler zurücksetzen
   const resetAllPlayers = useCallback(() => {
-    setPlayers(buildPlayers(fieldType));
+    setPlayers(buildDefaultPlayers(fieldType));
     setSelectedId(null);
   }, [fieldType]);
 

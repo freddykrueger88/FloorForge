@@ -6,10 +6,10 @@ import { useState, useRef, useEffect } from 'react';
 import styles from './NewBoardModal.module.css';
 
 const FIELD_TYPES = [
-  { value: 'large',         label: 'Großfeld',        desc: '20 × 40 m – Offizielles IFF Spielfeld' },
-  { value: 'small',         label: 'Kleinfeld',       desc: '14 × 24 m' },
-  { value: 'street',        label: 'Street Floorball', desc: 'Variabel, ohne Bande' },
-  { value: 'three_v_three', label: '3 vs 3',          desc: 'Kleinfeld für schnelle Spiele' },
+  { value: 'large',  label: 'Großfeld',         desc: '40 × 20 m – Offizielles IFF Spielfeld' },
+  { value: 'small',  label: 'Kleinfeld',        desc: '20 × 14 m' },
+  { value: 'street', label: 'Street Floorball', desc: '25 × 15 m, ohne Bande' },
+  { value: '3v3',    label: '3 vs 3',           desc: '22 × 11 m – Kleinfeld für schnelle Spiele' },
 ];
 
 export default function NewBoardModal({ onConfirm, onClose, loading }) {

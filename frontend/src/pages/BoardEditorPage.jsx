@@ -7,12 +7,16 @@
  *  - PlaybackControls + useAnimation (Issue #11)
  *  - useAutoSave (Positionsänderungen des aktiven Frames sichern)
  */
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
+import { buildDefaultPlayers, IFF_FIELDS } from '../constants/fieldConfig.js';
+import { rescalePlayers, rescaleElements } from '../utils/fieldRescale.js';
+
 import FieldContainer from '../components/field/FieldContainer.jsx';
 import FieldToolbar from '../components/field/FieldToolbar.jsx';
+import FieldTypeChangeDialog from '../components/field/FieldTypeChangeDialog.jsx';
 import PlayerInfoPanel from '../components/field/PlayerInfoPanel.jsx';
 import { FrameTimeline } from '../components/frames/index.js';
 import { PlaybackControls } from '../components/playback/index.js';
@@ -67,11 +71,22 @@ export default function BoardEditorPage() {
     fetchBoard(boardId).then((b) => {
       setBoard(b);
       setNotes(b?.notes ?? '');
+      if (b?.fieldType) field.setFieldType(b.fieldType);
       lines.loadLines(b?.activeLineId ?? null);
     }).catch(() => {});
     loadFrames();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [boardId]);
+
+  // Neues Board ohne Frames → erstes Frame mit feldtyp-passenden Standardpositionen anlegen
+  const seededRef = useRef(null);
+  useEffect(() => { seededRef.current = null; }, [boardId]);
+  useEffect(() => {
+    if (!board || framesLoading || frames.length > 0) return;
+    if (seededRef.current === boardId) return;
+    seededRef.current = boardId;
+    addFrame(buildDefaultPlayers(board.fieldType), []);
+  }, [board, framesLoading, frames.length, boardId, addFrame]);
 
   // Auto-Save der Notizen (Issue #30) – unabhängig vom Frame-Autosave
   const saveNotes = useCallback(async (nextNotes) => {
@@ -107,6 +122,51 @@ export default function BoardEditorPage() {
 
   const displayedPlayers = anim.playing ? anim.displayPlayers : livePlayers;
 
+  // Feldtyp wechseln (mit Warnung) – Positionen & Zeichnungen proportional skalieren
+  const [pendingFieldType, setPendingFieldType] = useState(null);
+  const [changingField, setChangingField] = useState(false);
+
+  const handleRequestFieldTypeChange = useCallback((newType) => {
+    if (newType === field.fieldType) return;
+    setPendingFieldType(newType);
+  }, [field.fieldType]);
+
+  const handleConfirmFieldTypeChange = useCallback(async () => {
+    if (!pendingFieldType) return;
+    const oldField = IFF_FIELDS[field.fieldType] ?? IFF_FIELDS.large;
+    const newField = IFF_FIELDS[pendingFieldType] ?? IFF_FIELDS.large;
+    const scaleX = newField.width / oldField.width;
+    const scaleY = newField.height / oldField.height;
+
+    setChangingField(true);
+    try {
+      await updateBoard(boardId, { fieldType: pendingFieldType });
+
+      const rescaledLive = rescalePlayers(livePlayers, scaleX, scaleY);
+      const rescaledElements = rescaleElements(drawing.elements, scaleX, scaleY);
+      setLivePlayers(rescaledLive);
+      drawing.loadElements(rescaledElements);
+      if (activeFrame?._id) {
+        await updateFrame(activeFrame._id, { players: rescaledLive, elements: rescaledElements });
+      }
+
+      await Promise.all(
+        frames
+          .filter((f) => f._id !== activeFrame?._id)
+          .map((f) => updateFrame(f._id, {
+            players:  rescalePlayers(f.players, scaleX, scaleY),
+            elements: rescaleElements(f.elements, scaleX, scaleY),
+          }))
+      );
+
+      field.setFieldType(pendingFieldType);
+      setBoard((b) => ({ ...b, fieldType: pendingFieldType }));
+    } finally {
+      setChangingField(false);
+      setPendingFieldType(null);
+    }
+  }, [pendingFieldType, field, boardId, updateBoard, livePlayers, drawing, activeFrame, updateFrame, frames]);
+
   return (
     <main className={styles.page} role="main">
       <header className={styles.header}>
@@ -122,8 +182,20 @@ export default function BoardEditorPage() {
           onToggleShowNames={() => setShowNames((v) => !v)}
           namePosition={namePosition}
           onSetNamePosition={setNamePosition}
+          fieldType={field.fieldType}
+          availableFields={field.availableFields}
+          onRequestFieldTypeChange={handleRequestFieldTypeChange}
         />
       </header>
+
+      {pendingFieldType && (
+        <FieldTypeChangeDialog
+          targetLabel={IFF_FIELDS[pendingFieldType]?.label ?? pendingFieldType}
+          onConfirm={handleConfirmFieldTypeChange}
+          onCancel={() => setPendingFieldType(null)}
+          loading={changingField}
+        />
+      )}
 
       <PlaybackControls
         playing={anim.playing}

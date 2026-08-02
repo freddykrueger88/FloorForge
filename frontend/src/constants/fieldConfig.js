@@ -24,9 +24,9 @@ export const IFF_FIELDS = {
   },
   small: {
     id: 'small',
-    label: 'Kleinfeld (24×14m)',
-    labelEn: 'Small Field (24×14m)',
-    width: 24,
+    label: 'Kleinfeld (20×14m)',
+    labelEn: 'Small Field (20×14m)',
+    width: 20,
     height: 14,
     boardHeight: 0.5,
     goalWidth: 1.20,
@@ -41,10 +41,10 @@ export const IFF_FIELDS = {
   },
   street: {
     id: 'street',
-    label: 'Street Floorball',
-    labelEn: 'Street Floorball',
-    width: 20,
-    height: 10,
+    label: 'Street Floorball (25×15m)',
+    labelEn: 'Street Floorball (25×15m)',
+    width: 25,
+    height: 15,
     boardHeight: 0,
     goalWidth: 1.0,
     goalDepth: 0.3,
@@ -56,12 +56,12 @@ export const IFF_FIELDS = {
     cornerRadius: 0.5,
     players: { home: 3, away: 3, goalkeepers: 0 },
   },
-  threeVsThree: {
-    id: 'threeVsThree',
-    label: '3vs3',
-    labelEn: '3 vs 3',
-    width: 18,
-    height: 9,
+  '3v3': {
+    id: '3v3',
+    label: '3vs3 (22×11m)',
+    labelEn: '3 vs 3 (22×11m)',
+    width: 22,
+    height: 11,
     boardHeight: 0,
     goalWidth: 0.8,
     goalDepth: 0.25,
@@ -73,6 +73,17 @@ export const IFF_FIELDS = {
     cornerRadius: 0.4,
     players: { home: 3, away: 3, goalkeepers: 0 },
   },
+};
+
+/**
+ * Kurz-Labels je Feldtyp (für Board-Kacheln/Postkarten – einzige Quelle,
+ * damit Labels nicht in mehreren Komponenten dupliziert/inkonsistent werden)
+ */
+export const FIELD_TYPE_LABELS = {
+  large:  'Großfeld',
+  small:  'Kleinfeld',
+  street: 'Street',
+  '3v3':  '3vs3',
 };
 
 /**
@@ -121,6 +132,56 @@ export const DEFAULT_POSITIONS_LARGE = {
     { id: 'a6', role: 'S',  position: 'Stürmer',      x: 18.0, y: 13.0 },
   ],
 };
+
+// Feldspieler-Slots (ohne TW) – TW wird nur ergänzt, wenn field.players.goalkeepers > 0
+const FIELD_PLAYER_SLOTS = [
+  { role: 'V', xRatio: 0.20, yOffsetRatio: -0.35 },
+  { role: 'V', xRatio: 0.20, yOffsetRatio: 0.35 },
+  { role: 'M', xRatio: 0.38, yOffsetRatio: 0 },
+  { role: 'S', xRatio: 0.50, yOffsetRatio: -0.3 },
+  { role: 'S', xRatio: 0.50, yOffsetRatio: 0.3 },
+];
+
+function buildMirroredPositions(field) {
+  const { width: fieldWidth, height: fieldHeight, players } = field;
+  const mid = fieldHeight / 2;
+
+  const homeBase = [];
+  let n = 1;
+  if (players.goalkeepers > 0) {
+    homeBase.push({ id: `h${n++}`, role: 'TW', x: fieldWidth * 0.07, y: mid });
+  }
+  for (const slot of FIELD_PLAYER_SLOTS.slice(0, players.home)) {
+    homeBase.push({ id: `h${n++}`, role: slot.role, x: fieldWidth * slot.xRatio, y: mid + mid * slot.yOffsetRatio });
+  }
+
+  const awayBase = homeBase.map((p) => ({
+    ...p,
+    id: p.id.replace('h', 'a'),
+    x: fieldWidth - p.x,
+  }));
+
+  return { home: homeBase, away: awayBase };
+}
+
+// Standard-Positionen je Feldtyp (Großfeld hand-kuratiert, Rest prozedural gespiegelt)
+const DEFAULT_POSITIONS_BY_FIELD = {
+  large:  DEFAULT_POSITIONS_LARGE,
+  small:  buildMirroredPositions(IFF_FIELDS.small),
+  street: buildMirroredPositions(IFF_FIELDS.street),
+  '3v3':  buildMirroredPositions(IFF_FIELDS['3v3']),
+};
+
+/**
+ * Baut das Standard-Spieler-Array (home+away) für einen Feldtyp auf –
+ * genutzt beim Anlegen des ersten Frames eines neuen Boards.
+ */
+export function buildDefaultPlayers(fieldType) {
+  const positions = DEFAULT_POSITIONS_BY_FIELD[fieldType] ?? DEFAULT_POSITIONS_BY_FIELD.large;
+  const home = (positions.home ?? []).map((p) => ({ ...p, team: 'home' }));
+  const away = (positions.away ?? []).map((p) => ({ ...p, team: 'away' }));
+  return [...home, ...away];
+}
 
 /**
  * Snapping-Raster

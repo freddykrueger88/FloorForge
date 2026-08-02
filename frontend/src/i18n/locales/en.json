@@ -11,9 +11,9 @@
   },
   "field": {
     "large": "Full Field (40×20m)",
-    "small": "Small Field (24×14m)",
-    "street": "Street Floorball",
-    "threeVsThree": "3 vs 3",
+    "small": "Small Field (20×14m)",
+    "street": "Street Floorball (25×15m)",
+    "3v3": "3 vs 3 (22×11m)",
     "grid": "Grid",
     "gridSize": "Grid Size",
     "showGrid": "Show Grid",

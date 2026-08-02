@@ -11,9 +11,9 @@
   },
   "field": {
     "large": "Großfeld (40×20m)",
-    "small": "Kleinfeld (24×14m)",
-    "street": "Street Floorball",
-    "threeVsThree": "3 vs 3",
+    "small": "Kleinfeld (20×14m)",
+    "street": "Street Floorball (25×15m)",
+    "3v3": "3 vs 3 (22×11m)",
     "grid": "Raster",
     "gridSize": "Rastergröße",
     "showGrid": "Raster anzeigen",

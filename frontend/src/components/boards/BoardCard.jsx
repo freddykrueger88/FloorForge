@@ -3,14 +3,8 @@
  * Zeigt Name, Typ, Datum – editierbar per Doppelklick
  */
 import { useState, useRef, useEffect } from 'react';
+import { FIELD_TYPE_LABELS } from '../../constants/fieldConfig.js';
 import styles from './BoardCard.module.css';
-
-const FIELD_TYPE_LABELS = {
-  large:        'Großfeld (20×40m)',
-  small:        'Kleinfeld',
-  street:       'Street Floorball',
-  three_v_three:'3vs3',
-};
 
 function formatDate(iso) {
   return new Date(iso).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });

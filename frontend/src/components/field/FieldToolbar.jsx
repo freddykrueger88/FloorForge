@@ -9,9 +9,26 @@ export default function FieldToolbar({
   onToggleShowNames,
   namePosition,
   onSetNamePosition,
+  fieldType,
+  availableFields,
+  onRequestFieldTypeChange,
 }) {
   return (
     <div className={styles.toolbar} role="toolbar" aria-label="Feld-Einstellungen">
+      {availableFields && (
+        <select
+          className={styles.fieldTypeSelect}
+          value={fieldType}
+          onChange={(e) => onRequestFieldTypeChange(e.target.value)}
+          aria-label="Spielfeld-Typ"
+          title="Spielfeld-Typ ändern"
+        >
+          {availableFields.map((f) => (
+            <option key={f.id} value={f.id}>{f.label}</option>
+          ))}
+        </select>
+      )}
+
       <button
         className={`${styles.toggleBtn} ${showNames ? styles.active : ''}`}
         onClick={onToggleShowNames}

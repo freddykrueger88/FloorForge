@@ -8,6 +8,16 @@
   border-radius: var(--radius-md);
 }
 
+.fieldTypeSelect {
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-2);
+  color: var(--color-text);
+  font-size: var(--text-xs);
+  cursor: pointer;
+}
+
 .toggleBtn {
   display: flex;
   align-items: center;
