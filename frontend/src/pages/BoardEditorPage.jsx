@@ -5,19 +5,21 @@
  *  - FieldContainer (Spielfeld + Spieler + Zeichnungen)
  *  - FrameTimeline (Frame-Verwaltung)
  *  - PlaybackControls + useAnimation (Issue #11)
- *  - useAutoSave (Positionsänderungen des aktiven Frames sichern)
+ *  - useAutoSave (Positionsränderungen des aktiven Frames sichern)
+ *  - TeamColorPanel (Issue #14 – v0.4.0)
  */
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import { buildDefaultPlayers, IFF_FIELDS } from '../constants/fieldConfig.js';
+import { buildDefaultPlayers, IFF_FIELDS, DEFAULT_TEAM_COLORS, IFF_BALL_COLORS } from '../constants/fieldConfig.js';
 import { rescalePlayers, rescaleElements } from '../utils/fieldRescale.js';
 
 import FieldContainer from '../components/field/FieldContainer.jsx';
 import FieldToolbar from '../components/field/FieldToolbar.jsx';
 import FieldTypeChangeDialog from '../components/field/FieldTypeChangeDialog.jsx';
 import PlayerInfoPanel from '../components/field/PlayerInfoPanel.jsx';
+import TeamColorPanel from '../components/field/TeamColorPanel.jsx';
 import { DrawingToolbar } from '../components/drawing/index.js';
 import { FrameTimeline } from '../components/frames/index.js';
 import { PlaybackControls } from '../components/playback/index.js';
@@ -34,7 +36,8 @@ import { useAnimation } from '../hooks/useAnimation.js';
 
 import styles from './BoardEditorPage.module.css';
 
-const PLAYER_MARGIN_M = 0.8; // Meter Abstand zur Bande (analog usePlayerState.updatePosition)
+const PLAYER_MARGIN_M = 0.8;
+const DEFAULT_BALL_COLOR = IFF_BALL_COLORS.find((c) => c.id === 'orange')?.hex ?? '#f97316';
 
 export default function BoardEditorPage() {
   const { id: boardId } = useParams();
@@ -43,6 +46,26 @@ export default function BoardEditorPage() {
   const { fetchBoard, updateBoard } = useBoardsApi();
   const [board, setBoard] = useState(null);
   const [notes, setNotes] = useState('');
+
+  // Issue #14 – Teamfarben & Ball
+  const [homeColor, setHomeColor] = useState({ fill: DEFAULT_TEAM_COLORS.home.fill, stroke: DEFAULT_TEAM_COLORS.home.stroke });
+  const [awayColor, setAwayColor] = useState({ fill: DEFAULT_TEAM_COLORS.away.fill, stroke: DEFAULT_TEAM_COLORS.away.stroke });
+  const [ballColor, setBallColor] = useState(DEFAULT_BALL_COLOR);
+
+  const handleChangeHomeColor = useCallback((color) => {
+    setHomeColor(color);
+    updateBoard(boardId, { homeColor: color }).catch(() => {});
+  }, [boardId, updateBoard]);
+
+  const handleChangeAwayColor = useCallback((color) => {
+    setAwayColor(color);
+    updateBoard(boardId, { awayColor: color }).catch(() => {});
+  }, [boardId, updateBoard]);
+
+  const handleChangeBallColor = useCallback((hex) => {
+    setBallColor(hex);
+    updateBoard(boardId, { ballColor: hex }).catch(() => {});
+  }, [boardId, updateBoard]);
 
   const field = useField('large');
   const {
@@ -53,11 +76,9 @@ export default function BoardEditorPage() {
   const drawing = useDrawing();
   const lines = useLines(boardId);
 
-  // Live-Spielerpositionen des aktiven Frames (editierbar per Drag & Drop)
   const [livePlayers, setLivePlayers] = useState([]);
   const [selectedPlayerId, setSelectedPlayerId] = useState(null);
 
-  // Spielername auf Token (Issue #29)
   const [showNames, setShowNames] = useState(false);
   const [namePosition, setNamePosition] = useState('unten');
 
@@ -65,23 +86,23 @@ export default function BoardEditorPage() {
     setLivePlayers((prev) => prev.map((p) => (p.id === id ? { ...p, name } : p)));
   }, []);
 
-  // Animation (Issue #11)
   const anim = useAnimation({ frames, activeIndex, goToFrame });
 
-  // Board + Frames initial laden
   useEffect(() => {
     if (!boardId) return;
     fetchBoard(boardId).then((b) => {
       setBoard(b);
       setNotes(b?.notes ?? '');
       if (b?.fieldType) field.setFieldType(b.fieldType);
+      if (b?.homeColor) setHomeColor(b.homeColor);
+      if (b?.awayColor) setAwayColor(b.awayColor);
+      if (b?.ballColor) setBallColor(b.ballColor);
       lines.loadLines(b?.activeLineId ?? null);
     }).catch(() => {});
     loadFrames();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [boardId]);
 
-  // Neues Board ohne Frames → erstes Frame mit feldtyp-passenden Standardpositionen anlegen
   const seededRef = useRef(null);
   useEffect(() => { seededRef.current = null; }, [boardId]);
   useEffect(() => {
@@ -91,7 +112,6 @@ export default function BoardEditorPage() {
     addFrame(buildDefaultPlayers(board.fieldType), []);
   }, [board, framesLoading, frames.length, boardId, addFrame]);
 
-  // Auto-Save der Notizen (Issue #30) – unabhängig vom Frame-Autosave
   const saveNotes = useCallback(async (nextNotes) => {
     if (!boardId) return;
     await updateBoard(boardId, { notes: nextNotes });
@@ -99,7 +119,6 @@ export default function BoardEditorPage() {
 
   useAutoSave(notes, saveNotes, !!board);
 
-  // Wenn sich der aktive Frame ändert (und nicht gerade animiert wird), Live-Zustand übernehmen
   useEffect(() => {
     if (anim.playing) return;
     setLivePlayers(activeFrame?.players ?? []);
@@ -107,7 +126,6 @@ export default function BoardEditorPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeFrame?._id, anim.playing]);
 
-  // Auto-Save: Positionsänderungen des aktiven Frames zurückschreiben
   const saveActiveFrame = useCallback(async (players) => {
     if (!activeFrame?._id) return;
     await updateFrame(activeFrame._id, { players, elements: drawing.elements });
@@ -128,7 +146,6 @@ export default function BoardEditorPage() {
 
   const displayedPlayers = anim.playing ? anim.displayPlayers : livePlayers;
 
-  // Feldtyp wechseln (mit Warnung) – Positionen & Zeichnungen proportional skalieren
   const [pendingFieldType, setPendingFieldType] = useState(null);
   const [changingField, setChangingField] = useState(false);
 
@@ -183,15 +200,25 @@ export default function BoardEditorPage() {
           {saveStatus === 'saved'  && '✓ Gespeichert'}
           {saveStatus === 'error'  && '⚠ Fehler beim Speichern'}
         </span>
-        <FieldToolbar
-          showNames={showNames}
-          onToggleShowNames={() => setShowNames((v) => !v)}
-          namePosition={namePosition}
-          onSetNamePosition={setNamePosition}
-          fieldType={field.fieldType}
-          availableFields={field.availableFields}
-          onRequestFieldTypeChange={handleRequestFieldTypeChange}
-        />
+        <div className={styles.headerControls}>
+          <TeamColorPanel
+            homeColor={homeColor}
+            awayColor={awayColor}
+            ballColor={ballColor}
+            onChangeHomeColor={handleChangeHomeColor}
+            onChangeAwayColor={handleChangeAwayColor}
+            onChangeBallColor={handleChangeBallColor}
+          />
+          <FieldToolbar
+            showNames={showNames}
+            onToggleShowNames={() => setShowNames((v) => !v)}
+            namePosition={namePosition}
+            onSetNamePosition={setNamePosition}
+            fieldType={field.fieldType}
+            availableFields={field.availableFields}
+            onRequestFieldTypeChange={handleRequestFieldTypeChange}
+          />
+        </div>
       </header>
 
       {pendingFieldType && (
@@ -244,6 +271,9 @@ export default function BoardEditorPage() {
             selectedPlayerId={selectedPlayerId}
             onSelectPlayer={setSelectedPlayerId}
             onDragEndPlayer={handleDragEndPlayer}
+            homeColor={homeColor}
+            awayColor={awayColor}
+            ballColor={ballColor}
             drawingElements={anim.playing ? (activeFrame?.elements ?? []) : drawing.elements}
             selectedDrawingId={drawing.selectedId}
             activeTool={drawing.activeTool}
