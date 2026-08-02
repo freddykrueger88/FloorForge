@@ -7,10 +7,12 @@
  *  - PlaybackControls + useAnimation (Issue #11)
  *  - useAutoSave (Positionsränderungen des aktiven Frames sichern)
  *  - TeamColorPanel (Issue #14 – v0.4.0)
+ *  - ExportPanel (Issue #15 – v0.5.0)
  */
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import Konva from 'konva';
 
 import { buildDefaultPlayers, IFF_FIELDS, DEFAULT_TEAM_COLORS, IFF_BALL_COLORS } from '../constants/fieldConfig.js';
 import { rescalePlayers, rescaleElements } from '../utils/fieldRescale.js';
@@ -23,7 +25,7 @@ import TeamColorPanel from '../components/field/TeamColorPanel.jsx';
 import { DrawingToolbar } from '../components/drawing/index.js';
 import { FrameTimeline } from '../components/frames/index.js';
 import { PlaybackControls } from '../components/playback/index.js';
-import { NotesPanel } from '../components/board/index.js';
+import { NotesPanel, ExportPanel } from '../components/board/index.js';
 import { LinesPanel } from '../components/lines/index.js';
 
 import { useBoardsApi } from '../hooks/useBoardsApi.js';
@@ -38,6 +40,8 @@ import styles from './BoardEditorPage.module.css';
 
 const PLAYER_MARGIN_M = 0.8;
 const DEFAULT_BALL_COLOR = IFF_BALL_COLORS.find((c) => c.id === 'orange')?.hex ?? '#f97316';
+const EXPORT_W = 1280;
+const EXPORT_H = 720;
 
 export default function BoardEditorPage() {
   const { id: boardId } = useParams();
@@ -190,6 +194,22 @@ export default function BoardEditorPage() {
     }
   }, [pendingFieldType, field, boardId, updateBoard, livePlayers, drawing, activeFrame, updateFrame, frames]);
 
+  // Issue #15 – renderFrame: rendert einen Frame offline als PNG via Konva
+  // Nutzt Konva.Stage direkt (kein React), um ein unsichtbares Canvas zu erstellen
+  const renderFrame = useCallback(async (frame) => {
+    const { default: FloorballFieldStatic } = await import('../components/field/FloorballFieldStatic.js');
+    return FloorballFieldStatic({
+      fieldType: field.fieldType,
+      width: EXPORT_W,
+      height: EXPORT_H,
+      players: frame.players ?? [],
+      elements: frame.elements ?? [],
+      homeColor,
+      awayColor,
+      ballColor,
+    });
+  }, [field.fieldType, homeColor, awayColor, ballColor]);
+
   return (
     <main className={styles.page} role="main">
       <header className={styles.header}>
@@ -311,6 +331,7 @@ export default function BoardEditorPage() {
             onTogglePlayer={lines.togglePlayerInLine}
             canAddLine={lines.canAddLine}
           />
+          <ExportPanel frames={frames} renderFrame={renderFrame} />
           <NotesPanel value={notes} onChange={setNotes} />
         </div>
       </div>
