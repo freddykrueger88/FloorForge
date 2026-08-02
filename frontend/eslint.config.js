@@ -15,7 +15,7 @@ export default [
       ...reactHooks.configs.recommended.rules,
       'react/react-in-jsx-scope': 'off',
       'react/prop-types': 'off',
-      'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+      'no-unused-vars': ['warn', { argsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' }],
     },
     settings: { react: { version: 'detect' } },
     languageOptions: {
@@ -24,6 +24,9 @@ export default [
       globals: {
         window: 'readonly', document: 'readonly', localStorage: 'readonly',
         console: 'readonly', setTimeout: 'readonly', clearTimeout: 'readonly',
+        setInterval: 'readonly', clearInterval: 'readonly',
+        requestAnimationFrame: 'readonly', cancelAnimationFrame: 'readonly',
+        ResizeObserver: 'readonly',
         fetch: 'readonly', URL: 'readonly', FormData: 'readonly',
         import: 'readonly',
       },

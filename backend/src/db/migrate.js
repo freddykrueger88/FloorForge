@@ -2,6 +2,7 @@
  * FloorForge – Datenbankmigrationen
  * Vollständiges Schema: users, boards, frames, lines, exports, settings
  */
+import 'dotenv/config';
 import pool from './pool.js';
 import logger from '../utils/logger.js';
 

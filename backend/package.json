@@ -5,10 +5,10 @@
   "type": "module",
   "main": "src/server.js",
   "scripts": {
-    "start": "node --env-file=.env src/server.js",
-    "dev": "node --env-file=.env --watch src/server.js",
-    "db:migrate": "node --env-file=.env src/db/migrate.js",
-    "db:seed": "node --env-file=.env src/db/seed.js",
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "db:migrate": "node src/db/migrate.js",
+    "db:seed": "node src/db/seed.js",
     "test": "NODE_ENV=test node --experimental-vm-modules node_modules/.bin/jest --runInBand --forceExit",
     "lint": "eslint src"
   },
@@ -16,6 +16,7 @@
     "bcrypt": "^5.1.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "express-rate-limit": "^7.4.1",
     "express-validator": "^7.2.0",

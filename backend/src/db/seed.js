@@ -3,6 +3,7 @@
  * Legt Demo-Daten für Entwicklung an.
  * Nur im development-Modus ausführen!
  */
+import 'dotenv/config';
 import pool from './pool.js';
 import { connectRedis } from './redis.js';
 import { runMigrations } from './migrate.js';

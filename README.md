@@ -42,9 +42,9 @@ Danach erreichbar unter: `http://localhost:3000`
 
 ```
 FloorForge/
-├── backend/          # Node.js/Express API
-├── frontend/         # React + Vite
-├── docker/           # Dockerfiles & docker-compose
+├── backend/          # Node.js/Express API (inkl. Dockerfile)
+├── frontend/         # React + Vite (inkl. Dockerfile, nginx.conf)
+├── docker-compose.yml
 ├── docs/             # Dokumentation & IFF-Regelwerke
 ├── .github/          # CI/CD Workflows, Issue Templates
 ├── CHANGELOG.md

@@ -16,7 +16,6 @@ export const notFoundHandler = (req, res) => {
 /**
  * 500 Handler – Interne Serverfehler
  */
-// eslint-disable-next-line no-unused-vars
 export const errorHandler = (err, req, res, _next) => {
   const status = err.status || err.statusCode || 500;
   const message = process.env.NODE_ENV === 'production'
