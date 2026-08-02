@@ -17,9 +17,11 @@ import PlayerInfoPanel from '../components/field/PlayerInfoPanel.jsx';
 import { FrameTimeline } from '../components/frames/index.js';
 import { PlaybackControls } from '../components/playback/index.js';
 import { NotesPanel } from '../components/board/index.js';
+import { LinesPanel } from '../components/lines/index.js';
 
 import { useBoardsApi } from '../hooks/useBoardsApi.js';
 import { useFrames } from '../hooks/useFrames.js';
+import { useLines } from '../hooks/useLines.js';
 import { useField } from '../hooks/useField.js';
 import { useDrawing } from '../hooks/useDrawing.js';
 import { useAutoSave } from '../hooks/useAutoSave.js';
@@ -42,6 +44,7 @@ export default function BoardEditorPage() {
   } = useFrames(boardId);
 
   const drawing = useDrawing();
+  const lines = useLines(boardId);
 
   // Live-Spielerpositionen des aktiven Frames (editierbar per Drag & Drop)
   const [livePlayers, setLivePlayers] = useState([]);
@@ -61,7 +64,11 @@ export default function BoardEditorPage() {
   // Board + Frames initial laden
   useEffect(() => {
     if (!boardId) return;
-    fetchBoard(boardId).then((b) => { setBoard(b); setNotes(b?.notes ?? ''); }).catch(() => {});
+    fetchBoard(boardId).then((b) => {
+      setBoard(b);
+      setNotes(b?.notes ?? '');
+      lines.loadLines(b?.activeLineId ?? null);
+    }).catch(() => {});
     loadFrames();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [boardId]);
@@ -150,6 +157,8 @@ export default function BoardEditorPage() {
             activeTool={drawing.activeTool}
             showNames={showNames}
             namePosition={namePosition}
+            activeLinePlayerIds={lines.activeLine?.playerIds ?? null}
+            activeLineColor={lines.activeLine?.color ?? null}
           />
 
           {!anim.playing && selectedPlayerId && (
@@ -164,6 +173,17 @@ export default function BoardEditorPage() {
         </div>
 
         <div className={styles.sidebar}>
+          <LinesPanel
+            lines={lines.lines}
+            activeLineId={lines.activeLineId}
+            players={livePlayers}
+            onAddLine={lines.addLine}
+            onRenameLine={(id, name) => lines.updateLine(id, { name })}
+            onDeleteLine={lines.deleteLine}
+            onSetActiveLine={lines.setActiveLine}
+            onTogglePlayer={lines.togglePlayerInLine}
+            canAddLine={lines.canAddLine}
+          />
           <NotesPanel value={notes} onChange={setNotes} />
         </div>
       </div>

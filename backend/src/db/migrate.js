@@ -99,6 +99,7 @@ export async function runMigrations() {
     await client.query(`ALTER TABLE boards ADD COLUMN IF NOT EXISTS players_json JSONB NOT NULL DEFAULT '[]';`);
     await client.query(`ALTER TABLE boards ADD COLUMN IF NOT EXISTS elements_json JSONB NOT NULL DEFAULT '[]';`);
     await client.query(`ALTER TABLE boards ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ DEFAULT NULL;`);
+    await client.query(`ALTER TABLE boards ADD COLUMN IF NOT EXISTS active_line_id UUID DEFAULT NULL;`);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_boards_deleted_at ON boards(deleted_at) WHERE deleted_at IS NOT NULL;`);
 
     // ── frames ────────────────────────────────────────────────────────────
@@ -128,6 +129,9 @@ export async function runMigrations() {
       );
     `);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_lines_board_id ON lines(board_id);`);
+    await client.query(`ALTER TABLE lines ADD COLUMN IF NOT EXISTS type TEXT NOT NULL DEFAULT 'offense'
+      CHECK (type IN ('offense', 'defense', 'special'));`);
+    await client.query(`ALTER TABLE lines ADD COLUMN IF NOT EXISTS order_index INTEGER NOT NULL DEFAULT 0;`);
 
     // ── exports ───────────────────────────────────────────────────────────
     // format: 'gif' | 'mp4' | 'pdf' | 'link' | 'png'

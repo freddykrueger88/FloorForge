@@ -43,6 +43,7 @@ export default function PlayerToken({
   readonly     = false,
   showName     = false,
   namePosition = 'unten',
+  lineHighlightColor = null, // Farbe der aktiven Line, falls dieser Spieler ihr angehört (Issue #12)
 }) {
   const groupRef = useRef(null);
   const radius   = Math.max(12, TOKEN_RADIUS_M * scale);
@@ -97,6 +98,16 @@ export default function PlayerToken({
           outerRadius={radius + 6}
           fill="#facc15"
           opacity={0.9}
+        />
+      )}
+
+      {/* Line-Hervorhebung (Issue #12) – dezenter als der Auswahl-Ring */}
+      {!isSelected && lineHighlightColor && (
+        <Ring
+          innerRadius={radius + 1}
+          outerRadius={radius + 4}
+          fill={lineHighlightColor}
+          opacity={0.85}
         />
       )}
 

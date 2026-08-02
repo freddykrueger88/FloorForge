@@ -36,6 +36,8 @@ export default function FloorballField({
   snapToGrid = 0,
   showNames    = false,
   namePosition = 'unten',
+  activeLinePlayerIds = null,
+  activeLineColor     = null,
   // Zeichnen
   drawingElements  = [],
   selectedDrawingId = null,
@@ -116,6 +118,8 @@ export default function FloorballField({
         readonly={readonly}
         showNames={showNames}
         namePosition={namePosition}
+        activeLinePlayerIds={activeLinePlayerIds}
+        activeLineColor={activeLineColor}
       />
     </Stage>
   );
