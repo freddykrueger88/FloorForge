@@ -3,7 +3,7 @@
 Diese Roadmap zeigt die geplante Entwicklung von FloorForge.
 Reihenfolge und Inhalte können sich ändern. Issues tracken den Fortschritt.
 
-> Stand: 01.08.2026 — nach 10 bearbeiteten Issues
+> Stand: 02.08.2026 — nach 13 bearbeiteten Issues (#10–#13)
 
 ---
 
@@ -28,32 +28,32 @@ Reihenfolge und Inhalte können sich ändern. Issues tracken den Fortschritt.
 - ✓ i18n (Deutsch + Englisch)
 - ✓ CSS Design-Tokens (base.css, tokens.css)
 - ✓ CI/CD Workflows stabilisiert
-- □ Spieler-Icons vorplatziert & beweglich → Teil von v0.3.0
-- □ Pfeil-Tool (Bewegung, Pass, Schuss) → Teil von v0.3.0
-- □ Undo/Redo Funktion → geplant
-- □ Spielfeld speichern & laden → Board-System läuft
+- ✓ Spieler-Icons vorplatziert & beweglich (Teil von v0.3.0)
+- ✓ Pfeil-Tool (Bewegung, Pass, Schuss) (Teil von v0.3.0)
+- ✓ Undo/Redo Funktion
+- ✓ Spielfeld speichern & laden → Board-System läuft
 
-## 🔄 v0.3.0 – Frame-System & Boards (in Arbeit)
+## ✅ v0.3.0 – Frame-System & Boards
 
 - ✓ Frame-System: Frames erstellen, löschen, sortieren (#10)
 - ✓ Frame-Timeline UI mit Drag & Drop (#10)
 - ✓ Board-Modell erweitert: `notes`, `frames[]`, `lines[]` vorbereitet (#10)
 - ✓ useFrames Hook: vollständiges State-Management (#10)
-- □ Animation abspielen (Play/Pause/Stop) (#11)
-- □ Animationsgeschwindigkeit einstellen (#11)
-- □ Spieler bewegen sich zwischen Frames (Interpolation) (#12)
-- □ Postcard-Galerie: Board-Übersicht als Postkarten (#30)
-- □ Spielfeld-Miniatur (readonly) in der Galerie (#30)
-- □ Pfeil-/Linien-Editor für Spielzüge
-- □ Spieler auf dem Feld platzieren & bewegen
+- ✓ Animation abspielen (Play/Pause/Stop) (#11)
+- ✓ Animationsgeschwindigkeit einstellen (#11)
+- ✓ Spieler bewegen sich zwischen Frames (Interpolation) (#11)
+- ✓ Postcard-Galerie: Board-Übersicht als Postkarten (#30)
+- ✓ Spielfeld-Miniatur (readonly) in der Galerie (#30)
+- ✓ Pfeil-/Linien-Editor für Spielzüge
+- ✓ Spieler auf dem Feld platzieren & bewegen
 
-## 🔵 v0.4.0 – Lines & Teams
+## ✅ v0.4.0 – Lines & Teams
 
-- □ Lines anlegen (Sturmreihen, Defensivreihen)
-- □ Spieler einer Line zuweisen
-- □ Farben für Heim/Gast/Lines konfigurieren
+- ✓ Lines anlegen (Sturmreihen, Defensivreihen) (#12)
+- ✓ Spieler einer Line zuweisen (#12)
+- ✓ Farben für Heim/Gast/Lines konfigurieren (#12)
+- ✓ Verschiedene Spielfeld-Typen wählbar (Kleinfeld, 3v3, Street) (#13)
 - □ Positionen mit Hinweisen/Notizen versehen
-- □ Verschiedene Spielfeld-Typen wählbar (Kleinfeld, 3v3, Street)
 
 ## 🟣 v0.5.0 – Export
 
@@ -105,4 +105,4 @@ Reihenfolge und Inhalte können sich ändern. Issues tracken den Fortschritt.
 
 ---
 
-*Roadmap wird kontinuierlich aktualisiert. Letztes Update: 01.08.2026*
+*Roadmap wird kontinuierlich aktualisiert. Letztes Update: 02.08.2026*

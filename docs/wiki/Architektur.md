@@ -9,9 +9,10 @@
 | Express.js | 4.x | HTTP Framework |
 | PostgreSQL | 16 | Datenbank |
 | Redis | 7 | Session/Cache |
-| FFmpeg | 6 | Video/GIF Export |
-| bcryptjs | 2.x | Passwort-Hashing |
+| bcrypt | 5.x | Passwort-Hashing |
 | jsonwebtoken | 9.x | JWT Auth |
+
+> FFmpeg (Video/GIF-Export) ist geplant, aber noch nicht implementiert (Issues #15, #23, #24).
 
 ### Frontend
 | Technologie | Version | Zweck |
@@ -22,7 +23,8 @@
 | Zustand | 4 | State Management |
 | React Router | 6 | Routing |
 | i18next | 23 | Internationalisierung |
-| Lucide React | - | Icons |
+
+> Icons werden aktuell über Unicode/Emoji dargestellt, keine Icon-Bibliothek im Einsatz.
 
 ### Infrastruktur
 | Technologie | Zweck |
@@ -44,13 +46,10 @@
 │       :3000               │ →│  Redis    │          │
 │                           │   │ Port:6379 │          │
 │                           │   └───────────┘          │
-│                           │ →│  FFmpeg   │          │
-│                           │   │ (Export)  │          │
-│                           │   └───────────┘          │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-## 🔄 Datenfluss: GIF-Export
+## 🔄 Datenfluss: GIF-Export (geplant, Issue #15 – noch nicht implementiert)
 
 ```
 Coach klickt "GIF exportieren"

@@ -13,15 +13,38 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
-### In Arbeit (v0.3.x)
-- Animations-Playback: Play / Pause / Stop / Geschwindigkeit (#11)
-- Spieler-Interpolation zwischen Frames (#12)
-- Postcard-Galerie: Board-Übersicht als Postkarten mit Spielfeld-Miniatur (#30)
-
 ### Geplant
-- Lines-System: Sturmreihen, Defensivreihen, Farben (#16)
 - Export: GIF, PNG, MP4, Link (v0.5.0)
+- Einstellungsseite (v0.6.0, #18)
 - Barrierefreiheit: WCAG 2.1 AA vollständig (v0.7.0)
+- Passwort ändern & zurücksetzen (v0.6.0, #31)
+
+---
+
+## [0.4.0-dev] – 2026-08-02 (in Entwicklung)
+
+### Added
+- **Lines-System** (Issue #12): Sturm-/Defensivreihen anlegen, Spieler zuweisen,
+  Farben & Typ (offense/defense/special) konfigurieren, aktive Line auf dem
+  Feld hervorheben. Max. 10 Lines pro Board.
+- **Spielfeld-Varianten** (Issue #13): Kleinfeld (20×14m), 3v3 (22×11m) und
+  Street Floorball (25×15m) zusätzlich zum Großfeld, wählbar bei Board-
+  Erstellung und nachträglich im Editor änderbar (mit Warnung + proportionaler
+  Neuskalierung bestehender Positionen/Zeichnungen)
+- Automatisches Seeding feldtyp-passender Standardpositionen für neue Boards
+
+### Fixed
+- Login/Register: CORS-Origin-Mismatch bei Zugriff über LAN-IP behoben
+- Session-Cookie wurde mit `Secure`-Flag über reines HTTP ausgeliefert und
+  vom Browser verworfen (neu: `COOKIE_SECURE` konfigurierbar)
+- Axios-Interceptor leitete bei jedem 401 sofort zum Login um – auch beim
+  Login/Register-Request selbst, wodurch Fehlermeldungen sofort verschwanden
+- Fehlende i18n-Keys (`auth.*`, `a11y.skipToContent`) auf Login/Register-Seite
+- Zeichen-Werkzeugleiste (`DrawingToolbar`) war nirgends eingebunden –
+  Farbe/Strichstärke/Undo/Redo/Clear waren über die UI nicht erreichbar
+- Spielerpositionen wurden beim Ziehen nicht an die Feldgrenzen geklemmt
+- Docker-Healthchecks (Compose + Dockerfiles) nutzten `localhost`, was durch
+  IPv6-Auflösung in Alpine-Containern fälschlich als "unhealthy" galt
 
 ---
 

@@ -3,19 +3,9 @@
  * (Issue #12 – v0.4.0)
  */
 import { useState, useCallback } from 'react';
+import { apiFetch } from '../utils/apiFetch.js';
 
 const BASE = (boardId) => `/api/boards/${boardId}/lines`;
-
-async function apiFetch(url, options = {}) {
-  const res  = await fetch(url, {
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    ...options,
-  });
-  const json = await res.json();
-  if (!res.ok) throw new Error(json.message ?? `HTTP ${res.status}`);
-  return json.data;
-}
 
 export function useLines(boardId) {
   const [lines,        setLines       ] = useState([]);

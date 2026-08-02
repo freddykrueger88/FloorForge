@@ -15,10 +15,9 @@ cd FloorForge
 
 # 2. Umgebungsvariablen konfigurieren
 cp .env.example .env
-nano .env   # Passe SECRET_KEY und DB-Passwort an!
+nano .env   # Passe JWT_SECRET und DB-Passwort an!
 
 # 3. Container starten
-cd docker
 docker compose up -d
 
 # 4. Status prüfen
@@ -28,9 +27,9 @@ docker compose logs -f
 
 ## Erreichbarkeit
 
-- **Frontend:** http://localhost:3000
-- **Backend API:** http://localhost:3001
-- **Health Check:** http://localhost:3001/health
+- **Frontend:** http://localhost:${APP_PORT} (Standard: `3000`, siehe `.env`)
+- **Backend API:** nur intern über den Nginx-Proxy erreichbar, unter `http://localhost:${APP_PORT}/api/` — der Backend-Port selbst ist nicht auf den Host gemappt
+- **Health Check:** http://localhost:${APP_PORT}/health
 
 ## Erster Start
 
@@ -43,7 +42,6 @@ docker compose logs -f
 
 ```bash
 git pull
-cd docker
 docker compose pull
 docker compose up -d --build
 ```
@@ -55,6 +53,6 @@ docker compose up -d --build
 | `APP_PORT` | Frontend-Port | 3000 |
 | `JWT_SECRET` | **Ändern!** Mind. 64 Zeichen | - |
 | `DB_PASSWORD` | **Ändern!** Sicheres Passwort | - |
-| `SHARE_LINK_EXPIRES_HOURS` | Share-Link Gültigkeit | 72 |
+| `COOKIE_SECURE` | Session-Cookie nur über HTTPS senden. `false` setzen, wenn kein TLS-Reverse-Proxy davorsteht (sonst wird das Login-Cookie verworfen) | `true` |
 
 > ⚠️ **Sicherheit:** Ändere `JWT_SECRET` und `DB_PASSWORD` unbedingt vor dem ersten Start!

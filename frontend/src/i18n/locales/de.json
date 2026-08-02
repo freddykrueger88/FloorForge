@@ -46,8 +46,31 @@
     "fieldCanvas": "Floorball-Spielfeld Canvas",
     "themeToggle": "Theme wechseln"
   },
+  "auth": {
+    "loginTitle": "Anmelden",
+    "loginError": "Anmeldung fehlgeschlagen. Bitte versuche es erneut.",
+    "loggingIn": "Anmeldung läuft…",
+    "loginBtn": "Anmelden",
+    "noAccount": "Noch kein Konto?",
+    "registerLink": "Jetzt registrieren",
+    "registerTitle": "Registrieren",
+    "registerError": "Registrierung fehlgeschlagen. Bitte versuche es erneut.",
+    "registering": "Registrierung läuft…",
+    "registerBtn": "Konto erstellen",
+    "firstUserAdmin": "Der erste registrierte Account wird automatisch Admin.",
+    "hasAccount": "Bereits ein Konto?",
+    "loginLink": "Zum Login",
+    "email": "E-Mail-Adresse",
+    "password": "Passwort",
+    "name": "Name (optional)",
+    "namePlaceholder": "z.B. Max Mustermann",
+    "passwordHint": "Mind. 8 Zeichen, Groß-/Kleinbuchstaben und eine Zahl"
+  },
   "errors": {
     "generic": "Ein Fehler ist aufgetreten.",
     "notFound": "Seite nicht gefunden."
+  },
+  "board": {
+    "untitled": "Unbenanntes Board"
   }
 }

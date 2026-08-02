@@ -147,6 +147,17 @@ export async function setActiveLine(req, res) {
       return res.status(404).json(error('Board nicht gefunden'));
     }
     const { lineId } = req.body;
+
+    if (lineId != null) {
+      const lineExists = await pool.query(
+        'SELECT id FROM lines WHERE id = $1 AND board_id = $2',
+        [lineId, req.params.id]
+      );
+      if (lineExists.rows.length === 0) {
+        return res.status(404).json(error('Line nicht gefunden'));
+      }
+    }
+
     const result = await pool.query(
       'UPDATE boards SET active_line_id = $1 WHERE id = $2 RETURNING active_line_id',
       [lineId ?? null, req.params.id]

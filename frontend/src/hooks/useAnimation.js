@@ -42,6 +42,15 @@ export function useAnimation({ frames = [], activeIndex = 0, goToFrame, loop: lo
   const startTimeRef = useRef(null);
   const fromIndexRef = useRef(activeIndex);
 
+  // Refs für Werte, die `tick` bei jedem rekursiven requestAnimationFrame-Aufruf
+  // aktuell lesen muss (sonst läuft eine bereits gestartete Wiedergabe mit der
+  // Closure/den Werten von damals weiter, z.B. Geschwindigkeitswechsel während
+  // des Abspielens hätte sonst erst nach Stop/Replay eine Wirkung)
+  const speedRef  = useRef(speed);  speedRef.current  = speed;
+  const loopRef   = useRef(loop);   loopRef.current   = loop;
+  const framesRef = useRef(frames); framesRef.current = frames;
+  const goToFrameRef = useRef(goToFrame); goToFrameRef.current = goToFrame;
+
   // Wenn sich der aktive Frame von außen ändert (z.B. manuelle Auswahl), Anzeige synchronisieren
   useEffect(() => {
     if (!playing) {
@@ -69,9 +78,11 @@ export function useAnimation({ frames = [], activeIndex = 0, goToFrame, loop: lo
   const tick = useCallback((timestamp) => {
     if (startTimeRef.current === null) startTimeRef.current = timestamp;
     const elapsed  = timestamp - startTimeRef.current;
-    const duration = MS_PER_FRAME_TRANSITION / speed;
+    const duration = MS_PER_FRAME_TRANSITION / speedRef.current;
     const t = Math.min(1, elapsed / duration);
 
+    const frames  = framesRef.current;
+    const goToFrame = goToFrameRef.current;
     const fromIdx = fromIndexRef.current;
     const toIdx   = fromIdx + 1;
     const fromFrame = frames[fromIdx];
@@ -88,7 +99,7 @@ export function useAnimation({ frames = [], activeIndex = 0, goToFrame, loop: lo
         goToFrame?.(toIdx);
         startTimeRef.current = timestamp;
         rafRef.current = requestAnimationFrame(tick);
-      } else if (loop) {
+      } else if (loopRef.current) {
         fromIndexRef.current = 0;
         goToFrame?.(0);
         setDisplayPlayers(frames[0]?.players ?? []);
@@ -101,7 +112,7 @@ export function useAnimation({ frames = [], activeIndex = 0, goToFrame, loop: lo
     } else {
       rafRef.current = requestAnimationFrame(tick);
     }
-  }, [frames, speed, loop, goToFrame]);
+  }, []);
 
   const play = useCallback(() => {
     if (frames.length < 2) return; // Nichts zu animieren

@@ -45,21 +45,25 @@ app.use(cors({
 }));
 
 // ── Rate Limiter ──────────────────────────────
-app.use('/api/', rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: { success: false, message: 'Zu viele Anfragen, bitte warten.' },
-}));
+// In Tests deaktiviert (analog zum Morgan-Logging unten), damit automatisierte
+// Testläufe nicht durch produktionsrelevante Limits verfälscht werden.
+if (process.env.NODE_ENV !== 'test') {
+  app.use('/api/', rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { success: false, message: 'Zu viele Anfragen, bitte warten.' },
+  }));
 
-app.use('/api/auth/', rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 10,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: { success: false, message: 'Zu viele Login-Versuche, bitte warten.' },
-}));
+  app.use('/api/auth/', rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 10,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { success: false, message: 'Zu viele Login-Versuche, bitte warten.' },
+  }));
+}
 
 // ── Parser ────────────────────────────────────
 app.use(express.json({ limit: '10kb' }));
@@ -99,6 +103,10 @@ async function bootstrap() {
   }
 }
 
-bootstrap();
+// In Tests wird `app` direkt importiert (supertest) – DB/Redis-Setup und
+// app.listen() übernimmt dort die Test-Suite selbst (siehe __tests__/setup.js)
+if (process.env.NODE_ENV !== 'test') {
+  bootstrap();
+}
 
 export default app;

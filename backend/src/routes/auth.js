@@ -21,9 +21,13 @@ const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
 
 // Cookie-Optionen
+// secure: true sendet das Cookie nur über HTTPS – Browser verwerfen es sonst
+// stillschweigend. Läuft die Instanz ohne TLS-Reverse-Proxy davor (z.B.
+// Homelab-Deployment über reines HTTP), muss COOKIE_SECURE=false gesetzt
+// werden, sonst wird jedes Login-Cookie sofort verworfen.
 const COOKIE_OPTS = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
+  secure: process.env.NODE_ENV === 'production' && process.env.COOKIE_SECURE !== 'false',
   sameSite: 'strict',
   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 Tage in ms
   path: '/',
@@ -152,7 +156,7 @@ router.post('/logout', authenticate, async (req, res) => {
       }
     }
     res.clearCookie('token', { ...COOKIE_OPTS, maxAge: 0 });
-    logger.info(`User logged out: ${req.user.email}`);
+    logger.info(`User logged out: ${req.user.id}`);
     return res.json(success({ message: 'Erfolgreich abgemeldet' }));
   } catch (err) {
     logger.error('Logout error:', err);

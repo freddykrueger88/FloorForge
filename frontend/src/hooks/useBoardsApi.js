@@ -3,19 +3,9 @@
  * Kapselt fetch-Aufrufe, Loading- & Error-State
  */
 import { useState, useCallback } from 'react';
+import { apiFetch } from '../utils/apiFetch.js';
 
 const BASE = '/api/boards';
-
-async function apiFetch(url, options = {}) {
-  const res = await fetch(url, {
-    headers: { 'Content-Type': 'application/json', ...options.headers },
-    credentials: 'include', // Auth-Cookie muss auch cross-origin (Vite :5173 → API :3001) mitgeschickt werden
-    ...options,
-  });
-  const json = await res.json();
-  if (!res.ok) throw new Error(json.message ?? `HTTP ${res.status}`);
-  return json.data;
-}
 
 export function useBoardsApi() {
   const [loading, setLoading] = useState(false);

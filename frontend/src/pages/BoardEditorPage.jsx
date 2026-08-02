@@ -18,6 +18,7 @@ import FieldContainer from '../components/field/FieldContainer.jsx';
 import FieldToolbar from '../components/field/FieldToolbar.jsx';
 import FieldTypeChangeDialog from '../components/field/FieldTypeChangeDialog.jsx';
 import PlayerInfoPanel from '../components/field/PlayerInfoPanel.jsx';
+import { DrawingToolbar } from '../components/drawing/index.js';
 import { FrameTimeline } from '../components/frames/index.js';
 import { PlaybackControls } from '../components/playback/index.js';
 import { NotesPanel } from '../components/board/index.js';
@@ -32,6 +33,8 @@ import { useAutoSave } from '../hooks/useAutoSave.js';
 import { useAnimation } from '../hooks/useAnimation.js';
 
 import styles from './BoardEditorPage.module.css';
+
+const PLAYER_MARGIN_M = 0.8; // Meter Abstand zur Bande (analog usePlayerState.updatePosition)
 
 export default function BoardEditorPage() {
   const { id: boardId } = useParams();
@@ -116,9 +119,12 @@ export default function BoardEditorPage() {
     !!activeFrame && !anim.playing,
   );
 
-  const handleDragEndPlayer = useCallback((id, x, y) => {
+  const handleDragEndPlayer = useCallback((id, rawX, rawY) => {
+    const currentField = IFF_FIELDS[field.fieldType] ?? IFF_FIELDS.large;
+    const x = Math.max(PLAYER_MARGIN_M, Math.min(currentField.width  - PLAYER_MARGIN_M, rawX));
+    const y = Math.max(PLAYER_MARGIN_M, Math.min(currentField.height - PLAYER_MARGIN_M, rawY));
     setLivePlayers((prev) => prev.map((p) => (p.id === id ? { ...p, x, y } : p)));
-  }, []);
+  }, [field.fieldType]);
 
   const displayedPlayers = anim.playing ? anim.displayPlayers : livePlayers;
 
@@ -213,6 +219,20 @@ export default function BoardEditorPage() {
       />
 
       <div className={styles.body}>
+        <DrawingToolbar
+          activeTool={drawing.activeTool}
+          setActiveTool={drawing.setActiveTool}
+          activeColor={drawing.activeColor}
+          setActiveColor={drawing.setActiveColor}
+          strokeWidth={drawing.strokeWidth}
+          setStrokeWidth={drawing.setStrokeWidth}
+          onUndo={drawing.undo}
+          onRedo={drawing.redo}
+          onClear={drawing.clearAll}
+          canUndo={drawing.canUndo}
+          canRedo={drawing.canRedo}
+          elementCount={drawing.elements.length}
+        />
         <div className={styles.fieldArea}>
           <FieldContainer
             fieldType={field.fieldType}
@@ -227,6 +247,11 @@ export default function BoardEditorPage() {
             drawingElements={anim.playing ? (activeFrame?.elements ?? []) : drawing.elements}
             selectedDrawingId={drawing.selectedId}
             activeTool={drawing.activeTool}
+            isDrawing={drawing.isDrawing}
+            onPointerDown={drawing.handlePointerDown}
+            onPointerMove={drawing.handlePointerMove}
+            onPointerUp={drawing.handlePointerUp}
+            onElementClick={drawing.handleElementClick}
             showNames={showNames}
             namePosition={namePosition}
             activeLinePlayerIds={lines.activeLine?.playerIds ?? null}

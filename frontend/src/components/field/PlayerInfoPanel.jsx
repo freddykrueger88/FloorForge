@@ -8,11 +8,12 @@ import styles from './PlayerInfoPanel.module.css';
 
 export default function PlayerInfoPanel({ player, onClose, onReset, onNameChange }) {
   const { i18n } = useTranslation();
-  const lang     = i18n.language?.startsWith('en') ? 'en' : 'de';
-  const hints    = POSITION_HINTS[lang] ?? POSITION_HINTS.de;
-  const info     = hints[player?.role] ?? hints['M'];
 
   if (!player) return null;
+
+  const lang  = i18n.language?.startsWith('en') ? 'en' : 'de';
+  const hints = POSITION_HINTS[lang] ?? POSITION_HINTS.de;
+  const info  = hints[player.role] ?? hints['M'];
 
   return (
     <aside

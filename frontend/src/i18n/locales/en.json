@@ -46,8 +46,31 @@
     "fieldCanvas": "Floorball field canvas",
     "themeToggle": "Toggle theme"
   },
+  "auth": {
+    "loginTitle": "Log in",
+    "loginError": "Login failed. Please try again.",
+    "loggingIn": "Logging in…",
+    "loginBtn": "Log in",
+    "noAccount": "Don't have an account?",
+    "registerLink": "Register now",
+    "registerTitle": "Register",
+    "registerError": "Registration failed. Please try again.",
+    "registering": "Registering…",
+    "registerBtn": "Create account",
+    "firstUserAdmin": "The first registered account automatically becomes admin.",
+    "hasAccount": "Already have an account?",
+    "loginLink": "Go to login",
+    "email": "Email address",
+    "password": "Password",
+    "name": "Name (optional)",
+    "namePlaceholder": "e.g. John Doe",
+    "passwordHint": "Min. 8 characters, upper/lowercase letters and a number"
+  },
   "errors": {
     "generic": "An error occurred.",
     "notFound": "Page not found."
+  },
+  "board": {
+    "untitled": "Untitled Board"
   }
 }

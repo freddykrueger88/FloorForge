@@ -6,7 +6,7 @@ import redisClient from '../db/redis.js';
 import { error } from '../utils/apiResponse.js';
 
 export async function authenticate(req, res, next) {
-  const token = req.cookies?.token || req.headers.authorization?.replace('Bearer ', '');
+  const token = req.cookies?.token;
 
   if (!token) {
     return res.status(401).json(error('Nicht authentifiziert'));
@@ -19,6 +19,10 @@ export async function authenticate(req, res, next) {
       return res.status(401).json(error('Token ungültig (ausgeloggt)'));
     }
 
+    // Hinweis: `role` stammt aus dem Token-Payload (Stand beim Login), nicht
+    // aus einer Live-Abfrage der DB. Ändert sich die Rolle eines Users später
+    // (z.B. über ein künftiges Admin-Panel, Issue #26), wirkt das erst nach
+    // Ablauf/Neu-Login des bestehenden Tokens (JWT_EXPIRES_IN).
     const decoded = jwt.verify(token, process.env.JWT_SECRET, { algorithms: ['HS256'] });
     req.user = { id: decoded.sub, role: decoded.role };
     next();

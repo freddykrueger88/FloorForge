@@ -34,7 +34,7 @@ export default function LoginPage() {
 
   return (
     <main className="auth-page" role="main">
-      <a href="#main-content" className="sr-only sr-only-focusable">{t('a11y.skipToContent')}</a>
+      <a href="#main-content" className="sr-only sr-only-focusable">{t('accessibility.skipToContent')}</a>
 
       <div className="auth-card" id="main-content">
         {/* Logo */}

@@ -50,6 +50,11 @@
   padding: var(--space-4);
 }
 
+.body > :global(aside) {
+  flex-shrink: 0;
+  margin: var(--space-4) 0 var(--space-4) var(--space-4);
+}
+
 .sidebar {
   flex-shrink: 0;
   display: flex;

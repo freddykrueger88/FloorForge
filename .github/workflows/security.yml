@@ -26,10 +26,10 @@ jobs:
         working-directory: backend
         run: |
           npm install --ignore-scripts
-          npm audit --audit-level=high || true
+          npm audit --audit-level=high
 
       - name: Frontend Audit
         working-directory: frontend
         run: |
           npm install --ignore-scripts
-          npm audit --audit-level=high || true
+          npm audit --audit-level=high

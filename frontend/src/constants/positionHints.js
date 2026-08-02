@@ -64,6 +64,36 @@ export const POSITION_HINTS = {
         'Nach oben sichern wenn Mittelfeld aufrrückt',
       ],
     },
+    RM: {
+      name: 'Rechter Mittelfeldspieler',
+      short: 'RM',
+      hint: 'Verbindet Abwehr und Angriff auf der rechten Bahn. Unterstützt Verteidiger und Stürmer.',
+      tips: [
+        'Rechte Außenbahn besetzen',
+        'Nach Ballgewinn schnell nach vorne anbieten',
+        'Bei gegnerischem Angriff über die rechte Seite zurückarbeiten',
+      ],
+    },
+    LM: {
+      name: 'Linker Mittelfeldspieler',
+      short: 'LM',
+      hint: 'Verbindet Abwehr und Angriff auf der linken Bahn. Spiegel des rechten Mittelfeldspielers.',
+      tips: [
+        'Linke Außenbahn besetzen',
+        'Symmetrie mit dem rechten Mittelfeldspieler wahren',
+        'Bei gegnerischem Angriff über die linke Seite zurückarbeiten',
+      ],
+    },
+    ST: {
+      name: 'Stürmer (Mitte)',
+      short: 'ST',
+      hint: 'Zentraler Torabschluss. Presst die gegnerische Abwehr und sucht die Zuspiele aus dem Mittelfeld.',
+      tips: [
+        'Zentrale Torposition frühzeitig einnehmen',
+        'Freilaufen für Zuspiele aus dem Mittelfeld',
+        'Nach Ballverlust als erster pressen',
+      ],
+    },
   },
   en: {
     TW: {
@@ -104,6 +134,56 @@ export const POSITION_HINTS = {
         'Take up goal position early',
         'Bind defenders through movement',
         'Press immediately after losing the ball',
+      ],
+    },
+    RV: {
+      name: 'Right Defender',
+      short: 'RD',
+      hint: 'Covers the right side of the defence. Supports the right wing in attack when needed.',
+      tips: [
+        'Hold the line with the left defender',
+        'Cut off opponent crosses early',
+        'Join the right-side attack when your own team has the ball',
+      ],
+    },
+    LV: {
+      name: 'Left Defender',
+      short: 'LD',
+      hint: 'Covers the left side of the defence. Mirror of the right defender.',
+      tips: [
+        'Maintain symmetry with the right defender',
+        'Close the left channel against opponent build-up',
+        'Cover back when midfield pushes forward',
+      ],
+    },
+    RM: {
+      name: 'Right Midfielder',
+      short: 'RM',
+      hint: 'Links defence and attack on the right flank. Supports both defenders and forwards.',
+      tips: [
+        'Occupy the right flank',
+        'Offer an outlet forward after winning the ball',
+        'Track back on the right when the opponent attacks',
+      ],
+    },
+    LM: {
+      name: 'Left Midfielder',
+      short: 'LM',
+      hint: 'Links defence and attack on the left flank. Mirror of the right midfielder.',
+      tips: [
+        'Occupy the left flank',
+        'Maintain symmetry with the right midfielder',
+        'Track back on the left when the opponent attacks',
+      ],
+    },
+    ST: {
+      name: 'Striker',
+      short: 'ST',
+      hint: 'Central goal threat. Presses the opposing defence and looks for through balls from midfield.',
+      tips: [
+        'Take up a central goal position early',
+        'Find space for passes from midfield',
+        'Be first to press after losing the ball',
       ],
     },
   },

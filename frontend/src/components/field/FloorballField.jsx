@@ -86,7 +86,7 @@ export default function FloorballField({
         <Circle x={cx} y={cy} radius={lw*2.5} fill={colors.line}/>
         <Rect x={ox-goalD_px} y={cy-goalW_px/2} width={goalD_px} height={goalW_px} fill="transparent" stroke={colors.goal} strokeWidth={lw2}/>
         <Rect x={ox+fieldW} y={cy-goalW_px/2} width={goalD_px} height={goalW_px} fill="transparent" stroke={colors.goal} strokeWidth={lw2}/>
-        <Text x={ox+fieldW/2-30} y={oy-20} text={field.label} fontSize={Math.max(10,px(0.6))} fill={colors.text} fontFamily="Inter, system-ui, sans-serif"/>
+        <Text x={ox} y={oy-20} width={fieldW} align="center" text={field.label} fontSize={Math.max(10,px(0.6))} fill={colors.text} fontFamily="Inter, system-ui, sans-serif"/>
       </Layer>
 
       {/* Layer 2: Zeichen-Elemente (unter Spielern) */}
