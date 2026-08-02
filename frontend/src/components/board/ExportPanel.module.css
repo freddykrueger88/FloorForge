@@ -1,0 +1,125 @@
+.panel {
+  padding: 12px;
+  background: #1e2128;
+  border-radius: 8px;
+  border: 1px solid #2d3340;
+  color: #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.title {
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin: 0;
+  color: #cbd5e1;
+}
+
+.hint {
+  font-size: 0.78rem;
+  color: #64748b;
+  margin: 0;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.optLabel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.82rem;
+  color: #94a3b8;
+  gap: 8px;
+}
+
+.select {
+  background: #23272e;
+  border: 1px solid #3a3f4b;
+  border-radius: 5px;
+  color: #e2e8f0;
+  padding: 3px 6px;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+.select:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.checkLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  color: #94a3b8;
+  cursor: pointer;
+  user-select: none;
+}
+
+.progressBar {
+  height: 6px;
+  background: #2d3340;
+  border-radius: 3px;
+  overflow: hidden;
+}
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #60a5fa);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.statusMsg {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  margin: 0;
+}
+.statusError { color: #f87171; }
+
+.actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.exportBtn {
+  flex: 1;
+  padding: 7px 12px;
+  background: #2563eb;
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.exportBtn:hover:not(:disabled) { background: #1d4ed8; }
+.exportBtn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.downloadBtn {
+  flex: 1;
+  padding: 7px 12px;
+  background: #16a34a;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  text-align: center;
+  transition: background 0.15s;
+}
+.downloadBtn:hover { background: #15803d; }
+
+.resetBtn {
+  padding: 7px 10px;
+  background: #23272e;
+  border: 1px solid #3a3f4b;
+  border-radius: 6px;
+  color: #94a3b8;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+.resetBtn:hover { color: #e2e8f0; }
