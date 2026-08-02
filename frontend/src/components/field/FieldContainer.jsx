@@ -21,6 +21,7 @@ export default function FieldContainer({
   onDragEndPlayer,
   homeColor,
   awayColor,
+  ballColor,
   snapToGrid = 0,
   showNames    = false,
   namePosition = 'unten',
@@ -77,6 +78,7 @@ export default function FieldContainer({
         onDragEndPlayer={onDragEndPlayer}
         homeColor={homeColor}
         awayColor={awayColor}
+        ballColor={ballColor}
         snapToGrid={snapToGrid}
         showNames={showNames}
         namePosition={namePosition}

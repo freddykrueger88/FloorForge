@@ -11,6 +11,9 @@ import { DrawingLayer } from '../drawing/index.js';
 
 export { FIELD_COLORS };
 
+const BALL_RADIUS_M = 0.115; // IFF: Floorball-Durchmesser ca. 72mm → Radius ~0.115m (visuell leicht vergrößert)
+const DEFAULT_BALL_COLOR = '#f97316'; // Hot Orange
+
 function computeScale(field, canvasW, canvasH, padding = 40) {
   const scale  = Math.min((canvasW - padding * 2) / field.width, (canvasH - padding * 2) / field.height);
   const fieldW = field.width  * scale;
@@ -33,6 +36,7 @@ export default function FloorballField({
   onDragEndPlayer,
   homeColor  = { fill: '#1d4ed8', stroke: '#1e3a8a' },
   awayColor  = { fill: '#dc2626', stroke: '#991b1b' },
+  ballColor  = DEFAULT_BALL_COLOR,
   snapToGrid = 0,
   showNames    = false,
   namePosition = 'unten',
@@ -61,6 +65,7 @@ export default function FloorballField({
   const goalAreaW = px(field.goalAreaWidth), goalAreaD = px(field.goalAreaDepth);
   const keeperW = px(field.keeperWidth),     keeperD = px(field.keeperDepth);
   const goalW_px = px(field.goalWidth),      goalD_px = px(field.goalDepth);
+  const ballR = Math.max(4, px(BALL_RADIUS_M));
 
   const gridLines = useMemo(() => {
     if (!showGrid || gridSize <= 0) return [];
@@ -86,6 +91,15 @@ export default function FloorballField({
         <Circle x={cx} y={cy} radius={lw*2.5} fill={colors.line}/>
         <Rect x={ox-goalD_px} y={cy-goalW_px/2} width={goalD_px} height={goalW_px} fill="transparent" stroke={colors.goal} strokeWidth={lw2}/>
         <Rect x={ox+fieldW} y={cy-goalW_px/2} width={goalD_px} height={goalW_px} fill="transparent" stroke={colors.goal} strokeWidth={lw2}/>
+        {/* Ball am Anstosspunkt (Spielfeldmitte) */}
+        <Circle
+          x={cx} y={cy}
+          radius={ballR}
+          fill={ballColor ?? DEFAULT_BALL_COLOR}
+          stroke="rgba(0,0,0,0.4)"
+          strokeWidth={Math.max(1, lw * 0.8)}
+          listening={false}
+        />
         <Text x={ox} y={oy-20} width={fieldW} align="center" text={field.label} fontSize={Math.max(10,px(0.6))} fill={colors.text} fontFamily="Inter, system-ui, sans-serif"/>
       </Layer>
 
