@@ -6,9 +6,12 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useBoardsApi } from '../hooks/useBoardsApi.js';
 import BoardCard from '../components/boards/BoardCard.jsx';
+import BoardPostcard from '../components/boards/BoardPostcard.jsx';
 import NewBoardModal from '../components/boards/NewBoardModal.jsx';
 import DeleteConfirmDialog from '../components/boards/DeleteConfirmDialog.jsx';
 import styles from './BoardsPage.module.css';
+
+const VIEW_STORAGE_KEY = 'floorforge:boardsView';
 
 export default function BoardsPage() {
   const navigate = useNavigate();
@@ -17,6 +20,13 @@ export default function BoardsPage() {
   const [boards,        setBoards       ] = useState([]);
   const [showNewModal,  setShowNewModal  ] = useState(false);
   const [deleteTarget,  setDeleteTarget  ] = useState(null); // { id, name }
+  // Ansicht: Postkarten-Galerie ↔ Kompakt-Kachel (Issue #30)
+  const [view, setView] = useState(() => localStorage.getItem(VIEW_STORAGE_KEY) || 'postcard');
+
+  const setViewMode = useCallback((mode) => {
+    setView(mode);
+    localStorage.setItem(VIEW_STORAGE_KEY, mode);
+  }, []);
 
   const load = useCallback(async () => {
     try { setBoards(await fetchBoards()); } catch { /* error via hook */ }
@@ -66,6 +76,28 @@ export default function BoardsPage() {
         >
           <span aria-hidden="true">➕</span> Neues Spielfeld
         </button>
+
+        {/* Postkarten-Galerie ↔ Kompakt-Kachel Toggle (Issue #30) */}
+        <div className={styles.viewToggle} role="group" aria-label="Ansicht wechseln">
+          <button
+            className={`${styles.viewBtn} ${view === 'postcard' ? styles.viewActive : ''}`}
+            onClick={() => setViewMode('postcard')}
+            aria-pressed={view === 'postcard'}
+            aria-label="Postkarten-Galerie"
+            title="Postkarten-Galerie"
+          >
+            <span aria-hidden="true">🃏</span>
+          </button>
+          <button
+            className={`${styles.viewBtn} ${view === 'compact' ? styles.viewActive : ''}`}
+            onClick={() => setViewMode('compact')}
+            aria-pressed={view === 'compact'}
+            aria-label="Kompakt-Kachel-Ansicht"
+            title="Kompakt-Kachel-Ansicht"
+          >
+            <span aria-hidden="true">▦</span>
+          </button>
+        </div>
       </header>
 
       {error && (
@@ -93,15 +125,26 @@ export default function BoardsPage() {
           </button>
         </div>
       ) : (
-        <ul className={styles.grid} role="list" aria-label="Spielfelder">
+        <ul
+          className={view === 'postcard' ? styles.postcardGrid : styles.grid}
+          role="list"
+          aria-label="Spielfelder"
+        >
           {boards.map((board) => (
             <li key={board._id}>
-              <BoardCard
-                board={board}
-                onClick={() => navigate(`/board/${board._id}`)}
-                onRename={(name) => handleRename(board._id, name)}
-                onDelete={() => setDeleteTarget({ id: board._id, name: board.name })}
-              />
+              {view === 'postcard' ? (
+                <BoardPostcard
+                  board={board}
+                  onClick={() => navigate(`/board/${board._id}`)}
+                />
+              ) : (
+                <BoardCard
+                  board={board}
+                  onClick={() => navigate(`/board/${board._id}`)}
+                  onRename={(name) => handleRename(board._id, name)}
+                  onDelete={() => setDeleteTarget({ id: board._id, name: board.name })}
+                />
+              )}
             </li>
           ))}
         </ul>

@@ -5,15 +5,11 @@
 import { useMemo } from 'react';
 import { Stage, Layer, Rect, Line, Circle, Text } from 'react-konva';
 import { IFF_FIELDS } from '../../constants/fieldConfig.js';
+import { FIELD_COLORS } from '../../constants/fieldTheme.js';
 import PlayerLayer from './PlayerLayer.jsx';
 import { DrawingLayer } from '../drawing/index.js';
 
-const FIELD_COLORS = {
-  dark:    { surface: '#1a2a1a', line: '#ffffff', board: '#374151', goal: '#9ca3af', goalArea: 'rgba(255,255,255,0.06)', keeperArea: 'rgba(255,255,255,0.10)', center: 'rgba(255,255,255,0.04)', grid: 'rgba(255,255,255,0.07)', text: 'rgba(255,255,255,0.4)' },
-  light:   { surface: '#e8f5e9', line: '#1a1a1a', board: '#374151', goal: '#4b5563', goalArea: 'rgba(0,0,0,0.05)',       keeperArea: 'rgba(0,0,0,0.08)',          center: 'rgba(0,0,0,0.03)',          grid: 'rgba(0,0,0,0.08)',          text: 'rgba(0,0,0,0.35)'          },
-  vikings: { surface: '#00193f', line: '#ffffff', board: '#0039a6', goal: '#a8c4e8', goalArea: 'rgba(255,255,255,0.07)', keeperArea: 'rgba(255,255,255,0.12)', center: 'rgba(255,255,255,0.04)', grid: 'rgba(255,255,255,0.08)', text: 'rgba(255,255,255,0.4)' },
-  iff:     { surface: '#0a1a0a', line: '#ffffff', board: '#e30613', goal: '#e30613', goalArea: 'rgba(255,255,255,0.06)', keeperArea: 'rgba(255,255,255,0.10)', center: 'rgba(255,255,255,0.04)', grid: 'rgba(255,255,255,0.07)', text: 'rgba(255,255,255,0.4)' },
-};
+export { FIELD_COLORS };
 
 function computeScale(field, canvasW, canvasH, padding = 40) {
   const scale  = Math.min((canvasW - padding * 2) / field.width, (canvasH - padding * 2) / field.height);
@@ -38,6 +34,8 @@ export default function FloorballField({
   homeColor  = { fill: '#1d4ed8', stroke: '#1e3a8a' },
   awayColor  = { fill: '#dc2626', stroke: '#991b1b' },
   snapToGrid = 0,
+  showNames    = false,
+  namePosition = 'unten',
   // Zeichnen
   drawingElements  = [],
   selectedDrawingId = null,
@@ -116,6 +114,8 @@ export default function FloorballField({
         onDragEnd={onDragEndPlayer}
         snapToGrid={snapToGrid}
         readonly={readonly}
+        showNames={showNames}
+        namePosition={namePosition}
       />
     </Stage>
   );

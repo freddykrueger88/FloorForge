@@ -28,6 +28,8 @@ export default function PlayerLayer({
   onDragEnd,
   snapToGrid  = 0,
   readonly    = false,
+  showNames   = false,
+  namePosition = 'unten',
 }) {
   return (
     <Layer>
@@ -47,6 +49,8 @@ export default function PlayerLayer({
             onDragEnd={onDragEnd}
             snapToGrid={snapToGrid}
             readonly={readonly}
+            showName={showNames}
+            namePosition={namePosition}
           />
         );
       })}

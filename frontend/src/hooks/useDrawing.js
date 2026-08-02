@@ -80,6 +80,14 @@ export function useDrawing() {
     setSelectedId((s) => s === id ? null : s);
   }, [pushUndo]);
 
+  // Elemente eines Frames übernehmen (z.B. bei Frame-Wechsel) – setzt Undo/Redo zurück
+  const loadElements = useCallback((newElements = []) => {
+    setElements(newElements);
+    setUndoStack([]);
+    setRedoStack([]);
+    setSelectedId(null);
+  }, []);
+
   const clearAll = useCallback(() => {
     setElements((prev) => {
       if (prev.length === 0) return prev;
@@ -199,7 +207,7 @@ export function useDrawing() {
     canUndo: undoStack.length > 0,
     canRedo: redoStack.length > 0,
     // Aktionen
-    addElement, updateElement, deleteElement, clearAll,
+    addElement, updateElement, deleteElement, clearAll, loadElements,
     handlePointerDown, handlePointerMove, handlePointerUp,
     handleElementClick,
   };

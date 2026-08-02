@@ -14,6 +14,25 @@ export default function FieldContainer({
   theme     = 'dark',
   readonly  = false,
   minHeight = 320,
+  // Spieler
+  players           = [],
+  selectedPlayerId  = null,
+  onSelectPlayer,
+  onDragEndPlayer,
+  homeColor,
+  awayColor,
+  snapToGrid = 0,
+  showNames    = false,
+  namePosition = 'unten',
+  // Zeichnen
+  drawingElements    = [],
+  selectedDrawingId  = null,
+  activeTool,
+  isDrawing,
+  onPointerDown,
+  onPointerMove,
+  onPointerUp,
+  onElementClick,
 }) {
   const containerRef = useRef(null);
   const [size, setSize] = useState({ width: 800, height: 500 });
@@ -50,6 +69,23 @@ export default function FieldContainer({
         gridSize={gridSize}
         theme={theme}
         readonly={readonly}
+        players={players}
+        selectedPlayerId={selectedPlayerId}
+        onSelectPlayer={onSelectPlayer}
+        onDragEndPlayer={onDragEndPlayer}
+        homeColor={homeColor}
+        awayColor={awayColor}
+        snapToGrid={snapToGrid}
+        showNames={showNames}
+        namePosition={namePosition}
+        drawingElements={drawingElements}
+        selectedDrawingId={selectedDrawingId}
+        activeTool={activeTool}
+        isDrawing={isDrawing}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onElementClick={onElementClick}
       />
     </div>
   );

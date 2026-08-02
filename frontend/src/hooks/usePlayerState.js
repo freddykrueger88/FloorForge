@@ -51,6 +51,11 @@ export function usePlayerState(fieldType = 'large') {
   const field          = IFF_FIELDS[fieldType] ?? IFF_FIELDS.large;
   const [players,     setPlayers]     = useState(() => buildPlayers(fieldType));
   const [selectedId,  setSelectedId]  = useState(null);
+  // Issue #29 – Spielername auf Token
+  const [showNames,    setShowNames]    = useState(false);
+  const [namePosition, setNamePosition] = useState('unten'); // 'oben' | 'unten'
+
+  const toggleShowNames = useCallback(() => setShowNames((v) => !v), []);
 
   // Spielfeld wechseln → Positionen neu initialisieren
   const resetForField = useCallback((newFieldType) => {
@@ -85,6 +90,11 @@ export function usePlayerState(fieldType = 'large') {
     setSelectedId(null);
   }, [fieldType]);
 
+  // Spielernamen zuweisen (Issue #29) – leerer Name entfernt das Label wieder
+  const setPlayerName = useCallback((id, name) => {
+    setPlayers((prev) => prev.map((p) => (p.id === id ? { ...p, name: name?.trim() ?? '' } : p)));
+  }, []);
+
   // Auswahl
   const selectPlayer = useCallback((id) => {
     setSelectedId((prev) => prev === id ? null : id);
@@ -101,5 +111,8 @@ export function usePlayerState(fieldType = 'large') {
     resetPlayer,
     resetAllPlayers,
     resetForField,
+    setPlayerName,
+    showNames, setShowNames, toggleShowNames,
+    namePosition, setNamePosition,
   };
 }

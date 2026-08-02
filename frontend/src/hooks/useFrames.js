@@ -12,7 +12,11 @@ import { useState, useCallback } from 'react';
 const BASE = (boardId) => `/api/boards/${boardId}/frames`;
 
 async function apiFetch(url, options = {}) {
-  const res  = await fetch(url, { headers: { 'Content-Type': 'application/json' }, ...options });
+  const res  = await fetch(url, {
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include', // Auth-Cookie muss auch cross-origin mitgeschickt werden
+    ...options,
+  });
   const json = await res.json();
   if (!res.ok) throw new Error(json.message ?? `HTTP ${res.status}`);
   return json.data;

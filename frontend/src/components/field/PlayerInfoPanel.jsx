@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { POSITION_HINTS } from '../../constants/positionHints.js';
 import styles from './PlayerInfoPanel.module.css';
 
-export default function PlayerInfoPanel({ player, onClose, onReset }) {
+export default function PlayerInfoPanel({ player, onClose, onReset, onNameChange }) {
   const { i18n } = useTranslation();
   const lang     = i18n.language?.startsWith('en') ? 'en' : 'de';
   const hints    = POSITION_HINTS[lang] ?? POSITION_HINTS.de;
@@ -31,6 +31,20 @@ export default function PlayerInfoPanel({ player, onClose, onReset }) {
           ×
         </button>
       </header>
+
+      {/* Spielername (Issue #29) */}
+      <label className={styles.nameLabel} htmlFor="player-name-input">
+        Spielername
+        <input
+          id="player-name-input"
+          type="text"
+          maxLength={20}
+          className={styles.nameInput}
+          value={player.name ?? ''}
+          placeholder="Name eingeben…"
+          onChange={(e) => onNameChange?.(player.id, e.target.value)}
+        />
+      </label>
 
       <p className={styles.hint}>{info.hint}</p>
 

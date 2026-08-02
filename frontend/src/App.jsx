@@ -5,10 +5,12 @@ import './styles/tokens.css';
 import './styles/base.css';
 import './styles/auth.css';
 
-const LoginPage    = lazy(() => import('./pages/LoginPage.jsx'));
-const RegisterPage = lazy(() => import('./pages/RegisterPage.jsx'));
-const Dashboard    = lazy(() => import('./pages/Dashboard.jsx'));
-const NotFound     = lazy(() => import('./pages/NotFound.jsx'));
+const LoginPage      = lazy(() => import('./pages/LoginPage.jsx'));
+const RegisterPage   = lazy(() => import('./pages/RegisterPage.jsx'));
+const Dashboard      = lazy(() => import('./pages/Dashboard.jsx'));
+const BoardsPage     = lazy(() => import('./pages/BoardsPage.jsx'));
+const BoardEditorPage = lazy(() => import('./pages/BoardEditorPage.jsx'));
+const NotFound       = lazy(() => import('./pages/NotFound.jsx'));
 
 function PrivateRoute({ children }) {
   const user = useAuthStore((s) => s.user);
@@ -39,6 +41,8 @@ export default function App() {
           <Route path="/login"    element={<PublicRoute><LoginPage /></PublicRoute>} />
           <Route path="/register" element={<PublicRoute><RegisterPage /></PublicRoute>} />
           <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+          <Route path="/boards" element={<PrivateRoute><BoardsPage /></PrivateRoute>} />
+          <Route path="/board/:id" element={<PrivateRoute><BoardEditorPage /></PrivateRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
