@@ -1,30 +1,27 @@
 /**
  * FloorForge – Einheitliche API Response Helfer
+ *
+ * Diese Helfer geben reine Payload-Objekte zurück (kein `res`!) – der
+ * Aufrufer entscheidet selbst über den HTTP-Statuscode via `res.status(...)`:
+ *   res.status(201).json(created({ user }));
+ *   res.status(401).json(error('Nicht authentifiziert'));
  */
 
-const success = (res, data, statusCode = 200) => {
-  return res.status(statusCode).json({
-    success: true,
-    data,
-  });
-};
+export const success = (data) => ({
+  success: true,
+  data,
+});
 
-const created = (res, data) => success(res, data, 201);
+export const created = (data) => success(data);
 
-const paginated = (res, data, pagination) => {
-  return res.status(200).json({
-    success: true,
-    data,
-    pagination,
-  });
-};
+export const paginated = (data, pagination) => ({
+  success: true,
+  data,
+  pagination,
+});
 
-const error = (res, message, statusCode = 400, details = null) => {
-  return res.status(statusCode).json({
-    success: false,
-    error: message,
-    ...(details && { details }),
-  });
-};
-
-module.exports = { success, created, paginated, error };
+export const error = (message, details = null) => ({
+  success: false,
+  message,
+  ...(details && { details }),
+});

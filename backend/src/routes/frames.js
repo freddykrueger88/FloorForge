@@ -1,22 +1,28 @@
 /**
- * /api/boards/:id/frames – Frame-Routen
+ * /api/boards/:id/frames – Frame-Routen (authentifiziert, user-scoped)
  */
 import { Router } from 'express';
 import { body, param } from 'express-validator';
+import { authenticate } from '../middleware/auth.js';
+import { validate } from '../middleware/validate.js';
 import { getFrames, addFrame, updateFrame, deleteFrame, reorderFrames } from '../controllers/framesController.js';
 
 const router = Router({ mergeParams: true });
 
-const validateBoardId = param('id').isMongoId().withMessage('Ungültige Board-ID');
-const validateFrameId = param('frameId').isMongoId().withMessage('Ungültige Frame-ID');
+router.use(authenticate);
 
-router.get   ('/',             validateBoardId, getFrames);
-router.post  ('/',             validateBoardId, [
+const validateBoardId = param('id').isUUID().withMessage('Ungültige Board-ID');
+const validateFrameId = param('frameId').isUUID().withMessage('Ungültige Frame-ID');
+
+router.get   ('/',             [validateBoardId, validate], getFrames);
+router.post  ('/',             [
+  validateBoardId,
   body('label').optional().isString().isLength({ max: 60 }),
   body('duration').optional().isInt({ min: 100, max: 10000 }),
+  validate,
 ], addFrame);
-router.put   ('/reorder',      validateBoardId, reorderFrames);
-router.put   ('/:frameId',     [validateBoardId, validateFrameId], updateFrame);
-router.delete('/:frameId',     [validateBoardId, validateFrameId], deleteFrame);
+router.put   ('/reorder',      [validateBoardId, validate], reorderFrames);
+router.put   ('/:frameId',     [validateBoardId, validateFrameId, validate], updateFrame);
+router.delete('/:frameId',     [validateBoardId, validateFrameId, validate], deleteFrame);
 
 export default router;

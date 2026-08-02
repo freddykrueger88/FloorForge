@@ -5,7 +5,7 @@
 /**
  * 404 Handler – Route nicht gefunden
  */
-const notFound = (req, res) => {
+export const notFoundHandler = (req, res) => {
   res.status(404).json({
     error: 'Not Found',
     message: `Route ${req.method} ${req.originalUrl} existiert nicht.`,
@@ -17,7 +17,7 @@ const notFound = (req, res) => {
  * 500 Handler – Interne Serverfehler
  */
 // eslint-disable-next-line no-unused-vars
-const errorHandler = (err, req, res, _next) => {
+export const errorHandler = (err, req, res, _next) => {
   const status = err.status || err.statusCode || 500;
   const message = process.env.NODE_ENV === 'production'
     ? 'Internal Server Error'
@@ -34,5 +34,3 @@ const errorHandler = (err, req, res, _next) => {
     ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
   });
 };
-
-module.exports = { notFound, errorHandler };

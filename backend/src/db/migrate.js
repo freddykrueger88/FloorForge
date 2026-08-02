@@ -82,6 +82,25 @@ export async function runMigrations() {
     await client.query(`CREATE INDEX IF NOT EXISTS idx_boards_user_id ON boards(user_id);`);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_boards_created_at ON boards(created_at DESC);`);
 
+    // ── boards: zusätzliche Spalten für Editor-Einstellungen ─────────────
+    // (nachträglich ergänzt – ALTER statt neuer CREATE TABLE, damit bestehende
+    //  Daten erhalten bleiben; alle Statements sind idempotent)
+    await client.query(`ALTER TABLE boards ADD COLUMN IF NOT EXISTS notes TEXT NOT NULL DEFAULT '';`);
+    await client.query(`ALTER TABLE boards ADD COLUMN IF NOT EXISTS theme TEXT NOT NULL DEFAULT 'dark'
+      CHECK (theme IN ('dark', 'light', 'vikings', 'iff'));`);
+    await client.query(`ALTER TABLE boards ADD COLUMN IF NOT EXISTS home_color TEXT NOT NULL DEFAULT '#1d4ed8';`);
+    await client.query(`ALTER TABLE boards ADD COLUMN IF NOT EXISTS away_color TEXT NOT NULL DEFAULT '#dc2626';`);
+    await client.query(`ALTER TABLE boards ADD COLUMN IF NOT EXISTS ball_color TEXT NOT NULL DEFAULT '#ffffff';`);
+    await client.query(`ALTER TABLE boards ADD COLUMN IF NOT EXISTS show_grid BOOLEAN NOT NULL DEFAULT false;`);
+    await client.query(`ALTER TABLE boards ADD COLUMN IF NOT EXISTS show_names BOOLEAN NOT NULL DEFAULT true;`);
+    await client.query(`ALTER TABLE boards ADD COLUMN IF NOT EXISTS name_position TEXT NOT NULL DEFAULT 'below'
+      CHECK (name_position IN ('above', 'below'));`);
+    // Basis-Aufstellung (= "Frame 0"), analog zu den Frames unten
+    await client.query(`ALTER TABLE boards ADD COLUMN IF NOT EXISTS players_json JSONB NOT NULL DEFAULT '[]';`);
+    await client.query(`ALTER TABLE boards ADD COLUMN IF NOT EXISTS elements_json JSONB NOT NULL DEFAULT '[]';`);
+    await client.query(`ALTER TABLE boards ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ DEFAULT NULL;`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_boards_deleted_at ON boards(deleted_at) WHERE deleted_at IS NOT NULL;`);
+
     // ── frames ────────────────────────────────────────────────────────────
     // data_json: { players: [...], arrows: [...], lines: [...] }
     await client.query(`
@@ -137,4 +156,12 @@ export async function runMigrations() {
   } finally {
     client.release();
   }
+}
+
+// Erlaubt den direkten Aufruf via `npm run db:migrate` (node src/db/migrate.js),
+// zusätzlich zum Import durch server.js beim Bootstrap.
+if (import.meta.url === `file://${process.argv[1]}`) {
+  runMigrations()
+    .then(() => process.exit(0))
+    .catch(() => process.exit(1));
 }

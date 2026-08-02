@@ -2,12 +2,12 @@
  * FloorForge – Request Validation Middleware
  * Verwendet express-validator
  */
-const { validationResult } = require('express-validator');
+import { validationResult } from 'express-validator';
 
 /**
  * Validierungsfehler prüfen und als 422 zurückgeben
  */
-const validate = (req, res, next) => {
+export const validate = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).json({
@@ -20,5 +20,3 @@ const validate = (req, res, next) => {
   }
   return next();
 };
-
-module.exports = { validate };

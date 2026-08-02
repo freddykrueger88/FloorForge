@@ -1,128 +1,215 @@
 /**
  * framesController – CRUD + Reorder für Frames eines Boards
- * Frames sind Sub-Documents im Board-Dokument
+ *
+ * Persistenz: eigene `frames`-Tabelle (Postgres), 1 Zeile pro Frame,
+ * referenziert über board_id. data_json hält { players, elements }.
+ * Jeder Zugriff wird über einen Board-Ownership-Check (user_id) abgesichert.
  */
-import Board from '../models/Board.js';
-import { validationResult } from 'express-validator';
+import pool from '../db/pool.js';
+import logger from '../utils/logger.js';
+import { success, created, error } from '../utils/apiResponse.js';
 
 const MAX_FRAMES = 50;
 
-const handleValidation = (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    res.status(400).json({ success: false, errors: errors.array() });
-    return false;
-  }
-  return true;
-};
+function toApiFrame(row) {
+  const data = row.data_json || {};
+  return {
+    _id:      row.id,
+    order:    row.order_index,
+    label:    data.label ?? '',
+    players:  data.players ?? [],
+    elements: data.elements ?? [],
+    duration: row.duration_ms,
+  };
+}
+
+// Stellt sicher, dass das Board existiert UND dem eingeloggten User gehört.
+async function assertBoardOwnership(boardId, userId) {
+  const result = await pool.query(
+    'SELECT id FROM boards WHERE id = $1 AND user_id = $2 AND deleted_at IS NULL',
+    [boardId, userId]
+  );
+  return result.rows.length > 0;
+}
 
 // GET /api/boards/:id/frames
 export async function getFrames(req, res) {
   try {
-    const board = await Board.findOne({ _id: req.params.id, deletedAt: null }).select('frames');
-    if (!board) return res.status(404).json({ success: false, message: 'Board nicht gefunden' });
-    const sorted = [...board.frames].sort((a, b) => a.order - b.order);
-    res.json({ success: true, data: sorted });
+    if (!(await assertBoardOwnership(req.params.id, req.user.id))) {
+      return res.status(404).json(error('Board nicht gefunden'));
+    }
+    const result = await pool.query(
+      'SELECT * FROM frames WHERE board_id = $1 ORDER BY order_index ASC',
+      [req.params.id]
+    );
+    res.json(success(result.rows.map(toApiFrame)));
   } catch (err) {
-    console.error('[getFrames]', err);
-    res.status(500).json({ success: false, message: 'Interner Serverfehler' });
+    logger.error('[getFrames]', err);
+    res.status(500).json(error('Interner Serverfehler'));
   }
 }
 
 // POST /api/boards/:id/frames
 export async function addFrame(req, res) {
-  if (!handleValidation(req, res)) return;
+  const client = await pool.connect();
   try {
-    const board = await Board.findOne({ _id: req.params.id, deletedAt: null });
-    if (!board) return res.status(404).json({ success: false, message: 'Board nicht gefunden' });
-    if (board.frames.length >= MAX_FRAMES) {
-      return res.status(400).json({ success: false, message: `Maximal ${MAX_FRAMES} Frames pro Board` });
+    if (!(await assertBoardOwnership(req.params.id, req.user.id))) {
+      return res.status(404).json(error('Board nicht gefunden'));
     }
 
-    const order = board.frames.length;
-    const newFrame = {
-      order,
-      label:    req.body.label    ?? '',
-      duration: req.body.duration ?? 1000,
-      // Kopiert den Zustand eines Referenz-Frames (Standard: letzter Frame)
-      players:  req.body.players  ?? board.players,
+    await client.query('BEGIN');
+
+    const countResult = await client.query(
+      'SELECT COUNT(*)::int AS count FROM frames WHERE board_id = $1',
+      [req.params.id]
+    );
+    const order = countResult.rows[0].count;
+    if (order >= MAX_FRAMES) {
+      await client.query('ROLLBACK');
+      return res.status(400).json(error(`Maximal ${MAX_FRAMES} Frames pro Board`));
+    }
+
+    const dataJson = {
+      label:    req.body.label ?? '',
+      players:  req.body.players ?? [],
       elements: req.body.elements ?? [],
     };
 
-    board.frames.push(newFrame);
-    await board.save();
+    const insertResult = await client.query(
+      `INSERT INTO frames (board_id, order_index, data_json, duration_ms)
+       VALUES ($1, $2, $3::jsonb, $4)
+       RETURNING *`,
+      [req.params.id, order, JSON.stringify(dataJson), req.body.duration ?? 1000]
+    );
 
-    const added = board.frames[board.frames.length - 1];
-    res.status(201).json({ success: true, data: added });
+    await client.query('COMMIT');
+    res.status(201).json(created(toApiFrame(insertResult.rows[0])));
   } catch (err) {
-    console.error('[addFrame]', err);
-    res.status(500).json({ success: false, message: 'Interner Serverfehler' });
+    await client.query('ROLLBACK');
+    logger.error('[addFrame]', err);
+    res.status(500).json(error('Interner Serverfehler'));
+  } finally {
+    client.release();
   }
 }
 
 // PUT /api/boards/:id/frames/:frameId
 export async function updateFrame(req, res) {
-  if (!handleValidation(req, res)) return;
   try {
-    const board = await Board.findOne({ _id: req.params.id, deletedAt: null });
-    if (!board) return res.status(404).json({ success: false, message: 'Board nicht gefunden' });
+    if (!(await assertBoardOwnership(req.params.id, req.user.id))) {
+      return res.status(404).json(error('Board nicht gefunden'));
+    }
 
-    const frame = board.frames.id(req.params.frameId);
-    if (!frame) return res.status(404).json({ success: false, message: 'Frame nicht gefunden' });
+    const existing = await pool.query(
+      'SELECT * FROM frames WHERE id = $1 AND board_id = $2',
+      [req.params.frameId, req.params.id]
+    );
+    if (existing.rows.length === 0) {
+      return res.status(404).json(error('Frame nicht gefunden'));
+    }
 
-    const allowed = ['label', 'players', 'elements', 'duration'];
-    allowed.forEach((key) => { if (req.body[key] !== undefined) frame[key] = req.body[key]; });
+    const currentData = existing.rows[0].data_json || {};
+    const nextData = {
+      label:    req.body.label    !== undefined ? req.body.label    : currentData.label,
+      players:  req.body.players  !== undefined ? req.body.players  : currentData.players,
+      elements: req.body.elements !== undefined ? req.body.elements : currentData.elements,
+    };
+    const duration = req.body.duration !== undefined ? req.body.duration : existing.rows[0].duration_ms;
 
-    await board.save();
-    res.json({ success: true, data: frame });
+    const result = await pool.query(
+      `UPDATE frames SET data_json = $1::jsonb, duration_ms = $2
+       WHERE id = $3 RETURNING *`,
+      [JSON.stringify(nextData), duration, req.params.frameId]
+    );
+    res.json(success(toApiFrame(result.rows[0])));
   } catch (err) {
-    console.error('[updateFrame]', err);
-    res.status(500).json({ success: false, message: 'Interner Serverfehler' });
+    logger.error('[updateFrame]', err);
+    res.status(500).json(error('Interner Serverfehler'));
   }
 }
 
 // DELETE /api/boards/:id/frames/:frameId
 export async function deleteFrame(req, res) {
+  const client = await pool.connect();
   try {
-    const board = await Board.findOne({ _id: req.params.id, deletedAt: null });
-    if (!board) return res.status(404).json({ success: false, message: 'Board nicht gefunden' });
-    if (board.frames.length <= 1) {
-      return res.status(400).json({ success: false, message: 'Mindestens 1 Frame muss erhalten bleiben' });
+    if (!(await assertBoardOwnership(req.params.id, req.user.id))) {
+      return res.status(404).json(error('Board nicht gefunden'));
     }
 
-    board.frames.pull({ _id: req.params.frameId });
-    // Reihenfolge normalisieren
-    board.frames.forEach((f, i) => { f.order = i; });
-    await board.save();
-    res.json({ success: true, message: 'Frame gelöscht' });
+    await client.query('BEGIN');
+
+    const countResult = await client.query(
+      'SELECT COUNT(*)::int AS count FROM frames WHERE board_id = $1',
+      [req.params.id]
+    );
+    if (countResult.rows[0].count <= 1) {
+      await client.query('ROLLBACK');
+      return res.status(400).json(error('Mindestens 1 Frame muss erhalten bleiben'));
+    }
+
+    const del = await client.query(
+      'DELETE FROM frames WHERE id = $1 AND board_id = $2 RETURNING id',
+      [req.params.frameId, req.params.id]
+    );
+    if (del.rows.length === 0) {
+      await client.query('ROLLBACK');
+      return res.status(404).json(error('Frame nicht gefunden'));
+    }
+
+    // Reihenfolge normalisieren (0..n-1)
+    const remaining = await client.query(
+      'SELECT id FROM frames WHERE board_id = $1 ORDER BY order_index ASC',
+      [req.params.id]
+    );
+    await Promise.all(
+      remaining.rows.map((row, idx) =>
+        client.query('UPDATE frames SET order_index = $1 WHERE id = $2', [idx, row.id]))
+    );
+
+    await client.query('COMMIT');
+    res.json(success({ message: 'Frame gelöscht' }));
   } catch (err) {
-    console.error('[deleteFrame]', err);
-    res.status(500).json({ success: false, message: 'Interner Serverfehler' });
+    await client.query('ROLLBACK');
+    logger.error('[deleteFrame]', err);
+    res.status(500).json(error('Interner Serverfehler'));
+  } finally {
+    client.release();
   }
 }
 
-// PUT /api/boards/:id/frames/reorder
-// Body: { order: [frameId1, frameId2, ...] }
+// PUT /api/boards/:id/frames/reorder   Body: { order: [frameId1, frameId2, ...] }
 export async function reorderFrames(req, res) {
+  const client = await pool.connect();
   try {
-    const board = await Board.findOne({ _id: req.params.id, deletedAt: null });
-    if (!board) return res.status(404).json({ success: false, message: 'Board nicht gefunden' });
-
-    const { order } = req.body; // Array von Frame-IDs in neuer Reihenfolge
-    if (!Array.isArray(order)) {
-      return res.status(400).json({ success: false, message: '"order" muss ein Array von Frame-IDs sein' });
+    if (!(await assertBoardOwnership(req.params.id, req.user.id))) {
+      return res.status(404).json(error('Board nicht gefunden'));
     }
 
-    order.forEach((frameId, idx) => {
-      const frame = board.frames.id(frameId);
-      if (frame) frame.order = idx;
-    });
+    const { order } = req.body;
+    if (!Array.isArray(order)) {
+      return res.status(400).json(error('"order" muss ein Array von Frame-IDs sein'));
+    }
 
-    await board.save();
-    const sorted = [...board.frames].sort((a, b) => a.order - b.order);
-    res.json({ success: true, data: sorted });
+    await client.query('BEGIN');
+    await Promise.all(
+      order.map((frameId, idx) =>
+        client.query(
+          'UPDATE frames SET order_index = $1 WHERE id = $2 AND board_id = $3',
+          [idx, frameId, req.params.id]
+        ))
+    );
+    await client.query('COMMIT');
+
+    const result = await pool.query(
+      'SELECT * FROM frames WHERE board_id = $1 ORDER BY order_index ASC',
+      [req.params.id]
+    );
+    res.json(success(result.rows.map(toApiFrame)));
   } catch (err) {
-    console.error('[reorderFrames]', err);
-    res.status(500).json({ success: false, message: 'Interner Serverfehler' });
+    await client.query('ROLLBACK');
+    logger.error('[reorderFrames]', err);
+    res.status(500).json(error('Interner Serverfehler'));
+  } finally {
+    client.release();
   }
 }

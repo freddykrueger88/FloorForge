@@ -80,9 +80,9 @@ router.post('/register', registerValidation, async (req, res) => {
 
     // User anlegen
     const result = await pool.query(
-      `INSERT INTO users (email, password_hash, role, name)
+      `INSERT INTO users (email, password_hash, role, display_name)
        VALUES ($1, $2, $3, $4)
-       RETURNING id, email, role, name, created_at`,
+       RETURNING id, email, role, display_name, created_at`,
       [email, passwordHash, role, name || null]
     );
     const user = result.rows[0];
@@ -92,7 +92,7 @@ router.post('/register', registerValidation, async (req, res) => {
     res.cookie('token', token, COOKIE_OPTS);
 
     logger.info(`User registered: ${email} (role: ${role})`);
-    return res.status(201).json(created({ user: { id: user.id, email: user.email, role: user.role, name: user.name } }));
+    return res.status(201).json(created({ user: { id: user.id, email: user.email, role: user.role, name: user.display_name } }));
   } catch (err) {
     logger.error('Register error:', err);
     return res.status(500).json(error('Interner Serverfehler'));
@@ -110,7 +110,7 @@ router.post('/login', loginValidation, async (req, res) => {
 
   try {
     const result = await pool.query(
-      'SELECT id, email, password_hash, role, name FROM users WHERE email = $1',
+      'SELECT id, email, password_hash, role, display_name FROM users WHERE email = $1',
       [email]
     );
 
@@ -130,7 +130,7 @@ router.post('/login', loginValidation, async (req, res) => {
     res.cookie('token', token, COOKIE_OPTS);
 
     logger.info(`User logged in: ${email}`);
-    return res.json(success({ user: { id: user.id, email: user.email, role: user.role, name: user.name } }));
+    return res.json(success({ user: { id: user.id, email: user.email, role: user.role, name: user.display_name } }));
   } catch (err) {
     logger.error('Login error:', err);
     return res.status(500).json(error('Interner Serverfehler'));
@@ -164,7 +164,7 @@ router.post('/logout', authenticate, async (req, res) => {
 router.get('/me', authenticate, async (req, res) => {
   try {
     const result = await pool.query(
-      'SELECT id, email, role, name, created_at FROM users WHERE id = $1',
+      'SELECT id, email, role, display_name AS name, created_at FROM users WHERE id = $1',
       [req.user.id]
     );
     if (result.rows.length === 0) {

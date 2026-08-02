@@ -1,4 +1,4 @@
-import '../setup.js';
+import './setup.js';
 import request from 'supertest';
 
 // Minimaler Health-Test ohne echte DB/Redis-Verbindung
