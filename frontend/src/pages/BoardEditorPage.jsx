@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 
 import { buildDefaultPlayers, IFF_FIELDS, DEFAULT_TEAM_COLORS, IFF_BALL_COLORS } from '../constants/fieldConfig.js';
 import { rescalePlayers, rescaleElements } from '../utils/fieldRescale.js';
+import { teamColorToFillStroke, normalizeStoredColor } from '../utils/color.js';
 
 import FieldContainer from '../components/field/FieldContainer.jsx';
 import FieldToolbar from '../components/field/FieldToolbar.jsx';
@@ -51,19 +52,20 @@ export default function BoardEditorPage() {
   const [board, setBoard] = useState(null);
   const [notes, setNotes] = useState('');
 
-  // Issue #14 – Teamfarben & Ball
-  const [homeColor, setHomeColor] = useState({ fill: DEFAULT_TEAM_COLORS.home.fill, stroke: DEFAULT_TEAM_COLORS.home.stroke });
-  const [awayColor, setAwayColor] = useState({ fill: DEFAULT_TEAM_COLORS.away.fill, stroke: DEFAULT_TEAM_COLORS.away.stroke });
+  // Issue #14 – Teamfarben & Ball (als einzelner Hex-String persistiert,
+  // {fill,stroke} wird erst beim Rendern abgeleitet – Issue #33)
+  const [homeColor, setHomeColor] = useState(DEFAULT_TEAM_COLORS.home.fill);
+  const [awayColor, setAwayColor] = useState(DEFAULT_TEAM_COLORS.away.fill);
   const [ballColor, setBallColor] = useState(DEFAULT_BALL_COLOR);
 
-  const handleChangeHomeColor = useCallback((color) => {
-    setHomeColor(color);
-    updateBoard(boardId, { homeColor: color }).catch(() => {});
+  const handleChangeHomeColor = useCallback((hex) => {
+    setHomeColor(hex);
+    updateBoard(boardId, { homeColor: hex }).catch(() => {});
   }, [boardId, updateBoard]);
 
-  const handleChangeAwayColor = useCallback((color) => {
-    setAwayColor(color);
-    updateBoard(boardId, { awayColor: color }).catch(() => {});
+  const handleChangeAwayColor = useCallback((hex) => {
+    setAwayColor(hex);
+    updateBoard(boardId, { awayColor: hex }).catch(() => {});
   }, [boardId, updateBoard]);
 
   const handleChangeBallColor = useCallback((hex) => {
@@ -110,8 +112,8 @@ export default function BoardEditorPage() {
       setBoard(b);
       setNotes(b?.notes ?? '');
       if (b?.fieldType) field.setFieldType(b.fieldType);
-      if (b?.homeColor) setHomeColor(b.homeColor);
-      if (b?.awayColor) setAwayColor(b.awayColor);
+      if (b?.homeColor) setHomeColor(normalizeStoredColor(b.homeColor) ?? DEFAULT_TEAM_COLORS.home.fill);
+      if (b?.awayColor) setAwayColor(normalizeStoredColor(b.awayColor) ?? DEFAULT_TEAM_COLORS.away.fill);
       if (b?.ballColor) setBallColor(b.ballColor);
       lines.loadLines(b?.activeLineId ?? null);
     }).catch(() => {});
@@ -216,8 +218,8 @@ export default function BoardEditorPage() {
       height: EXPORT_H,
       players: frame.players ?? [],
       elements: frame.elements ?? [],
-      homeColor,
-      awayColor,
+      homeColor: teamColorToFillStroke(homeColor, DEFAULT_TEAM_COLORS.home.fill),
+      awayColor: teamColorToFillStroke(awayColor, DEFAULT_TEAM_COLORS.away.fill),
       ballColor,
     });
   }, [field.fieldType, homeColor, awayColor, ballColor]);
@@ -305,8 +307,8 @@ export default function BoardEditorPage() {
             selectedPlayerId={selectedPlayerId}
             onSelectPlayer={setSelectedPlayerId}
             onDragEndPlayer={handleDragEndPlayer}
-            homeColor={homeColor}
-            awayColor={awayColor}
+            homeColor={teamColorToFillStroke(homeColor, DEFAULT_TEAM_COLORS.home.fill)}
+            awayColor={teamColorToFillStroke(awayColor, DEFAULT_TEAM_COLORS.away.fill)}
             ballColor={ballColor}
             drawingElements={anim.playing ? (activeFrame?.elements ?? []) : drawing.elements}
             selectedDrawingId={drawing.selectedId}

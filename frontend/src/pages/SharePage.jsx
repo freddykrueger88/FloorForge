@@ -7,24 +7,8 @@ import { useParams } from 'react-router-dom';
 import FieldContainer from '../components/field/FieldContainer.jsx';
 import { PlaybackControls } from '../components/playback/index.js';
 import { useAnimation } from '../hooks/useAnimation.js';
+import { teamColorToFillStroke } from '../utils/color.js';
 import styles from './SharePage.module.css';
-
-// home_color/away_color kommen als einfacher Hex-String vom Backend. Ältere/
-// fehlerhafte Datensätze (Issue #14) können auch ein stringifiziertes
-// {fill,stroke}-Objekt enthalten – defensiv beides abfangen.
-function parseTeamColor(raw, fallback) {
-  if (!raw) return { fill: fallback, stroke: fallback };
-  if (typeof raw === 'string' && raw.trim().startsWith('{')) {
-    try {
-      const obj = JSON.parse(raw);
-      const fill = obj.fill ?? fallback;
-      return { fill, stroke: obj.stroke ?? fill };
-    } catch {
-      // fällt durch zur Plain-String-Behandlung
-    }
-  }
-  return { fill: raw, stroke: raw };
-}
 
 export default function SharePage() {
   const { token } = useParams();
@@ -68,8 +52,8 @@ export default function SharePage() {
     );
   }
 
-  const homeColor = parseTeamColor(board.homeColor, '#1d4ed8');
-  const awayColor = parseTeamColor(board.awayColor, '#dc2626');
+  const homeColor = teamColorToFillStroke(board.homeColor, '#1d4ed8');
+  const awayColor = teamColorToFillStroke(board.awayColor, '#dc2626');
 
   return (
     <main className={styles.page} role="main">

@@ -33,11 +33,11 @@ export default function TeamColorPanel({
       >
         <span
           className={styles.colorDot}
-          style={{ background: homeColor?.fill ?? DEFAULT_TEAM_COLORS.home.fill }}
+          style={{ background: homeColor ?? DEFAULT_TEAM_COLORS.home.fill }}
         />
         <span
           className={styles.colorDot}
-          style={{ background: awayColor?.fill ?? DEFAULT_TEAM_COLORS.away.fill }}
+          style={{ background: awayColor ?? DEFAULT_TEAM_COLORS.away.fill }}
         />
         <span>🎨</span>
       </button>
@@ -66,14 +66,14 @@ export default function TeamColorPanel({
                 <input
                   type="color"
                   className={styles.colorInput}
-                  value={homeColor?.fill ?? DEFAULT_TEAM_COLORS.home.fill}
-                  onChange={(e) => onChangeHomeColor({ ...homeColor, fill: e.target.value, stroke: e.target.value })}
+                  value={homeColor ?? DEFAULT_TEAM_COLORS.home.fill}
+                  onChange={(e) => onChangeHomeColor(e.target.value)}
                   aria-label="Heimteam Füllfarbe"
                 />
               </div>
               <button
                 className={styles.resetBtn}
-                onClick={() => onChangeHomeColor({ fill: DEFAULT_TEAM_COLORS.home.fill, stroke: DEFAULT_TEAM_COLORS.home.stroke })}
+                onClick={() => onChangeHomeColor(DEFAULT_TEAM_COLORS.home.fill)}
                 title="Standardfarbe wiederherstellen"
               >↺</button>
             </div>
@@ -88,14 +88,14 @@ export default function TeamColorPanel({
                 <input
                   type="color"
                   className={styles.colorInput}
-                  value={awayColor?.fill ?? DEFAULT_TEAM_COLORS.away.fill}
-                  onChange={(e) => onChangeAwayColor({ ...awayColor, fill: e.target.value, stroke: e.target.value })}
+                  value={awayColor ?? DEFAULT_TEAM_COLORS.away.fill}
+                  onChange={(e) => onChangeAwayColor(e.target.value)}
                   aria-label="Gastteam Füllfarbe"
                 />
               </div>
               <button
                 className={styles.resetBtn}
-                onClick={() => onChangeAwayColor({ fill: DEFAULT_TEAM_COLORS.away.fill, stroke: DEFAULT_TEAM_COLORS.away.stroke })}
+                onClick={() => onChangeAwayColor(DEFAULT_TEAM_COLORS.away.fill)}
                 title="Standardfarbe wiederherstellen"
               >↺</button>
             </div>
