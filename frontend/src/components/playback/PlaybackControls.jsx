@@ -2,6 +2,7 @@
  * PlaybackControls – Play/Pause/Stop, Geschwindigkeit, Loop, Fortschritt
  * (Issue #11 – v0.3.0)
  */
+import { useTranslation } from 'react-i18next';
 import useAnnounceStore from '../../store/announceStore.js';
 import styles from './PlaybackControls.module.css';
 
@@ -19,21 +20,22 @@ export default function PlaybackControls({
   frameCount,
   progress = 0,
 }) {
+  const { t } = useTranslation();
   const announce = useAnnounceStore((s) => s.announce);
 
-  const handleStop = () => { announce('Zurück zu Frame 1'); stop(); };
-  const handleTogglePlay = () => { announce(playing ? 'Wiedergabe pausiert' : 'Wiedergabe gestartet'); togglePlay(); };
-  const handleSetSpeed = (s) => { announce(`Geschwindigkeit ${s}x`); setSpeed(s); };
-  const handleToggleLoop = () => { announce(loop ? 'Wiederholung deaktiviert' : 'Wiederholung aktiviert'); setLoop((v) => !v); };
+  const handleStop = () => { announce(t('playback.announceStop')); stop(); };
+  const handleTogglePlay = () => { announce(playing ? t('playback.announcePause') : t('playback.announcePlay')); togglePlay(); };
+  const handleSetSpeed = (s) => { announce(t('playback.announceSpeed', { speed: s })); setSpeed(s); };
+  const handleToggleLoop = () => { announce(loop ? t('playback.announceLoopOff') : t('playback.announceLoopOn')); setLoop((v) => !v); };
 
   return (
-    <div className={styles.controls} role="group" aria-label="Wiedergabe-Steuerung">
+    <div className={styles.controls} role="group" aria-label={t('playback.controlsLabel')}>
       <button
         className={styles.iconBtn}
         onClick={handleStop}
         disabled={!playing && activeIndex === 0}
-        aria-label="Stopp – zurück zu Frame 1"
-        title="Stopp"
+        aria-label={t('playback.stopAriaLabel')}
+        title={t('playback.stop')}
       >
         <span aria-hidden="true">⏹</span>
       </button>
@@ -42,8 +44,8 @@ export default function PlaybackControls({
         className={`${styles.iconBtn} ${styles.playBtn}`}
         onClick={handleTogglePlay}
         disabled={!canPlay}
-        aria-label={playing ? 'Pausieren' : 'Abspielen'}
-        title={playing ? 'Pausieren (Leertaste)' : 'Abspielen (Leertaste)'}
+        aria-label={playing ? t('playback.pause') : t('playback.play')}
+        title={playing ? t('playback.pauseTitle') : t('playback.playTitle')}
       >
         <span aria-hidden="true">{playing ? '⏸' : '▶'}</span>
       </button>
@@ -57,7 +59,7 @@ export default function PlaybackControls({
       </div>
 
       {/* Geschwindigkeit */}
-      <div className={styles.speedGroup} role="radiogroup" aria-label="Wiedergabegeschwindigkeit">
+      <div className={styles.speedGroup} role="radiogroup" aria-label={t('playback.speedGroupLabel')}>
         {speeds.map((s) => (
           <button
             key={s}
@@ -76,14 +78,14 @@ export default function PlaybackControls({
         className={`${styles.iconBtn} ${loop ? styles.loopActive : ''}`}
         onClick={handleToggleLoop}
         aria-pressed={loop}
-        aria-label="Wiederholung ein-/ausschalten"
-        title="Loop"
+        aria-label={t('playback.loopAriaLabel')}
+        title={t('playback.loop')}
       >
         <span aria-hidden="true">🔁</span>
       </button>
 
       <span className={styles.frameLabel} aria-live="polite">
-        Frame {Math.min(activeIndex + 1, frameCount)} / {frameCount}
+        {t('playback.frameLabel', { current: Math.min(activeIndex + 1, frameCount), total: frameCount })}
       </span>
     </div>
   );

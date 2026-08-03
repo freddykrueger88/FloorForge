@@ -4,6 +4,7 @@
  * Unterstützt Drag & Drop zum Sortieren
  */
 import { useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import styles from './FrameTimeline.module.css';
 
 const MAX_FRAMES = 50;
@@ -19,6 +20,7 @@ export default function FrameTimeline({
   currentPlayers,
   currentElements,
 }) {
+  const { t } = useTranslation();
   const dragItem  = useRef(null);
   const dragOver  = useRef(null);
   const [dragging, setDragging] = useState(false);
@@ -48,7 +50,7 @@ export default function FrameTimeline({
     <div
       className={styles.timeline}
       role="region"
-      aria-label="Frame-Timeline"
+      aria-label={t('frames.timelineAriaLabel')}
     >
       {/* Frames */}
       <ol className={styles.list} role="list">
@@ -70,7 +72,7 @@ export default function FrameTimeline({
             <button
               className={styles.frameBtn}
               onClick={() => onSelect?.(idx)}
-              aria-label={`Frame ${idx + 1}${frame.label ? `: ${frame.label}` : ''} ${idx === activeIndex ? '(aktiv)' : ''}`}
+              aria-label={`${t('frames.frameLabel', { number: idx + 1 })}${frame.label ? `: ${frame.label}` : ''}${idx === activeIndex ? ` ${t('frames.active')}` : ''}`}
               aria-pressed={idx === activeIndex}
             >
               {/* Thumbnail Platzhalter – zeigt Frame-Nummer + optionales Label */}
@@ -87,8 +89,8 @@ export default function FrameTimeline({
               <button
                 className={styles.deleteBtn}
                 onClick={(e) => { e.stopPropagation(); onDelete?.(frame._id); }}
-                aria-label={`Frame ${idx + 1} löschen`}
-                title="Frame löschen"
+                aria-label={t('frames.deleteFrameAriaLabel', { number: idx + 1 })}
+                title={t('frames.deleteFrameTitle')}
               >×</button>
             )}
           </li>
@@ -100,11 +102,11 @@ export default function FrameTimeline({
         className={styles.addBtn}
         onClick={() => onAdd?.(currentPlayers, currentElements)}
         disabled={loading || frames.length >= MAX_FRAMES}
-        aria-label="Neuen Frame hinzufügen"
-        title={frames.length >= MAX_FRAMES ? `Maximal ${MAX_FRAMES} Frames` : 'Frame hinzufügen'}
+        aria-label={t('frames.addFrameAriaLabel')}
+        title={frames.length >= MAX_FRAMES ? t('frames.maxFramesTitle', { max: MAX_FRAMES }) : t('frames.addFrameTitle')}
       >
         <span aria-hidden="true">+</span>
-        <span className={styles.addLabel}>Frame</span>
+        <span className={styles.addLabel}>{t('frames.addLabel')}</span>
       </button>
 
       {/* Frame-Zähler */}

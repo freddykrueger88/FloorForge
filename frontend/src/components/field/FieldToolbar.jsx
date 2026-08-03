@@ -2,6 +2,7 @@
  * FieldToolbar – Globale Feld-Einstellungen (aktuell: Namen ein-/ausblenden)
  * (Issue #29 – v0.3.x)
  */
+import { useTranslation } from 'react-i18next';
 import styles from './FieldToolbar.module.css';
 
 export default function FieldToolbar({
@@ -15,15 +16,16 @@ export default function FieldToolbar({
   showHints,
   onToggleShowHints,
 }) {
+  const { t } = useTranslation();
   return (
-    <div className={styles.toolbar} role="toolbar" aria-label="Feld-Einstellungen">
+    <div className={styles.toolbar} role="toolbar" aria-label={t('field.toolbarLabel')}>
       {availableFields && (
         <select
           className={styles.fieldTypeSelect}
           value={fieldType}
           onChange={(e) => onRequestFieldTypeChange(e.target.value)}
-          aria-label="Spielfeld-Typ"
-          title="Spielfeld-Typ ändern"
+          aria-label={t('settings.fieldType')}
+          title={t('field.changeFieldType')}
         >
           {availableFields.map((f) => (
             <option key={f.id} value={f.id}>{f.label}</option>
@@ -35,33 +37,33 @@ export default function FieldToolbar({
         className={`${styles.toggleBtn} ${showNames ? styles.active : ''}`}
         onClick={onToggleShowNames}
         aria-pressed={showNames}
-        aria-label="Spielernamen ein-/ausblenden"
-        title="Namen anzeigen"
+        aria-label={t('field.toggleNames')}
+        title={t('field.showNames')}
       >
         <span aria-hidden="true">{showNames ? '👁' : '🚫'}</span>
-        <span>Namen</span>
+        <span>{t('field.namesLabel')}</span>
       </button>
 
       <button
         className={`${styles.toggleBtn} ${showHints ? styles.active : ''}`}
         onClick={onToggleShowHints}
         aria-pressed={showHints}
-        aria-label="Positions-Hinweise ein-/ausblenden"
-        title="Positions-Hinweise bei Hover anzeigen"
+        aria-label={t('field.toggleHints')}
+        title={t('field.showHints')}
       >
         <span aria-hidden="true">💡</span>
-        <span>Hinweise</span>
+        <span>{t('field.hintsLabel')}</span>
       </button>
 
       {showNames && (
-        <div className={styles.positionGroup} role="radiogroup" aria-label="Namensposition">
+        <div className={styles.positionGroup} role="radiogroup" aria-label={t('field.namePosition')}>
           <button
             className={`${styles.posBtn} ${namePosition === 'oben' ? styles.active : ''}`}
             onClick={() => onSetNamePosition('oben')}
             role="radio"
             aria-checked={namePosition === 'oben'}
           >
-            oben
+            {t('field.positionTop')}
           </button>
           <button
             className={`${styles.posBtn} ${namePosition === 'unten' ? styles.active : ''}`}
@@ -69,7 +71,7 @@ export default function FieldToolbar({
             role="radio"
             aria-checked={namePosition === 'unten'}
           >
-            unten
+            {t('field.positionBottom')}
           </button>
         </div>
       )}

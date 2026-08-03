@@ -3,14 +3,13 @@
  * Zeigt Name, Typ, Datum – editierbar per Doppelklick
  */
 import { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FIELD_TYPE_LABELS } from '../../constants/fieldConfig.js';
+import { formatDate } from '../../utils/formatDate.js';
 import styles from './BoardCard.module.css';
 
-function formatDate(iso) {
-  return new Date(iso).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
-}
-
 export default function BoardCard({ board, onClick, onRename, onDelete }) {
+  const { t } = useTranslation();
   const [editing, setEditing] = useState(false);
   const [name,    setName   ] = useState(board.name);
   const inputRef = useRef(null);
@@ -29,13 +28,13 @@ export default function BoardCard({ board, onClick, onRename, onDelete }) {
   return (
     <article
       className={styles.card}
-      aria-label={`Spielfeld: ${board.name}`}
+      aria-label={t('boardCard.ariaLabel', { name: board.name })}
     >
       {/* Klickbarer Bereich – öffnet das Spielfeld */}
       <button
         className={styles.openBtn}
         onClick={onClick}
-        aria-label={`${board.name} öffnen`}
+        aria-label={t('boardCard.openAriaLabel', { name: board.name })}
       >
         <span className={styles.fieldIcon} aria-hidden="true">🏑</span>
         <span className={styles.fieldType}>{FIELD_TYPE_LABELS[board.fieldType] ?? board.fieldType}</span>
@@ -56,15 +55,15 @@ export default function BoardCard({ board, onClick, onRename, onDelete }) {
               if (e.key === 'Escape') { setName(board.name); setEditing(false); }
             }}
             maxLength={80}
-            aria-label="Spielfeld umbenennen"
+            aria-label={t('boardCard.renameAriaLabel')}
           />
         ) : (
           <button
             className={styles.nameBtn}
             onDoubleClick={() => setEditing(true)}
             onClick={(e) => e.detail === 2 && setEditing(true)}
-            title="Doppelklick zum Umbenennen"
-            aria-label={`${board.name} (Doppelklick zum Umbenennen)`}
+            title={t('boardCard.renameTitle')}
+            aria-label={t('boardCard.renameNameAriaLabel', { name: board.name })}
           >
             {board.name}
           </button>
@@ -73,8 +72,8 @@ export default function BoardCard({ board, onClick, onRename, onDelete }) {
         <button
           className={styles.deleteBtn}
           onClick={(e) => { e.stopPropagation(); onDelete(); }}
-          aria-label="Spielfeld löschen"
-          title="Löschen"
+          aria-label={t('boardCard.deleteAriaLabel')}
+          title={t('boardCard.deleteTitle')}
         >
           🗑
         </button>

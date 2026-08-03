@@ -7,7 +7,7 @@ import { POSITION_HINTS } from '../../constants/positionHints.js';
 import styles from './PlayerInfoPanel.module.css';
 
 export default function PlayerInfoPanel({ player, onClose, onReset, onNameChange }) {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   if (!player) return null;
 
@@ -19,7 +19,7 @@ export default function PlayerInfoPanel({ player, onClose, onReset, onNameChange
     <aside
       className={styles.panel}
       role="complementary"
-      aria-label={`Spieler-Info: ${info.name}`}
+      aria-label={t('field.playerInfoLabel', { name: info.name })}
     >
       <header className={styles.header}>
         <div className={styles.badge}>{player.role}</div>
@@ -27,7 +27,7 @@ export default function PlayerInfoPanel({ player, onClose, onReset, onNameChange
         <button
           className={styles.close}
           onClick={onClose}
-          aria-label="Info-Panel schließen"
+          aria-label={t('playerInfoPanel.closeLabel')}
         >
           ×
         </button>
@@ -35,14 +35,14 @@ export default function PlayerInfoPanel({ player, onClose, onReset, onNameChange
 
       {/* Spielername (Issue #29) */}
       <label className={styles.nameLabel} htmlFor="player-name-input">
-        Spielername
+        {t('field.playerName')}
         <input
           id="player-name-input"
           type="text"
           maxLength={20}
           className={styles.nameInput}
           value={player.name ?? ''}
-          placeholder="Name eingeben…"
+          placeholder={t('field.namePlaceholder')}
           onChange={(e) => onNameChange?.(player.id, e.target.value)}
         />
       </label>
@@ -62,9 +62,9 @@ export default function PlayerInfoPanel({ player, onClose, onReset, onNameChange
         <button
           className={styles.resetBtn}
           onClick={() => onReset?.(player.id)}
-          title="Spieler zur Ausgangsposition zurücksetzen"
+          title={t('field.resetPositionTitle')}
         >
-          🔄 Position zurücksetzen
+          🔄 {t('field.resetPosition')}
         </button>
       </div>
     </aside>

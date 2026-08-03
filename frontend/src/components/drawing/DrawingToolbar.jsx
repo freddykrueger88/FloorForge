@@ -20,17 +20,17 @@ export default function DrawingToolbar({
   canRedo = false,
   elementCount = 0,
 }) {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const isDE = !i18n.language?.startsWith('en');
 
   return (
     <aside
       className={styles.toolbar}
       role="toolbar"
-      aria-label="Zeichen-Werkzeuge"
+      aria-label={t('drawing.toolbarLabel')}
     >
       {/* ── Tools ── */}
-      <div className={styles.group} role="radiogroup" aria-label="Werkzeug">
+      <div className={styles.group} role="radiogroup" aria-label={t('drawing.toolGroupLabel')}>
         {TOOL_ORDER.map((key) => {
           const tool = TOOLS[key];
           const label = isDE ? tool.label : (tool.labelEn ?? tool.label);
@@ -54,8 +54,10 @@ export default function DrawingToolbar({
       <div className={styles.divider} role="separator" />
 
       {/* ── Farben ── */}
-      <div className={styles.group} aria-label="Farbe" role="radiogroup">
-        {DEFAULT_COLORS.map(({ hex, label }) => (
+      <div className={styles.group} aria-label={t('drawing.colorGroupLabel')} role="radiogroup">
+        {DEFAULT_COLORS.map(({ hex, label, labelEn }) => {
+          const colorName = isDE ? label : (labelEn ?? label);
+          return (
           <button
             key={hex}
             role="radio"
@@ -63,19 +65,20 @@ export default function DrawingToolbar({
             className={`${styles.colorBtn} ${activeColor === hex ? styles.colorActive : ''}`}
             style={{ background: hex }}
             onClick={() => setActiveColor(hex)}
-            title={label}
-            aria-label={`Farbe: ${label}`}
+            title={colorName}
+            aria-label={t('drawing.colorAriaLabel', { color: colorName })}
           />
-        ))}
+          );
+        })}
         {/* Custom Color Picker */}
-        <label className={styles.colorPickerLabel} title="Eigene Farbe">
+        <label className={styles.colorPickerLabel} title={t('drawing.customColor')}>
           <span aria-hidden="true">🎨</span>
           <input
             type="color"
             className={styles.colorInput}
             value={activeColor}
             onChange={(e) => setActiveColor(e.target.value)}
-            aria-label="Eigene Farbe wählen"
+            aria-label={t('drawing.customColorPick')}
           />
         </label>
       </div>
@@ -83,23 +86,26 @@ export default function DrawingToolbar({
       <div className={styles.divider} role="separator" />
 
       {/* ── Linienstärke ── */}
-      <div className={styles.group} aria-label="Linienstärke" role="radiogroup">
-        {STROKE_WIDTHS.map(({ value, label }) => (
+      <div className={styles.group} aria-label={t('drawing.strokeGroupLabel')} role="radiogroup">
+        {STROKE_WIDTHS.map(({ value, label, labelEn }) => {
+          const widthName = isDE ? label : (labelEn ?? label);
+          return (
           <button
             key={value}
             role="radio"
             aria-checked={strokeWidth === value}
             className={`${styles.strokeBtn} ${strokeWidth === value ? styles.active : ''}`}
             onClick={() => setStrokeWidth(value)}
-            title={label}
-            aria-label={`Linienstärke: ${label}`}
+            title={widthName}
+            aria-label={t('drawing.strokeAriaLabel', { width: widthName })}
           >
             <span
               style={{ display: 'block', height: `${Math.min(value * 1.5, 8)}px`, background: 'currentColor', borderRadius: '9999px', width: '24px' }}
               aria-hidden="true"
             />
           </button>
-        ))}
+          );
+        })}
       </div>
 
       <div className={styles.divider} role="separator" />
@@ -110,22 +116,22 @@ export default function DrawingToolbar({
           className={styles.actionBtn}
           onClick={onUndo}
           disabled={!canUndo}
-          title="Rückgängig [Strg+Z]"
-          aria-label="Rückgängig"
+          title={t('drawing.undoTitle')}
+          aria-label={t('drawing.undo')}
         >↩</button>
         <button
           className={styles.actionBtn}
           onClick={onRedo}
           disabled={!canRedo}
-          title="Wiederherstellen [Strg+Y]"
-          aria-label="Wiederherstellen"
+          title={t('drawing.redoTitle')}
+          aria-label={t('drawing.redo')}
         >↪</button>
         <button
           className={`${styles.actionBtn} ${styles.clearBtn}`}
           onClick={onClear}
           disabled={elementCount === 0}
-          title="Alle Zeichnungen löschen"
-          aria-label="Alle Zeichnungen löschen"
+          title={t('drawing.clearAll')}
+          aria-label={t('drawing.clearAll')}
         >🗑</button>
       </div>
     </aside>

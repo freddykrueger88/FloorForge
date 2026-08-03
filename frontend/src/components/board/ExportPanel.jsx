@@ -3,6 +3,7 @@
  * Issue #15 – v0.5.0
  */
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import QRCode from 'qrcode';
 import { useExport } from '../../hooks/useExport.js';
 import { useShare } from '../../hooks/useShare.js';
@@ -10,9 +11,9 @@ import styles from './ExportPanel.module.css';
 
 const FPS_OPTIONS    = [1, 2, 3, 4, 5, 8, 10];
 const WIDTH_OPTIONS  = [
-  { value: 480,  label: '480p' },
-  { value: 720,  label: '720p (Standard)' },
-  { value: 1280, label: '1080p' },
+  { value: 480,  label: '480p',  standard: false },
+  { value: 720,  label: '720p',  standard: true  },
+  { value: 1280, label: '1080p', standard: false },
 ];
 
 function formatExpiry(iso) {
@@ -21,6 +22,7 @@ function formatExpiry(iso) {
 }
 
 export default function ExportPanel({ boardId, frames, renderFrame }) {
+  const { t } = useTranslation();
   const [fps,   setFps  ] = useState(4);
   const [width, setWidth] = useState(720);
   const [loop,  setLoop ] = useState(true);
@@ -62,24 +64,24 @@ export default function ExportPanel({ boardId, frames, renderFrame }) {
 
   const statusLabel = {
     idle:       null,
-    rendering:  `🎨 Rendere Frames… ${progress}%`,
-    uploading:  `☁️ Lade hoch…`,
-    processing: `⚙️ FFmpeg läuft… ${progress}%`,
-    done:       '✅ Export fertig!',
-    error:      `⚠️ ${error}`,
+    rendering:  t('export.rendering', { progress }),
+    uploading:  t('export.uploading'),
+    processing: t('export.processing', { progress }),
+    done:       t('export.done'),
+    error:      t('export.error', { error }),
   }[status];
 
   return (
     <div className={styles.panel}>
-      <h3 className={styles.title}>📤 GIF-Export</h3>
+      <h3 className={styles.title}>{t('export.title')}</h3>
 
       {frames?.length < 2 && (
-        <p className={styles.hint}>Mindestens 2 Frames benötigt.</p>
+        <p className={styles.hint}>{t('export.minFramesHint')}</p>
       )}
 
       <div className={styles.options}>
         <label className={styles.optLabel}>
-          FPS
+          {t('export.fps')}
           <select
             className={styles.select}
             value={fps}
@@ -93,15 +95,15 @@ export default function ExportPanel({ boardId, frames, renderFrame }) {
         </label>
 
         <label className={styles.optLabel}>
-          Auflösung
+          {t('export.resolution')}
           <select
             className={styles.select}
             value={width}
             onChange={(e) => setWidth(Number(e.target.value))}
             disabled={busy}
           >
-            {WIDTH_OPTIONS.map(({ value, label }) => (
-              <option key={value} value={value}>{label}</option>
+            {WIDTH_OPTIONS.map(({ value, label, standard }) => (
+              <option key={value} value={value}>{label}{standard ? ` (${t('export.standard')})` : ''}</option>
             ))}
           </select>
         </label>
@@ -113,7 +115,7 @@ export default function ExportPanel({ boardId, frames, renderFrame }) {
             onChange={(e) => setLoop(e.target.checked)}
             disabled={busy}
           />
-          Loop
+          {t('export.loop')}
         </label>
       </div>
 
@@ -137,9 +139,9 @@ export default function ExportPanel({ boardId, frames, renderFrame }) {
               download="floorforge.gif"
               className={styles.downloadBtn}
             >
-              ⬇️ GIF herunterladen
+              {t('export.download')}
             </a>
-            <button className={styles.resetBtn} onClick={reset}>Neu exportieren</button>
+            <button className={styles.resetBtn} onClick={reset}>{t('export.exportAgain')}</button>
           </>
         ) : (
           <button
@@ -148,7 +150,7 @@ export default function ExportPanel({ boardId, frames, renderFrame }) {
             disabled={!canExport}
             aria-disabled={!canExport}
           >
-            {busy ? 'Exportiert…' : '🎬 GIF erstellen'}
+            {busy ? t('export.exporting') : t('export.create')}
           </button>
         )}
       </div>
@@ -156,16 +158,14 @@ export default function ExportPanel({ boardId, frames, renderFrame }) {
       <hr className={styles.divider} />
 
       {/* Issue #16 – Share-Link ohne Login */}
-      <h3 className={styles.title}>🔗 Link teilen</h3>
+      <h3 className={styles.title}>{t('export.shareTitle')}</h3>
       <p className={styles.hint}>
-        Ohne Login abrufbar — nur mit vertrauenswürdigen Personen teilen.
-        Sichtbar sind der Spielname sowie alle Frames/Positionen und
-        Formationen, keine Kontodaten. Der Link läuft automatisch ab.
-        {share.expiresAt && ` Gültig bis ${formatExpiry(share.expiresAt)}.`}
+        {t('export.shareHint')}
+        {share.expiresAt && ` ${t('export.shareExpiry', { date: formatExpiry(share.expiresAt) })}`}
       </p>
 
       {share.error && (
-        <p className={`${styles.statusMsg} ${styles.statusError}`}>⚠️ {share.error}</p>
+        <p className={`${styles.statusMsg} ${styles.statusError}`}>{t('export.error', { error: share.error })}</p>
       )}
 
       {share.shareUrl ? (
@@ -177,19 +177,19 @@ export default function ExportPanel({ boardId, frames, renderFrame }) {
               value={share.shareUrl}
               className={styles.urlInput}
               onFocus={(e) => e.target.select()}
-              aria-label="Share-Link"
+              aria-label={t('export.shareLinkAriaLabel')}
             />
             <button className={styles.copyBtn} onClick={handleCopy}>
-              {copied ? '✓ Kopiert' : '📋 Kopieren'}
+              {copied ? t('export.copied') : t('export.copy')}
             </button>
           </div>
           {qrDataUrl && (
             <div className={styles.qrWrap}>
-              <img src={qrDataUrl} alt="QR-Code zum Share-Link" />
+              <img src={qrDataUrl} alt={t('export.qrAlt')} />
             </div>
           )}
           <button className={styles.resetBtn} onClick={() => { share.reset(); setQrDataUrl(null); }}>
-            Neuen Link erstellen
+            {t('export.newLink')}
           </button>
         </>
       ) : (
@@ -198,7 +198,7 @@ export default function ExportPanel({ boardId, frames, renderFrame }) {
           onClick={handleCreateShareLink}
           disabled={share.loading || !frames?.length}
         >
-          {share.loading ? 'Erstellt…' : '🔗 Link erstellen'}
+          {share.loading ? t('export.creating') : t('export.createLink')}
         </button>
       )}
     </div>

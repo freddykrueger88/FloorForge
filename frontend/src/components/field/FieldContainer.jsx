@@ -4,6 +4,7 @@
  * width/height an FloorballField.
  */
 import { useRef, useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import FloorballField from './FloorballField.jsx';
 import styles from './FieldContainer.module.css';
 
@@ -38,6 +39,7 @@ export default function FieldContainer({
   onPointerUp,
   onElementClick,
 }) {
+  const { t } = useTranslation();
   const containerRef = useRef(null);
   const [size, setSize] = useState({ width: 800, height: 500 });
 
@@ -63,7 +65,7 @@ export default function FieldContainer({
       className={styles.container}
       style={{ minHeight }}
       role="region"
-      aria-label="Spielfeld-Canvas"
+      aria-label={t('accessibility.fieldCanvas')}
     >
       <FloorballField
         fieldType={fieldType}

@@ -7,11 +7,13 @@
  * versehentliches Editieren abgelenkt wird.
  */
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import styles from './NotesPanel.module.css';
 
 const MAX_LENGTH = 500;
 
 export default function NotesPanel({ value = '', onChange }) {
+  const { t } = useTranslation();
   const [draft, setDraft] = useState(value);
 
   // Von außen aktualisierte Notizen übernehmen (z.B. nach dem Laden des Boards)
@@ -24,16 +26,16 @@ export default function NotesPanel({ value = '', onChange }) {
   }, [onChange]);
 
   return (
-    <section className={styles.panel} aria-label="Notizen zu diesem Spielfeld">
-      <h3 className={styles.heading}>📝 Notizen</h3>
+    <section className={styles.panel} aria-label={t('notes.ariaLabel')}>
+      <h3 className={styles.heading}>{t('notes.title')}</h3>
       <textarea
         className={styles.textarea}
         value={draft}
         onChange={handleChange}
         maxLength={MAX_LENGTH}
-        placeholder="Notizen zu diesem Spielfeld…"
+        placeholder={t('notes.placeholder')}
         rows={5}
-        aria-label="Notizen zu diesem Spielfeld"
+        aria-label={t('notes.ariaLabel')}
       />
       <span className={styles.counter} aria-live="polite">
         {draft.length} / {MAX_LENGTH}

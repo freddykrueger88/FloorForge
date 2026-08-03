@@ -49,16 +49,18 @@ Offizielle Quelle: [IFF Offizielle Regeln](https://floorball.sport/game/rules/)
 
 ---
 
-## 🎯 Positionen (Großfeld)
+## 🎯 Positionen (Großfeld, 2-1-2-System)
 
-| Position | Abkürzung | Beschreibung |
-|---|---|---|
-| Torwart | TW | Verteidigt das Tor, kein Schläger |
-| Rechter Verteidiger | RV | Defensive Absicherung rechts |
-| Linker Verteidiger | LV | Defensive Absicherung links |
-| Rechter Mittelfeldspieler | RM | Verbindung Abwehr-Angriff rechts |
-| Linker Mittelfeldspieler | LM | Verbindung Abwehr-Angriff links |
-| Stürmer (Mitte) | ST | Tor-Abschluss, Pressung |
+Floorball kennt keine „Mittelfeld"-Linie wie im Fußball. Das
+Standard-Großfeld-System ist 2-1-2: 2 Verteidiger, 1 Center, 2 Stürmer
+(siehe Issue #28).
+
+| Position | Abkürzung | Anzahl | Beschreibung |
+|---|---|---|---|
+| Torwart | TW | 1 | Verteidigt das Tor, einzige Position mit Sonderregeln |
+| Verteidiger | V | 2 | Sichert die eigene Hälfte, verhindert Torschüsse |
+| Center | C | 1 | Bindeglied zwischen Abwehr und Angriff, größte Laufleistung |
+| Stürmer | S | 2 | Tor-Abschluss, Pressung der gegnerischen Abwehr |
 
 ---
 

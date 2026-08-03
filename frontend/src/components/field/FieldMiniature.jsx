@@ -7,6 +7,7 @@
  * Das Spielfeld wird um 90° gedreht dargestellt (Querformat → Hochformat),
  * damit es ins Postkarten-Layout passt.
  */
+import { useTranslation } from 'react-i18next';
 import { IFF_FIELDS } from '../../constants/fieldConfig.js';
 import { FIELD_COLORS } from '../../constants/fieldTheme.js';
 
@@ -16,6 +17,7 @@ export default function FieldMiniature({
   width     = 140,
   height    = 200,
 }) {
+  const { t } = useTranslation();
   const field  = IFF_FIELDS[fieldType] ?? IFF_FIELDS.large;
   const colors = FIELD_COLORS[theme]   ?? FIELD_COLORS.dark;
 
@@ -43,7 +45,7 @@ export default function FieldMiniature({
       height={height}
       viewBox={`0 0 ${width} ${height}`}
       role="img"
-      aria-label={`Spielfeld-Vorschau: ${field.label}`}
+      aria-label={t('field.miniaturePreview', { label: field.label })}
     >
       <rect
         x={ox} y={oy} width={fieldW} height={fieldH}

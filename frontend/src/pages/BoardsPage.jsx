@@ -4,6 +4,7 @@
  */
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useBoardsApi } from '../hooks/useBoardsApi.js';
 import { useSettings } from '../hooks/useSettings.js';
 import BoardCard from '../components/boards/BoardCard.jsx';
@@ -15,6 +16,7 @@ import styles from './BoardsPage.module.css';
 const VIEW_STORAGE_KEY = 'floorforge:boardsView';
 
 export default function BoardsPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { loading, error, fetchBoards, createBoard, updateBoard, deleteBoard } = useBoardsApi();
   const { settings } = useSettings();
@@ -67,40 +69,40 @@ export default function BoardsPage() {
 
   return (
     <main className={styles.page} id="main-content">
-      <a href="#main-content" className="sr-only sr-only-focusable">Zum Inhalt springen</a>
+      <a href="#main-content" className="sr-only sr-only-focusable">{t('accessibility.skipToContent')}</a>
       <header className={styles.header}>
         <div>
-          <h1 className={styles.title}>Spielfelder</h1>
+          <h1 className={styles.title}>{t('nav.boards')}</h1>
           <p className={styles.subtitle}>
             {boards.length > 0
-              ? `${boards.length} Spielfeld${boards.length !== 1 ? 'er' : ''}`
-              : 'Noch kein Spielfeld angelegt'}
+              ? t('boardsPage.count', { count: boards.length })
+              : t('boardsPage.noBoardsYet')}
           </p>
         </div>
         <Link
           to="/settings"
           className={styles.newBtn}
-          aria-label="Einstellungen öffnen"
-          title="Einstellungen"
+          aria-label={t('boardsPage.openSettings')}
+          title={t('nav.settings')}
         >
           <span aria-hidden="true">⚙️</span>
         </Link>
         <button
           className={styles.newBtn}
           onClick={() => setShowNewModal(true)}
-          aria-label="Neues Spielfeld anlegen"
+          aria-label={t('boardsPage.newBoardAriaLabel')}
         >
-          <span aria-hidden="true">➕</span> Neues Spielfeld
+          <span aria-hidden="true">➕</span> {t('boardsPage.newBoard')}
         </button>
 
         {/* Postkarten-Galerie ↔ Kompakt-Kachel Toggle (Issue #30) */}
-        <div className={styles.viewToggle} role="group" aria-label="Ansicht wechseln">
+        <div className={styles.viewToggle} role="group" aria-label={t('boardsPage.viewToggleLabel')}>
           <button
             className={`${styles.viewBtn} ${view === 'postcard' ? styles.viewActive : ''}`}
             onClick={() => setViewMode('postcard')}
             aria-pressed={view === 'postcard'}
-            aria-label="Postkarten-Galerie"
-            title="Postkarten-Galerie"
+            aria-label={t('boardsPage.postcardView')}
+            title={t('boardsPage.postcardView')}
           >
             <span aria-hidden="true">🃏</span>
           </button>
@@ -108,8 +110,8 @@ export default function BoardsPage() {
             className={`${styles.viewBtn} ${view === 'compact' ? styles.viewActive : ''}`}
             onClick={() => setViewMode('compact')}
             aria-pressed={view === 'compact'}
-            aria-label="Kompakt-Kachel-Ansicht"
-            title="Kompakt-Kachel-Ansicht"
+            aria-label={t('boardsPage.compactView')}
+            title={t('boardsPage.compactView')}
           >
             <span aria-hidden="true">▦</span>
           </button>
@@ -123,7 +125,7 @@ export default function BoardsPage() {
       )}
 
       {loading && boards.length === 0 ? (
-        <div className={styles.skeletonGrid} aria-busy="true" aria-label="Lädt Spielfelder...">
+        <div className={styles.skeletonGrid} aria-busy="true" aria-label={t('boardsPage.loadingBoards')}>
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className={styles.skeleton} />
           ))}
@@ -131,20 +133,20 @@ export default function BoardsPage() {
       ) : boards.length === 0 ? (
         <div className={styles.emptyState} role="status">
           <div className={styles.emptyIcon} aria-hidden="true">🏑</div>
-          <h2>Noch kein Spielfeld angelegt</h2>
-          <p>Erstelle dein erstes Spielfeld und beginne mit der Taktik-Planung.</p>
+          <h2>{t('boardsPage.noBoardsYet')}</h2>
+          <p>{t('boardsPage.emptyStateDesc')}</p>
           <button
             className={styles.newBtn}
             onClick={() => setShowNewModal(true)}
           >
-            Erstes Spielfeld anlegen
+            {t('boardsPage.createFirstBoard')}
           </button>
         </div>
       ) : (
         <ul
           className={view === 'postcard' ? styles.postcardGrid : styles.grid}
           role="list"
-          aria-label="Spielfelder"
+          aria-label={t('nav.boards')}
         >
           {boards.map((board) => (
             <li key={board._id}>

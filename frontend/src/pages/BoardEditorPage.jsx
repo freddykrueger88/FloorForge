@@ -49,7 +49,7 @@ const EXPORT_H = 720;
 
 export default function BoardEditorPage() {
   const { id: boardId } = useParams();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const { fetchBoard, updateBoard } = useBoardsApi();
   const [board, setBoard] = useState(null);
@@ -169,13 +169,18 @@ export default function BoardEditorPage() {
   const handleSelectPlayer = useCallback((id) => {
     if (id) {
       const player = livePlayers.find((p) => p.id === id);
-      const roleName = POSITION_HINTS.de[player?.role]?.name ?? player?.role ?? 'Spieler';
-      useAnnounceStore.getState().announce(`${roleName} ausgewählt${player?.name ? `, ${player.name}` : ''}`);
+      const hintTable = POSITION_HINTS[i18n.language] ?? POSITION_HINTS.de;
+      const roleName = hintTable[player?.role]?.name ?? player?.role ?? t('boardEditor.genericPlayer');
+      useAnnounceStore.getState().announce(
+        player?.name
+          ? t('boardEditor.playerSelectedWithName', { role: roleName, name: player.name })
+          : t('boardEditor.playerSelected', { role: roleName })
+      );
     } else {
-      useAnnounceStore.getState().announce('Spieler abgewählt');
+      useAnnounceStore.getState().announce(t('boardEditor.playerDeselected'));
     }
     setSelectedPlayerId(id);
-  }, [livePlayers]);
+  }, [livePlayers, i18n.language, t]);
 
   // Pfeiltasten verschieben den ausgewählten Spieler, Escape wählt ihn ab
   // (Issue #19 – Tastaturnavigation). Deaktiviert während der Wiedergabe,
@@ -276,12 +281,12 @@ export default function BoardEditorPage() {
     <main className={styles.page} role="main" id="main-content">
       <a href="#main-content" className="sr-only sr-only-focusable">{t('accessibility.skipToContent')}</a>
       <header className={styles.header}>
-        <Link to="/boards" className={styles.backLink} aria-label="Zurück zur Board-Übersicht">←</Link>
-        <h1 className={styles.title}>{board?.name ?? t('board.untitled', 'Unbenanntes Board')}</h1>
+        <Link to="/boards" className={styles.backLink} aria-label={t('boardEditor.backToBoards')}>←</Link>
+        <h1 className={styles.title}>{board?.name ?? t('board.untitled')}</h1>
         <span className={styles.saveStatus} aria-live="polite">
-          {saveStatus === 'saving' && '💾 Speichert…'}
-          {saveStatus === 'saved'  && '✓ Gespeichert'}
-          {saveStatus === 'error'  && '⚠ Fehler beim Speichern'}
+          {saveStatus === 'saving' && t('boardEditor.saving')}
+          {saveStatus === 'saved'  && t('boardEditor.saved')}
+          {saveStatus === 'error'  && t('boardEditor.saveError')}
         </span>
         <div className={styles.headerControls}>
           <TeamColorPanel

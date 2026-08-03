@@ -9,6 +9,7 @@
  *   - Tastaturkürzel (Strg+Z, Strg+Y, Entf)
  */
 import { useState, useCallback, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { TOOLS, DEFAULT_COLORS, MAX_UNDO_STEPS } from '../constants/drawingConfig.js';
 import useAnnounceStore from '../store/announceStore.js';
 
@@ -16,25 +17,30 @@ let _id = 0;
 const uid = () => `el_${++_id}_${Date.now()}`;
 
 export function useDrawing() {
+  const { t, i18n } = useTranslation();
+  const isEn = i18n.language === 'en';
   const [elements,    setElements]    = useState([]);
   const [undoStack,   setUndoStack]   = useState([]);
   const [redoStack,   setRedoStack]   = useState([]);
   const [activeTool,  setActiveToolState]  = useState('move');
   const changeTool = useCallback((tool) => {
-    useAnnounceStore.getState().announce(`Werkzeug: ${TOOLS[tool]?.label ?? tool}`);
+    const toolDef = TOOLS[tool];
+    const label = (isEn ? toolDef?.labelEn : toolDef?.label) ?? tool;
+    useAnnounceStore.getState().announce(t('drawing.announceTool', { tool: label }));
     setActiveToolState(tool);
-  }, []);
+  }, [isEn, t]);
   const [activeColor, setActiveColorState] = useState(DEFAULT_COLORS[0].hex);
   const [strokeWidth, setStrokeWidthState] = useState(3);
   const changeColor = useCallback((hex) => {
-    const label = DEFAULT_COLORS.find((c) => c.hex === hex)?.label ?? hex;
-    useAnnounceStore.getState().announce(`Farbe: ${label}`);
+    const colorDef = DEFAULT_COLORS.find((c) => c.hex === hex);
+    const label = (isEn ? colorDef?.labelEn : colorDef?.label) ?? hex;
+    useAnnounceStore.getState().announce(t('drawing.announceColor', { color: label }));
     setActiveColorState(hex);
-  }, []);
+  }, [isEn, t]);
   const changeStrokeWidth = useCallback((width) => {
-    useAnnounceStore.getState().announce(`Strichbreite: ${width}`);
+    useAnnounceStore.getState().announce(t('drawing.announceStrokeWidth', { width }));
     setStrokeWidthState(width);
-  }, []);
+  }, [t]);
   const [selectedId,  setSelectedId]  = useState(null);
   const [isDrawing,   setIsDrawing]   = useState(false);
   const currentElRef = useRef(null); // Laufendes Freihand-Element

@@ -4,6 +4,7 @@
  */
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import FieldContainer from '../components/field/FieldContainer.jsx';
 import { PlaybackControls } from '../components/playback/index.js';
 import { useAnimation } from '../hooks/useAnimation.js';
@@ -11,6 +12,7 @@ import { teamColorToFillStroke } from '../utils/color.js';
 import styles from './SharePage.module.css';
 
 export default function SharePage() {
+  const { t } = useTranslation();
   const { token } = useParams();
   const [board, setBoard] = useState(null);
   const [error, setError] = useState(null);
@@ -23,14 +25,14 @@ export default function SharePage() {
     fetch(`/api/share/${token}`)
       .then(async (res) => {
         const json = await res.json().catch(() => ({}));
-        if (!res.ok) throw new Error(json.message ?? 'Link ungültig oder abgelaufen');
+        if (!res.ok) throw new Error(json.message ?? t('sharePage.linkInvalid'));
         return json.data;
       })
       .then((data) => { if (!cancelled) setBoard(data); })
       .catch((err) => { if (!cancelled) setError(err.message); })
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
-  }, [token]);
+  }, [token, t]);
 
   const frames = board?.frames ?? [];
   const anim = useAnimation({ frames, activeIndex, goToFrame: setActiveIndex });
@@ -39,8 +41,8 @@ export default function SharePage() {
   if (loading) {
     return (
       <main className={styles.page} role="main" aria-busy="true" id="main-content">
-        <a href="#main-content" className="sr-only sr-only-focusable">Zum Inhalt springen</a>
-        <p className={styles.centerMsg}>Wird geladen…</p>
+        <a href="#main-content" className="sr-only sr-only-focusable">{t('accessibility.skipToContent')}</a>
+        <p className={styles.centerMsg}>{t('sharePage.loading')}</p>
       </main>
     );
   }
@@ -48,8 +50,8 @@ export default function SharePage() {
   if (error || !board) {
     return (
       <main className={styles.page} role="main" id="main-content">
-        <a href="#main-content" className="sr-only sr-only-focusable">Zum Inhalt springen</a>
-        <p className={styles.centerMsg} role="alert">⚠️ {error ?? 'Link ungültig oder abgelaufen'}</p>
+        <a href="#main-content" className="sr-only sr-only-focusable">{t('accessibility.skipToContent')}</a>
+        <p className={styles.centerMsg} role="alert">⚠️ {error ?? t('sharePage.linkInvalid')}</p>
       </main>
     );
   }
@@ -59,10 +61,10 @@ export default function SharePage() {
 
   return (
     <main className={styles.page} role="main" id="main-content">
-      <a href="#main-content" className="sr-only sr-only-focusable">Zum Inhalt springen</a>
+      <a href="#main-content" className="sr-only sr-only-focusable">{t('accessibility.skipToContent')}</a>
       <header className={styles.header}>
         <h1 className={styles.title}>{board.name}</h1>
-        <span className={styles.badge}>👁 Nur-Lese-Ansicht — geteilt ohne Login</span>
+        <span className={styles.badge}>👁 {t('sharePage.readonlyBadge')}</span>
       </header>
 
       <PlaybackControls

@@ -74,21 +74,21 @@ export const TOOLS = {
 export const TOOL_ORDER = ['select', 'move', 'pass', 'shot', 'freehand', 'eraser'];
 
 export const DEFAULT_COLORS = [
-  { hex: '#facc15', label: 'Gelb'   },
-  { hex: '#f97316', label: 'Orange' },
-  { hex: '#ef4444', label: 'Rot'    },
-  { hex: '#22c55e', label: 'Grün'   },
-  { hex: '#3b82f6', label: 'Blau'   },
-  { hex: '#a855f7', label: 'Lila'   },
-  { hex: '#ffffff', label: 'Weiß'   },
-  { hex: '#000000', label: 'Schwarz'},
+  { hex: '#facc15', label: 'Gelb',    labelEn: 'Yellow' },
+  { hex: '#f97316', label: 'Orange',  labelEn: 'Orange' },
+  { hex: '#ef4444', label: 'Rot',     labelEn: 'Red' },
+  { hex: '#22c55e', label: 'Grün',    labelEn: 'Green' },
+  { hex: '#3b82f6', label: 'Blau',    labelEn: 'Blue' },
+  { hex: '#a855f7', label: 'Lila',    labelEn: 'Purple' },
+  { hex: '#ffffff', label: 'Weiß',    labelEn: 'White' },
+  { hex: '#000000', label: 'Schwarz', labelEn: 'Black' },
 ];
 
 export const STROKE_WIDTHS = [
-  { value: 1, label: 'Dünn'  },
-  { value: 2, label: 'Mittel' },
-  { value: 4, label: 'Dick'   },
-  { value: 7, label: 'Extra'  },
+  { value: 1, label: 'Dünn',  labelEn: 'Thin' },
+  { value: 2, label: 'Mittel', labelEn: 'Medium' },
+  { value: 4, label: 'Dick',   labelEn: 'Thick' },
+  { value: 7, label: 'Extra',  labelEn: 'Extra' },
 ];
 
 export const MAX_UNDO_STEPS = 50;

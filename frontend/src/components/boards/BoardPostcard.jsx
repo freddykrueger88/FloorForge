@@ -8,16 +8,14 @@
  * WICHTIG: Notizen sind hier NUR LESBAR. Bearbeitung erfolgt ausschließlich
  * innerhalb der geöffneten Board-Ansicht (NotesPanel).
  */
+import { useTranslation } from 'react-i18next';
 import FieldMiniature from '../field/FieldMiniature.jsx';
 import { FIELD_TYPE_LABELS } from '../../constants/fieldConfig.js';
+import { formatDate } from '../../utils/formatDate.js';
 import styles from './BoardPostcard.module.css';
 
-function formatDate(iso) {
-  if (!iso) return '';
-  return new Date(iso).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
-}
-
 export default function BoardPostcard({ board, onClick }) {
+  const { t } = useTranslation();
   const hasNotes = board.notes && board.notes.trim().length > 0;
 
   const handleKeyDown = (e) => {
@@ -31,7 +29,7 @@ export default function BoardPostcard({ board, onClick }) {
     <article
       className={styles.card}
       role="article"
-      aria-label={`Board: ${board.name}`}
+      aria-label={t('boardPostcard.ariaLabel', { name: board.name })}
       tabIndex={0}
       onClick={onClick}
       onKeyDown={handleKeyDown}
@@ -51,7 +49,7 @@ export default function BoardPostcard({ board, onClick }) {
         <h3 className={styles.name}>{board.name}</h3>
 
         <p className={hasNotes ? styles.notes : styles.notesEmpty}>
-          {hasNotes ? board.notes : 'Keine Notizen'}
+          {hasNotes ? board.notes : t('boardPostcard.noNotes')}
         </p>
 
         <div className={styles.meta}>
@@ -60,8 +58,8 @@ export default function BoardPostcard({ board, onClick }) {
           </span>
           <span className={styles.date}>📅 {formatDate(board.updatedAt)}</span>
           <span className={styles.colorChips} aria-hidden="true">
-            <span className={styles.chip} style={{ background: board.homeColor ?? '#1d4ed8' }} title="Heimfarbe" />
-            <span className={styles.chip} style={{ background: board.awayColor ?? '#dc2626' }} title="Auswärtsfarbe" />
+            <span className={styles.chip} style={{ background: board.homeColor ?? '#1d4ed8' }} title={t('teams.home')} />
+            <span className={styles.chip} style={{ background: board.awayColor ?? '#dc2626' }} title={t('teams.away')} />
           </span>
         </div>
       </div>

@@ -3,10 +3,12 @@
  * (Issue #22). Stufe 3 verlangt die exakte E-Mail-Adresse zur Bestätigung.
  */
 import { useState, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useFocusTrap } from '../../hooks/useFocusTrap.js';
 import styles from '../boards/DeleteConfirmDialog.module.css';
 
 export default function DeleteAccountDialog({ userEmail, onConfirm, onCancel, loading, error }) {
+  const { t } = useTranslation();
   const [step, setStep] = useState(0);
   const [emailInput, setEmailInput] = useState('');
   const containerRef = useRef(null);
@@ -26,38 +28,34 @@ export default function DeleteAccountDialog({ userEmail, onConfirm, onCancel, lo
 
         {step === 0 && (
           <>
-            <h2 id="del-acc-title" className={styles.title}>Account löschen?</h2>
+            <h2 id="del-acc-title" className={styles.title}>{t('dialogs.deleteAccount.step1Title')}</h2>
             <p className={styles.msg}>
-              Möchtest du deinen Account wirklich löschen? Alle deine Spielfelder,
-              Taktiken und Einstellungen werden permanent gelöscht.
+              {t('dialogs.deleteAccount.step1Message')}
             </p>
           </>
         )}
 
         {step === 1 && (
           <>
-            <h2 className={styles.title}>Wirklich sicher?</h2>
+            <h2 className={styles.title}>{t('dialogs.deleteAccount.step2Title')}</h2>
             <p className={styles.msg}>
-              Diese Aktion kann <strong>NICHT</strong> rückgängig gemacht werden. Exportiere
-              deine Taktiken vorher (GIF-Export im jeweiligen Spielfeld), wenn du sie
-              behalten möchtest.
+              {t('dialogs.deleteAccount.step2MessagePrefix')} <strong>{t('dialogs.deleteAccount.step2MessageBold')}</strong> {t('dialogs.deleteAccount.step2MessageSuffix')}
             </p>
           </>
         )}
 
         {step === 2 && (
           <>
-            <h2 className={styles.title}>Letzte Bestätigung</h2>
+            <h2 className={styles.title}>{t('dialogs.deleteAccount.step3Title')}</h2>
             <p className={styles.msg}>
-              Gib deine E-Mail-Adresse <strong>{userEmail}</strong> ein, um die
-              unwiderrufliche Löschung zu bestätigen.
+              {t('dialogs.deleteAccount.step3MessagePrefix')} <strong>{userEmail}</strong> {t('dialogs.deleteAccount.step3MessageSuffix')}
             </p>
             <input
               type="email"
               value={emailInput}
               onChange={(e) => setEmailInput(e.target.value)}
               placeholder={userEmail}
-              aria-label="E-Mail-Adresse zur Bestätigung"
+              aria-label={t('dialogs.deleteAccount.emailConfirmAriaLabel')}
               style={{
                 width: '100%', padding: 'var(--space-3)', borderRadius: 'var(--radius-md)',
                 border: '1px solid var(--color-border)', background: 'var(--color-bg)',
@@ -68,20 +66,20 @@ export default function DeleteAccountDialog({ userEmail, onConfirm, onCancel, lo
           </>
         )}
 
-        <div className={styles.steps} aria-label={`Schritt ${step + 1} von 3`}>
+        <div className={styles.steps} aria-label={t('dialogs.deleteAccount.stepIndicator', { step: step + 1, total: 3 })}>
           {[0, 1, 2].map((i) => (
             <span key={i} className={`${styles.dot} ${i <= step ? styles.dotActive : ''}`} aria-hidden="true" />
           ))}
         </div>
 
         <div className={styles.actions}>
-          <button className={styles.cancelBtn} onClick={onCancel} disabled={loading}>Abbrechen</button>
+          <button className={styles.cancelBtn} onClick={onCancel} disabled={loading}>{t('dialogs.deleteAccount.cancel')}</button>
           <button
             className={`${styles.confirmBtn} ${styles.confirm_danger}`}
             onClick={handlePrimary}
             disabled={loading || (step === 2 && !matches)}
           >
-            {loading ? 'Löscht…' : step === 0 ? 'Weiter' : step === 1 ? 'Trotzdem weiter' : 'Account unwiderruflich löschen'}
+            {loading ? t('dialogs.deleteAccount.deleting') : step === 0 ? t('dialogs.deleteAccount.next') : step === 1 ? t('dialogs.deleteAccount.proceedAnyway') : t('dialogs.deleteAccount.confirmFinal')}
           </button>
         </div>
       </div>

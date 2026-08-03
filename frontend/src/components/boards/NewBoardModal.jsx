@@ -3,17 +3,20 @@
  * Name + Spielfeld-Typ auswählen
  */
 import { useState, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useFocusTrap } from '../../hooks/useFocusTrap.js';
 import styles from './NewBoardModal.module.css';
 
-const FIELD_TYPES = [
-  { value: 'large',  label: 'Großfeld',         desc: '40 × 20 m – Offizielles IFF Spielfeld' },
-  { value: 'small',  label: 'Kleinfeld',        desc: '20 × 14 m' },
-  { value: 'street', label: 'Street Floorball', desc: '25 × 15 m, ohne Bande' },
-  { value: '3v3',    label: '3 vs 3',           desc: '22 × 11 m – Kleinfeld für schnelle Spiele' },
-];
-
 export default function NewBoardModal({ onConfirm, onClose, loading, defaultFieldType = 'large' }) {
+  const { t } = useTranslation();
+
+  const FIELD_TYPES = [
+    { value: 'large',  label: t('field.large'),  desc: t('dialogs.newBoard.fieldDescLarge') },
+    { value: 'small',  label: t('field.small'),  desc: t('dialogs.newBoard.fieldDescSmall') },
+    { value: 'street', label: t('field.street'), desc: t('dialogs.newBoard.fieldDescStreet') },
+    { value: '3v3',    label: t('field.3v3'),    desc: t('dialogs.newBoard.fieldDesc3v3') },
+  ];
+
   const [name,      setName     ] = useState('');
   const [fieldType, setFieldType] = useState(defaultFieldType);
   const nameRef = useRef(null);
@@ -39,13 +42,13 @@ export default function NewBoardModal({ onConfirm, onClose, loading, defaultFiel
     >
       <div className={styles.modal}>
         <header className={styles.modalHeader}>
-          <h2 id="new-board-title" className={styles.modalTitle}>Neues Spielfeld</h2>
-          <button className={styles.closeBtn} onClick={onClose} aria-label="Schließen">✕</button>
+          <h2 id="new-board-title" className={styles.modalTitle}>{t('dialogs.newBoard.title')}</h2>
+          <button className={styles.closeBtn} onClick={onClose} aria-label={t('dialogs.newBoard.close')}>✕</button>
         </header>
 
         <form onSubmit={handleSubmit} className={styles.form} noValidate>
           <label className={styles.label} htmlFor="board-name">
-            Name des Spielfelds
+            {t('dialogs.newBoard.nameLabel')}
           </label>
           <input
             ref={nameRef}
@@ -54,14 +57,14 @@ export default function NewBoardModal({ onConfirm, onClose, loading, defaultFiel
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="z.B. Spiel vs. Hamburg, Training 04.08."
+            placeholder={t('dialogs.newBoard.namePlaceholder')}
             maxLength={80}
             required
             aria-required="true"
           />
 
           <fieldset className={styles.fieldset}>
-            <legend className={styles.legend}>Spielfeld-Typ</legend>
+            <legend className={styles.legend}>{t('dialogs.newBoard.fieldTypeLegend')}</legend>
             <div className={styles.typeGrid}>
               {FIELD_TYPES.map(({ value, label, desc }) => (
                 <label
@@ -85,7 +88,7 @@ export default function NewBoardModal({ onConfirm, onClose, loading, defaultFiel
 
           <div className={styles.actions}>
             <button type="button" className={styles.cancelBtn} onClick={onClose}>
-              Abbrechen
+              {t('dialogs.newBoard.cancel')}
             </button>
             <button
               type="submit"
@@ -93,7 +96,7 @@ export default function NewBoardModal({ onConfirm, onClose, loading, defaultFiel
               disabled={loading || !name.trim()}
               aria-disabled={loading}
             >
-              {loading ? 'Erstellt…' : 'Spielfeld anlegen'}
+              {loading ? t('dialogs.newBoard.creating') : t('dialogs.newBoard.confirm')}
             </button>
           </div>
         </form>

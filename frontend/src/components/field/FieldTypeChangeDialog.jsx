@@ -3,10 +3,12 @@
  * Spielerpositionen und Zeichnungen werden dabei proportional skaliert.
  */
 import { useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useFocusTrap } from '../../hooks/useFocusTrap.js';
 import styles from './FieldTypeChangeDialog.module.css';
 
 export default function FieldTypeChangeDialog({ targetLabel, onConfirm, onCancel, loading }) {
+  const { t } = useTranslation();
   const containerRef = useRef(null);
   useFocusTrap(containerRef, { onEscape: onCancel });
 
@@ -21,18 +23,17 @@ export default function FieldTypeChangeDialog({ targetLabel, onConfirm, onCancel
     >
       <div className={styles.dialog}>
         <div className={styles.icon} aria-hidden="true">⚠️</div>
-        <h2 id="fieldtype-title" className={styles.title}>Spielfeld-Typ ändern?</h2>
+        <h2 id="fieldtype-title" className={styles.title}>{t('dialogs.fieldTypeChange.title')}</h2>
         <p id="fieldtype-msg" className={styles.msg}>
-          Das Spielfeld wird auf „{targetLabel}“ umgestellt. Bestehende Spielerpositionen
-          und Zeichnungen in allen Frames werden proportional an das neue Feld angepasst.
+          {t('dialogs.fieldTypeChange.message', { targetLabel })}
         </p>
 
         <div className={styles.actions}>
           <button className={styles.cancelBtn} onClick={onCancel} disabled={loading}>
-            Abbrechen
+            {t('dialogs.fieldTypeChange.cancel')}
           </button>
           <button className={styles.confirmBtn} onClick={onConfirm} disabled={loading}>
-            {loading ? 'Wird angepasst…' : 'Ja, Feld wechseln'}
+            {loading ? t('dialogs.fieldTypeChange.adjusting') : t('dialogs.fieldTypeChange.confirm')}
           </button>
         </div>
       </div>

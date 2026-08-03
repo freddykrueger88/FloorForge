@@ -3,6 +3,7 @@
  * Spielfeld-Layer + Spieler-Layer + Zeichen-Layer
  */
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Stage, Layer, Rect, Line, Circle, Text } from 'react-konva';
 import { IFF_FIELDS } from '../../constants/fieldConfig.js';
 import { FIELD_COLORS } from '../../constants/fieldTheme.js';
@@ -53,6 +54,7 @@ export default function FloorballField({
   onPointerUp,
   onElementClick,
 }) {
+  const { t } = useTranslation();
   const field  = IFF_FIELDS[fieldType] ?? IFF_FIELDS.large;
   const colors = FIELD_COLORS[theme]   ?? FIELD_COLORS.dark;
   const { scale, fieldW, fieldH, offsetX, offsetY } = useMemo(
@@ -82,7 +84,7 @@ export default function FloorballField({
       width={width}
       height={height}
       role="img"
-      aria-label={`Floorball-Spielfeld: ${field.label}, ${players.length} Spieler. Über Tab einzeln erreichbar.`}
+      aria-label={t('field.canvasAriaLabel', { label: field.label, count: players.length })}
     >
       {/* Layer 1: Spielfeld */}
       <Layer listening={false}>

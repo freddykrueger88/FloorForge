@@ -1,5 +1,6 @@
 import { Suspense, lazy, useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import useAuthStore from './store/authStore.js';
 import { apiFetch } from './utils/apiFetch.js';
 import { applyGlobalPreferences } from './utils/applyPreferences.js';
@@ -20,6 +21,7 @@ const BoardEditorPage = lazy(() => import('./pages/BoardEditorPage.jsx'));
 const SharePage       = lazy(() => import('./pages/SharePage.jsx'));
 const SettingsPage    = lazy(() => import('./pages/SettingsPage.jsx'));
 const PrivacyPage     = lazy(() => import('./pages/PrivacyPage.jsx'));
+const RulesPage       = lazy(() => import('./pages/RulesPage.jsx'));
 const NotFound       = lazy(() => import('./pages/NotFound.jsx'));
 
 function PrivateRoute({ children }) {
@@ -35,12 +37,15 @@ function PublicRoute({ children }) {
   return children;
 }
 
-const Loader = () => (
-  <div className="page-loader" role="status" aria-live="polite">
-    <span className="sr-only">Wird geladen…</span>
-    <div className="spinner" aria-hidden="true" />
-  </div>
-);
+const Loader = () => {
+  const { t } = useTranslation();
+  return (
+    <div className="page-loader" role="status" aria-live="polite">
+      <span className="sr-only">{t('settings.loadingPage')}</span>
+      <div className="spinner" aria-hidden="true" />
+    </div>
+  );
+};
 
 export default function App() {
   const user = useAuthStore((s) => s.user);
@@ -77,6 +82,7 @@ export default function App() {
           <Route path="/settings" element={<PrivateRoute><SettingsPage /></PrivateRoute>} />
           <Route path="/share/:token" element={<SharePage />} />
           <Route path="/privacy" element={<PrivacyPage />} />
+          <Route path="/rules" element={<RulesPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>

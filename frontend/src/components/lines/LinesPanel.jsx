@@ -9,9 +9,10 @@
  * - Max. 10 Lines pro Board
  */
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import styles from './LinesPanel.module.css';
 
-const TYPE_LABELS = { offense: 'Sturm', defense: 'Defense', special: 'Special' };
+const TYPE_LABEL_KEYS = { offense: 'lines.typeOffense', defense: 'lines.typeDefense', special: 'lines.typeSpecial' };
 const PRESET_COLORS = ['#facc15', '#22c55e', '#3b82f6', '#ef4444', '#a855f7', '#06b6d4'];
 
 export default function LinesPanel({
@@ -25,6 +26,7 @@ export default function LinesPanel({
   onTogglePlayer,
   canAddLine = true,
 }) {
+  const { t } = useTranslation();
   const [collapsed,   setCollapsed  ] = useState(false);
   const [editingId,   setEditingId  ] = useState(null); // welche Line wird gerade bearbeitet (Spieler zuweisen)
   const [renamingId,  setRenamingId ] = useState(null);
@@ -52,15 +54,15 @@ export default function LinesPanel({
   };
 
   return (
-    <section className={styles.panel} aria-label="Lines (Sturm-/Defensivreihen)">
+    <section className={styles.panel} aria-label={t('lines.sectionAriaLabel')}>
       <header className={styles.header}>
         <button
           className={styles.collapseBtn}
           onClick={() => setCollapsed((v) => !v)}
           aria-expanded={!collapsed}
-          aria-label={collapsed ? 'Lines-Panel ausklappen' : 'Lines-Panel einklappen'}
+          aria-label={collapsed ? t('lines.expand') : t('lines.collapse')}
         >
-          <span aria-hidden="true">{collapsed ? '▸' : '▾'}</span> Lines
+          <span aria-hidden="true">{collapsed ? '▸' : '▾'}</span> {t('lines.title')}
         </button>
         {!collapsed && <span className={styles.count}>{lines.length}/10</span>}
       </header>
@@ -78,9 +80,9 @@ export default function LinesPanel({
                       className={styles.swatch}
                       style={{ background: line.color }}
                       onClick={() => onSetActiveLine?.(isActive ? null : line._id)}
-                      aria-label={`Line "${line.name}" ${isActive ? 'deaktivieren' : 'aktivieren'}`}
+                      aria-label={t(isActive ? 'lines.deactivateAriaLabel' : 'lines.activateAriaLabel', { name: line.name })}
                       aria-pressed={isActive}
-                      title={isActive ? 'Aktiv – klicken zum Deaktivieren' : 'Klicken zum Aktivieren'}
+                      title={isActive ? t('lines.activeTitle') : t('lines.inactiveTitle')}
                     />
 
                     {renamingId === line._id ? (
@@ -92,22 +94,22 @@ export default function LinesPanel({
                         onChange={(e) => setRenameDraft(e.target.value)}
                         onBlur={() => commitRename(line._id)}
                         onKeyDown={(e) => e.key === 'Enter' && commitRename(line._id)}
-                        aria-label="Line umbenennen"
+                        aria-label={t('lines.renameAriaLabel')}
                       />
                     ) : (
-                      <button className={styles.lineName} onClick={() => startRename(line)} title="Umbenennen">
+                      <button className={styles.lineName} onClick={() => startRename(line)} title={t('lines.renameTitle')}>
                         {line.name}
                       </button>
                     )}
 
-                    <span className={styles.typeBadge}>{TYPE_LABELS[line.type] ?? line.type}</span>
+                    <span className={styles.typeBadge}>{TYPE_LABEL_KEYS[line.type] ? t(TYPE_LABEL_KEYS[line.type]) : line.type}</span>
 
                     <button
                       className={styles.iconBtn}
                       onClick={() => setEditingId(isEditing ? null : line._id)}
                       aria-expanded={isEditing}
-                      aria-label={`Spieler für "${line.name}" zuweisen`}
-                      title="Spieler zuweisen"
+                      aria-label={t('lines.assignPlayersAriaLabel', { name: line.name })}
+                      title={t('lines.assignPlayersTitle')}
                     >
                       👥 {line.playerIds.length}
                     </button>
@@ -115,17 +117,17 @@ export default function LinesPanel({
                     <button
                       className={styles.deleteBtn}
                       onClick={() => onDeleteLine?.(line._id)}
-                      aria-label={`Line "${line.name}" löschen`}
-                      title="Löschen"
+                      aria-label={t('lines.deleteAriaLabel', { name: line.name })}
+                      title={t('lines.deleteTitle')}
                     >
                       🗑
                     </button>
                   </div>
 
                   {isEditing && (
-                    <div className={styles.playerGrid} role="group" aria-label="Spieler zuweisen">
+                    <div className={styles.playerGrid} role="group" aria-label={t('lines.assignPlayersTitle')}>
                       {players.length === 0 && (
-                        <p className={styles.emptyHint}>Keine Spieler auf dem Feld</p>
+                        <p className={styles.emptyHint}>{t('lines.noPlayersHint')}</p>
                       )}
                       {players.map((p) => {
                         const assigned = line.playerIds.includes(p.id);
@@ -149,7 +151,7 @@ export default function LinesPanel({
           </ul>
 
           <div className={styles.addRow}>
-            <div className={styles.colorPicker} role="radiogroup" aria-label="Farbe wählen">
+            <div className={styles.colorPicker} role="radiogroup" aria-label={t('lines.colorPickerAriaLabel')}>
               {PRESET_COLORS.map((c) => (
                 <button
                   key={c}
@@ -158,7 +160,7 @@ export default function LinesPanel({
                   onClick={() => setNewColor(c)}
                   role="radio"
                   aria-checked={newColor === c}
-                  aria-label={`Farbe ${c}`}
+                  aria-label={t('lines.colorAriaLabel', { color: c })}
                 />
               ))}
             </div>
@@ -166,32 +168,32 @@ export default function LinesPanel({
               className={styles.typeSelect}
               value={newType}
               onChange={(e) => setNewType(e.target.value)}
-              aria-label="Line-Typ"
+              aria-label={t('lines.typeSelectAriaLabel')}
             >
-              <option value="offense">Sturm</option>
-              <option value="defense">Defense</option>
-              <option value="special">Special</option>
+              <option value="offense">{t('lines.typeOffense')}</option>
+              <option value="defense">{t('lines.typeDefense')}</option>
+              <option value="special">{t('lines.typeSpecial')}</option>
             </select>
             <input
               className={styles.newNameInput}
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
-              placeholder="Neue Line…"
+              placeholder={t('lines.newLinePlaceholder')}
               maxLength={40}
               disabled={!canAddLine}
-              aria-label="Name der neuen Line"
+              aria-label={t('lines.newLineAriaLabel')}
             />
             <button
               className={styles.addBtn}
               onClick={handleAdd}
               disabled={!canAddLine || !newName.trim()}
-              aria-label="Line hinzufügen"
+              aria-label={t('lines.addAriaLabel')}
             >
               ＋
             </button>
           </div>
-          {!canAddLine && <p className={styles.limitHint}>Maximal 10 Lines pro Board erreicht.</p>}
+          {!canAddLine && <p className={styles.limitHint}>{t('lines.limitHint')}</p>}
         </>
       )}
     </section>

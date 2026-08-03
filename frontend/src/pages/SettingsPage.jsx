@@ -4,6 +4,7 @@
  */
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import useAuthStore from '../store/authStore.js';
 import useThemeStore from '../store/themeStore.js';
 import { useSettings } from '../hooks/useSettings.js';
@@ -11,24 +12,26 @@ import { useAutoSave } from '../hooks/useAutoSave.js';
 import { useBackup } from '../hooks/useBackup.js';
 import { apiFetch } from '../utils/apiFetch.js';
 import { applyGlobalPreferences } from '../utils/applyPreferences.js';
+import { formatDate } from '../utils/formatDate.js';
 import { IFF_FIELDS, IFF_BALL_COLORS, DEFAULT_TEAM_COLORS } from '../constants/fieldConfig.js';
 import DeleteAccountDialog from '../components/settings/DeleteAccountDialog.jsx';
 import styles from './SettingsPage.module.css';
 
-const THEME_LABELS = { dark: 'Dunkel', light: 'Hell', vikings: 'TB Uphusen Vikings', iff: 'IFF Official' };
-const COLORBLIND_OPTIONS = [
-  { value: 'keine',        label: 'Keine' },
-  { value: 'deuteranopie', label: 'Deuteranopie (Rot-Grün)' },
-  { value: 'protanopie',   label: 'Protanopie (Rot-Grün)' },
-  { value: 'tritanopie',   label: 'Tritanopie (Blau-Gelb)' },
-  { value: 'monochromie',  label: 'Monochromie (Graustufen)' },
-];
-
 export default function SettingsPage() {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { user, setUser, logout } = useAuthStore();
   const { theme, themes, setTheme } = useThemeStore();
   const { settings, loading, updateSettings } = useSettings();
+
+  const THEME_LABELS = { dark: t('settings.dark'), light: t('settings.light'), vikings: t('settings.vikings'), iff: t('settings.iff') };
+  const COLORBLIND_OPTIONS = [
+    { value: 'keine',        label: t('settings.colorblindNone') },
+    { value: 'deuteranopie', label: t('settings.colorblindDeuteranopia') },
+    { value: 'protanopie',   label: t('settings.colorblindProtanopia') },
+    { value: 'tritanopie',   label: t('settings.colorblindTritanopia') },
+    { value: 'monochromie',  label: t('settings.colorblindMonochrome') },
+  ];
 
   const [name, setName] = useState(user?.name || '');
   useEffect(() => { setName(user?.name || ''); }, [user?.name]);
@@ -49,7 +52,7 @@ export default function SettingsPage() {
       const res = await apiFetch('/api/auth/email', { method: 'PUT', body: JSON.stringify(emailForm) });
       setUser(res.user);
       setEmailForm({ newEmail: '', currentPassword: '' });
-      setEmailMsg({ type: 'ok', text: 'E-Mail geändert.' });
+      setEmailMsg({ type: 'ok', text: t('settings.emailChanged') });
     } catch (err) {
       setEmailMsg({ type: 'error', text: err.message });
     }
@@ -62,7 +65,7 @@ export default function SettingsPage() {
     e.preventDefault();
     setPwMsg(null);
     if (pwForm.newPassword !== pwForm.confirmPassword) {
-      setPwMsg({ type: 'error', text: 'Neue Passwörter stimmen nicht überein.' });
+      setPwMsg({ type: 'error', text: t('settings.passwordMismatch') });
       return;
     }
     try {
@@ -71,7 +74,7 @@ export default function SettingsPage() {
         body: JSON.stringify({ currentPassword: pwForm.currentPassword, newPassword: pwForm.newPassword }),
       });
       setPwForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
-      setPwMsg({ type: 'ok', text: 'Passwort geändert.' });
+      setPwMsg({ type: 'ok', text: t('settings.passwordChanged') });
     } catch (err) {
       setPwMsg({ type: 'error', text: err.message });
     }
@@ -187,58 +190,76 @@ export default function SettingsPage() {
     applyGlobalPreferences(updated);
   };
 
-  if (loading) return <p className={styles.loadingMsg}>Wird geladen…</p>;
+  const handleLanguageChange = (lang) => {
+    i18n.changeLanguage(lang);
+    patch({ language: lang });
+  };
+
+  if (loading) return <p className={styles.loadingMsg}>{t('settings.loadingPage')}</p>;
 
   return (
     <main className={styles.page} id="main-content">
-      <a href="#main-content" className="sr-only sr-only-focusable">Zum Inhalt springen</a>
+      <a href="#main-content" className="sr-only sr-only-focusable">{t('accessibility.skipToContent')}</a>
       <header className={styles.header}>
-        <Link to="/boards" className={styles.backLink} aria-label="Zurück zu den Spielfeldern">←</Link>
-        <h1 className={styles.title}>Einstellungen</h1>
+        <Link to="/boards" className={styles.backLink} aria-label={t('settings.backLink')}>←</Link>
+        <h1 className={styles.title}>{t('settings.title')}</h1>
       </header>
 
       <div className={styles.layout}>
-        <nav className={styles.sidebar} aria-label="Einstellungs-Kategorien">
-          <a href="#darstellung">Darstellung</a>
-          <a href="#spielfeld">Spielfeld-Standards</a>
-          <a href="#barrierefreiheit">Barrierefreiheit</a>
-          <a href="#konto">Konto</a>
-          <a href="#daten">Daten</a>
-          {isAdmin && <a href="#admin">Admin</a>}
+        <nav className={styles.sidebar} aria-label={t('settings.nav.categories')}>
+          <a href="#darstellung">{t('settings.nav.appearance')}</a>
+          <a href="#spielfeld">{t('settings.nav.fieldStandards')}</a>
+          <a href="#barrierefreiheit">{t('settings.nav.accessibility')}</a>
+          <a href="#konto">{t('settings.nav.account')}</a>
+          <a href="#daten">{t('settings.nav.data')}</a>
+          {isAdmin && <a href="#admin">{t('settings.nav.admin')}</a>}
         </nav>
 
         <div className={styles.content}>
           {/* ── Darstellung ──────────────────────────────────────── */}
           <section id="darstellung" className={styles.section}>
-            <h2>Darstellung</h2>
+            <h2>{t('settings.nav.appearance')}</h2>
 
             <div className={styles.field}>
-              <label className={styles.fieldLabel}>Theme</label>
+              <label className={styles.fieldLabel}>{t('settings.theme')}</label>
               <div className={styles.themeGrid}>
-                {themes.map((t) => (
+                {themes.map((th) => (
                   <button
-                    key={t}
-                    className={`${styles.themeTile} ${theme === t ? styles.themeTileActive : ''}`}
-                    onClick={() => { setTheme(t); patch({ theme: t }); }}
-                    aria-pressed={theme === t}
+                    key={th}
+                    className={`${styles.themeTile} ${theme === th ? styles.themeTileActive : ''}`}
+                    onClick={() => { setTheme(th); patch({ theme: th }); }}
+                    aria-pressed={theme === th}
                   >
-                    {THEME_LABELS[t] ?? t}
+                    {THEME_LABELS[th] ?? th}
                   </button>
                 ))}
               </div>
             </div>
 
             <div className={styles.field}>
-              <label className={styles.fieldLabel} htmlFor="font-size">Schriftgröße</label>
+              <label className={styles.fieldLabel} htmlFor="language-select">{t('settings.language')}</label>
+              <select
+                id="language-select"
+                className={styles.select}
+                value={i18n.language}
+                onChange={(e) => handleLanguageChange(e.target.value)}
+              >
+                <option value="de">{t('settings.languageDe')}</option>
+                <option value="en">{t('settings.languageEn')}</option>
+              </select>
+            </div>
+
+            <div className={styles.field}>
+              <label className={styles.fieldLabel} htmlFor="font-size">{t('settings.fontSize')}</label>
               <select
                 id="font-size"
                 className={styles.select}
                 value={settings?.fontSize ?? 'mittel'}
                 onChange={(e) => patch({ fontSize: e.target.value })}
               >
-                <option value="klein">Klein</option>
-                <option value="mittel">Mittel</option>
-                <option value="gross">Groß</option>
+                <option value="klein">{t('settings.fontSizeSmall')}</option>
+                <option value="mittel">{t('settings.fontSizeMedium')}</option>
+                <option value="gross">{t('settings.fontSizeLarge')}</option>
               </select>
             </div>
 
@@ -248,7 +269,7 @@ export default function SettingsPage() {
                 checked={!!settings?.reducedMotion}
                 onChange={(e) => patch({ reducedMotion: e.target.checked })}
               />
-              Bewegungen reduzieren
+              {t('settings.reducedMotion')}
             </label>
 
             <label className={styles.checkboxRow}>
@@ -257,16 +278,16 @@ export default function SettingsPage() {
                 checked={!!settings?.dyslexiaFont}
                 onChange={(e) => patch({ dyslexiaFont: e.target.checked })}
               />
-              Legasthenie-freundliche Schrift (OpenDyslexic)
+              {t('settings.dyslexiaFont')}
             </label>
           </section>
 
           {/* ── Spielfeld-Standards ──────────────────────────────── */}
           <section id="spielfeld" className={styles.section}>
-            <h2>Spielfeld-Standards</h2>
+            <h2>{t('settings.nav.fieldStandards')}</h2>
 
             <div className={styles.field}>
-              <label className={styles.fieldLabel} htmlFor="default-field-type">Standard-Spielfeld-Typ</label>
+              <label className={styles.fieldLabel} htmlFor="default-field-type">{t('settings.defaultFieldType')}</label>
               <select
                 id="default-field-type"
                 className={styles.select}
@@ -281,7 +302,7 @@ export default function SettingsPage() {
 
             <div className={styles.colorRow}>
               <label className={styles.colorField}>
-                Heimfarbe
+                {t('settings.homeColor')}
                 <input
                   type="color"
                   value={settings?.defaultHomeColor ?? DEFAULT_TEAM_COLORS.home.fill}
@@ -289,7 +310,7 @@ export default function SettingsPage() {
                 />
               </label>
               <label className={styles.colorField}>
-                Gastfarbe
+                {t('settings.awayColor')}
                 <input
                   type="color"
                   value={settings?.defaultAwayColor ?? DEFAULT_TEAM_COLORS.away.fill}
@@ -297,7 +318,7 @@ export default function SettingsPage() {
                 />
               </label>
               <label className={styles.colorField}>
-                Ballfarbe
+                {t('settings.ballColor')}
                 <select
                   className={styles.select}
                   value={settings?.defaultBallColor ?? '#ffffff'}
@@ -313,14 +334,10 @@ export default function SettingsPage() {
 
           {/* ── Barrierefreiheit ─────────────────────────────────── */}
           <section id="barrierefreiheit" className={styles.section}>
-            <h2>Barrierefreiheit</h2>
-            <p className={styles.hint}>
-              Vollständige WCAG-Prüfung, Screenreader-Test und weitere Modi folgen
-              in Issue #19 — hier die Basis-Schalter.
-            </p>
+            <h2>{t('settings.nav.accessibility')}</h2>
 
             <div className={styles.field}>
-              <label className={styles.fieldLabel} htmlFor="colorblind-mode">Farbblind-Modus</label>
+              <label className={styles.fieldLabel} htmlFor="colorblind-mode">{t('settings.colorblindMode')}</label>
               <select
                 id="colorblind-mode"
                 className={styles.select}
@@ -339,7 +356,7 @@ export default function SettingsPage() {
                 checked={!!settings?.highContrast}
                 onChange={(e) => patch({ highContrast: e.target.checked })}
               />
-              Hoher Kontrast
+              {t('settings.highContrast')}
             </label>
 
             <label className={styles.checkboxRow}>
@@ -348,16 +365,16 @@ export default function SettingsPage() {
                 checked={!!settings?.adhdMode}
                 onChange={(e) => patch({ adhdMode: e.target.checked })}
               />
-              ADHS-freundlicher Modus (weniger dekorative Ablenkung)
+              {t('settings.adhdMode')}
             </label>
           </section>
 
           {/* ── Konto ────────────────────────────────────────────── */}
           <section id="konto" className={styles.section}>
-            <h2>Konto</h2>
+            <h2>{t('settings.nav.account')}</h2>
 
             <div className={styles.field}>
-              <label className={styles.fieldLabel} htmlFor="display-name">Anzeigename</label>
+              <label className={styles.fieldLabel} htmlFor="display-name">{t('settings.displayName')}</label>
               <input
                 id="display-name"
                 className={styles.textInput}
@@ -366,18 +383,18 @@ export default function SettingsPage() {
                 maxLength={100}
               />
               <span className={styles.saveStatus} aria-live="polite">
-                {nameSaveStatus === 'saving' && 'Speichert…'}
-                {nameSaveStatus === 'saved' && '✓ Gespeichert'}
+                {nameSaveStatus === 'saving' && t('settings.saving')}
+                {nameSaveStatus === 'saved' && t('settings.saved')}
               </span>
             </div>
 
             <form className={styles.subForm} onSubmit={handleEmailSubmit}>
-              <h3 className={styles.subTitle}>E-Mail ändern</h3>
-              <p className={styles.currentValue}>Aktuell: {user?.email}</p>
+              <h3 className={styles.subTitle}>{t('settings.changeEmail')}</h3>
+              <p className={styles.currentValue}>{t('settings.currentEmail', { email: user?.email })}</p>
               <input
                 type="email"
                 className={styles.textInput}
-                placeholder="Neue E-Mail-Adresse"
+                placeholder={t('settings.newEmailPlaceholder')}
                 value={emailForm.newEmail}
                 onChange={(e) => setEmailForm((f) => ({ ...f, newEmail: e.target.value }))}
                 required
@@ -385,23 +402,23 @@ export default function SettingsPage() {
               <input
                 type="password"
                 className={styles.textInput}
-                placeholder="Aktuelles Passwort"
+                placeholder={t('settings.currentPasswordPlaceholder')}
                 value={emailForm.currentPassword}
                 onChange={(e) => setEmailForm((f) => ({ ...f, currentPassword: e.target.value }))}
                 required
               />
-              <button type="submit" className={styles.submitBtn}>E-Mail ändern</button>
+              <button type="submit" className={styles.submitBtn}>{t('settings.changeEmail')}</button>
               {emailMsg && (
                 <p className={emailMsg.type === 'error' ? styles.msgError : styles.msgOk}>{emailMsg.text}</p>
               )}
             </form>
 
             <form className={styles.subForm} onSubmit={handlePasswordSubmit}>
-              <h3 className={styles.subTitle}>Passwort ändern</h3>
+              <h3 className={styles.subTitle}>{t('settings.changePassword')}</h3>
               <input
                 type="password"
                 className={styles.textInput}
-                placeholder="Aktuelles Passwort"
+                placeholder={t('settings.currentPasswordPlaceholder')}
                 value={pwForm.currentPassword}
                 onChange={(e) => setPwForm((f) => ({ ...f, currentPassword: e.target.value }))}
                 required
@@ -409,46 +426,46 @@ export default function SettingsPage() {
               <input
                 type="password"
                 className={styles.textInput}
-                placeholder="Neues Passwort"
+                placeholder={t('settings.newPasswordPlaceholder')}
                 value={pwForm.newPassword}
                 onChange={(e) => setPwForm((f) => ({ ...f, newPassword: e.target.value }))}
                 required
               />
-              <span className={styles.hint}>Mind. 8 Zeichen, Groß-/Kleinbuchstaben und eine Zahl</span>
+              <span className={styles.hint}>{t('auth.passwordHint')}</span>
               <input
                 type="password"
                 className={styles.textInput}
-                placeholder="Neues Passwort bestätigen"
+                placeholder={t('settings.confirmPasswordPlaceholder')}
                 value={pwForm.confirmPassword}
                 onChange={(e) => setPwForm((f) => ({ ...f, confirmPassword: e.target.value }))}
                 required
               />
-              <button type="submit" className={styles.submitBtn}>Passwort ändern</button>
+              <button type="submit" className={styles.submitBtn}>{t('settings.changePassword')}</button>
               {pwMsg && (
                 <p className={pwMsg.type === 'error' ? styles.msgError : styles.msgOk}>{pwMsg.text}</p>
               )}
             </form>
 
             <div className={styles.dangerZone}>
-              <h3 className={styles.subTitle}>Account löschen</h3>
-              <p className={styles.hint}>Löscht deinen Account und alle Spielfelder unwiderruflich.</p>
+              <h3 className={styles.subTitle}>{t('settings.deleteAccountTitle')}</h3>
+              <p className={styles.hint}>{t('settings.deleteAccountHint')}</p>
               <button className={styles.deleteBtn} onClick={() => setShowDelete(true)}>
-                🗑 Account löschen
+                {t('settings.deleteAccountBtn')}
               </button>
             </div>
 
-            <button className={styles.logoutBtn} onClick={logout}>Abmelden</button>
+            <button className={styles.logoutBtn} onClick={logout}>{t('nav.logout')}</button>
           </section>
 
           {/* ── Daten: Export/Import ─────────────────────────────── */}
           <section id="daten" className={styles.section}>
-            <h2>Daten</h2>
+            <h2>{t('settings.nav.data')}</h2>
 
             <div className={styles.field}>
-              <h3 className={styles.subTitle}>Auskunft (Art. 15 DSGVO)</h3>
-              <p className={styles.hint}>Zeigt alle über dich gespeicherten Daten direkt an.</p>
+              <h3 className={styles.subTitle}>{t('settings.gdprTitle')}</h3>
+              <p className={styles.hint}>{t('settings.gdprHint')}</p>
               <button className={styles.submitBtn} onClick={handleShowMyData} disabled={myDataLoading}>
-                {myDataLoading ? 'Lädt…' : showMyData ? 'Ausblenden' : 'Meine Daten einsehen'}
+                {myDataLoading ? t('settings.gdprLoading') : showMyData ? t('settings.gdprHide') : t('settings.gdprShow')}
               </button>
               {myDataError && <p className={styles.msgError}>⚠️ {myDataError}</p>}
               {showMyData && myData && (
@@ -457,22 +474,16 @@ export default function SettingsPage() {
             </div>
 
             <div className={styles.field}>
-              <h3 className={styles.subTitle}>Alle Daten exportieren</h3>
-              <p className={styles.hint}>
-                Lädt ein ZIP mit deinem Konto, deinen Einstellungen und allen Spielfeldern
-                (inkl. Frames und Reihen) herunter.
-              </p>
+              <h3 className={styles.subTitle}>{t('settings.exportTitle')}</h3>
+              <p className={styles.hint}>{t('settings.exportHint')}</p>
               <button className={styles.submitBtn} onClick={handleExport} disabled={exporting}>
-                {exporting ? 'Exportiert…' : '⬇ Alle Daten exportieren'}
+                {exporting ? t('settings.exportingBtn') : t('settings.exportBtn')}
               </button>
             </div>
 
             <form className={styles.subForm} onSubmit={handleImport}>
-              <h3 className={styles.subTitle}>Backup importieren</h3>
-              <p className={styles.hint}>
-                Importiert Spielfelder aus einem zuvor exportierten ZIP. Bereits vorhandene
-                Spielfelder (gleicher Name, Feldtyp und Erstellungszeitpunkt) werden übersprungen.
-              </p>
+              <h3 className={styles.subTitle}>{t('settings.importTitle')}</h3>
+              <p className={styles.hint}>{t('settings.importHint')}</p>
               <input
                 ref={fileInputRef}
                 type="file"
@@ -480,12 +491,12 @@ export default function SettingsPage() {
                 onChange={(e) => setImportFile(e.target.files?.[0] ?? null)}
               />
               <button type="submit" className={styles.submitBtn} disabled={!importFile || importing}>
-                {importing ? 'Importiert…' : 'Importieren'}
+                {importing ? t('settings.importingBtn') : t('settings.importBtn')}
               </button>
               {backupError && <p className={styles.msgError}>⚠️ {backupError}</p>}
               {importResult && (
                 <p className={styles.msgOk}>
-                  ✓ {importResult.imported} importiert, {importResult.skipped} übersprungen
+                  {t('settings.importResult', { imported: importResult.imported, skipped: importResult.skipped })}
                 </p>
               )}
             </form>
@@ -494,26 +505,26 @@ export default function SettingsPage() {
           {/* ── Admin ────────────────────────────────────────────── */}
           {isAdmin && (
             <section id="admin" className={styles.section}>
-              <h2>Admin: Benutzerverwaltung</h2>
+              <h2>{t('settings.adminTitle')}</h2>
               {adminError && <p className={styles.msgError}>⚠️ {adminError}</p>}
               <table className={styles.userTable}>
                 <thead>
-                  <tr><th>E-Mail</th><th>Rolle</th><th>Registriert am</th><th></th></tr>
+                  <tr><th>{t('settings.colEmail')}</th><th>{t('settings.colRole')}</th><th>{t('settings.colRegistered')}</th><th></th></tr>
                 </thead>
                 <tbody>
                   {users.map((u) => (
                     <tr key={u.id}>
                       <td>{u.email}</td>
                       <td>{u.role}</td>
-                      <td>{new Date(u.created_at).toLocaleDateString('de-DE')}</td>
+                      <td>{formatDate(u.created_at)}</td>
                       <td className={styles.userActions}>
                         {u.id !== user.id && (
                           <>
                             <button className={styles.smallBtn} onClick={() => handleToggleRole(u)}>
-                              {u.role === 'admin' ? 'Zu User degradieren' : 'Zu Admin befördern'}
+                              {u.role === 'admin' ? t('settings.demoteBtn') : t('settings.promoteBtn')}
                             </button>
                             <button className={styles.smallBtnDanger} onClick={() => handleDeleteUser(u.id)}>
-                              Löschen
+                              {t('settings.deleteBtn')}
                             </button>
                           </>
                         )}
@@ -524,7 +535,7 @@ export default function SettingsPage() {
               </table>
 
               <div className={styles.subForm}>
-                <h3 className={styles.subTitle}>Automatische Backups</h3>
+                <h3 className={styles.subTitle}>{t('settings.autoBackupsTitle')}</h3>
                 {backupConfigError && <p className={styles.msgError}>⚠️ {backupConfigError}</p>}
                 {backupConfig && (
                   <>
@@ -534,24 +545,24 @@ export default function SettingsPage() {
                         checked={!!backupConfig.enabled}
                         onChange={(e) => patchBackupConfig({ enabled: e.target.checked })}
                       />
-                      Automatische Backups aktivieren
+                      {t('settings.enableBackups')}
                     </label>
 
                     <div className={styles.field}>
-                      <label className={styles.fieldLabel} htmlFor="backup-schedule">Rhythmus</label>
+                      <label className={styles.fieldLabel} htmlFor="backup-schedule">{t('settings.schedule')}</label>
                       <select
                         id="backup-schedule"
                         className={styles.select}
                         value={backupConfig.schedule}
                         onChange={(e) => patchBackupConfig({ schedule: e.target.value })}
                       >
-                        <option value="daily">Täglich</option>
-                        <option value="weekly">Wöchentlich</option>
+                        <option value="daily">{t('settings.scheduleDaily')}</option>
+                        <option value="weekly">{t('settings.scheduleWeekly')}</option>
                       </select>
                     </div>
 
                     <div className={styles.field}>
-                      <label className={styles.fieldLabel} htmlFor="backup-retention">Aufbewahrung (Anzahl Läufe)</label>
+                      <label className={styles.fieldLabel} htmlFor="backup-retention">{t('settings.retention')}</label>
                       <input
                         id="backup-retention"
                         type="number"
