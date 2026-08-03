@@ -89,7 +89,7 @@ router.post('/register', registerValidation, async (req, res) => {
     const token = signToken(user.id, user.role);
     res.cookie('token', token, COOKIE_OPTS);
 
-    logger.info(`User registered: ${email} (role: ${role})`);
+    logger.info(`User registered: ${user.id} (role: ${role})`);
     return res.status(201).json(created({ user: { id: user.id, email: user.email, role: user.role, name: user.display_name } }));
   } catch (err) {
     logger.error('Register error:', err);
@@ -127,7 +127,7 @@ router.post('/login', loginValidation, async (req, res) => {
     const token = signToken(user.id, user.role);
     res.cookie('token', token, COOKIE_OPTS);
 
-    logger.info(`User logged in: ${email}`);
+    logger.info(`User logged in: ${user.id}`);
     return res.json(success({ user: { id: user.id, email: user.email, role: user.role, name: user.display_name } }));
   } catch (err) {
     logger.error('Login error:', err);

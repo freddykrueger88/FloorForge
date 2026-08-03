@@ -19,9 +19,12 @@ const logger = winston.createLogger({
   ),
   transports: [
     new winston.transports.Console(),
+    // Datensparsamkeit: begrenzte Größe/Anzahl statt unbegrenzt wachsender
+    // Log-Dateien (sonst überdauern personenbezogene Daten in alten Log-
+    // Einträgen eine Account-Löschung unbegrenzt lange)
     ...(process.env.NODE_ENV === 'production' ? [
-      new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
-      new winston.transports.File({ filename: 'logs/combined.log' }),
+      new winston.transports.File({ filename: 'logs/error.log', level: 'error', maxsize: 10 * 1024 * 1024, maxFiles: 5 }),
+      new winston.transports.File({ filename: 'logs/combined.log', maxsize: 10 * 1024 * 1024, maxFiles: 5 }),
     ] : []),
   ],
 });

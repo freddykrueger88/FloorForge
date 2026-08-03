@@ -36,7 +36,7 @@ app.use(helmet({
       styleSrc: ["'self'", "'unsafe-inline'"],
       imgSrc: ["'self'", 'data:', 'blob:'],
       connectSrc: ["'self'"],
-      fontSrc: ["'self'", 'https://api.fontshare.com'],
+      fontSrc: ["'self'"],
       objectSrc: ["'none'"],
       frameSrc: ["'none'"],
     },
