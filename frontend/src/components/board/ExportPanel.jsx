@@ -159,6 +159,8 @@ export default function ExportPanel({ boardId, frames, renderFrame }) {
       <h3 className={styles.title}>🔗 Link teilen</h3>
       <p className={styles.hint}>
         Ohne Login abrufbar — nur mit vertrauenswürdigen Personen teilen.
+        Sichtbar sind der Spielname sowie alle Frames/Positionen und
+        Formationen, keine Kontodaten. Der Link läuft automatisch ab.
         {share.expiresAt && ` Gültig bis ${formatExpiry(share.expiresAt)}.`}
       </p>
 

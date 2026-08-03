@@ -4,6 +4,7 @@ import useAuthStore from './store/authStore.js';
 import { apiFetch } from './utils/apiFetch.js';
 import { applyGlobalPreferences } from './utils/applyPreferences.js';
 import ColorBlindFilters from './components/a11y/ColorBlindFilters.jsx';
+import Footer from './components/layout/Footer.jsx';
 import './styles/tokens.css';
 import './styles/base.css';
 import './styles/auth.css';
@@ -15,6 +16,7 @@ const BoardsPage     = lazy(() => import('./pages/BoardsPage.jsx'));
 const BoardEditorPage = lazy(() => import('./pages/BoardEditorPage.jsx'));
 const SharePage       = lazy(() => import('./pages/SharePage.jsx'));
 const SettingsPage    = lazy(() => import('./pages/SettingsPage.jsx'));
+const PrivacyPage     = lazy(() => import('./pages/PrivacyPage.jsx'));
 const NotFound       = lazy(() => import('./pages/NotFound.jsx'));
 
 function PrivateRoute({ children }) {
@@ -70,9 +72,11 @@ export default function App() {
           <Route path="/board/:id" element={<PrivateRoute><BoardEditorPage /></PrivateRoute>} />
           <Route path="/settings" element={<PrivateRoute><SettingsPage /></PrivateRoute>} />
           <Route path="/share/:token" element={<SharePage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
+      <Footer />
     </BrowserRouter>
   );
 }

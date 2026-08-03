@@ -14,6 +14,11 @@ import { rescheduleBackupCron } from './services/backupCron.js';
 import apiRoutes from './routes/index.js';
 import { notFoundHandler, errorHandler } from './middleware/errorHandler.js';
 import logger from './utils/logger.js';
+import { anonymizeIp } from './utils/anonymizeIp.js';
+
+// DSGVO: IP-Adresse in Zugriffs-Logs anonymisieren (Issue #20) – ersetzt
+// :remote-addr im morgan-Format unten, respektiert `trust proxy` (Zeile 22).
+morgan.token('anon-addr', (req) => anonymizeIp(req.ip));
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -72,8 +77,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 // ── Logging ───────────────────────────────────
+// Format entspricht 'combined', nur mit :anon-addr statt :remote-addr
+// (DSGVO – keine vollständigen IP-Adressen in Logs, Issue #20)
 if (process.env.NODE_ENV !== 'test') {
-  app.use(morgan('combined', {
+  app.use(morgan(':anon-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"', {
     stream: { write: (msg) => logger.http(msg.trim()) },
   }));
 }

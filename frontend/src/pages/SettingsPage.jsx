@@ -95,6 +95,25 @@ export default function SettingsPage() {
     }
   };
 
+  // ── Daten: Auskunft ──────────────────────────────────────────────
+  const [myData, setMyData] = useState(null);
+  const [myDataError, setMyDataError] = useState(null);
+  const [myDataLoading, setMyDataLoading] = useState(false);
+  const [showMyData, setShowMyData] = useState(false);
+  const handleShowMyData = async () => {
+    if (myData) { setShowMyData((v) => !v); return; }
+    setMyDataLoading(true);
+    setMyDataError(null);
+    try {
+      setMyData(await apiFetch('/api/user/data'));
+      setShowMyData(true);
+    } catch (err) {
+      setMyDataError(err.message);
+    } finally {
+      setMyDataLoading(false);
+    }
+  };
+
   // ── Daten: Export/Import ─────────────────────────────────────────
   const { exporting, importing, error: backupError, importResult, exportData, importData } = useBackup();
   const [importFile, setImportFile] = useState(null);
@@ -414,6 +433,18 @@ export default function SettingsPage() {
           {/* ── Daten: Export/Import ─────────────────────────────── */}
           <section id="daten" className={styles.section}>
             <h2>Daten</h2>
+
+            <div className={styles.field}>
+              <h3 className={styles.subTitle}>Auskunft (Art. 15 DSGVO)</h3>
+              <p className={styles.hint}>Zeigt alle über dich gespeicherten Daten direkt an.</p>
+              <button className={styles.submitBtn} onClick={handleShowMyData} disabled={myDataLoading}>
+                {myDataLoading ? 'Lädt…' : showMyData ? 'Ausblenden' : 'Meine Daten einsehen'}
+              </button>
+              {myDataError && <p className={styles.msgError}>⚠️ {myDataError}</p>}
+              {showMyData && myData && (
+                <pre className={styles.dataPreview}>{JSON.stringify(myData, null, 2)}</pre>
+              )}
+            </div>
 
             <div className={styles.field}>
               <h3 className={styles.subTitle}>Alle Daten exportieren</h3>

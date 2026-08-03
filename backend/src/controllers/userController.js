@@ -57,6 +57,18 @@ export async function deleteAccount(req, res) {
   }
 }
 
+// GET /api/user/data – Auskunftsrecht Art. 15 DSGVO: Daten einsehen,
+// ohne ZIP-Download (Issue #20)
+export async function getUserData(req, res) {
+  try {
+    const data = await buildUserExport(req.user.id);
+    return res.json(success(data));
+  } catch (err) {
+    logger.error('[getUserData]', err);
+    return res.status(500).json(error('Interner Serverfehler'));
+  }
+}
+
 // GET /api/user/export – ZIP-Export aller eigenen Daten (Issue #21)
 export async function exportAccount(req, res) {
   try {
