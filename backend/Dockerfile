@@ -39,8 +39,8 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/src ./src
 COPY --from=builder /app/package.json ./package.json
 
-# Export-Ordner anlegen
-RUN mkdir -p /app/exports
+# Export-/Backup-Ordner anlegen
+RUN mkdir -p /app/exports /app/backups
 
 # Non-root User
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup \

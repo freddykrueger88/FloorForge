@@ -152,6 +152,29 @@ export async function runMigrations() {
     await client.query(`CREATE INDEX IF NOT EXISTS idx_exports_share_token ON exports(share_token) WHERE share_token IS NOT NULL;`);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_exports_expires_at ON exports(expires_at) WHERE expires_at IS NOT NULL;`);
 
+    // ── app_config (Issue #21) ───────────────────────────────────────────
+    // Globale, nicht user-gebundene Konfiguration – genau eine Zeile.
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS app_config (
+        id               UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        backup_enabled   BOOLEAN NOT NULL DEFAULT false,
+        backup_schedule  TEXT NOT NULL DEFAULT 'daily' CHECK (backup_schedule IN ('daily', 'weekly')),
+        backup_retention INTEGER NOT NULL DEFAULT 7,
+        updated_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      );
+    `);
+    await client.query(`
+      DROP TRIGGER IF EXISTS trg_app_config_updated_at ON app_config;
+      CREATE TRIGGER trg_app_config_updated_at
+        BEFORE UPDATE ON app_config
+        FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+    `);
+    await client.query(`
+      INSERT INTO app_config (backup_enabled, backup_schedule, backup_retention)
+      SELECT false, 'daily', 7
+      WHERE NOT EXISTS (SELECT 1 FROM app_config);
+    `);
+
     await client.query('COMMIT');
     logger.info('Database migrations completed successfully.');
   } catch (err) {

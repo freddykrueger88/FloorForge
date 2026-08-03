@@ -12,7 +12,7 @@ import { success, created, error } from '../utils/apiResponse.js';
 
 const MAX_LINES = 10;
 
-function toApiLine(row) {
+export function toApiLine(row) {
   return {
     _id:       row.id,
     name:      row.name,

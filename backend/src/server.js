@@ -10,6 +10,7 @@ import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
 import { runMigrations } from './db/migrate.js';
 import { connectRedis } from './db/redis.js';
+import { rescheduleBackupCron } from './services/backupCron.js';
 import apiRoutes from './routes/index.js';
 import { notFoundHandler, errorHandler } from './middleware/errorHandler.js';
 import logger from './utils/logger.js';
@@ -94,6 +95,7 @@ async function bootstrap() {
   try {
     await connectRedis();
     await runMigrations();
+    await rescheduleBackupCron();
     app.listen(PORT, '0.0.0.0', () => {
       logger.info(`FloorForge Backend läuft auf Port ${PORT} (${process.env.NODE_ENV || 'development'})`);
     });

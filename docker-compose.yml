@@ -72,6 +72,7 @@ services:
       SHARE_LINK_EXPIRES_HOURS: ${SHARE_LINK_EXPIRES_HOURS:-72}
     volumes:
       - exports_data:/app/exports
+      - backups_data:/app/backups
     networks:
       - internal
     depends_on:
@@ -118,6 +119,8 @@ volumes:
     name: floorforge_redis_data
   exports_data:
     name: floorforge_exports_data
+  backups_data:
+    name: floorforge_backups_data
 
 networks:
   internal:

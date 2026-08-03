@@ -5,6 +5,7 @@
 import pool from '../db/pool.js';
 import logger from '../utils/logger.js';
 import { success, error } from '../utils/apiResponse.js';
+import { rescheduleBackupCron } from '../services/backupCron.js';
 
 async function adminCount() {
   const result = await pool.query("SELECT COUNT(*) FROM users WHERE role = 'admin'");
@@ -69,6 +70,45 @@ export async function updateUserRole(req, res) {
     res.json(success(result.rows[0]));
   } catch (err) {
     logger.error('[updateUserRole]', err);
+    res.status(500).json(error('Interner Serverfehler'));
+  }
+}
+
+// GET /api/admin/backup-config (Issue #21)
+export async function getBackupConfig(req, res) {
+  try {
+    const result = await pool.query('SELECT * FROM app_config LIMIT 1');
+    const row = result.rows[0];
+    res.json(success({
+      enabled: row.backup_enabled,
+      schedule: row.backup_schedule,
+      retention: row.backup_retention,
+    }));
+  } catch (err) {
+    logger.error('[getBackupConfig]', err);
+    res.status(500).json(error('Interner Serverfehler'));
+  }
+}
+
+// PUT /api/admin/backup-config   Body: { enabled, schedule, retention }
+export async function updateBackupConfig(req, res) {
+  try {
+    const { enabled, schedule, retention } = req.body;
+    const result = await pool.query(
+      `UPDATE app_config SET backup_enabled = $1, backup_schedule = $2, backup_retention = $3
+       RETURNING *`,
+      [enabled, schedule, retention]
+    );
+    await rescheduleBackupCron();
+    const row = result.rows[0];
+    logger.info(`Admin ${req.user.id} updated backup config`);
+    res.json(success({
+      enabled: row.backup_enabled,
+      schedule: row.backup_schedule,
+      retention: row.backup_retention,
+    }));
+  } catch (err) {
+    logger.error('[updateBackupConfig]', err);
     res.status(500).json(error('Interner Serverfehler'));
   }
 }
