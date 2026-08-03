@@ -60,7 +60,7 @@ export default function PlayerToken({
   const { i18n } = useTranslation();
   const hintLang  = i18n.language?.startsWith('en') ? 'en' : 'de';
   const hintTable = POSITION_HINTS[hintLang] ?? POSITION_HINTS.de;
-  const hintInfo  = hintTable[player.role] ?? hintTable['M'];
+  const hintInfo  = hintTable[player.role] ?? hintTable['C'];
 
   // Meter → px
   const toCanvasX = (m) => offsetX + m * scale;

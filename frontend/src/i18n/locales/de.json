@@ -22,11 +22,7 @@
   },
   "teams": {
     "home": "Heimteam",
-    "away": "Auswärtsteam",
-    "goalkeeper": "Torwart",
-    "defender": "Verteidiger",
-    "midfielder": "Mittelfeld",
-    "forward": "Stürmer"
+    "away": "Auswärtsteam"
   },
   "settings": {
     "title": "Einstellungen",

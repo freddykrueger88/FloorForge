@@ -22,11 +22,7 @@
   },
   "teams": {
     "home": "Home Team",
-    "away": "Away Team",
-    "goalkeeper": "Goalkeeper",
-    "defender": "Defender",
-    "midfielder": "Midfielder",
-    "forward": "Forward"
+    "away": "Away Team"
   },
   "settings": {
     "title": "Settings",

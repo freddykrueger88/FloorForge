@@ -1,6 +1,11 @@
 /**
  * Positions-Hinweise für jeden Spielertyp
  * IFF-konform, für das Info-Panel wenn ein Spieler ausgewählt wird
+ *
+ * Formation: Standard-Großfeld-System 2-1-2 (2 Verteidiger, 1 Center,
+ * 2 Stürmer) – siehe Issue #28. Es gibt keine "Mittelfeld"-Linie wie im
+ * Fußball; die mittlere Feldspieler-Position heißt in Floorball/Unihockey
+ * "Center" (DE gleichlautend, Lehnwort).
  */
 export const POSITION_HINTS = {
   de: {
@@ -24,10 +29,10 @@ export const POSITION_HINTS = {
         'Kommunikation mit dem Torwart ist entscheidend',
       ],
     },
-    M: {
-      name: 'Mittelfeld',
-      short: 'M',
-      hint: 'Bindeglied zwischen Abwehr und Angriff. Unterstützt in beiden Phasen und hat die größte Laufleistung.',
+    C: {
+      name: 'Center',
+      short: 'C',
+      hint: 'Bindeglied zwischen Abwehr und Angriff im 2-1-2-System. Unterstützt in beiden Phasen und hat die größte Laufleistung.',
       tips: [
         'Zwischen den Linien anbieten',
         'Freie Mitspieler suchen und anspielen',
@@ -37,61 +42,11 @@ export const POSITION_HINTS = {
     S: {
       name: 'Stürmer',
       short: 'S',
-      hint: 'Sucht aktiv den Torabschluss. Presst gegnerische Verteidiger und öffnet Räume für das Mittelfeld.',
+      hint: 'Sucht aktiv den Torabschluss. Presst gegnerische Verteidiger und öffnet Räume für den Center.',
       tips: [
         'Torposition frühzeitig einnehmen',
         'Gegnerische Abwehr durch Bewegung binden',
         'Nach Ballverlust sofort pressen',
-      ],
-    },
-    RV: {
-      name: 'Rechter Verteidiger',
-      short: 'RV',
-      hint: 'Deckt die rechte Seite der Abwehr. Unterstützt bei Bedarf den rechten Flügel im Angriff.',
-      tips: [
-        'Linie halten mit dem linken Verteidiger',
-        'Flanken des Gegners frühzeitig unterbinden',
-        'Bei eigenem Angriff auf der rechten Bahn aufrrücken',
-      ],
-    },
-    LV: {
-      name: 'Linker Verteidiger',
-      short: 'LV',
-      hint: 'Deckt die linke Seite der Abwehr. Spiegel des rechten Verteidigers.',
-      tips: [
-        'Symmetrie mit dem rechten Verteidiger wahren',
-        'Linke Bahn bei gegnerischem Aufbau schließen',
-        'Nach oben sichern wenn Mittelfeld aufrrückt',
-      ],
-    },
-    RM: {
-      name: 'Rechter Mittelfeldspieler',
-      short: 'RM',
-      hint: 'Verbindet Abwehr und Angriff auf der rechten Bahn. Unterstützt Verteidiger und Stürmer.',
-      tips: [
-        'Rechte Außenbahn besetzen',
-        'Nach Ballgewinn schnell nach vorne anbieten',
-        'Bei gegnerischem Angriff über die rechte Seite zurückarbeiten',
-      ],
-    },
-    LM: {
-      name: 'Linker Mittelfeldspieler',
-      short: 'LM',
-      hint: 'Verbindet Abwehr und Angriff auf der linken Bahn. Spiegel des rechten Mittelfeldspielers.',
-      tips: [
-        'Linke Außenbahn besetzen',
-        'Symmetrie mit dem rechten Mittelfeldspieler wahren',
-        'Bei gegnerischem Angriff über die linke Seite zurückarbeiten',
-      ],
-    },
-    ST: {
-      name: 'Stürmer (Mitte)',
-      short: 'ST',
-      hint: 'Zentraler Torabschluss. Presst die gegnerische Abwehr und sucht die Zuspiele aus dem Mittelfeld.',
-      tips: [
-        'Zentrale Torposition frühzeitig einnehmen',
-        'Freilaufen für Zuspiele aus dem Mittelfeld',
-        'Nach Ballverlust als erster pressen',
       ],
     },
   },
@@ -116,10 +71,10 @@ export const POSITION_HINTS = {
         'Communication with goalkeeper is key',
       ],
     },
-    M: {
-      name: 'Midfielder',
-      short: 'MF',
-      hint: 'Link between defence and attack. Supports in both phases and covers the most ground.',
+    C: {
+      name: 'Centre',
+      short: 'C',
+      hint: 'Link between defence and attack in the 2-1-2 system. Supports in both phases and covers the most ground.',
       tips: [
         'Offer yourself between the lines',
         'Look for free teammates',
@@ -127,63 +82,13 @@ export const POSITION_HINTS = {
       ],
     },
     S: {
-      name: 'Forward',
-      short: 'FW',
-      hint: 'Actively seeks goal opportunities. Presses defenders and creates space for midfielders.',
+      name: 'Attacker',
+      short: 'A',
+      hint: 'Actively seeks goal opportunities. Presses defenders and creates space for the centre.',
       tips: [
         'Take up goal position early',
         'Bind defenders through movement',
         'Press immediately after losing the ball',
-      ],
-    },
-    RV: {
-      name: 'Right Defender',
-      short: 'RD',
-      hint: 'Covers the right side of the defence. Supports the right wing in attack when needed.',
-      tips: [
-        'Hold the line with the left defender',
-        'Cut off opponent crosses early',
-        'Join the right-side attack when your own team has the ball',
-      ],
-    },
-    LV: {
-      name: 'Left Defender',
-      short: 'LD',
-      hint: 'Covers the left side of the defence. Mirror of the right defender.',
-      tips: [
-        'Maintain symmetry with the right defender',
-        'Close the left channel against opponent build-up',
-        'Cover back when midfield pushes forward',
-      ],
-    },
-    RM: {
-      name: 'Right Midfielder',
-      short: 'RM',
-      hint: 'Links defence and attack on the right flank. Supports both defenders and forwards.',
-      tips: [
-        'Occupy the right flank',
-        'Offer an outlet forward after winning the ball',
-        'Track back on the right when the opponent attacks',
-      ],
-    },
-    LM: {
-      name: 'Left Midfielder',
-      short: 'LM',
-      hint: 'Links defence and attack on the left flank. Mirror of the right midfielder.',
-      tips: [
-        'Occupy the left flank',
-        'Maintain symmetry with the right midfielder',
-        'Track back on the left when the opponent attacks',
-      ],
-    },
-    ST: {
-      name: 'Striker',
-      short: 'ST',
-      hint: 'Central goal threat. Presses the opposing defence and looks for through balls from midfield.',
-      tips: [
-        'Take up a central goal position early',
-        'Find space for passes from midfield',
-        'Be first to press after losing the ball',
       ],
     },
   },
