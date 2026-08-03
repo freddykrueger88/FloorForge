@@ -13,25 +13,13 @@ import pool from '../db/pool.js';
 import redisClient from '../db/redis.js';
 import { authenticate } from '../middleware/auth.js';
 import { success, created, error } from '../utils/apiResponse.js';
+import { COOKIE_OPTS } from '../utils/cookies.js';
 import logger from '../utils/logger.js';
 
 const router = Router();
 const BCRYPT_ROUNDS = parseInt(process.env.BCRYPT_ROUNDS || '12', 10);
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
-
-// Cookie-Optionen
-// secure: true sendet das Cookie nur über HTTPS – Browser verwerfen es sonst
-// stillschweigend. Läuft die Instanz ohne TLS-Reverse-Proxy davor (z.B.
-// Homelab-Deployment über reines HTTP), muss COOKIE_SECURE=false gesetzt
-// werden, sonst wird jedes Login-Cookie sofort verworfen.
-const COOKIE_OPTS = {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === 'production' && process.env.COOKIE_SECURE !== 'false',
-  sameSite: 'strict',
-  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 Tage in ms
-  path: '/',
-};
 
 // ── Validierungsregeln ─────────────────────────
 const registerValidation = [
@@ -48,6 +36,12 @@ const loginValidation = [
   body('email').isEmail().normalizeEmail().withMessage('Ungültige E-Mail-Adresse'),
   body('password').notEmpty().withMessage('Passwort erforderlich'),
 ];
+
+const newPasswordValidation = body('newPassword')
+  .isLength({ min: 8 })
+  .withMessage('Passwort muss mindestens 8 Zeichen haben')
+  .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
+  .withMessage('Passwort muss Groß-, Kleinbuchstaben und eine Zahl enthalten');
 
 // ── Helper: JWT erstellen ──────────────────────
 function signToken(userId, role) {
@@ -177,6 +171,89 @@ router.get('/me', authenticate, async (req, res) => {
     return res.json(success({ user: result.rows[0] }));
   } catch (err) {
     logger.error('Me error:', err);
+    return res.status(500).json(error('Interner Serverfehler'));
+  }
+});
+
+// ── PUT /api/auth/name ──────────────────────────
+router.put('/name', authenticate, [
+  body('name').trim().isLength({ min: 1, max: 100 }).withMessage('Name 1-100 Zeichen'),
+], async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json(error('Validierungsfehler', errors.array()));
+  }
+  try {
+    const result = await pool.query(
+      'UPDATE users SET display_name = $1 WHERE id = $2 RETURNING id, email, role, display_name AS name',
+      [req.body.name, req.user.id]
+    );
+    return res.json(success({ user: result.rows[0] }));
+  } catch (err) {
+    logger.error('Update name error:', err);
+    return res.status(500).json(error('Interner Serverfehler'));
+  }
+});
+
+// ── PUT /api/auth/email ─────────────────────────
+router.put('/email', authenticate, [
+  body('newEmail').isEmail().normalizeEmail().withMessage('Ungültige E-Mail-Adresse'),
+  body('currentPassword').notEmpty().withMessage('Aktuelles Passwort erforderlich'),
+], async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json(error('Validierungsfehler', errors.array()));
+  }
+  const { newEmail, currentPassword } = req.body;
+
+  try {
+    const userResult = await pool.query('SELECT password_hash FROM users WHERE id = $1', [req.user.id]);
+    const valid = await bcrypt.compare(currentPassword, userResult.rows[0].password_hash);
+    if (!valid) {
+      return res.status(401).json(error('Aktuelles Passwort ist falsch'));
+    }
+
+    const existing = await pool.query('SELECT id FROM users WHERE email = $1 AND id != $2', [newEmail, req.user.id]);
+    if (existing.rows.length > 0) {
+      return res.status(409).json(error('E-Mail bereits vergeben'));
+    }
+
+    const result = await pool.query(
+      'UPDATE users SET email = $1 WHERE id = $2 RETURNING id, email, role, display_name AS name',
+      [newEmail, req.user.id]
+    );
+    logger.info(`User changed email: ${req.user.id}`);
+    return res.json(success({ user: result.rows[0] }));
+  } catch (err) {
+    logger.error('Update email error:', err);
+    return res.status(500).json(error('Interner Serverfehler'));
+  }
+});
+
+// ── PUT /api/auth/password ──────────────────────
+router.put('/password', authenticate, [
+  body('currentPassword').notEmpty().withMessage('Aktuelles Passwort erforderlich'),
+  newPasswordValidation,
+], async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json(error('Validierungsfehler', errors.array()));
+  }
+  const { currentPassword, newPassword } = req.body;
+
+  try {
+    const userResult = await pool.query('SELECT password_hash FROM users WHERE id = $1', [req.user.id]);
+    const valid = await bcrypt.compare(currentPassword, userResult.rows[0].password_hash);
+    if (!valid) {
+      return res.status(401).json(error('Aktuelles Passwort ist falsch'));
+    }
+
+    const newHash = await bcrypt.hash(newPassword, BCRYPT_ROUNDS);
+    await pool.query('UPDATE users SET password_hash = $1 WHERE id = $2', [newHash, req.user.id]);
+    logger.info(`User changed password: ${req.user.id}`);
+    return res.json(success({ message: 'Passwort geändert' }));
+  } catch (err) {
+    logger.error('Update password error:', err);
     return res.status(500).json(error('Interner Serverfehler'));
   }
 });

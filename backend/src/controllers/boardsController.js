@@ -70,12 +70,15 @@ export async function getBoard(req, res) {
 // POST /api/boards
 export async function createBoard(req, res) {
   try {
-    const { name, fieldType = 'large', theme = 'dark' } = req.body;
+    const {
+      name, fieldType = 'large', theme = 'dark',
+      homeColor = '#1d4ed8', awayColor = '#dc2626', ballColor = '#ffffff',
+    } = req.body;
     const result = await pool.query(
-      `INSERT INTO boards (user_id, name, field_type, theme)
-       VALUES ($1, $2, $3, $4)
+      `INSERT INTO boards (user_id, name, field_type, theme, home_color, away_color, ball_color)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
        RETURNING *`,
-      [req.user.id, name, fieldType, theme]
+      [req.user.id, name, fieldType, theme, homeColor, awayColor, ballColor]
     );
     res.status(201).json(created(toApiBoard(result.rows[0])));
   } catch (err) {

@@ -12,9 +12,9 @@ const FIELD_TYPES = [
   { value: '3v3',    label: '3 vs 3',           desc: '22 × 11 m – Kleinfeld für schnelle Spiele' },
 ];
 
-export default function NewBoardModal({ onConfirm, onClose, loading }) {
+export default function NewBoardModal({ onConfirm, onClose, loading, defaultFieldType = 'large' }) {
   const [name,      setName     ] = useState('');
-  const [fieldType, setFieldType] = useState('large');
+  const [fieldType, setFieldType] = useState(defaultFieldType);
   const nameRef = useRef(null);
 
   useEffect(() => { nameRef.current?.focus(); }, []);

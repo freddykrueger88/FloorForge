@@ -98,6 +98,34 @@
   --shadow-lg: 0 12px 32px oklch(0 0 0 / 0.6);
 }
 
+/* ── Schriftgröße (Issue #18 – Barrierefreiheit) ──────────────── */
+:root { --font-scale: 1; }
+[data-font-size="klein"] { --font-scale: 0.9; }
+[data-font-size="gross"] { --font-scale: 1.2; }
+html { font-size: calc(100% * var(--font-scale)); }
+
+/* Sanftes Fade beim Theme-Wechsel (Issue #17) */
+body {
+  transition: background-color 300ms ease, color 300ms ease;
+}
+
+/* ── Farbblind-Modus (Issue #18 – Barrierefreiheit) ───────────── */
+/* Filter-Defs: siehe components/a11y/ColorBlindFilters.jsx */
+[data-colorblind-mode="protanopie"]   body { filter: url(#floorforge-cb-protanopie); }
+[data-colorblind-mode="deuteranopie"] body { filter: url(#floorforge-cb-deuteranopie); }
+[data-colorblind-mode="tritanopie"]   body { filter: url(#floorforge-cb-tritanopie); }
+[data-colorblind-mode="monochromie"]  body { filter: url(#floorforge-cb-monochromie); }
+
+/* ── Hoher Kontrast (Issue #18 – Barrierefreiheit) ────────────── */
+[data-high-contrast="true"] {
+  --color-text:       #ffffff;
+  --color-text-muted: #e5e5e5;
+  --color-bg:         #000000;
+  --color-surface:    #000000;
+  --color-surface-2:  #0a0a0a;
+  --color-border:     #ffffff;
+}
+
 /* ── IFF (International Floorball Federation) ─────────────────── */
 [data-theme="iff"] {
   --color-bg:               #0a0a0a;

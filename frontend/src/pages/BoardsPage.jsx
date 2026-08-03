@@ -3,8 +3,9 @@
  * Kachel-Ansicht mit Anlegen, Umbenennen, Löschen
  */
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useBoardsApi } from '../hooks/useBoardsApi.js';
+import { useSettings } from '../hooks/useSettings.js';
 import BoardCard from '../components/boards/BoardCard.jsx';
 import BoardPostcard from '../components/boards/BoardPostcard.jsx';
 import NewBoardModal from '../components/boards/NewBoardModal.jsx';
@@ -16,6 +17,7 @@ const VIEW_STORAGE_KEY = 'floorforge:boardsView';
 export default function BoardsPage() {
   const navigate = useNavigate();
   const { loading, error, fetchBoards, createBoard, updateBoard, deleteBoard } = useBoardsApi();
+  const { settings } = useSettings();
 
   const [boards,        setBoards       ] = useState([]);
   const [showNewModal,  setShowNewModal  ] = useState(false);
@@ -36,7 +38,12 @@ export default function BoardsPage() {
 
   const handleCreate = async (data) => {
     try {
-      const board = await createBoard(data);
+      const board = await createBoard({
+        homeColor: settings?.defaultHomeColor,
+        awayColor: settings?.defaultAwayColor,
+        ballColor: settings?.defaultBallColor,
+        ...data,
+      });
       setShowNewModal(false);
       navigate(`/board/${board._id}`);
     } catch { /* error via hook */ }
@@ -69,6 +76,14 @@ export default function BoardsPage() {
               : 'Noch kein Spielfeld angelegt'}
           </p>
         </div>
+        <Link
+          to="/settings"
+          className={styles.newBtn}
+          aria-label="Einstellungen öffnen"
+          title="Einstellungen"
+        >
+          <span aria-hidden="true">⚙️</span>
+        </Link>
         <button
           className={styles.newBtn}
           onClick={() => setShowNewModal(true)}
@@ -155,6 +170,7 @@ export default function BoardsPage() {
           onConfirm={handleCreate}
           onClose={() => setShowNewModal(false)}
           loading={loading}
+          defaultFieldType={settings?.defaultFieldType ?? 'large'}
         />
       )}
 

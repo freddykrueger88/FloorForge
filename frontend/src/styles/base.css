@@ -47,6 +47,30 @@ p, li { text-wrap: pretty; max-width: 72ch; }
   }
 }
 
+/* Explizites "Bewegungen reduzieren" aus den Einstellungen (Issue #18) –
+   unabhängig von der OS-Präferenz */
+[data-reduced-motion="true"] *,
+[data-reduced-motion="true"] *::before,
+[data-reduced-motion="true"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* ADHS-freundlicher Modus (Issue #18) – weniger dekorative Ablenkung,
+   deutlicherer Fokus-Indikator */
+[data-adhd-mode="true"] *,
+[data-adhd-mode="true"] *::before,
+[data-adhd-mode="true"] *::after {
+  box-shadow: none !important;
+  animation: none !important;
+}
+[data-adhd-mode="true"] :focus-visible {
+  outline: 3px solid var(--color-warning);
+  outline-offset: 4px;
+}
+
 button { cursor: pointer; background: none; border: none; }
 
 a, button, [role="button"], input, textarea, select {

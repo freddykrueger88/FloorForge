@@ -1,6 +1,9 @@
-import { Suspense, lazy } from 'react';
+import { Suspense, lazy, useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import useAuthStore from './store/authStore.js';
+import { apiFetch } from './utils/apiFetch.js';
+import { applyGlobalPreferences } from './utils/applyPreferences.js';
+import ColorBlindFilters from './components/a11y/ColorBlindFilters.jsx';
 import './styles/tokens.css';
 import './styles/base.css';
 import './styles/auth.css';
@@ -11,6 +14,7 @@ const Dashboard      = lazy(() => import('./pages/Dashboard.jsx'));
 const BoardsPage     = lazy(() => import('./pages/BoardsPage.jsx'));
 const BoardEditorPage = lazy(() => import('./pages/BoardEditorPage.jsx'));
 const SharePage       = lazy(() => import('./pages/SharePage.jsx'));
+const SettingsPage    = lazy(() => import('./pages/SettingsPage.jsx'));
 const NotFound       = lazy(() => import('./pages/NotFound.jsx'));
 
 function PrivateRoute({ children }) {
@@ -34,8 +38,28 @@ const Loader = () => (
 );
 
 export default function App() {
+  const user = useAuthStore((s) => s.user);
+  const [booted, setBooted] = useState(false);
+
+  // Sitzung anhand des HttpOnly-Cookies wiederherstellen (fetchMe() wurde
+  // bisher nirgends aufgerufen – jeder Seiten-Reload hat dadurch visuell
+  // ausgeloggt, obwohl das Cookie noch gültig war)
+  useEffect(() => {
+    useAuthStore.getState().fetchMe().finally(() => setBooted(true));
+  }, []);
+
+  // Globale Darstellungs-/Barrierefreiheits-Einstellungen laden, sobald
+  // eine Session besteht (Issue #18)
+  useEffect(() => {
+    if (!user) return;
+    apiFetch('/api/settings').then(applyGlobalPreferences).catch(() => {});
+  }, [user]);
+
+  if (!booted) return <Loader />;
+
   return (
     <BrowserRouter>
+      <ColorBlindFilters />
       <Suspense fallback={<Loader />}>
         <Routes>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
@@ -44,6 +68,7 @@ export default function App() {
           <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
           <Route path="/boards" element={<PrivateRoute><BoardsPage /></PrivateRoute>} />
           <Route path="/board/:id" element={<PrivateRoute><BoardEditorPage /></PrivateRoute>} />
+          <Route path="/settings" element={<PrivateRoute><SettingsPage /></PrivateRoute>} />
           <Route path="/share/:token" element={<SharePage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

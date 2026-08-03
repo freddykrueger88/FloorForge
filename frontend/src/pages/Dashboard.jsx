@@ -17,7 +17,8 @@ export default function Dashboard() {
       >
         🏒 Zu meinen Spielfeldern
       </Link>
-      <div style={{ marginTop: '1rem' }}>
+      <div style={{ marginTop: '1rem', display: 'flex', gap: '0.75rem' }}>
+        <Link to="/settings" style={{ color: 'var(--color-text-muted)' }}>⚙️ Einstellungen</Link>
         <button onClick={logout}>
           {t('nav.logout')}
         </button>
