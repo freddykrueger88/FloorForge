@@ -13,6 +13,7 @@ export function applyGlobalPreferences(prefs = {}) {
   root.setAttribute('data-reduced-motion', String(!!prefs.reducedMotion));
   root.setAttribute('data-high-contrast', String(!!prefs.highContrast));
   root.setAttribute('data-adhd-mode', String(!!prefs.adhdMode));
+  root.setAttribute('data-dyslexia-font', String(!!prefs.dyslexiaFont));
 
   if (prefs.colorBlindMode && prefs.colorBlindMode !== 'keine') {
     root.setAttribute('data-colorblind-mode', prefs.colorBlindMode);

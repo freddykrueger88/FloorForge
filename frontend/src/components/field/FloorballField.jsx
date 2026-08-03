@@ -78,7 +78,12 @@ export default function FloorballField({
   }, [showGrid, gridSize, field, scale, offsetX, offsetY]);
 
   return (
-    <Stage width={width} height={height} role="img" aria-label={`Floorball-Spielfeld: ${field.label}`}>
+    <Stage
+      width={width}
+      height={height}
+      role="img"
+      aria-label={`Floorball-Spielfeld: ${field.label}, ${players.length} Spieler. Über Tab einzeln erreichbar.`}
+    >
       {/* Layer 1: Spielfeld */}
       <Layer listening={false}>
         <Rect x={ox} y={oy} width={fieldW} height={fieldH} fill={colors.surface} cornerRadius={px(field.cornerRadius)} stroke={colors.board} strokeWidth={lw2*2} shadowColor="#000" shadowBlur={12} shadowOpacity={0.3}/>

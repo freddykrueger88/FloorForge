@@ -4,10 +4,13 @@ import useAuthStore from './store/authStore.js';
 import { apiFetch } from './utils/apiFetch.js';
 import { applyGlobalPreferences } from './utils/applyPreferences.js';
 import ColorBlindFilters from './components/a11y/ColorBlindFilters.jsx';
+import LiveRegion from './components/a11y/LiveRegion.jsx';
 import Footer from './components/layout/Footer.jsx';
 import './styles/tokens.css';
 import './styles/base.css';
 import './styles/auth.css';
+import '@fontsource/opendyslexic/400.css';
+import '@fontsource/opendyslexic/700.css';
 
 const LoginPage      = lazy(() => import('./pages/LoginPage.jsx'));
 const RegisterPage   = lazy(() => import('./pages/RegisterPage.jsx'));
@@ -62,6 +65,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <ColorBlindFilters />
+      <LiveRegion />
       <Suspense fallback={<Loader />}>
         <Routes>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />

@@ -250,6 +250,15 @@ export default function SettingsPage() {
               />
               Bewegungen reduzieren
             </label>
+
+            <label className={styles.checkboxRow}>
+              <input
+                type="checkbox"
+                checked={!!settings?.dyslexiaFont}
+                onChange={(e) => patch({ dyslexiaFont: e.target.checked })}
+              />
+              Legasthenie-freundliche Schrift (OpenDyslexic)
+            </label>
           </section>
 
           {/* ── Spielfeld-Standards ──────────────────────────────── */}

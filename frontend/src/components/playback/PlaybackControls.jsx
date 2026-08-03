@@ -2,6 +2,7 @@
  * PlaybackControls – Play/Pause/Stop, Geschwindigkeit, Loop, Fortschritt
  * (Issue #11 – v0.3.0)
  */
+import useAnnounceStore from '../../store/announceStore.js';
 import styles from './PlaybackControls.module.css';
 
 export default function PlaybackControls({
@@ -18,11 +19,18 @@ export default function PlaybackControls({
   frameCount,
   progress = 0,
 }) {
+  const announce = useAnnounceStore((s) => s.announce);
+
+  const handleStop = () => { announce('Zurück zu Frame 1'); stop(); };
+  const handleTogglePlay = () => { announce(playing ? 'Wiedergabe pausiert' : 'Wiedergabe gestartet'); togglePlay(); };
+  const handleSetSpeed = (s) => { announce(`Geschwindigkeit ${s}x`); setSpeed(s); };
+  const handleToggleLoop = () => { announce(loop ? 'Wiederholung deaktiviert' : 'Wiederholung aktiviert'); setLoop((v) => !v); };
+
   return (
     <div className={styles.controls} role="group" aria-label="Wiedergabe-Steuerung">
       <button
         className={styles.iconBtn}
-        onClick={stop}
+        onClick={handleStop}
         disabled={!playing && activeIndex === 0}
         aria-label="Stopp – zurück zu Frame 1"
         title="Stopp"
@@ -32,7 +40,7 @@ export default function PlaybackControls({
 
       <button
         className={`${styles.iconBtn} ${styles.playBtn}`}
-        onClick={togglePlay}
+        onClick={handleTogglePlay}
         disabled={!canPlay}
         aria-label={playing ? 'Pausieren' : 'Abspielen'}
         title={playing ? 'Pausieren (Leertaste)' : 'Abspielen (Leertaste)'}
@@ -54,7 +62,7 @@ export default function PlaybackControls({
           <button
             key={s}
             className={`${styles.speedBtn} ${s === speed ? styles.speedActive : ''}`}
-            onClick={() => setSpeed(s)}
+            onClick={() => handleSetSpeed(s)}
             role="radio"
             aria-checked={s === speed}
           >
@@ -66,7 +74,7 @@ export default function PlaybackControls({
       {/* Loop */}
       <button
         className={`${styles.iconBtn} ${loop ? styles.loopActive : ''}`}
-        onClick={() => setLoop((v) => !v)}
+        onClick={handleToggleLoop}
         aria-pressed={loop}
         aria-label="Wiederholung ein-/ausschalten"
         title="Loop"

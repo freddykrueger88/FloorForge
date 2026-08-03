@@ -104,6 +104,9 @@
 [data-font-size="gross"] { --font-scale: 1.2; }
 html { font-size: calc(100% * var(--font-scale)); }
 
+/* ── Legasthenie-freundliche Schrift (Issue #19 – Barrierefreiheit) ── */
+[data-dyslexia-font="true"] { --font-body: 'OpenDyslexic', 'Inter', system-ui, sans-serif; }
+
 /* Sanftes Fade beim Theme-Wechsel (Issue #17) */
 body {
   transition: background-color 300ms ease, color 300ms ease;

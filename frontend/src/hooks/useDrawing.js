@@ -10,6 +10,7 @@
  */
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { TOOLS, DEFAULT_COLORS, MAX_UNDO_STEPS } from '../constants/drawingConfig.js';
+import useAnnounceStore from '../store/announceStore.js';
 
 let _id = 0;
 const uid = () => `el_${++_id}_${Date.now()}`;
@@ -18,9 +19,22 @@ export function useDrawing() {
   const [elements,    setElements]    = useState([]);
   const [undoStack,   setUndoStack]   = useState([]);
   const [redoStack,   setRedoStack]   = useState([]);
-  const [activeTool,  setActiveTool]  = useState('move');
-  const [activeColor, setActiveColor] = useState(DEFAULT_COLORS[0].hex);
-  const [strokeWidth, setStrokeWidth] = useState(3);
+  const [activeTool,  setActiveToolState]  = useState('move');
+  const changeTool = useCallback((tool) => {
+    useAnnounceStore.getState().announce(`Werkzeug: ${TOOLS[tool]?.label ?? tool}`);
+    setActiveToolState(tool);
+  }, []);
+  const [activeColor, setActiveColorState] = useState(DEFAULT_COLORS[0].hex);
+  const [strokeWidth, setStrokeWidthState] = useState(3);
+  const changeColor = useCallback((hex) => {
+    const label = DEFAULT_COLORS.find((c) => c.hex === hex)?.label ?? hex;
+    useAnnounceStore.getState().announce(`Farbe: ${label}`);
+    setActiveColorState(hex);
+  }, []);
+  const changeStrokeWidth = useCallback((width) => {
+    useAnnounceStore.getState().announce(`Strichbreite: ${width}`);
+    setStrokeWidthState(width);
+  }, []);
   const [selectedId,  setSelectedId]  = useState(null);
   const [isDrawing,   setIsDrawing]   = useState(false);
   const currentElRef = useRef(null); // Laufendes Freihand-Element
@@ -179,12 +193,12 @@ export function useDrawing() {
 
       // Tool-Shortcuts
       const key = e.key.toUpperCase();
-      if (key === 'M')      setActiveTool('move');
-      if (key === 'P')      setActiveTool('pass');
-      if (key === 'S')      setActiveTool('shot');
-      if (key === 'F')      setActiveTool('freehand');
-      if (key === 'E')      setActiveTool('eraser');
-      if (e.key === 'Escape') setActiveTool('select');
+      if (key === 'M')      changeTool('move');
+      if (key === 'P')      changeTool('pass');
+      if (key === 'S')      changeTool('shot');
+      if (key === 'F')      changeTool('freehand');
+      if (key === 'E')      changeTool('eraser');
+      if (e.key === 'Escape') changeTool('select');
 
       // Ausgewähltes Element löschen
       if ((e.key === 'Delete' || e.key === 'Backspace') && selectedId) {
@@ -194,14 +208,14 @@ export function useDrawing() {
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [undo, redo, selectedId, deleteElement]);
+  }, [undo, redo, selectedId, deleteElement, changeTool]);
 
   return {
     // State
     elements, selectedId, isDrawing,
-    activeTool,  setActiveTool,
-    activeColor, setActiveColor,
-    strokeWidth, setStrokeWidth,
+    activeTool,  setActiveTool: changeTool,
+    activeColor, setActiveColor: changeColor,
+    strokeWidth, setStrokeWidth: changeStrokeWidth,
     // Undo/Redo
     undo, redo,
     canUndo: undoStack.length > 0,

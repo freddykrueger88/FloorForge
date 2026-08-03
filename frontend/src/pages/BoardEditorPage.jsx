@@ -14,8 +14,10 @@ import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 import { buildDefaultPlayers, IFF_FIELDS, DEFAULT_TEAM_COLORS, IFF_BALL_COLORS } from '../constants/fieldConfig.js';
+import { POSITION_HINTS } from '../constants/positionHints.js';
 import { rescalePlayers, rescaleElements } from '../utils/fieldRescale.js';
 import { teamColorToFillStroke, normalizeStoredColor } from '../utils/color.js';
+import useAnnounceStore from '../store/announceStore.js';
 
 import FieldContainer from '../components/field/FieldContainer.jsx';
 import FieldToolbar from '../components/field/FieldToolbar.jsx';
@@ -163,6 +165,18 @@ export default function BoardEditorPage() {
     setLivePlayers((prev) => prev.map((p) => (p.id === id ? { ...p, x, y } : p)));
   }, [field.fieldType]);
 
+  // Spieler-Auswahl per Screenreader ansagen (Issue #19 – Teil 2)
+  const handleSelectPlayer = useCallback((id) => {
+    if (id) {
+      const player = livePlayers.find((p) => p.id === id);
+      const roleName = POSITION_HINTS.de[player?.role]?.name ?? player?.role ?? 'Spieler';
+      useAnnounceStore.getState().announce(`${roleName} ausgewählt${player?.name ? `, ${player.name}` : ''}`);
+    } else {
+      useAnnounceStore.getState().announce('Spieler abgewählt');
+    }
+    setSelectedPlayerId(id);
+  }, [livePlayers]);
+
   // Pfeiltasten verschieben den ausgewählten Spieler, Escape wählt ihn ab
   // (Issue #19 – Tastaturnavigation). Deaktiviert während der Wiedergabe,
   // analog zum arrowKeysEnabled-Guard in useAnimation für den Frame-Wechsel.
@@ -173,7 +187,7 @@ export default function BoardEditorPage() {
       if (!selectedPlayerId) return;
 
       if (e.key === 'Escape') {
-        setSelectedPlayerId(null);
+        handleSelectPlayer(null);
         return;
       }
       if (anim.playing) return;
@@ -194,7 +208,7 @@ export default function BoardEditorPage() {
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [selectedPlayerId, livePlayers, anim.playing, handleDragEndPlayer]);
+  }, [selectedPlayerId, livePlayers, anim.playing, handleDragEndPlayer, handleSelectPlayer]);
 
   const displayedPlayers = anim.playing ? anim.displayPlayers : livePlayers;
 
@@ -340,7 +354,7 @@ export default function BoardEditorPage() {
             readonly={anim.playing}
             players={displayedPlayers}
             selectedPlayerId={selectedPlayerId}
-            onSelectPlayer={setSelectedPlayerId}
+            onSelectPlayer={handleSelectPlayer}
             onDragEndPlayer={handleDragEndPlayer}
             homeColor={teamColorToFillStroke(homeColor, DEFAULT_TEAM_COLORS.home.fill)}
             awayColor={teamColorToFillStroke(awayColor, DEFAULT_TEAM_COLORS.away.fill)}
@@ -364,7 +378,7 @@ export default function BoardEditorPage() {
             <PlayerAccessibleList
               players={livePlayers}
               selectedPlayerId={selectedPlayerId}
-              onSelectPlayer={setSelectedPlayerId}
+              onSelectPlayer={handleSelectPlayer}
             />
           )}
 
@@ -372,7 +386,7 @@ export default function BoardEditorPage() {
             <div className={styles.infoPanelWrap}>
               <PlayerInfoPanel
                 player={livePlayers.find((p) => p.id === selectedPlayerId)}
-                onClose={() => setSelectedPlayerId(null)}
+                onClose={() => handleSelectPlayer(null)}
                 onNameChange={handleNameChange}
               />
             </div>
