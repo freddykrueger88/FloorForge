@@ -110,11 +110,11 @@ export async function startGifExport(req, res) {
   if (frames.length > MAX_FRAMES) {
     return res.status(400).json({ success: false, message: `Maximal ${MAX_FRAMES} Frames erlaubt.` });
   }
-  const safeFps   = Math.min(15, Math.max(1, Number(fps)   || 4);
+  const safeFps   = Math.min(15, Math.max(1, Number(fps) || 4));
   const safeWidth = [480, 720, 1280].includes(Number(width)) ? Number(width) : 720;
 
   const jobId = randomUUID();
-  jobs.set(jobId, { status: 'processing', progress: 0, createdAt: Date.now() });
+  jobs.set(jobId, { status: 'processing', progress: 0, createdAt: Date.now(), userId: req.user.id });
   res.status(202).json({ success: true, jobId });
 
   // Async: Frames schreiben + FFmpeg starten
@@ -141,7 +141,9 @@ export async function startGifExport(req, res) {
  */
 export function getExportStatus(req, res) {
   const job = jobs.get(req.params.id);
-  if (!job) return res.status(404).json({ success: false, message: 'Job nicht gefunden.' });
+  if (!job || job.userId !== req.user.id) {
+    return res.status(404).json({ success: false, message: 'Job nicht gefunden.' });
+  }
   res.json({ success: true, status: job.status, progress: job.progress, message: job.message });
 }
 
@@ -151,7 +153,7 @@ export function getExportStatus(req, res) {
 export function downloadExport(req, res) {
   const jobId = req.params.id;
   const job   = jobs.get(jobId);
-  if (!job || job.status !== 'done') {
+  if (!job || job.userId !== req.user.id || job.status !== 'done') {
     return res.status(404).json({ success: false, message: 'Export nicht bereit.' });
   }
   const filePath = gifPath(jobId);

@@ -6,8 +6,8 @@
 FROM node:20-alpine AS base
 WORKDIR /app
 
-# Systemabhängigkeiten (für bcrypt native bindings)
-RUN apk add --no-cache python3 make g++
+# Systemabhängigkeiten (python3/make/g++ für bcrypt native bindings, ffmpeg für GIF-Export)
+RUN apk add --no-cache python3 make g++ ffmpeg
 
 # Abhängigkeiten zuerst kopieren (Layer-Cache nutzen)
 COPY package*.json ./
@@ -30,6 +30,9 @@ COPY . .
 # ── Production ───────────────────────────────────
 FROM node:20-alpine AS production
 WORKDIR /app
+
+# ffmpeg wird zur Laufzeit für den GIF-Export gebraucht (Issue #15, exportController.js)
+RUN apk add --no-cache ffmpeg
 
 # Nur Produktions-Abhängigkeiten
 COPY --from=builder /app/node_modules ./node_modules

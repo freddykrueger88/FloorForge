@@ -12,7 +12,6 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import Konva from 'konva';
 
 import { buildDefaultPlayers, IFF_FIELDS, DEFAULT_TEAM_COLORS, IFF_BALL_COLORS } from '../constants/fieldConfig.js';
 import { rescalePlayers, rescaleElements } from '../utils/fieldRescale.js';
