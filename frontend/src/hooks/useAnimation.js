@@ -31,7 +31,7 @@ function interpolatePlayers(fromPlayers = [], toPlayers = [], t) {
   });
 }
 
-export function useAnimation({ frames = [], activeIndex = 0, goToFrame, loop: loopDefault = false } = {}) {
+export function useAnimation({ frames = [], activeIndex = 0, goToFrame, loop: loopDefault = false, arrowKeysEnabled = true } = {}) {
   const [playing,       setPlaying]      = useState(false);
   const [speed,         setSpeed]        = useState(1);
   const [loop,          setLoop]         = useState(loopDefault);
@@ -143,15 +143,15 @@ export function useAnimation({ frames = [], activeIndex = 0, goToFrame, loop: lo
       if (e.code === 'Space') {
         e.preventDefault();
         togglePlay();
-      } else if (e.code === 'ArrowRight' && !playing) {
+      } else if (e.code === 'ArrowRight' && !playing && arrowKeysEnabled) {
         goToFrame?.(Math.min(activeIndex + 1, frames.length - 1));
-      } else if (e.code === 'ArrowLeft' && !playing) {
+      } else if (e.code === 'ArrowLeft' && !playing && arrowKeysEnabled) {
         goToFrame?.(Math.max(activeIndex - 1, 0));
       }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [togglePlay, goToFrame, activeIndex, frames.length, playing]);
+  }, [togglePlay, goToFrame, activeIndex, frames.length, playing, arrowKeysEnabled]);
 
   return {
     playing,

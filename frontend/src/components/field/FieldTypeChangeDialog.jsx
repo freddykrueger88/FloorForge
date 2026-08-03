@@ -2,11 +2,17 @@
  * FieldTypeChangeDialog – Warnung vor dem Wechsel des Spielfeld-Typs
  * Spielerpositionen und Zeichnungen werden dabei proportional skaliert.
  */
+import { useRef } from 'react';
+import { useFocusTrap } from '../../hooks/useFocusTrap.js';
 import styles from './FieldTypeChangeDialog.module.css';
 
 export default function FieldTypeChangeDialog({ targetLabel, onConfirm, onCancel, loading }) {
+  const containerRef = useRef(null);
+  useFocusTrap(containerRef, { onEscape: onCancel });
+
   return (
     <div
+      ref={containerRef}
       className={styles.backdrop}
       role="alertdialog"
       aria-modal="true"

@@ -7,6 +7,7 @@ import styles from './PrivacyPage.module.css';
 export default function PrivacyPage() {
   return (
     <main className={styles.page} id="main-content">
+      <a href="#main-content" className="sr-only sr-only-focusable">Zum Inhalt springen</a>
       <header className={styles.header}>
         <h1 className={styles.title}>Datenschutzerklärung</h1>
       </header>

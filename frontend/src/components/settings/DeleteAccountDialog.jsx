@@ -2,12 +2,15 @@
  * DeleteAccountDialog – 3-stufige Löschbestätigung für den eigenen Account
  * (Issue #22). Stufe 3 verlangt die exakte E-Mail-Adresse zur Bestätigung.
  */
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+import { useFocusTrap } from '../../hooks/useFocusTrap.js';
 import styles from '../boards/DeleteConfirmDialog.module.css';
 
 export default function DeleteAccountDialog({ userEmail, onConfirm, onCancel, loading, error }) {
   const [step, setStep] = useState(0);
   const [emailInput, setEmailInput] = useState('');
+  const containerRef = useRef(null);
+  useFocusTrap(containerRef, { onEscape: onCancel });
 
   const matches = emailInput.trim().toLowerCase() === userEmail.toLowerCase();
 
@@ -17,7 +20,7 @@ export default function DeleteAccountDialog({ userEmail, onConfirm, onCancel, lo
   };
 
   return (
-    <div className={styles.backdrop} role="alertdialog" aria-modal="true" aria-labelledby="del-acc-title">
+    <div ref={containerRef} className={styles.backdrop} role="alertdialog" aria-modal="true" aria-labelledby="del-acc-title">
       <div className={`${styles.dialog} ${styles.danger}`}>
         <div className={styles.icon} aria-hidden="true">{step === 0 ? '⚠️' : step === 1 ? '🚨' : '🔴'}</div>
 

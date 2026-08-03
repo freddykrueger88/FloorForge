@@ -4,7 +4,8 @@
  * Stufe 2: „Sicher? Diese Aktion ist unwiderruflich.“
  * Stufe 3: „Wirklich endgültig löschen?“
  */
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+import { useFocusTrap } from '../../hooks/useFocusTrap.js';
 import styles from './DeleteConfirmDialog.module.css';
 
 const STEPS = [
@@ -16,6 +17,8 @@ const STEPS = [
 export default function DeleteConfirmDialog({ boardName, onConfirm, onCancel, loading }) {
   const [step, setStep] = useState(0);
   const current = STEPS[step];
+  const containerRef = useRef(null);
+  useFocusTrap(containerRef, { onEscape: onCancel });
 
   const handleConfirm = () => {
     if (step < STEPS.length - 1) { setStep((s) => s + 1); }
@@ -24,6 +27,7 @@ export default function DeleteConfirmDialog({ boardName, onConfirm, onCancel, lo
 
   return (
     <div
+      ref={containerRef}
       className={styles.backdrop}
       role="alertdialog"
       aria-modal="true"

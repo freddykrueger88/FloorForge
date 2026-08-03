@@ -2,7 +2,8 @@
  * NewBoardModal – Neues Spielfeld anlegen
  * Name + Spielfeld-Typ auswählen
  */
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
+import { useFocusTrap } from '../../hooks/useFocusTrap.js';
 import styles from './NewBoardModal.module.css';
 
 const FIELD_TYPES = [
@@ -16,15 +17,9 @@ export default function NewBoardModal({ onConfirm, onClose, loading, defaultFiel
   const [name,      setName     ] = useState('');
   const [fieldType, setFieldType] = useState(defaultFieldType);
   const nameRef = useRef(null);
+  const containerRef = useRef(null);
 
-  useEffect(() => { nameRef.current?.focus(); }, []);
-
-  // Escape zum Schließen
-  useEffect(() => {
-    const handler = (e) => { if (e.key === 'Escape') onClose(); };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
-  }, [onClose]);
+  useFocusTrap(containerRef, { initialFocusRef: nameRef, onEscape: onClose });
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -35,6 +30,7 @@ export default function NewBoardModal({ onConfirm, onClose, loading, defaultFiel
 
   return (
     <div
+      ref={containerRef}
       className={styles.backdrop}
       role="dialog"
       aria-modal="true"

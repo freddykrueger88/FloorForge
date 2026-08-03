@@ -67,6 +67,7 @@ export default function BoardsPage() {
 
   return (
     <main className={styles.page} id="main-content">
+      <a href="#main-content" className="sr-only sr-only-focusable">Zum Inhalt springen</a>
       <header className={styles.header}>
         <div>
           <h1 className={styles.title}>Spielfelder</h1>

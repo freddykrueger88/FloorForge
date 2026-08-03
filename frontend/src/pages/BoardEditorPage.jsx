@@ -40,6 +40,7 @@ import { useAnimation } from '../hooks/useAnimation.js';
 import styles from './BoardEditorPage.module.css';
 
 const PLAYER_MARGIN_M = 0.8;
+const NUDGE_STEP_M = 0.15;
 const DEFAULT_BALL_COLOR = IFF_BALL_COLORS.find((c) => c.id === 'orange')?.hex ?? '#f97316';
 const EXPORT_W = 1280;
 const EXPORT_H = 720;
@@ -104,7 +105,7 @@ export default function BoardEditorPage() {
     setLivePlayers((prev) => prev.map((p) => (p.id === id ? { ...p, name } : p)));
   }, []);
 
-  const anim = useAnimation({ frames, activeIndex, goToFrame });
+  const anim = useAnimation({ frames, activeIndex, goToFrame, arrowKeysEnabled: !selectedPlayerId });
 
   useEffect(() => {
     if (!boardId) return;
@@ -161,6 +162,39 @@ export default function BoardEditorPage() {
     const y = Math.max(PLAYER_MARGIN_M, Math.min(currentField.height - PLAYER_MARGIN_M, rawY));
     setLivePlayers((prev) => prev.map((p) => (p.id === id ? { ...p, x, y } : p)));
   }, [field.fieldType]);
+
+  // Pfeiltasten verschieben den ausgewählten Spieler, Escape wählt ihn ab
+  // (Issue #19 – Tastaturnavigation). Deaktiviert während der Wiedergabe,
+  // analog zum arrowKeysEnabled-Guard in useAnimation für den Frame-Wechsel.
+  useEffect(() => {
+    const handler = (e) => {
+      const tag = document.activeElement?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+      if (!selectedPlayerId) return;
+
+      if (e.key === 'Escape') {
+        setSelectedPlayerId(null);
+        return;
+      }
+      if (anim.playing) return;
+
+      let dx = 0;
+      let dy = 0;
+      if (e.key === 'ArrowUp') dy = -NUDGE_STEP_M;
+      else if (e.key === 'ArrowDown') dy = NUDGE_STEP_M;
+      else if (e.key === 'ArrowLeft') dx = -NUDGE_STEP_M;
+      else if (e.key === 'ArrowRight') dx = NUDGE_STEP_M;
+      else return;
+
+      const current = livePlayers.find((p) => p.id === selectedPlayerId);
+      if (!current) return;
+
+      e.preventDefault();
+      handleDragEndPlayer(selectedPlayerId, current.x + dx, current.y + dy);
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [selectedPlayerId, livePlayers, anim.playing, handleDragEndPlayer]);
 
   const displayedPlayers = anim.playing ? anim.displayPlayers : livePlayers;
 
@@ -225,7 +259,8 @@ export default function BoardEditorPage() {
   }, [field.fieldType, homeColor, awayColor, ballColor]);
 
   return (
-    <main className={styles.page} role="main">
+    <main className={styles.page} role="main" id="main-content">
+      <a href="#main-content" className="sr-only sr-only-focusable">{t('accessibility.skipToContent')}</a>
       <header className={styles.header}>
         <Link to="/boards" className={styles.backLink} aria-label="Zurück zur Board-Übersicht">←</Link>
         <h1 className={styles.title}>{board?.name ?? t('board.untitled', 'Unbenanntes Board')}</h1>

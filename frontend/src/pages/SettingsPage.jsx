@@ -191,6 +191,7 @@ export default function SettingsPage() {
 
   return (
     <main className={styles.page} id="main-content">
+      <a href="#main-content" className="sr-only sr-only-focusable">Zum Inhalt springen</a>
       <header className={styles.header}>
         <Link to="/boards" className={styles.backLink} aria-label="Zurück zu den Spielfeldern">←</Link>
         <h1 className={styles.title}>Einstellungen</h1>

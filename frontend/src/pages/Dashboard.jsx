@@ -22,7 +22,8 @@ export default function Dashboard() {
 
   return (
     <main className={styles.page} role="main">
-      <div className={styles.card}>
+      <a href="#main-content" className="sr-only sr-only-focusable">Zum Inhalt springen</a>
+      <div className={styles.card} id="main-content">
         <div className={styles.logo} aria-hidden="true">🏒</div>
 
         <p className={styles.greeting}>

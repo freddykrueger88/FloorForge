@@ -17,7 +17,7 @@
  *   namePosition – 'oben' | 'unten' – Position des Namens relativ zum Token
  */
 import { useRef, useState } from 'react';
-import { Circle, Group, Text, Ring, Rect } from 'react-konva';
+import { Circle, Group, Text, Ring, Rect, RegularPolygon } from 'react-konva';
 import { useTranslation } from 'react-i18next';
 import { POSITION_HINTS } from '../../constants/positionHints.js';
 
@@ -51,6 +51,11 @@ export default function PlayerToken({
   const groupRef = useRef(null);
   const radius   = Math.max(12, TOKEN_RADIUS_M * scale);
   const fontSize = Math.max(8, radius * LABEL_FONT_RATIO);
+  // Form-/Muster-Unterscheidung für Farbblindheit statt nur Farbe (Issue #19):
+  // Torwart als Raute statt Kreis, Auswärtsteam mit gestricheltem statt
+  // durchgezogenem Rand.
+  const isGoalkeeper = player.role === 'TW';
+  const strokeDash = player.team === 'away' ? [6, 3] : undefined;
   const [hovered, setHovered] = useState(false);
   const { i18n } = useTranslation();
   const hintLang  = i18n.language?.startsWith('en') ? 'en' : 'de';
@@ -131,16 +136,32 @@ export default function PlayerToken({
         offsetY={2}
       />
 
-      {/* Haupt-Kreis */}
-      <Circle
-        radius={radius}
-        fill={color}
-        stroke={isSelected ? '#facc15' : strokeColor}
-        strokeWidth={isSelected ? 3 : 2}
-        shadowColor="#000"
-        shadowBlur={isSelected ? 12 : 4}
-        shadowOpacity={isSelected ? 0.5 : 0.2}
-      />
+      {/* Haupt-Form: Torwart als Raute, Feldspieler als Kreis */}
+      {isGoalkeeper ? (
+        <RegularPolygon
+          sides={4}
+          radius={radius}
+          rotation={45}
+          fill={color}
+          stroke={isSelected ? '#facc15' : strokeColor}
+          strokeWidth={isSelected ? 3 : 2}
+          dash={strokeDash}
+          shadowColor="#000"
+          shadowBlur={isSelected ? 12 : 4}
+          shadowOpacity={isSelected ? 0.5 : 0.2}
+        />
+      ) : (
+        <Circle
+          radius={radius}
+          fill={color}
+          stroke={isSelected ? '#facc15' : strokeColor}
+          strokeWidth={isSelected ? 3 : 2}
+          dash={strokeDash}
+          shadowColor="#000"
+          shadowBlur={isSelected ? 12 : 4}
+          shadowOpacity={isSelected ? 0.5 : 0.2}
+        />
+      )}
 
       {/* Positions-Label */}
       <Text

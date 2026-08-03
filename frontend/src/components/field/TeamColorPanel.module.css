@@ -125,6 +125,7 @@
   outline: none;
 }
 .ballPreset:hover { transform: scale(1.15); }
+.ballPreset:focus-visible { outline: 2px solid #60a5fa; outline-offset: 2px; }
 .ballPresetActive {
   box-shadow: 0 0 0 2.5px #60a5fa;
   transform: scale(1.15);

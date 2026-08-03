@@ -85,6 +85,9 @@
   outline: none;
   min-height: 36px;
 }
+.nameInput:focus-visible {
+  box-shadow: 0 0 0 3px var(--color-primary-highlight);
+}
 
 .deleteBtn {
   width: 32px;

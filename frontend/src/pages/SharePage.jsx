@@ -38,7 +38,8 @@ export default function SharePage() {
 
   if (loading) {
     return (
-      <main className={styles.page} role="main" aria-busy="true">
+      <main className={styles.page} role="main" aria-busy="true" id="main-content">
+        <a href="#main-content" className="sr-only sr-only-focusable">Zum Inhalt springen</a>
         <p className={styles.centerMsg}>Wird geladen…</p>
       </main>
     );
@@ -46,7 +47,8 @@ export default function SharePage() {
 
   if (error || !board) {
     return (
-      <main className={styles.page} role="main">
+      <main className={styles.page} role="main" id="main-content">
+        <a href="#main-content" className="sr-only sr-only-focusable">Zum Inhalt springen</a>
         <p className={styles.centerMsg} role="alert">⚠️ {error ?? 'Link ungültig oder abgelaufen'}</p>
       </main>
     );
@@ -56,7 +58,8 @@ export default function SharePage() {
   const awayColor = teamColorToFillStroke(board.awayColor, '#dc2626');
 
   return (
-    <main className={styles.page} role="main">
+    <main className={styles.page} role="main" id="main-content">
+      <a href="#main-content" className="sr-only sr-only-focusable">Zum Inhalt springen</a>
       <header className={styles.header}>
         <h1 className={styles.title}>{board.name}</h1>
         <span className={styles.badge}>👁 Nur-Lese-Ansicht — geteilt ohne Login</span>
