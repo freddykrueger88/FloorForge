@@ -3,7 +3,9 @@
  * Issue #15 – v0.5.0
  */
 import { useState } from 'react';
+import QRCode from 'qrcode';
 import { useExport } from '../../hooks/useExport.js';
+import { useShare } from '../../hooks/useShare.js';
 import styles from './ExportPanel.module.css';
 
 const FPS_OPTIONS    = [1, 2, 3, 4, 5, 8, 10];
@@ -13,12 +15,43 @@ const WIDTH_OPTIONS  = [
   { value: 1280, label: '1080p' },
 ];
 
-export default function ExportPanel({ frames, renderFrame }) {
+function formatExpiry(iso) {
+  if (!iso) return '';
+  return new Date(iso).toLocaleString('de-DE', { dateStyle: 'medium', timeStyle: 'short' });
+}
+
+export default function ExportPanel({ boardId, frames, renderFrame }) {
   const [fps,   setFps  ] = useState(4);
   const [width, setWidth] = useState(720);
   const [loop,  setLoop ] = useState(true);
 
   const { status, progress, gifUrl, error, startExport, reset } = useExport();
+
+  // Issue #16 – Share-Link
+  const share = useShare(boardId);
+  const [qrDataUrl, setQrDataUrl] = useState(null);
+  const [copied,    setCopied   ] = useState(false);
+
+  const handleCreateShareLink = async () => {
+    setCopied(false);
+    try {
+      const { url } = await share.createShareLink();
+      setQrDataUrl(await QRCode.toDataURL(url, { width: 240, margin: 1 }));
+    } catch {
+      // Fehler wird über share.error angezeigt
+    }
+  };
+
+  const handleCopy = async () => {
+    if (!share.shareUrl) return;
+    try {
+      await navigator.clipboard.writeText(share.shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Zwischenablage evtl. ohne Berechtigung – Link steht trotzdem im Feld zum manuellen Kopieren
+    }
+  };
 
   const busy    = ['rendering', 'uploading', 'processing'].includes(status);
   const canExport = frames?.length >= 2 && !busy;
@@ -119,6 +152,53 @@ export default function ExportPanel({ frames, renderFrame }) {
           </button>
         )}
       </div>
+
+      <hr className={styles.divider} />
+
+      {/* Issue #16 – Share-Link ohne Login */}
+      <h3 className={styles.title}>🔗 Link teilen</h3>
+      <p className={styles.hint}>
+        Ohne Login abrufbar — nur mit vertrauenswürdigen Personen teilen.
+        {share.expiresAt && ` Gültig bis ${formatExpiry(share.expiresAt)}.`}
+      </p>
+
+      {share.error && (
+        <p className={`${styles.statusMsg} ${styles.statusError}`}>⚠️ {share.error}</p>
+      )}
+
+      {share.shareUrl ? (
+        <>
+          <div className={styles.shareRow}>
+            <input
+              type="text"
+              readOnly
+              value={share.shareUrl}
+              className={styles.urlInput}
+              onFocus={(e) => e.target.select()}
+              aria-label="Share-Link"
+            />
+            <button className={styles.copyBtn} onClick={handleCopy}>
+              {copied ? '✓ Kopiert' : '📋 Kopieren'}
+            </button>
+          </div>
+          {qrDataUrl && (
+            <div className={styles.qrWrap}>
+              <img src={qrDataUrl} alt="QR-Code zum Share-Link" />
+            </div>
+          )}
+          <button className={styles.resetBtn} onClick={() => { share.reset(); setQrDataUrl(null); }}>
+            Neuen Link erstellen
+          </button>
+        </>
+      ) : (
+        <button
+          className={styles.exportBtn}
+          onClick={handleCreateShareLink}
+          disabled={share.loading || !frames?.length}
+        >
+          {share.loading ? 'Erstellt…' : '🔗 Link erstellen'}
+        </button>
+      )}
     </div>
   );
 }

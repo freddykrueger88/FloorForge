@@ -1,0 +1,50 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  background: #111318;
+  color: #e2e8f0;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  background: #1a1e27;
+  border-bottom: 1px solid #2d3340;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.badge {
+  margin-left: auto;
+  font-size: 0.78rem;
+  color: #94a3b8;
+  white-space: nowrap;
+}
+
+.fieldArea {
+  flex: 1;
+  position: relative;
+  min-height: 0;
+  padding: 12px;
+}
+
+.centerMsg {
+  margin: auto;
+  padding: 24px;
+  font-size: 1rem;
+  color: #94a3b8;
+  text-align: center;
+}

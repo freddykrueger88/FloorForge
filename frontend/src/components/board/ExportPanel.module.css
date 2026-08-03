@@ -123,3 +123,47 @@
   cursor: pointer;
 }
 .resetBtn:hover { color: #e2e8f0; }
+
+.divider {
+  height: 1px;
+  background: #2d3340;
+  border: none;
+  margin: 2px 0;
+}
+
+.shareRow {
+  display: flex;
+  gap: 6px;
+}
+
+.urlInput {
+  flex: 1;
+  min-width: 0;
+  background: #23272e;
+  border: 1px solid #3a3f4b;
+  border-radius: 5px;
+  color: #e2e8f0;
+  padding: 6px 8px;
+  font-size: 0.78rem;
+}
+
+.copyBtn {
+  padding: 6px 10px;
+  background: #23272e;
+  border: 1px solid #3a3f4b;
+  border-radius: 6px;
+  color: #e2e8f0;
+  font-size: 0.82rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.copyBtn:hover { background: #2d3340; }
+
+.qrWrap {
+  display: flex;
+  justify-content: center;
+  padding: 8px;
+  background: #fff;
+  border-radius: 6px;
+}
+.qrWrap img { display: block; width: 120px; height: 120px; }

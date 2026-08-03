@@ -11,7 +11,7 @@ import { success, created, error } from '../utils/apiResponse.js';
 
 const MAX_FRAMES = 50;
 
-function toApiFrame(row) {
+export function toApiFrame(row) {
   const data = row.data_json || {};
   return {
     _id:      row.id,

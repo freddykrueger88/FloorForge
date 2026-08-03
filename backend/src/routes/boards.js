@@ -8,6 +8,7 @@ import { validate } from '../middleware/validate.js';
 import {
   getBoards, getBoard, createBoard, updateBoard, deleteBoard,
 } from '../controllers/boardsController.js';
+import { createShareLink } from '../controllers/shareController.js';
 
 const router = Router();
 
@@ -42,5 +43,6 @@ router.get   ('/:id',  [param('id').isUUID().withMessage('Ungültige Board-ID'),
 router.post  ('/',     [validateCreateBoard, validate], createBoard);
 router.put   ('/:id',  [param('id').isUUID(), ...validateBoard, validate], updateBoard);
 router.delete('/:id',  [param('id').isUUID().withMessage('Ungültige Board-ID'), validate], deleteBoard);
+router.post  ('/:id/share', [param('id').isUUID().withMessage('Ungültige Board-ID'), validate], createShareLink);
 
 export default router;

@@ -354,7 +354,7 @@ export default function BoardEditorPage() {
             onTogglePlayer={lines.togglePlayerInLine}
             canAddLine={lines.canAddLine}
           />
-          <ExportPanel frames={frames} renderFrame={renderFrame} />
+          <ExportPanel boardId={boardId} frames={frames} renderFrame={renderFrame} />
           <NotesPanel value={notes} onChange={setNotes} />
         </div>
       </div>

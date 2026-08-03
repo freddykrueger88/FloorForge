@@ -10,6 +10,7 @@ const RegisterPage   = lazy(() => import('./pages/RegisterPage.jsx'));
 const Dashboard      = lazy(() => import('./pages/Dashboard.jsx'));
 const BoardsPage     = lazy(() => import('./pages/BoardsPage.jsx'));
 const BoardEditorPage = lazy(() => import('./pages/BoardEditorPage.jsx'));
+const SharePage       = lazy(() => import('./pages/SharePage.jsx'));
 const NotFound       = lazy(() => import('./pages/NotFound.jsx'));
 
 function PrivateRoute({ children }) {
@@ -43,6 +44,7 @@ export default function App() {
           <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
           <Route path="/boards" element={<PrivateRoute><BoardsPage /></PrivateRoute>} />
           <Route path="/board/:id" element={<PrivateRoute><BoardEditorPage /></PrivateRoute>} />
+          <Route path="/share/:token" element={<SharePage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>

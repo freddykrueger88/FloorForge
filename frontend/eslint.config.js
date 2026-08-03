@@ -28,6 +28,7 @@ export default [
         requestAnimationFrame: 'readonly', cancelAnimationFrame: 'readonly',
         ResizeObserver: 'readonly',
         fetch: 'readonly', URL: 'readonly', FormData: 'readonly',
+        navigator: 'readonly',
       },
       parserOptions: { ecmaFeatures: { jsx: true } },
     },
