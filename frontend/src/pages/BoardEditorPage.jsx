@@ -22,6 +22,7 @@ import FieldToolbar from '../components/field/FieldToolbar.jsx';
 import FieldTypeChangeDialog from '../components/field/FieldTypeChangeDialog.jsx';
 import PlayerInfoPanel from '../components/field/PlayerInfoPanel.jsx';
 import TeamColorPanel from '../components/field/TeamColorPanel.jsx';
+import PlayerAccessibleList from '../components/field/PlayerAccessibleList.jsx';
 import { DrawingToolbar } from '../components/drawing/index.js';
 import { FrameTimeline } from '../components/frames/index.js';
 import { PlaybackControls } from '../components/playback/index.js';
@@ -85,6 +86,18 @@ export default function BoardEditorPage() {
 
   const [showNames, setShowNames] = useState(false);
   const [namePosition, setNamePosition] = useState('unten');
+
+  // Positions-Hinweise bei Hover (Issue #27)
+  const [showHints, setShowHints] = useState(
+    () => localStorage.getItem('floorforge:showHints') !== 'false'
+  );
+  const toggleShowHints = useCallback(() => {
+    setShowHints((v) => {
+      const next = !v;
+      localStorage.setItem('floorforge:showHints', String(next));
+      return next;
+    });
+  }, []);
 
   const handleNameChange = useCallback((id, name) => {
     setLivePlayers((prev) => prev.map((p) => (p.id === id ? { ...p, name } : p)));
@@ -237,6 +250,8 @@ export default function BoardEditorPage() {
             fieldType={field.fieldType}
             availableFields={field.availableFields}
             onRequestFieldTypeChange={handleRequestFieldTypeChange}
+            showHints={showHints}
+            onToggleShowHints={toggleShowHints}
           />
         </div>
       </header>
@@ -304,9 +319,18 @@ export default function BoardEditorPage() {
             onElementClick={drawing.handleElementClick}
             showNames={showNames}
             namePosition={namePosition}
+            showHints={showHints}
             activeLinePlayerIds={lines.activeLine?.playerIds ?? null}
             activeLineColor={lines.activeLine?.color ?? null}
           />
+
+          {!anim.playing && (
+            <PlayerAccessibleList
+              players={livePlayers}
+              selectedPlayerId={selectedPlayerId}
+              onSelectPlayer={setSelectedPlayerId}
+            />
+          )}
 
           {!anim.playing && selectedPlayerId && (
             <div className={styles.infoPanelWrap}>

@@ -42,6 +42,7 @@ export default function FloorballField({
   namePosition = 'unten',
   activeLinePlayerIds = null,
   activeLineColor     = null,
+  showHints    = false, // Issue #27
   // Zeichnen
   drawingElements  = [],
   selectedDrawingId = null,
@@ -134,6 +135,7 @@ export default function FloorballField({
         namePosition={namePosition}
         activeLinePlayerIds={activeLinePlayerIds}
         activeLineColor={activeLineColor}
+        showHints={showHints}
       />
     </Stage>
   );

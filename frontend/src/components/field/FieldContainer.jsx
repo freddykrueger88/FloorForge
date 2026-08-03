@@ -27,6 +27,7 @@ export default function FieldContainer({
   namePosition = 'unten',
   activeLinePlayerIds = null,
   activeLineColor     = null,
+  showHints    = false, // Issue #27
   // Zeichnen
   drawingElements    = [],
   selectedDrawingId  = null,
@@ -84,6 +85,7 @@ export default function FieldContainer({
         namePosition={namePosition}
         activeLinePlayerIds={activeLinePlayerIds}
         activeLineColor={activeLineColor}
+        showHints={showHints}
         drawingElements={drawingElements}
         selectedDrawingId={selectedDrawingId}
         activeTool={activeTool}

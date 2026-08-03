@@ -16,8 +16,10 @@
  *   showName     – boolean – Spielername ein-/ausblenden (Issue #29)
  *   namePosition – 'oben' | 'unten' – Position des Namens relativ zum Token
  */
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { Circle, Group, Text, Ring, Rect } from 'react-konva';
+import { useTranslation } from 'react-i18next';
+import { POSITION_HINTS } from '../../constants/positionHints.js';
 
 // Token-Größe relativ zur Spielfeldbreite (konstant egal wie groß der Canvas)
 const TOKEN_RADIUS_M = 0.75; // Meter
@@ -44,10 +46,16 @@ export default function PlayerToken({
   showName     = false,
   namePosition = 'unten',
   lineHighlightColor = null, // Farbe der aktiven Line, falls dieser Spieler ihr angehört (Issue #12)
+  showHints    = false, // Positions-Hinweis-Tooltip bei Hover (Issue #27)
 }) {
   const groupRef = useRef(null);
   const radius   = Math.max(12, TOKEN_RADIUS_M * scale);
   const fontSize = Math.max(8, radius * LABEL_FONT_RATIO);
+  const [hovered, setHovered] = useState(false);
+  const { i18n } = useTranslation();
+  const hintLang  = i18n.language?.startsWith('en') ? 'en' : 'de';
+  const hintTable = POSITION_HINTS[hintLang] ?? POSITION_HINTS.de;
+  const hintInfo  = hintTable[player.role] ?? hintTable['M'];
 
   // Meter → px
   const toCanvasX = (m) => offsetX + m * scale;
@@ -85,9 +93,12 @@ export default function PlayerToken({
       x={toCanvasX(player.x)}
       y={toCanvasY(player.y)}
       draggable={!readonly}
+      onDragStart={() => setHovered(false)}
       onDragEnd={handleDragEnd}
       onClick={() => onSelect?.(player.id)}
       onTap={() => onSelect?.(player.id)}
+      onMouseEnter={(e) => { setHovered(true); e.target.getStage().container().style.cursor = readonly ? 'default' : 'grab'; }}
+      onMouseLeave={(e) => { setHovered(false); e.target.getStage().container().style.cursor = 'default'; }}
       // Accessibility
       id={`player-${player.id}`}
     >
@@ -168,6 +179,43 @@ export default function PlayerToken({
             verticalAlign="middle"
             width={nameChipW}
             height={nameChipH}
+          />
+        </Group>
+      )}
+
+      {/* Positions-Hinweis-Tooltip bei Hover (Issue #27) */}
+      {showHints && hovered && (
+        <Group x={-80} y={-radius - 92} listening={false}>
+          <Rect
+            width={160}
+            height={80}
+            cornerRadius={8}
+            fill="rgba(15, 17, 23, 0.94)"
+            stroke="rgba(255, 255, 255, 0.15)"
+            strokeWidth={1}
+            shadowColor="#000"
+            shadowBlur={10}
+            shadowOpacity={0.4}
+          />
+          <Text
+            text={hintInfo.name}
+            x={8} y={7}
+            width={144}
+            fontSize={13}
+            fontStyle="700"
+            fill="#facc15"
+            fontFamily="Inter, system-ui, sans-serif"
+          />
+          <Text
+            text={hintInfo.hint}
+            x={8} y={25}
+            width={144}
+            height={48}
+            fontSize={11}
+            lineHeight={1.3}
+            fill="#ffffff"
+            fontFamily="Inter, system-ui, sans-serif"
+            wrap="word"
           />
         </Group>
       )}

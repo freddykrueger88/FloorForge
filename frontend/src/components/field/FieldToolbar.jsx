@@ -12,6 +12,8 @@ export default function FieldToolbar({
   fieldType,
   availableFields,
   onRequestFieldTypeChange,
+  showHints,
+  onToggleShowHints,
 }) {
   return (
     <div className={styles.toolbar} role="toolbar" aria-label="Feld-Einstellungen">
@@ -38,6 +40,17 @@ export default function FieldToolbar({
       >
         <span aria-hidden="true">{showNames ? '👁' : '🚫'}</span>
         <span>Namen</span>
+      </button>
+
+      <button
+        className={`${styles.toggleBtn} ${showHints ? styles.active : ''}`}
+        onClick={onToggleShowHints}
+        aria-pressed={showHints}
+        aria-label="Positions-Hinweise ein-/ausblenden"
+        title="Positions-Hinweise bei Hover anzeigen"
+      >
+        <span aria-hidden="true">💡</span>
+        <span>Hinweise</span>
       </button>
 
       {showNames && (
