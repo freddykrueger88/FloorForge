@@ -2,6 +2,12 @@
  * IFF-konforme Spielfeld-Maße
  * Quelle: IFF Rulebook 2022, Section 1 – Playing Area
  * Alle Maße in Metern, werden intern auf Canvas-Pixel skaliert.
+ *
+ * Torraum (goalAreaWidth×goalAreaDepth) und Torwartfläche
+ * (keeperWidth×keeperDepth) sind rechteckig, nicht halbrund – anders als
+ * z.B. beim Fußball-Strafraum. Das Tor selbst liegt NICHT an der Bande,
+ * sondern goalLineInset (2,85m Großfeld) davor – Floorball erlaubt
+ * Weiterspielen hinter dem Tor, ähnlich wie beim Eishockey.
  */
 
 export const IFF_FIELDS = {
@@ -13,12 +19,14 @@ export const IFF_FIELDS = {
     height: 20,         // m
     boardHeight: 0.5,   // Bandenhöhe (visuell)
     goalWidth: 1.60,    // m (IFF: 160cm)
-    goalDepth: 0.45,    // m
+    goalDepth: 0.60,    // m (IFF: 60cm)
     goalAreaWidth: 4.0, // m (Torraum Breite)
     goalAreaDepth: 5.0, // m (Torraum Tiefe)
     keeperWidth: 1.0,   // m (Torwartfläche Breite)
     keeperDepth: 2.5,   // m (Torwartfläche Tiefe)
-    centerCircleRadius: 2.85, // m
+    goalLineInset: 2.85, // m (IFF: Torraum 2,85m von der Bande entfernt –
+                          // Tor liegt NICHT an der Bande, Raum "hinter dem Tor"
+                          // bleibt bespielbar)
     cornerRadius: 1.0,  // m (abgerundete Ecken)
     players: { home: 5, away: 5, goalkeepers: 2 },
   },
@@ -35,7 +43,7 @@ export const IFF_FIELDS = {
     goalAreaDepth: 3.5,
     keeperWidth: 0.8,
     keeperDepth: 1.8,
-    centerCircleRadius: 2.0,
+    goalLineInset: 1.4, // m (proportional zum Großfeld-Wert 2,85m/40m skaliert)
     cornerRadius: 0.75,
     players: { home: 4, away: 4, goalkeepers: 0 },
   },
@@ -52,7 +60,7 @@ export const IFF_FIELDS = {
     goalAreaDepth: 3.0,
     keeperWidth: 0.6,
     keeperDepth: 1.5,
-    centerCircleRadius: 1.5,
+    goalLineInset: 1.8, // m (proportional zum Großfeld-Wert 2,85m/40m skaliert)
     cornerRadius: 0.5,
     players: { home: 3, away: 3, goalkeepers: 0 },
   },
@@ -69,7 +77,7 @@ export const IFF_FIELDS = {
     goalAreaDepth: 2.5,
     keeperWidth: 0,
     keeperDepth: 0,
-    centerCircleRadius: 1.2,
+    goalLineInset: 1.6, // m (proportional zum Großfeld-Wert 2,85m/40m skaliert)
     cornerRadius: 0.4,
     players: { home: 3, away: 3, goalkeepers: 0 },
   },

@@ -1,6 +1,7 @@
 .footer {
   display: flex;
   justify-content: center;
+  gap: var(--space-6);
   padding: var(--space-4);
   border-top: 1px solid var(--color-border);
   background: var(--color-bg);

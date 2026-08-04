@@ -12,6 +12,7 @@ import { IFF_FIELDS } from '../../constants/fieldConfig.js';
 import { FIELD_COLORS } from '../../constants/fieldTheme.js';
 
 const BALL_RADIUS_M = 0.115;
+const FACEOFF_INSET_M = 1.5; // IFF: Anspiel-Punkte 1,5m von den Langseiten entfernt
 
 function computeScale(field, w, h, padding = 40) {
   const scale  = Math.min((w - padding * 2) / field.width, (h - padding * 2) / field.height);
@@ -44,8 +45,18 @@ export default async function renderFieldFrame({
   const goalAreaD = px(field.goalAreaDepth);
   const keeperW   = px(field.keeperWidth);
   const keeperD   = px(field.keeperDepth);
+  // Torraum + Torwartfläche sind laut IFF-Regelwerk schmal-lang – rein
+  // optisch für die Darstellung kompakter gekappt UND insgesamt
+  // verkleinert (×0.65). Tiefe (x) bleibt kleiner als Breite (y) –
+  // "quadratischer" Eindruck soll von oben nach unten entstehen.
+  const AREA_SCALE = 0.65;
+  const goalAreaDisplayW = goalAreaW * AREA_SCALE;
+  const goalAreaDisplayD = Math.min(goalAreaD, goalAreaW * 0.8) * AREA_SCALE;
+  const keeperDisplayW = keeperW * AREA_SCALE;
+  const keeperDisplayD = Math.min(keeperD, keeperW * 0.8) * AREA_SCALE;
   const goalW_px  = px(field.goalWidth);
   const goalD_px  = px(field.goalDepth);
+  const goalInset = px(field.goalLineInset);
   const ballR     = Math.max(4, px(BALL_RADIUS_M));
 
   // Unsichtbarer Container-Div
@@ -65,22 +76,36 @@ export default async function renderFieldFrame({
     shadowColor: '#000', shadowBlur: 12, shadowOpacity: 0.3,
   }));
 
-  // Goal-Areas
+  // Torraum (4×5m) + Torwartfläche (1×2,5m) + Tor – beginnen goalInset
+  // (2,85m Großfeld) von der Bande entfernt, sodass der Raum "hinter dem
+  // Tor" bespielbar bleibt (anders als beim Fußball)
   for (const side of ['left', 'right']) {
-    const gx = side === 'left' ? ox : ox + fieldW - goalAreaW;
-    layer.add(new Konva.Rect({ x: gx, y: cy - goalAreaD / 2, width: goalAreaW, height: goalAreaD, fill: colors.goalArea, stroke: colors.line, strokeWidth: lw }));
+    const gx = side === 'left' ? ox + goalInset : ox + fieldW - goalInset - goalAreaDisplayD;
+    layer.add(new Konva.Rect({ x: gx, y: cy - goalAreaDisplayW / 2, width: goalAreaDisplayD, height: goalAreaDisplayW, fill: colors.goalArea, stroke: colors.line, strokeWidth: lw }));
     if (keeperD > 0) {
-      const kx = side === 'left' ? ox : ox + fieldW - keeperW;
-      layer.add(new Konva.Rect({ x: kx, y: cy - keeperD / 2, width: keeperW, height: keeperD, fill: colors.keeperArea, stroke: colors.line, strokeWidth: lw }));
+      const kx = side === 'left' ? ox + goalInset : ox + fieldW - goalInset - keeperDisplayD;
+      layer.add(new Konva.Rect({ x: kx, y: cy - keeperDisplayW / 2, width: keeperDisplayD, height: keeperDisplayW, fill: colors.keeperArea, stroke: colors.line, strokeWidth: lw }));
     }
-    const goalX = side === 'left' ? ox - goalD_px : ox + fieldW;
+    const goalX = side === 'left' ? ox + goalInset - goalD_px : ox + fieldW - goalInset;
     layer.add(new Konva.Rect({ x: goalX, y: cy - goalW_px / 2, width: goalD_px, height: goalW_px, fill: 'transparent', stroke: colors.goal, strokeWidth: lw2 }));
   }
 
-  // Mittellinie + Mittelkreis
+  // Mittellinie + Anspiel-Punkte (IFF: Mittelpunkt + 6 weitere Punkte auf
+  // Mittellinie/Torlinien-Verlängerungen, je 1,5m von den Langseiten)
   layer.add(new Konva.Line({ points: [cx, oy, cx, oy + fieldH], stroke: colors.line, strokeWidth: lw }));
-  layer.add(new Konva.Circle({ x: cx, y: cy, radius: px(field.centerCircleRadius), fill: colors.center, stroke: colors.line, strokeWidth: lw }));
   layer.add(new Konva.Circle({ x: cx, y: cy, radius: lw * 2.5, fill: colors.line }));
+  const faceoffNearY = oy + px(FACEOFF_INSET_M);
+  const faceoffFarY  = oy + fieldH - px(FACEOFF_INSET_M);
+  for (const d of [
+    { x: cx,          y: faceoffNearY },
+    { x: cx,          y: faceoffFarY  },
+    { x: ox,          y: faceoffNearY },
+    { x: ox,          y: faceoffFarY  },
+    { x: ox + fieldW, y: faceoffNearY },
+    { x: ox + fieldW, y: faceoffFarY  },
+  ]) {
+    layer.add(new Konva.Circle({ x: d.x, y: d.y, radius: lw * 2.5, fill: colors.line }));
+  }
 
   // Ball
   layer.add(new Konva.Circle({ x: cx, y: cy, radius: ballR, fill: ballColor, stroke: 'rgba(0,0,0,0.4)', strokeWidth: Math.max(1, lw * 0.8) }));

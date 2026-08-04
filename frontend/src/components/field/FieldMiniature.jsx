@@ -38,6 +38,7 @@ export default function FieldMiniature({
   const cy = oy + fieldH / 2;
   const goalAreaD = field.goalAreaDepth * scale; // jetzt Höhe an den Enden
   const goalAreaW = field.goalAreaWidth * scale; // jetzt Breite
+  const goalInset = field.goalLineInset * scale; // Abstand Torraum ↔ Bande
 
   return (
     <svg
@@ -54,26 +55,22 @@ export default function FieldMiniature({
         stroke={colors.board}
         strokeWidth={lw * 2}
       />
-      {/* Torraum oben */}
+      {/* Torraum oben – beginnt goalInset von der Bande entfernt, nicht
+          direkt an ihr (Raum "hinter dem Tor" bleibt bespielbar) */}
       <rect
-        x={cx - goalAreaW / 2} y={oy}
+        x={cx - goalAreaW / 2} y={oy + goalInset}
         width={goalAreaW} height={goalAreaD}
         fill={colors.goalArea} stroke={colors.line} strokeWidth={lw}
       />
       {/* Torraum unten */}
       <rect
-        x={cx - goalAreaW / 2} y={oy + fieldH - goalAreaD}
+        x={cx - goalAreaW / 2} y={oy + fieldH - goalInset - goalAreaD}
         width={goalAreaW} height={goalAreaD}
         fill={colors.goalArea} stroke={colors.line} strokeWidth={lw}
       />
-      {/* Mittellinie */}
+      {/* Mittellinie + Anspielpunkt (kein Mittelkreis – Floorball nutzt
+          Punkte statt Kreis, anders als Fußball) */}
       <line x1={ox} y1={cy} x2={ox + fieldW} y2={cy} stroke={colors.line} strokeWidth={lw} />
-      {/* Mittelkreis */}
-      <circle
-        cx={cx} cy={cy}
-        r={field.centerCircleRadius * scale}
-        fill={colors.center} stroke={colors.line} strokeWidth={lw}
-      />
       <circle cx={cx} cy={cy} r={lw * 1.5} fill={colors.line} />
     </svg>
   );

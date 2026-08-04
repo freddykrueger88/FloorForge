@@ -14,6 +14,7 @@ export { FIELD_COLORS };
 
 const BALL_RADIUS_M = 0.115; // IFF: Floorball-Durchmesser ca. 72mm → Radius ~0.115m (visuell leicht vergrößert)
 const DEFAULT_BALL_COLOR = '#f97316'; // Hot Orange
+const FACEOFF_INSET_M = 1.5; // IFF: Anspiel-Punkte 1,5m von den Langseiten entfernt
 
 function computeScale(field, canvasW, canvasH, padding = 40) {
   const scale  = Math.min((canvasW - padding * 2) / field.width, (canvasH - padding * 2) / field.height);
@@ -67,8 +68,37 @@ export default function FloorballField({
   const lw = Math.max(1, scale * 0.05), lw2 = lw * 2;
   const goalAreaW = px(field.goalAreaWidth), goalAreaD = px(field.goalAreaDepth);
   const keeperW = px(field.keeperWidth),     keeperD = px(field.keeperDepth);
+  // Torraum + Torwartfläche sind laut IFF-Regelwerk schmal-lang (4×5m
+  // bzw. 1×2,5m) – rein optisch für die Darstellung kompakter gekappt
+  // UND insgesamt verkleinert (×0.65), damit sie nicht zu dominant vor
+  // dem Tor wirken; die echten Maße (goalAreaWidth/-Depth,
+  // keeperWidth/-Depth) bleiben unverändert. Die Tiefe (ins Feld, x)
+  // bleibt dabei bewusst KLEINER als die Breite (entlang Torlinie, y) –
+  // der "quadratische" Eindruck soll von oben nach unten entstehen,
+  // nicht in die Tiefe.
+  const AREA_SCALE = 0.65;
+  const goalAreaDisplayW = goalAreaW * AREA_SCALE;
+  const goalAreaDisplayD = Math.min(goalAreaD, goalAreaW * 0.8) * AREA_SCALE;
+  const keeperDisplayW = keeperW * AREA_SCALE;
+  const keeperDisplayD = Math.min(keeperD, keeperW * 0.8) * AREA_SCALE;
   const goalW_px = px(field.goalWidth),      goalD_px = px(field.goalDepth);
+  const goalInset = px(field.goalLineInset);
   const ballR = Math.max(4, px(BALL_RADIUS_M));
+
+  // Anspiel-Punkte (IFF-Regelwerk): Mittelpunkt + 6 weitere Punkte auf der
+  // Mittellinie und den gedachten Verlängerungen der Torlinien, je 1,5m von
+  // den Langseiten entfernt – ersetzt den zuvor fälschlich gezeichneten
+  // Mittelkreis (Fußball-Markierung, kein Floorball-Element)
+  const faceoffNearY = oy + px(FACEOFF_INSET_M);
+  const faceoffFarY  = oy + fieldH - px(FACEOFF_INSET_M);
+  const faceoffDots = [
+    { x: cx,        y: faceoffNearY },
+    { x: cx,        y: faceoffFarY  },
+    { x: ox,        y: faceoffNearY },
+    { x: ox,        y: faceoffFarY  },
+    { x: ox+fieldW, y: faceoffNearY },
+    { x: ox+fieldW, y: faceoffFarY  },
+  ];
 
   const gridLines = useMemo(() => {
     if (!showGrid || gridSize <= 0) return [];
@@ -90,15 +120,21 @@ export default function FloorballField({
       <Layer listening={false}>
         <Rect x={ox} y={oy} width={fieldW} height={fieldH} fill={colors.surface} cornerRadius={px(field.cornerRadius)} stroke={colors.board} strokeWidth={lw2*2} shadowColor="#000" shadowBlur={12} shadowOpacity={0.3}/>
         {gridLines}
-        <Rect x={ox} y={cy-goalAreaD/2} width={goalAreaW} height={goalAreaD} fill={colors.goalArea} stroke={colors.line} strokeWidth={lw}/>
-        {keeperD>0 && <Rect x={ox} y={cy-keeperD/2} width={keeperW} height={keeperD} fill={colors.keeperArea} stroke={colors.line} strokeWidth={lw}/>}
-        <Rect x={ox+fieldW-goalAreaW} y={cy-goalAreaD/2} width={goalAreaW} height={goalAreaD} fill={colors.goalArea} stroke={colors.line} strokeWidth={lw}/>
-        {keeperD>0 && <Rect x={ox+fieldW-keeperW} y={cy-keeperD/2} width={keeperW} height={keeperD} fill={colors.keeperArea} stroke={colors.line} strokeWidth={lw}/>}
+        {/* Torraum (4×5m, rechteckig) + Torwartfläche (1×2,5m) – beide
+            beginnen goalInset (2,85m Großfeld) von der Bande entfernt am
+            Tor, nicht an der Bande selbst: dahinter bleibt Raum zum
+            Weiterspielen "hinter dem Tor" */}
+        <Rect x={ox+goalInset} y={cy-goalAreaDisplayW/2} width={goalAreaDisplayD} height={goalAreaDisplayW} fill={colors.goalArea} stroke={colors.line} strokeWidth={lw}/>
+        {keeperD>0 && <Rect x={ox+goalInset} y={cy-keeperDisplayW/2} width={keeperDisplayD} height={keeperDisplayW} fill={colors.keeperArea} stroke={colors.line} strokeWidth={lw}/>}
+        <Rect x={ox+fieldW-goalInset-goalAreaDisplayD} y={cy-goalAreaDisplayW/2} width={goalAreaDisplayD} height={goalAreaDisplayW} fill={colors.goalArea} stroke={colors.line} strokeWidth={lw}/>
+        {keeperD>0 && <Rect x={ox+fieldW-goalInset-keeperDisplayD} y={cy-keeperDisplayW/2} width={keeperDisplayD} height={keeperDisplayW} fill={colors.keeperArea} stroke={colors.line} strokeWidth={lw}/>}
         <Line points={[cx,oy,cx,oy+fieldH]} stroke={colors.line} strokeWidth={lw}/>
-        <Circle x={cx} y={cy} radius={px(field.centerCircleRadius)} fill={colors.center} stroke={colors.line} strokeWidth={lw}/>
         <Circle x={cx} y={cy} radius={lw*2.5} fill={colors.line}/>
-        <Rect x={ox-goalD_px} y={cy-goalW_px/2} width={goalD_px} height={goalW_px} fill="transparent" stroke={colors.goal} strokeWidth={lw2}/>
-        <Rect x={ox+fieldW} y={cy-goalW_px/2} width={goalD_px} height={goalW_px} fill="transparent" stroke={colors.goal} strokeWidth={lw2}/>
+        {faceoffDots.map((d, i) => <Circle key={`fo${i}`} x={d.x} y={d.y} radius={lw*2.5} fill={colors.line} listening={false}/>)}
+        {/* Tor liegt innerhalb der Bande am Torraum (nicht davor) – der
+            Bereich zwischen Bande und Tor bleibt frei bespielbar */}
+        <Rect x={ox+goalInset-goalD_px} y={cy-goalW_px/2} width={goalD_px} height={goalW_px} fill="transparent" stroke={colors.goal} strokeWidth={lw2}/>
+        <Rect x={ox+fieldW-goalInset} y={cy-goalW_px/2} width={goalD_px} height={goalW_px} fill="transparent" stroke={colors.goal} strokeWidth={lw2}/>
         {/* Ball am Anstosspunkt (Spielfeldmitte) */}
         <Circle
           x={cx} y={cy}

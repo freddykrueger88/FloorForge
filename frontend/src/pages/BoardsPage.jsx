@@ -3,7 +3,7 @@
  * Kachel-Ansicht mit Anlegen, Umbenennen, Löschen
  */
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate, Link } from 'react-router';
+import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useBoardsApi } from '../hooks/useBoardsApi.js';
 import { useSettings } from '../hooks/useSettings.js';
@@ -69,7 +69,6 @@ export default function BoardsPage() {
 
   return (
     <main className={styles.page} id="main-content">
-      <a href="#main-content" className="sr-only sr-only-focusable">{t('accessibility.skipToContent')}</a>
       <header className={styles.header}>
         <div>
           <h1 className={styles.title}>{t('nav.boards')}</h1>
@@ -79,14 +78,9 @@ export default function BoardsPage() {
               : t('boardsPage.noBoardsYet')}
           </p>
         </div>
-        <Link
-          to="/settings"
-          className={styles.newBtn}
-          aria-label={t('boardsPage.openSettings')}
-          title={t('nav.settings')}
-        >
-          <span aria-hidden="true">⚙️</span>
-        </Link>
+      </header>
+
+      <div className={styles.actionsBar}>
         <button
           className={styles.newBtn}
           onClick={() => setShowNewModal(true)}
@@ -116,7 +110,7 @@ export default function BoardsPage() {
             <span aria-hidden="true">▦</span>
           </button>
         </div>
-      </header>
+      </div>
 
       {error && (
         <div className={styles.errorBanner} role="alert">
