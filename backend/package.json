@@ -1,6 +1,6 @@
 {
   "name": "floorforge-backend",
-  "version": "0.1.0",
+  "version": "0.9.0",
   "description": "FloorForge Backend – REST API (Express/Node.js)",
   "type": "module",
   "main": "src/server.js",
