@@ -172,7 +172,8 @@
     "backToBoards": "Zurück zur Board-Übersicht",
     "saving": "💾 Speichert…",
     "saved": "✓ Gespeichert",
-    "saveError": "⚠ Fehler beim Speichern"
+    "saveError": "⚠ Fehler beim Speichern",
+    "saveOffline": "📡 Offline – wird synchronisiert"
   },
   "dashboardStats": {
     "title": "Deine Statistik",
@@ -651,5 +652,13 @@
     "assignFromRosterAriaLabel": "Spieler aus dem Kader zuweisen",
     "assignFromRosterNone": "– Kader-Spieler wählen –",
     "emptyRosterHint": "Noch kein Kader angelegt – auf der Kader-Seite anlegbar."
+  },
+  "offline": {
+    "offlineBanner_one": "Offline – Änderungen werden gespeichert, sobald wieder online ({{count}} ausstehend)",
+    "offlineBanner_other": "Offline – Änderungen werden gespeichert, sobald wieder online ({{count}} ausstehend)",
+    "syncingBanner_one": "Synchronisiere {{count}} Änderung...",
+    "syncingBanner_other": "Synchronisiere {{count}} Änderungen...",
+    "synced": "Alle Änderungen synchronisiert",
+    "syncedWithErrors": "Synchronisiert – einzelne Änderungen konnten nicht übernommen werden"
   }
 }

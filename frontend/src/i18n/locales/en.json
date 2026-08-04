@@ -172,7 +172,8 @@
     "backToBoards": "Back to board overview",
     "saving": "💾 Saving…",
     "saved": "✓ Saved",
-    "saveError": "⚠ Error saving"
+    "saveError": "⚠ Error saving",
+    "saveOffline": "📡 Offline – will sync"
   },
   "dashboardStats": {
     "title": "Your stats",
@@ -651,5 +652,13 @@
     "assignFromRosterAriaLabel": "Assign a player from the roster",
     "assignFromRosterNone": "– Select roster player –",
     "emptyRosterHint": "No roster yet – create one on the roster page."
+  },
+  "offline": {
+    "offlineBanner_one": "Offline – changes will be saved once back online ({{count}} pending)",
+    "offlineBanner_other": "Offline – changes will be saved once back online ({{count}} pending)",
+    "syncingBanner_one": "Syncing {{count}} change...",
+    "syncingBanner_other": "Syncing {{count}} changes...",
+    "synced": "All changes synced",
+    "syncedWithErrors": "Synced – some changes could not be applied"
   }
 }

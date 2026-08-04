@@ -8,7 +8,7 @@ const DEBOUNCE_MS  = 300;    // kurz nach letzter Änderung (bündelt State-Upda
 const INTERVAL_MS  = 30000;  // 30s Intervall
 
 export function useAutoSave(data, saveFn, enabled = true) {
-  const [status,   setStatus  ] = useState('idle');  // idle | saving | saved | error
+  const [status,   setStatus  ] = useState('idle');  // idle | saving | saved | offline | error
   const [lastSaved,setLastSaved] = useState(null);
   const debounceRef = useRef(null);
   const intervalRef = useRef(null);
@@ -24,8 +24,11 @@ export function useAutoSave(data, saveFn, enabled = true) {
       setLastSaved(new Date());
       // Nach 3s wieder auf idle
       setTimeout(() => setStatus('idle'), 3000);
-    } catch {
-      setStatus('error');
+    } catch (err) {
+      // Issue #49 – bei fehlender Verbindung wurde die Änderung bereits
+      // in der offlineQueue gepuffert (siehe apiFetch.js), kein
+      // Datenverlust – UI zeigt das getrennt von einem echten Fehler
+      setStatus(err?.offlineQueued ? 'offline' : 'error');
     }
   }, [saveFn, enabled]);
 

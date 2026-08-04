@@ -3,15 +3,44 @@
  * (Boards, Frames, Lines). Leitet bei 401 zum Login um (Session abgelaufen),
  * analog zum Axios-Interceptor in utils/api.js – außer bei Login/Register
  * selbst, wo ein 401 lediglich falsche Zugangsdaten bedeutet.
+ *
+ * Issue #49 – Offline-Modus: schlägt ein PUT/DELETE (immer eine
+ * bestehende, bereits per ID referenzierte Ressource – POST/Neuanlage
+ * wird bewusst NICHT gepuffert, siehe offlineQueue.js) wegen eines
+ * echten Netzwerkfehlers fehl (nicht wegen einer normalen 4xx/5xx-
+ * Serverantwort), wird der Request in der offlineQueue gepuffert statt
+ * verloren zu gehen. Der geworfene Error trägt `offlineQueued: true`,
+ * damit aufrufender Code (z.B. useAutoSave.js) das von einem echten
+ * Fehler unterscheiden kann.
  */
+import { enqueueWrite, getQueuedWrites } from './offlineQueue.js';
+import useOfflineStore from '../store/offlineStore.js';
+
 const AUTH_ENDPOINTS = ['/auth/login', '/auth/register'];
+const QUEUEABLE_METHODS = ['PUT', 'DELETE'];
 
 export async function apiFetch(url, options = {}) {
-  const res = await fetch(url, {
-    headers: { 'Content-Type': 'application/json', ...options.headers },
-    credentials: 'include',
-    ...options,
-  });
+  const method = (options.method ?? 'GET').toUpperCase();
+
+  let res;
+  try {
+    res = await fetch(url, {
+      headers: { 'Content-Type': 'application/json', ...options.headers },
+      credentials: 'include',
+      ...options,
+    });
+  } catch (networkErr) {
+    if (!QUEUEABLE_METHODS.includes(method)) throw networkErr;
+
+    await enqueueWrite({ url, method, body: options.body });
+    useOfflineStore.getState().setQueueLength((await getQueuedWrites()).length);
+    useOfflineStore.getState().setOnline(false);
+
+    const err = new Error('Offline – Änderung wird synchronisiert, sobald wieder online');
+    err.offlineQueued = true;
+    throw err;
+  }
+
   const json = await res.json();
 
   if (!res.ok) {

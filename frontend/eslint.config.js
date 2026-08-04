@@ -29,6 +29,7 @@ export default [
         ResizeObserver: 'readonly',
         fetch: 'readonly', URL: 'readonly', FormData: 'readonly',
         navigator: 'readonly',
+        indexedDB: 'readonly', IDBKeyRange: 'readonly',
       },
       parserOptions: { ecmaFeatures: { jsx: true } },
     },

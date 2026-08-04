@@ -8,6 +8,10 @@ import ColorBlindFilters from './components/a11y/ColorBlindFilters.jsx';
 import LiveRegion from './components/a11y/LiveRegion.jsx';
 import Header from './components/layout/Header.jsx';
 import Footer from './components/layout/Footer.jsx';
+import OfflineBanner from './components/layout/OfflineBanner.jsx';
+import useOfflineStore from './store/offlineStore.js';
+import { syncOfflineQueue } from './utils/offlineSync.js';
+import { getQueuedWrites } from './utils/offlineQueue.js';
 import './styles/tokens.css';
 import './styles/base.css';
 import './styles/auth.css';
@@ -69,12 +73,35 @@ export default function App() {
     apiFetch('/api/settings').then(applyGlobalPreferences).catch(() => {});
   }, [user]);
 
+  // Issue #49 – Offline-Modus: online/offline-Events global registrieren,
+  // bei Wiederverbindung gepufferte Schreibzugriffe automatisch abspielen.
+  // Initialen Queue-Stand einmalig laden (z.B. nach Reload mit noch
+  // offenen, nicht synchronisierten Änderungen).
+  useEffect(() => {
+    const handleOnline = () => {
+      useOfflineStore.getState().setOnline(true);
+      syncOfflineQueue();
+    };
+    const handleOffline = () => useOfflineStore.getState().setOnline(false);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    getQueuedWrites().then((queued) => useOfflineStore.getState().setQueueLength(queued.length));
+    if (navigator.onLine) syncOfflineQueue();
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
   if (!booted) return <Loader />;
 
   return (
     <BrowserRouter>
       <ColorBlindFilters />
       <LiveRegion />
+      <OfflineBanner />
       <Header />
       <Suspense fallback={<Loader />}>
         <Routes>

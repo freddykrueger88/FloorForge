@@ -323,9 +323,10 @@ export default function BoardEditorPage() {
         <Link to="/boards" className={styles.backLink} aria-label={t('boardEditor.backToBoards')}>←</Link>
         <h1 className={styles.title}>{board?.name ?? t('board.untitled')}</h1>
         <span className={styles.saveStatus} aria-live="polite">
-          {saveStatus === 'saving' && t('boardEditor.saving')}
-          {saveStatus === 'saved'  && t('boardEditor.saved')}
-          {saveStatus === 'error'  && t('boardEditor.saveError')}
+          {saveStatus === 'saving'  && t('boardEditor.saving')}
+          {saveStatus === 'saved'   && t('boardEditor.saved')}
+          {saveStatus === 'offline' && t('boardEditor.saveOffline')}
+          {saveStatus === 'error'   && t('boardEditor.saveError')}
         </span>
         <div className={styles.headerControls}>
           <TeamColorPanel
