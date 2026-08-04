@@ -19,6 +19,28 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 - Barrierefreiheit: WCAG 2.1 AA vollständig (v0.7.0)
 - Passwort ändern & zurücksetzen (v0.6.0, #31)
 
+### Changed – Abhängigkeiten & Runtimes modernisiert
+Vollständige, schrittweise Modernisierung (5 Phasen, jede einzeln
+verifiziert – siehe Commit-Historie für Details):
+- **Backend:** Express 4→5, redis-Client 4→6 (RESP3-Default),
+  archiver 7→8 (ESM-Rewrite, `ZipArchive`-Klasse statt Factory-Funktion,
+  betrifft `userController.js`/`backupCron.js`), dotenv 16→17,
+  express-rate-limit 7→8, jest 29→30, eslint 9→10.
+- **Frontend:** zustand 4→5, konva 9→10 (`Konva.legacyTextRendering =
+  true` gesetzt, um das bisherige Text-Rendering pixelgenau zu
+  erhalten), i18next 23→26, react-i18next 14→17.
+- **Infrastruktur:** Node 20/22 → 24 (Active LTS) in allen
+  Dockerfiles + CI, nginx 1.27→1.30, **Postgres 16→18** (Live-Migration
+  der Produktivdatenbank per pg_dump/pg_restore, eigenes neues Volume –
+  Postgres-Datenverzeichnisse sind zwischen Majors nicht kompatibel),
+  Redis-Server 7→8. GitHub Actions auf aktuelle Major-Versionen.
+- **Bewusst zurückgestellt:** Vite 7→8 + `@vitejs/plugin-react` 5→6 –
+  `@vitejs/plugin-react@6`s optionale Rolldown/Babel-Integration hat
+  einen ungelösten Peer-Konflikt mit einer Pre-Release-Version von
+  `@babel/core`, selbst bei einer frischen Installation. `eslint`
+  10 (Frontend) ist blockiert, da `eslint-plugin-react` (aktuellste
+  Version) nur `eslint ^9.7` als Peer unterstützt.
+
 ---
 
 ## [0.4.0-dev] – 2026-08-02 (in Entwicklung)
