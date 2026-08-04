@@ -26,7 +26,7 @@ import FieldTypeChangeDialog from '../components/field/FieldTypeChangeDialog.jsx
 import PlayerInfoPanel from '../components/field/PlayerInfoPanel.jsx';
 import TeamColorPanel from '../components/field/TeamColorPanel.jsx';
 import PlayerAccessibleList from '../components/field/PlayerAccessibleList.jsx';
-import { DrawingToolbar } from '../components/drawing/index.js';
+import { DrawingToolbar, DrawingCoordinatesForm } from '../components/drawing/index.js';
 import { FrameTimeline } from '../components/frames/index.js';
 import { PlaybackControls } from '../components/playback/index.js';
 import { NotesPanel, ExportPanel, PdfExportPanel } from '../components/board/index.js';
@@ -400,6 +400,12 @@ export default function BoardEditorPage() {
         </div>
 
         <div className={styles.sidebar}>
+          <DrawingCoordinatesForm
+            activeTool={drawing.activeTool}
+            field={IFF_FIELDS[field.fieldType] ?? IFF_FIELDS.large}
+            onAddArrow={drawing.addArrowElement}
+            onAddFreehand={drawing.addFreehandElement}
+          />
           <LinesPanel
             lines={lines.lines}
             activeLineId={lines.activeLineId}

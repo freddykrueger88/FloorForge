@@ -357,7 +357,21 @@
     "undo": "Rückgängig",
     "redoTitle": "Wiederherstellen [Strg+Y]",
     "redo": "Wiederherstellen",
-    "clearAll": "Alle Zeichnungen löschen"
+    "clearAll": "Alle Zeichnungen löschen",
+    "coordinatesTitle": "Per Koordinaten zeichnen",
+    "coordinatesHint": "Alternative zum Ziehen mit der Maus – Werte in Metern.",
+    "startX": "Start X",
+    "startY": "Start Y",
+    "endX": "Ende X",
+    "endY": "Ende Y",
+    "addArrow": "Hinzufügen",
+    "freehandPointX": "Punkt X",
+    "freehandPointY": "Punkt Y",
+    "addPoint": "Punkt hinzufügen",
+    "saveFreehand": "Zeichnung speichern",
+    "pointList": "Wegpunkte",
+    "removePoint": "Punkt entfernen",
+    "announceElementAdded": "Zeichen-Element hinzugefügt"
   },
   "playback": {
     "announceStop": "Zurück zu Frame 1",

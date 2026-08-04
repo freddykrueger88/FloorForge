@@ -357,7 +357,21 @@
     "undo": "Undo",
     "redoTitle": "Redo [Ctrl+Y]",
     "redo": "Redo",
-    "clearAll": "Clear all drawings"
+    "clearAll": "Clear all drawings",
+    "coordinatesTitle": "Draw by coordinates",
+    "coordinatesHint": "Alternative to dragging with the mouse – values in meters.",
+    "startX": "Start X",
+    "startY": "Start Y",
+    "endX": "End X",
+    "endY": "End Y",
+    "addArrow": "Add",
+    "freehandPointX": "Point X",
+    "freehandPointY": "Point Y",
+    "addPoint": "Add point",
+    "saveFreehand": "Save drawing",
+    "pointList": "Waypoints",
+    "removePoint": "Remove point",
+    "announceElementAdded": "Drawing element added"
   },
   "playback": {
     "announceStop": "Back to frame 1",

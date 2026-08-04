@@ -193,6 +193,45 @@ export function useDrawing() {
     };
   }, [isDrawing, handlePointerUp]);
 
+  // Tastatur-Alternative zum Ziehen mit der Maus (Issue #38 – WCAG 2.1.1):
+  // erzeugt exakt dieselbe Element-Form wie handlePointerDown/Move/Up,
+  // nur direkt aus fertigen Koordinaten statt schrittweise per Drag.
+  const addArrowElement = useCallback((tool, x1, y1, x2, y2) => {
+    const toolDef = TOOLS[tool];
+    if (!toolDef) return;
+    const el = {
+      id: uid(),
+      type: tool,
+      x1, y1, x2, y2,
+      color: activeColor,
+      strokeWidth: toolDef.strokeWidth ?? strokeWidth,
+      dash: toolDef.dash ?? [],
+      arrowHead: toolDef.arrowHead ?? true,
+    };
+    setElements((prev) => {
+      pushUndo(prev);
+      return [...prev, el];
+    });
+    useAnnounceStore.getState().announce(t('drawing.announceElementAdded'));
+  }, [activeColor, strokeWidth, pushUndo, t]);
+
+  const addFreehandElement = useCallback((points) => {
+    const el = {
+      id: uid(),
+      type: 'freehand',
+      points,
+      color: activeColor,
+      strokeWidth,
+      dash: [],
+      arrowHead: false,
+    };
+    setElements((prev) => {
+      pushUndo(prev);
+      return [...prev, el];
+    });
+    useAnnounceStore.getState().announce(t('drawing.announceElementAdded'));
+  }, [activeColor, strokeWidth, pushUndo, t]);
+
   // Eraser: Element per Klick löschen
   const handleElementClick = useCallback((id) => {
     if (activeTool === 'eraser') {
@@ -245,5 +284,6 @@ export function useDrawing() {
     addElement, updateElement, deleteElement, clearAll, loadElements,
     handlePointerDown, handlePointerMove, handlePointerUp,
     handleElementClick,
+    addArrowElement, addFreehandElement,
   };
 }
