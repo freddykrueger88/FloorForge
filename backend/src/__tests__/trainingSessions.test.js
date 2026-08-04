@@ -1,0 +1,254 @@
+import './setup.js';
+import request from 'supertest';
+import app from '../server.js';
+import pool from '../db/pool.js';
+import redisClient, { connectRedis } from '../db/redis.js';
+import { runMigrations } from '../db/migrate.js';
+
+const TEST_EMAIL_PREFIX = 'trainings-test-';
+const uniqueEmail = (tag) => `${TEST_EMAIL_PREFIX}${tag}-${Math.floor(Math.random() * 1e9)}@example.com`;
+
+async function registerAndLogin(tag) {
+  const email = uniqueEmail(tag);
+  const res = await request(app).post('/api/auth/register').send({ email, password: 'Testpass123' });
+  return { email, cookie: res.headers['set-cookie'][0] };
+}
+
+async function createBoard(cookie, name = 'Testboard') {
+  const res = await request(app)
+    .post('/api/boards')
+    .set('Cookie', cookie)
+    .send({ name, fieldType: 'large' });
+  return res.body.data._id;
+}
+
+let owner;
+let other;
+let ownerBoardId;
+let otherBoardId;
+
+beforeAll(async () => {
+  await connectRedis();
+  await runMigrations();
+  owner = await registerAndLogin('owner');
+  other = await registerAndLogin('other');
+  ownerBoardId = await createBoard(owner.cookie, 'Passübung');
+  otherBoardId = await createBoard(other.cookie, 'Fremdes Board');
+});
+
+afterAll(async () => {
+  await pool.query('DELETE FROM users WHERE email LIKE $1', [`${TEST_EMAIL_PREFIX}%`]);
+  await pool.end();
+  await redisClient.quit();
+});
+
+describe('GET/POST /api/trainings', () => {
+  it('liefert eine leere Liste für einen frischen Nutzer', async () => {
+    const res = await request(app).get('/api/trainings').set('Cookie', owner.cookie);
+    expect(res.status).toBe(200);
+    expect(res.body.data).toEqual([]);
+  });
+
+  it('lehnt nicht authentifizierte Anfragen mit 401 ab', async () => {
+    const res = await request(app).get('/api/trainings');
+    expect(res.status).toBe(401);
+  });
+
+  it('legt eine neue Trainingseinheit an', async () => {
+    const res = await request(app)
+      .post('/api/trainings')
+      .set('Cookie', owner.cookie)
+      .send({ name: 'Aufwärmen Block A' });
+    expect(res.status).toBe(201);
+    expect(res.body.data.name).toBe('Aufwärmen Block A');
+    expect(res.body.data.itemCount).toBe(0);
+    expect(res.body.data.totalMinutes).toBe(0);
+  });
+
+  it('lehnt eine Trainingseinheit ohne Namen mit 422 ab', async () => {
+    const res = await request(app).post('/api/trainings').set('Cookie', owner.cookie).send({});
+    expect(res.status).toBe(422);
+  });
+
+  it('lehnt eine 21. Trainingseinheit mit 400 ab (Maximal 20)', async () => {
+    for (let i = 0; i < 19; i++) {
+      const res = await request(app)
+        .post('/api/trainings')
+        .set('Cookie', owner.cookie)
+        .send({ name: `Session ${i}` });
+      expect(res.status).toBe(201);
+    }
+    const overLimit = await request(app)
+      .post('/api/trainings')
+      .set('Cookie', owner.cookie)
+      .send({ name: 'Zu viel' });
+    expect(overLimit.status).toBe(400);
+  });
+});
+
+describe('Session CRUD + Ownership', () => {
+  let sessionId;
+
+  beforeAll(async () => {
+    const res = await request(app)
+      .post('/api/trainings')
+      .set('Cookie', other.cookie)
+      .send({ name: 'Fremde Session' });
+    sessionId = res.body.data._id;
+  });
+
+  it('erlaubt dem Eigentümer, die Session zu ändern', async () => {
+    const res = await request(app)
+      .put(`/api/trainings/${sessionId}`)
+      .set('Cookie', other.cookie)
+      .send({ name: 'Umbenannt', notes: 'Fokus: Passspiel' });
+    expect(res.status).toBe(200);
+    expect(res.body.data.name).toBe('Umbenannt');
+    expect(res.body.data.notes).toBe('Fokus: Passspiel');
+  });
+
+  it('verweigert einem fremden User den Zugriff (GET) mit 404', async () => {
+    const res = await request(app).get(`/api/trainings/${sessionId}`).set('Cookie', owner.cookie);
+    expect(res.status).toBe(404);
+  });
+
+  it('verweigert einem fremden User das Ändern (PUT) mit 404', async () => {
+    const res = await request(app)
+      .put(`/api/trainings/${sessionId}`)
+      .set('Cookie', owner.cookie)
+      .send({ name: 'Übernommen' });
+    expect(res.status).toBe(404);
+  });
+
+  it('verweigert einem fremden User das Löschen (DELETE) mit 404', async () => {
+    const res = await request(app).delete(`/api/trainings/${sessionId}`).set('Cookie', owner.cookie);
+    expect(res.status).toBe(404);
+  });
+});
+
+describe('Items: CRUD, Ownership, Limit, Reorder, Cascade', () => {
+  // Eigener Nutzer statt `owner`, da `owner` in den Tests oben bereits
+  // sein MAX_SESSIONS=20-Kontingent ausgeschöpft hat.
+  let itemsUser;
+  let itemsUserBoardId;
+  let sessionId;
+  let itemAId;
+  let itemBId;
+
+  beforeAll(async () => {
+    itemsUser = await registerAndLogin('items');
+    itemsUserBoardId = await createBoard(itemsUser.cookie, 'Passübung');
+
+    const res = await request(app)
+      .post('/api/trainings')
+      .set('Cookie', itemsUser.cookie)
+      .send({ name: 'Items-Session' });
+    sessionId = res.body.data._id;
+  });
+
+  it('fügt ein eigenes Board als Übung hinzu', async () => {
+    const res = await request(app)
+      .post(`/api/trainings/${sessionId}/items`)
+      .set('Cookie', itemsUser.cookie)
+      .send({ boardId: itemsUserBoardId, durationMinutes: 20, note: 'Aufwärmen' });
+    expect(res.status).toBe(201);
+    expect(res.body.data.boardId).toBe(itemsUserBoardId);
+    expect(res.body.data.boardName).toBe('Passübung');
+    expect(res.body.data.durationMinutes).toBe(20);
+    expect(res.body.data.order).toBe(0);
+    itemAId = res.body.data._id;
+  });
+
+  it('lehnt das Hinzufügen eines fremden Boards mit 404 ab', async () => {
+    const res = await request(app)
+      .post(`/api/trainings/${sessionId}/items`)
+      .set('Cookie', itemsUser.cookie)
+      .send({ boardId: otherBoardId, durationMinutes: 10 });
+    expect(res.status).toBe(404);
+  });
+
+  it('lehnt das Hinzufügen zu einer fremden Session mit 404 ab', async () => {
+    const res = await request(app)
+      .post(`/api/trainings/${sessionId}/items`)
+      .set('Cookie', other.cookie)
+      .send({ boardId: otherBoardId, durationMinutes: 10 });
+    expect(res.status).toBe(404);
+  });
+
+  it('fügt eine zweite Übung hinzu (order=1)', async () => {
+    const res = await request(app)
+      .post(`/api/trainings/${sessionId}/items`)
+      .set('Cookie', itemsUser.cookie)
+      .send({ boardId: itemsUserBoardId, durationMinutes: 15, note: 'Hauptteil' });
+    expect(res.status).toBe(201);
+    expect(res.body.data.order).toBe(1);
+    itemBId = res.body.data._id;
+  });
+
+  it('zeigt die Session mit beiden Items inkl. Summen', async () => {
+    const res = await request(app).get(`/api/trainings/${sessionId}`).set('Cookie', itemsUser.cookie);
+    expect(res.status).toBe(200);
+    expect(res.body.data.items).toHaveLength(2);
+    expect(res.body.data.itemCount).toBe(2);
+    expect(res.body.data.totalMinutes).toBe(35);
+  });
+
+  it('ändert Dauer/Notiz einer Übung', async () => {
+    const res = await request(app)
+      .put(`/api/trainings/${sessionId}/items/${itemAId}`)
+      .set('Cookie', itemsUser.cookie)
+      .send({ durationMinutes: 25 });
+    expect(res.status).toBe(200);
+    expect(res.body.data.durationMinutes).toBe(25);
+  });
+
+  it('vertauscht die Reihenfolge der beiden Items', async () => {
+    const res = await request(app)
+      .put(`/api/trainings/${sessionId}/items/reorder`)
+      .set('Cookie', itemsUser.cookie)
+      .send({ order: [itemBId, itemAId] });
+    expect(res.status).toBe(200);
+    expect(res.body.data[0]._id).toBe(itemBId);
+    expect(res.body.data[0].order).toBe(0);
+    expect(res.body.data[1]._id).toBe(itemAId);
+    expect(res.body.data[1].order).toBe(1);
+  });
+
+  it('löscht eine Übung und normalisiert die Reihenfolge', async () => {
+    const res = await request(app)
+      .delete(`/api/trainings/${sessionId}/items/${itemBId}`)
+      .set('Cookie', itemsUser.cookie);
+    expect(res.status).toBe(200);
+
+    const session = await request(app).get(`/api/trainings/${sessionId}`).set('Cookie', itemsUser.cookie);
+    expect(session.body.data.items).toHaveLength(1);
+    expect(session.body.data.items[0]._id).toBe(itemAId);
+    expect(session.body.data.items[0].order).toBe(0);
+  });
+
+  it('lehnt eine 31. Übung mit 400 ab (Maximal 30 pro Session)', async () => {
+    for (let i = 0; i < 29; i++) {
+      const res = await request(app)
+        .post(`/api/trainings/${sessionId}/items`)
+        .set('Cookie', itemsUser.cookie)
+        .send({ boardId: itemsUserBoardId, durationMinutes: 5 });
+      expect(res.status).toBe(201);
+    }
+    const overLimit = await request(app)
+      .post(`/api/trainings/${sessionId}/items`)
+      .set('Cookie', itemsUser.cookie)
+      .send({ boardId: itemsUserBoardId, durationMinutes: 5 });
+    expect(overLimit.status).toBe(400);
+  });
+
+  it('löscht beim Löschen der Session auch alle Items (Cascade)', async () => {
+    const del = await request(app).delete(`/api/trainings/${sessionId}`).set('Cookie', itemsUser.cookie);
+    expect(del.status).toBe(200);
+
+    const remaining = await pool.query(
+      'SELECT COUNT(*)::int AS count FROM training_session_items WHERE session_id = $1',
+      [sessionId]
+    );
+    expect(remaining.rows[0].count).toBe(0);
+  });
+});

@@ -19,6 +19,8 @@ const RegisterPage   = lazy(() => import('./pages/RegisterPage.jsx'));
 const Dashboard      = lazy(() => import('./pages/Dashboard.jsx'));
 const BoardsPage     = lazy(() => import('./pages/BoardsPage.jsx'));
 const BoardEditorPage = lazy(() => import('./pages/BoardEditorPage.jsx'));
+const TrainingsPage       = lazy(() => import('./pages/TrainingsPage.jsx'));
+const TrainingSessionPage = lazy(() => import('./pages/TrainingSessionPage.jsx'));
 const SharePage       = lazy(() => import('./pages/SharePage.jsx'));
 const SettingsPage    = lazy(() => import('./pages/SettingsPage.jsx'));
 const PrivacyPage     = lazy(() => import('./pages/PrivacyPage.jsx'));
@@ -81,6 +83,8 @@ export default function App() {
           <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
           <Route path="/boards" element={<PrivateRoute><BoardsPage /></PrivateRoute>} />
           <Route path="/board/:id" element={<PrivateRoute><BoardEditorPage /></PrivateRoute>} />
+          <Route path="/trainings" element={<PrivateRoute><TrainingsPage /></PrivateRoute>} />
+          <Route path="/trainings/:id" element={<PrivateRoute><TrainingSessionPage /></PrivateRoute>} />
           <Route path="/settings" element={<PrivateRoute><SettingsPage /></PrivateRoute>} />
           <Route path="/share/:token" element={<SharePage />} />
           <Route path="/privacy" element={<PrivacyPage />} />

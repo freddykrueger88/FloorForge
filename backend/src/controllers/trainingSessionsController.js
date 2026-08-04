@@ -1,0 +1,373 @@
+/**
+ * trainingSessionsController – Trainingsplaner: Sessions (geordnete
+ * Sequenz von Board-Referenzen mit Dauer/Notiz je Übung), Issue #45.
+ *
+ * Nutzer-gebunden (nicht board-gebunden), analog playbooksController.js.
+ * Items referenzieren Boards per FK (kein Snapshot) – Änderungen am
+ * Board spiegeln sich live im Plan. Reihenfolge/CRUD auf Item-Ebene
+ * folgt exakt dem Muster von framesController.js.
+ */
+import pool from '../db/pool.js';
+import logger from '../utils/logger.js';
+import { success, created, error } from '../utils/apiResponse.js';
+
+const MAX_SESSIONS = 20;
+const MAX_ITEMS_PER_SESSION = 30;
+
+function toApiSession(row) {
+  return {
+    _id:          row.id,
+    name:         row.name,
+    notes:        row.notes,
+    itemCount:    Number(row.item_count ?? 0),
+    totalMinutes: Number(row.total_minutes ?? 0),
+    createdAt:    row.created_at,
+    updatedAt:    row.updated_at,
+  };
+}
+
+function toApiItem(row) {
+  return {
+    _id:              row.id,
+    boardId:          row.board_id,
+    boardName:        row.board_name,
+    boardFieldType:   row.field_type,
+    boardTheme:       row.theme,
+    boardHomeColor:   row.home_color,
+    boardAwayColor:   row.away_color,
+    boardBallColor:   row.ball_color,
+    order:            row.order_index,
+    durationMinutes:  row.duration_minutes,
+    note:             row.note,
+    createdAt:        row.created_at,
+  };
+}
+
+async function assertSessionOwnership(sessionId, userId) {
+  const result = await pool.query(
+    'SELECT id FROM training_sessions WHERE id = $1 AND user_id = $2',
+    [sessionId, userId]
+  );
+  return result.rows.length > 0;
+}
+
+async function assertBoardOwnership(boardId, userId) {
+  const result = await pool.query(
+    'SELECT id FROM boards WHERE id = $1 AND user_id = $2 AND deleted_at IS NULL',
+    [boardId, userId]
+  );
+  return result.rows.length > 0;
+}
+
+async function fetchItems(sessionId) {
+  const result = await pool.query(
+    `SELECT i.*, b.name AS board_name, b.field_type, b.theme,
+            b.home_color, b.away_color, b.ball_color
+     FROM training_session_items i
+     LEFT JOIN boards b ON b.id = i.board_id AND b.deleted_at IS NULL
+     WHERE i.session_id = $1
+     ORDER BY i.order_index ASC`,
+    [sessionId]
+  );
+  return result.rows.map(toApiItem);
+}
+
+// GET /api/trainings
+export async function getSessions(req, res) {
+  try {
+    const result = await pool.query(
+      `SELECT s.*,
+              COUNT(i.id)::int AS item_count,
+              COALESCE(SUM(i.duration_minutes), 0)::int AS total_minutes
+       FROM training_sessions s
+       LEFT JOIN training_session_items i ON i.session_id = s.id
+       WHERE s.user_id = $1
+       GROUP BY s.id
+       ORDER BY s.updated_at DESC`,
+      [req.user.id]
+    );
+    res.json(success(result.rows.map(toApiSession)));
+  } catch (err) {
+    logger.error('[getSessions]', err);
+    res.status(500).json(error('Interner Serverfehler'));
+  }
+}
+
+// POST /api/trainings
+export async function createSession(req, res) {
+  try {
+    const countResult = await pool.query(
+      'SELECT COUNT(*)::int AS count FROM training_sessions WHERE user_id = $1',
+      [req.user.id]
+    );
+    if (countResult.rows[0].count >= MAX_SESSIONS) {
+      return res.status(400).json(error(`Maximal ${MAX_SESSIONS} Trainingseinheiten`));
+    }
+
+    const { name } = req.body;
+    const result = await pool.query(
+      'INSERT INTO training_sessions (user_id, name) VALUES ($1, $2) RETURNING *',
+      [req.user.id, name]
+    );
+    res.status(201).json(created(toApiSession({ ...result.rows[0], item_count: 0, total_minutes: 0 })));
+  } catch (err) {
+    logger.error('[createSession]', err);
+    res.status(500).json(error('Interner Serverfehler'));
+  }
+}
+
+// GET /api/trainings/:id
+export async function getSession(req, res) {
+  try {
+    const result = await pool.query(
+      'SELECT * FROM training_sessions WHERE id = $1 AND user_id = $2',
+      [req.params.id, req.user.id]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json(error('Trainingseinheit nicht gefunden'));
+    }
+
+    const items = await fetchItems(req.params.id);
+    const session = toApiSession({
+      ...result.rows[0],
+      item_count: items.length,
+      total_minutes: items.reduce((sum, i) => sum + i.durationMinutes, 0),
+    });
+    res.json(success({ ...session, items }));
+  } catch (err) {
+    logger.error('[getSession]', err);
+    res.status(500).json(error('Interner Serverfehler'));
+  }
+}
+
+// PUT /api/trainings/:id
+export async function updateSession(req, res) {
+  try {
+    const sets = [];
+    const values = [];
+    let i = 1;
+
+    if (req.body.name !== undefined) { sets.push(`name = $${i}`); values.push(req.body.name); i += 1; }
+    if (req.body.notes !== undefined) { sets.push(`notes = $${i}`); values.push(req.body.notes); i += 1; }
+
+    if (sets.length === 0) {
+      return res.status(400).json(error('Keine gültigen Felder zum Aktualisieren'));
+    }
+
+    values.push(req.params.id, req.user.id);
+    const result = await pool.query(
+      `UPDATE training_sessions SET ${sets.join(', ')}
+       WHERE id = $${i} AND user_id = $${i + 1}
+       RETURNING *`,
+      values
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json(error('Trainingseinheit nicht gefunden'));
+    }
+    res.json(success(toApiSession(result.rows[0])));
+  } catch (err) {
+    logger.error('[updateSession]', err);
+    res.status(500).json(error('Interner Serverfehler'));
+  }
+}
+
+// DELETE /api/trainings/:id
+export async function deleteSession(req, res) {
+  try {
+    const result = await pool.query(
+      'DELETE FROM training_sessions WHERE id = $1 AND user_id = $2 RETURNING id',
+      [req.params.id, req.user.id]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json(error('Trainingseinheit nicht gefunden'));
+    }
+    res.json(success({ message: 'Trainingseinheit gelöscht' }));
+  } catch (err) {
+    logger.error('[deleteSession]', err);
+    res.status(500).json(error('Interner Serverfehler'));
+  }
+}
+
+// POST /api/trainings/:id/items
+export async function addItem(req, res) {
+  const { boardId, durationMinutes = 15, note = '' } = req.body;
+
+  try {
+    if (!(await assertSessionOwnership(req.params.id, req.user.id))) {
+      return res.status(404).json(error('Trainingseinheit nicht gefunden'));
+    }
+    if (!(await assertBoardOwnership(boardId, req.user.id))) {
+      return res.status(404).json(error('Board nicht gefunden'));
+    }
+  } catch (err) {
+    logger.error('[addItem]', err);
+    return res.status(500).json(error('Interner Serverfehler'));
+  }
+
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+
+    const countResult = await client.query(
+      'SELECT COUNT(*)::int AS count FROM training_session_items WHERE session_id = $1',
+      [req.params.id]
+    );
+    if (countResult.rows[0].count >= MAX_ITEMS_PER_SESSION) {
+      await client.query('ROLLBACK');
+      return res.status(400).json(error(`Maximal ${MAX_ITEMS_PER_SESSION} Übungen pro Trainingseinheit`));
+    }
+    const orderIndex = countResult.rows[0].count;
+
+    const insertResult = await client.query(
+      `INSERT INTO training_session_items (session_id, board_id, order_index, duration_minutes, note)
+       VALUES ($1, $2, $3, $4, $5)
+       RETURNING id`,
+      [req.params.id, boardId, orderIndex, durationMinutes, note]
+    );
+
+    await client.query('COMMIT');
+
+    const itemResult = await pool.query(
+      `SELECT i.*, b.name AS board_name, b.field_type, b.theme,
+              b.home_color, b.away_color, b.ball_color
+       FROM training_session_items i
+       LEFT JOIN boards b ON b.id = i.board_id AND b.deleted_at IS NULL
+       WHERE i.id = $1`,
+      [insertResult.rows[0].id]
+    );
+    res.status(201).json(created(toApiItem(itemResult.rows[0])));
+  } catch (err) {
+    await client.query('ROLLBACK');
+    logger.error('[addItem]', err);
+    res.status(500).json(error('Interner Serverfehler'));
+  } finally {
+    client.release();
+  }
+}
+
+// PUT /api/trainings/:id/items/:itemId
+export async function updateItem(req, res) {
+  try {
+    if (!(await assertSessionOwnership(req.params.id, req.user.id))) {
+      return res.status(404).json(error('Trainingseinheit nicht gefunden'));
+    }
+
+    const sets = [];
+    const values = [];
+    let i = 1;
+
+    if (req.body.durationMinutes !== undefined) { sets.push(`duration_minutes = $${i}`); values.push(req.body.durationMinutes); i += 1; }
+    if (req.body.note !== undefined) { sets.push(`note = $${i}`); values.push(req.body.note); i += 1; }
+
+    if (sets.length === 0) {
+      return res.status(400).json(error('Keine gültigen Felder zum Aktualisieren'));
+    }
+
+    values.push(req.params.itemId, req.params.id);
+    const result = await pool.query(
+      `UPDATE training_session_items SET ${sets.join(', ')}
+       WHERE id = $${i} AND session_id = $${i + 1}
+       RETURNING id`,
+      values
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json(error('Übung nicht gefunden'));
+    }
+
+    const itemResult = await pool.query(
+      `SELECT i.*, b.name AS board_name, b.field_type, b.theme,
+              b.home_color, b.away_color, b.ball_color
+       FROM training_session_items i
+       LEFT JOIN boards b ON b.id = i.board_id AND b.deleted_at IS NULL
+       WHERE i.id = $1`,
+      [result.rows[0].id]
+    );
+    res.json(success(toApiItem(itemResult.rows[0])));
+  } catch (err) {
+    logger.error('[updateItem]', err);
+    res.status(500).json(error('Interner Serverfehler'));
+  }
+}
+
+// DELETE /api/trainings/:id/items/:itemId
+export async function deleteItem(req, res) {
+  try {
+    if (!(await assertSessionOwnership(req.params.id, req.user.id))) {
+      return res.status(404).json(error('Trainingseinheit nicht gefunden'));
+    }
+  } catch (err) {
+    logger.error('[deleteItem]', err);
+    return res.status(500).json(error('Interner Serverfehler'));
+  }
+
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+
+    const del = await client.query(
+      'DELETE FROM training_session_items WHERE id = $1 AND session_id = $2 RETURNING id',
+      [req.params.itemId, req.params.id]
+    );
+    if (del.rows.length === 0) {
+      await client.query('ROLLBACK');
+      return res.status(404).json(error('Übung nicht gefunden'));
+    }
+
+    // Reihenfolge normalisieren (0..n-1)
+    const remaining = await client.query(
+      'SELECT id FROM training_session_items WHERE session_id = $1 ORDER BY order_index ASC',
+      [req.params.id]
+    );
+    await Promise.all(
+      remaining.rows.map((row, idx) =>
+        client.query('UPDATE training_session_items SET order_index = $1 WHERE id = $2', [idx, row.id]))
+    );
+
+    await client.query('COMMIT');
+    res.json(success({ message: 'Übung gelöscht' }));
+  } catch (err) {
+    await client.query('ROLLBACK');
+    logger.error('[deleteItem]', err);
+    res.status(500).json(error('Interner Serverfehler'));
+  } finally {
+    client.release();
+  }
+}
+
+// PUT /api/trainings/:id/items/reorder   Body: { order: [itemId1, itemId2, ...] }
+export async function reorderItems(req, res) {
+  const { order } = req.body;
+  if (!Array.isArray(order)) {
+    return res.status(400).json(error('"order" muss ein Array von Übungs-IDs sein'));
+  }
+
+  try {
+    if (!(await assertSessionOwnership(req.params.id, req.user.id))) {
+      return res.status(404).json(error('Trainingseinheit nicht gefunden'));
+    }
+  } catch (err) {
+    logger.error('[reorderItems]', err);
+    return res.status(500).json(error('Interner Serverfehler'));
+  }
+
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    await Promise.all(
+      order.map((itemId, idx) =>
+        client.query(
+          'UPDATE training_session_items SET order_index = $1 WHERE id = $2 AND session_id = $3',
+          [idx, itemId, req.params.id]
+        ))
+    );
+    await client.query('COMMIT');
+
+    res.json(success(await fetchItems(req.params.id)));
+  } catch (err) {
+    await client.query('ROLLBACK');
+    logger.error('[reorderItems]', err);
+    res.status(500).json(error('Interner Serverfehler'));
+  } finally {
+    client.release();
+  }
+}

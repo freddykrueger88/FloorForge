@@ -14,6 +14,7 @@ import userRoutes from './user.js';
 import adminRoutes from './admin.js';
 import formationRoutes from './formations.js';
 import playbookRoutes from './playbooks.js';
+import trainingRoutes from './trainings.js';
 // import tacticsRoutes from './tactics.js'; // Issue #7
 
 const router = Router();
@@ -31,6 +32,7 @@ router.use('/user', userRoutes);
 router.use('/admin', adminRoutes);
 router.use('/formations', formationRoutes);
 router.use('/playbooks', playbookRoutes);
+router.use('/trainings', trainingRoutes);
 // router.use('/tactics', tacticsRoutes);
 
 export default router;

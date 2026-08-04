@@ -28,6 +28,7 @@ export default function Header() {
   const navLinks = [
     { to: '/dashboard', label: t('nav.dashboard') },
     { to: '/boards',    label: t('nav.boards') },
+    { to: '/trainings', label: t('nav.trainings') },
     { to: '/settings',  label: t('nav.settings') },
   ];
 

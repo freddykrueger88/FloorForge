@@ -167,6 +167,40 @@ export async function runMigrations() {
     `);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_formation_templates_user_id ON formation_templates(user_id);`);
 
+    // ── training_sessions + training_session_items (Issue #45 – Trainingsplaner) ──
+    // Eine Session referenziert bestehende Boards per FK (kein Snapshot) –
+    // Änderungen am Board spiegeln sich live im Plan.
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS training_sessions (
+        id         UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        user_id    UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        name       TEXT NOT NULL,
+        notes      TEXT NOT NULL DEFAULT '',
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      );
+    `);
+    await client.query(`
+      DROP TRIGGER IF EXISTS trg_training_sessions_updated_at ON training_sessions;
+      CREATE TRIGGER trg_training_sessions_updated_at
+        BEFORE UPDATE ON training_sessions
+        FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+    `);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_training_sessions_user_id ON training_sessions(user_id);`);
+
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS training_session_items (
+        id               UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        session_id       UUID NOT NULL REFERENCES training_sessions(id) ON DELETE CASCADE,
+        board_id         UUID NOT NULL REFERENCES boards(id) ON DELETE CASCADE,
+        order_index      INTEGER NOT NULL DEFAULT 0,
+        duration_minutes INTEGER NOT NULL DEFAULT 15,
+        note             TEXT NOT NULL DEFAULT '',
+        created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      );
+    `);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_training_session_items_session_id ON training_session_items(session_id);`);
+
     // ── exports ───────────────────────────────────────────────────────────
     // format: 'gif' | 'mp4' | 'pdf' | 'link' | 'png'
     await client.query(`
