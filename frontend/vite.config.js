@@ -19,7 +19,7 @@ export default defineConfig({
         theme_color: '#01696f',
         background_color: '#161614',
         display: 'standalone',
-        start_url: '/dashboard',
+        start_url: '/boards',
         icons: [
           { src: '/src/assets/favicon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' },
         ],
