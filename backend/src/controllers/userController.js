@@ -69,6 +69,47 @@ export async function getUserData(req, res) {
   }
 }
 
+// GET /api/user/stats – Statistiken zu genutzten Feldtypen/Line-Typen
+// über alle eigenen Boards hinweg (Issue #50)
+const FIELD_TYPES = ['large', 'small', 'street', '3v3'];
+const LINE_TYPES = ['offense', 'defense', 'special'];
+
+export async function getUserStats(req, res) {
+  try {
+    const [fieldTypeRows, lineTypeRows] = await Promise.all([
+      pool.query(
+        `SELECT field_type, COUNT(*)::int AS count
+         FROM boards WHERE user_id = $1 AND deleted_at IS NULL
+         GROUP BY field_type`,
+        [req.user.id]
+      ),
+      pool.query(
+        `SELECT l.type, COUNT(*)::int AS count
+         FROM lines l JOIN boards b ON b.id = l.board_id
+         WHERE b.user_id = $1 AND b.deleted_at IS NULL
+         GROUP BY l.type`,
+        [req.user.id]
+      ),
+    ]);
+
+    const fieldTypeCounts = Object.fromEntries(FIELD_TYPES.map((t) => [t, 0]));
+    for (const row of fieldTypeRows.rows) fieldTypeCounts[row.field_type] = row.count;
+
+    const lineTypeCounts = Object.fromEntries(LINE_TYPES.map((t) => [t, 0]));
+    for (const row of lineTypeRows.rows) lineTypeCounts[row.type] = row.count;
+
+    res.json(success({
+      totalBoards: Object.values(fieldTypeCounts).reduce((a, b) => a + b, 0),
+      fieldTypeCounts,
+      totalLines: Object.values(lineTypeCounts).reduce((a, b) => a + b, 0),
+      lineTypeCounts,
+    }));
+  } catch (err) {
+    logger.error('[getUserStats]', err);
+    res.status(500).json(error('Interner Serverfehler'));
+  }
+}
+
 // GET /api/user/export – ZIP-Export aller eigenen Daten (Issue #21)
 export async function exportAccount(req, res) {
   try {

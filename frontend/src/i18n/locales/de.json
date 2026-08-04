@@ -172,6 +172,11 @@
     "saved": "✓ Gespeichert",
     "saveError": "⚠ Fehler beim Speichern"
   },
+  "dashboardStats": {
+    "title": "Deine Statistik",
+    "fieldTypesTitle": "{{count}} Spielfelder",
+    "lineTypesTitle": "{{count}} Lines"
+  },
   "dashboard": {
     "greeting1": "Willkommen zurück",
     "greeting2": "Schön, dich zu sehen",

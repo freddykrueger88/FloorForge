@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import useAuthStore from '../store/authStore.js';
+import StatsWidget from '../components/dashboard/StatsWidget.jsx';
 import styles from './Dashboard.module.css';
 
 const GREETING_KEYS = [
@@ -50,6 +51,8 @@ export default function Dashboard() {
           {t('nav.logout')}
         </button>
       </div>
+
+      <StatsWidget />
     </main>
   );
 }

@@ -172,6 +172,11 @@
     "saved": "✓ Saved",
     "saveError": "⚠ Error saving"
   },
+  "dashboardStats": {
+    "title": "Your stats",
+    "fieldTypesTitle": "{{count}} boards",
+    "lineTypesTitle": "{{count}} lines"
+  },
   "dashboard": {
     "greeting1": "Welcome back",
     "greeting2": "Good to see you",

@@ -6,7 +6,7 @@ import multer from 'multer';
 import { body } from 'express-validator';
 import { authenticate } from '../middleware/auth.js';
 import { validate } from '../middleware/validate.js';
-import { deleteAccount, exportAccount, importAccount, getUserData } from '../controllers/userController.js';
+import { deleteAccount, exportAccount, importAccount, getUserData, getUserStats } from '../controllers/userController.js';
 import { error } from '../utils/apiResponse.js';
 
 const router = Router();
@@ -19,6 +19,7 @@ router.delete('/account', [
 ], deleteAccount);
 
 router.get('/data', getUserData);
+router.get('/stats', getUserStats);
 router.get('/export', exportAccount);
 
 const upload = multer({
