@@ -20,7 +20,6 @@ import '@fontsource/opendyslexic/700.css';
 
 const LoginPage      = lazy(() => import('./pages/LoginPage.jsx'));
 const RegisterPage   = lazy(() => import('./pages/RegisterPage.jsx'));
-const Dashboard      = lazy(() => import('./pages/Dashboard.jsx'));
 const BoardsPage     = lazy(() => import('./pages/BoardsPage.jsx'));
 const BoardEditorPage = lazy(() => import('./pages/BoardEditorPage.jsx'));
 const TrainingsPage       = lazy(() => import('./pages/TrainingsPage.jsx'));
@@ -41,7 +40,7 @@ function PrivateRoute({ children }) {
 
 function PublicRoute({ children }) {
   const user = useAuthStore((s) => s.user);
-  if (user) return <Navigate to="/dashboard" replace />;
+  if (user) return <Navigate to="/boards" replace />;
   return children;
 }
 
@@ -105,10 +104,9 @@ export default function App() {
       <Header />
       <Suspense fallback={<Loader />}>
         <Routes>
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/" element={<Navigate to="/boards" replace />} />
           <Route path="/login"    element={<PublicRoute><LoginPage /></PublicRoute>} />
           <Route path="/register" element={<PublicRoute><RegisterPage /></PublicRoute>} />
-          <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
           <Route path="/boards" element={<PrivateRoute><BoardsPage /></PrivateRoute>} />
           <Route path="/board/:id" element={<PrivateRoute><BoardEditorPage /></PrivateRoute>} />
           <Route path="/trainings" element={<PrivateRoute><TrainingsPage /></PrivateRoute>} />

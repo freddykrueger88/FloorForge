@@ -20,7 +20,7 @@ export default function RegisterPage() {
     try {
       const res = await api.post('/auth/register', form);
       setUser(res.data.data.user);
-      navigate('/dashboard', { replace: true });
+      navigate('/boards', { replace: true });
     } catch (e) {
       const details = e.response?.data?.details;
       const detailMsg = Array.isArray(details) ? details.map((d) => d.message).join(' ') : null;

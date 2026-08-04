@@ -26,7 +26,6 @@ export default function Header() {
   };
 
   const navLinks = [
-    { to: '/dashboard', label: t('nav.dashboard') },
     { to: '/boards',    label: t('nav.boards') },
     { to: '/trainings', label: t('nav.trainings') },
     { to: '/roster',    label: t('nav.roster') },
@@ -37,7 +36,7 @@ export default function Header() {
     <header className={styles.header}>
       <a href="#main-content" className="sr-only sr-only-focusable">{t('accessibility.skipToContent')}</a>
 
-      <Link to={user ? '/dashboard' : '/'} className={styles.brand} aria-label={t('nav.brandHome')}>
+      <Link to={user ? '/boards' : '/'} className={styles.brand} aria-label={t('nav.brandHome')}>
         <span className={styles.brandMark} aria-hidden="true">FF</span>
         <span className={styles.brandName}>{t('app.name')}</span>
       </Link>

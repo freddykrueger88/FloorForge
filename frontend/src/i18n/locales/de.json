@@ -4,7 +4,6 @@
     "tagline": "Taktik-Tool für Floorball Coaches"
   },
   "nav": {
-    "dashboard": "Dashboard",
     "boards": "Spielfelder",
     "settings": "Einstellungen",
     "logout": "Abmelden",
@@ -174,24 +173,6 @@
     "saved": "✓ Gespeichert",
     "saveError": "⚠ Fehler beim Speichern",
     "saveOffline": "📡 Offline – wird synchronisiert"
-  },
-  "dashboardStats": {
-    "title": "Deine Statistik",
-    "fieldTypesTitle": "{{count}} Spielfelder",
-    "lineTypesTitle": "{{count}} Lines"
-  },
-  "dashboard": {
-    "greeting1": "Willkommen zurück",
-    "greeting2": "Schön, dich zu sehen",
-    "greeting3": "Moin",
-    "greeting4": "Hey",
-    "greeting5": "Servus",
-    "greeting6": "Auf geht's",
-    "greeting7": "Bereit für den nächsten Spielzug",
-    "greeting8": "Gut, dass du da bist",
-    "tagline": "Bereit für den nächsten Spielzug?",
-    "boardsDesc": "Neues Spielfeld erstellen oder bestehende bearbeiten",
-    "settingsDesc": "Theme, Barrierefreiheit, Konto & mehr"
   },
   "boardsPage": {
     "count_one": "{{count}} Spielfeld",

@@ -4,7 +4,6 @@
     "tagline": "Tactics Tool for Floorball Coaches"
   },
   "nav": {
-    "dashboard": "Dashboard",
     "boards": "Boards",
     "settings": "Settings",
     "logout": "Logout",
@@ -174,24 +173,6 @@
     "saved": "✓ Saved",
     "saveError": "⚠ Error saving",
     "saveOffline": "📡 Offline – will sync"
-  },
-  "dashboardStats": {
-    "title": "Your stats",
-    "fieldTypesTitle": "{{count}} boards",
-    "lineTypesTitle": "{{count}} lines"
-  },
-  "dashboard": {
-    "greeting1": "Welcome back",
-    "greeting2": "Good to see you",
-    "greeting3": "Hey",
-    "greeting4": "Hi there",
-    "greeting5": "Howdy",
-    "greeting6": "Let's go",
-    "greeting7": "Ready for the next play",
-    "greeting8": "Glad you're here",
-    "tagline": "Ready for the next play?",
-    "boardsDesc": "Create a new board or edit an existing one",
-    "settingsDesc": "Theme, accessibility, account & more"
   },
   "boardsPage": {
     "count_one": "{{count}} board",
