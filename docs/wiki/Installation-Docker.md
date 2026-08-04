@@ -27,13 +27,15 @@ docker compose logs -f
 
 ## Erreichbarkeit
 
-- **Frontend:** http://localhost:${APP_PORT} (Standard: `3000`, siehe `.env`)
+- **Frontend:** http://localhost:${APP_PORT} (Standard: `80`, siehe `.env` –
+  bei Standardwert also einfach `http://localhost`)
 - **Backend API:** nur intern über den Nginx-Proxy erreichbar, unter `http://localhost:${APP_PORT}/api/` — der Backend-Port selbst ist nicht auf den Host gemappt
 - **Health Check:** http://localhost:${APP_PORT}/health
 
 ## Erster Start
 
-1. Öffne http://localhost:3000
+1. Öffne `http://localhost` (bzw. `http://localhost:${APP_PORT}`, falls
+   angepasst)
 2. Klicke auf **"Registrieren"**
 3. Der erste registrierte Benutzer wird automatisch **Admin**
 4. Lege dein erstes Spielfeld an und beginne mit dem Coachen!
@@ -42,7 +44,6 @@ docker compose logs -f
 
 ```bash
 git pull
-docker compose pull
 docker compose up -d --build
 ```
 
@@ -50,9 +51,10 @@ docker compose up -d --build
 
 | Variable | Beschreibung | Standard |
 |---|---|---|
-| `APP_PORT` | Frontend-Port | 3000 |
+| `APP_PORT` | Frontend-Port | 80 |
 | `JWT_SECRET` | **Ändern!** Mind. 64 Zeichen | - |
 | `DB_PASSWORD` | **Ändern!** Sicheres Passwort | - |
+| `REDIS_PASSWORD` | **Ändern!** Sicheres Passwort | - |
 | `COOKIE_SECURE` | Session-Cookie nur über HTTPS senden. `false` setzen, wenn kein TLS-Reverse-Proxy davorsteht (sonst wird das Login-Cookie verworfen) | `true` |
 
 > ⚠️ **Sicherheit:** Ändere `JWT_SECRET` und `DB_PASSWORD` unbedingt vor dem ersten Start!
