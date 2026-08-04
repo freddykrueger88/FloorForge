@@ -24,7 +24,14 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   betroffen. (Erster Fix-Versuch nutzte `${{ runner.temp }}` – der
   `runner`-Kontext steht in einem Job-`env`-Block aber nicht zur
   Verfügung, was den gesamten Workflow ungültig machte; korrigiert
-  auf einen literalen Pfad.) Zusätzlich: verschluckte Fehlermeldungen in
+  auf einen literalen Pfad.) Nach Behebung des EACCES-Problems zeigte
+  sich ein zweiter, unabhängiger Fehler: `ffmpeg` ist auf dem bare
+  GitHub-Actions-Runner nicht vorinstalliert (nur im Docker-Image via
+  `apk add ffmpeg`) – Backend-CI installiert jetzt `ffmpeg` +
+  `fonts-dejavu-core` per `apt-get` vor den Tests; da Ubuntu die
+  DejaVu-Schrift unter einem anderen Pfad als Alpine ablegt, wird sie
+  zusätzlich nach `/usr/share/fonts/dejavu/` kopiert (exakter Pfad aus
+  `WATERMARK_FONT` in `exportController.js`). Zusätzlich: verschluckte Fehlermeldungen in
   `exportController.js`/`backupCron.js` behoben (`err` statt
   `err.message` an den Logger übergeben – Winstons Format gibt einen
   reinen String-Zweitparameter sonst nicht aus), was die Diagnose

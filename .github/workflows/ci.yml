@@ -63,6 +63,16 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Install FFmpeg (für GIF-/MP4-Export-Tests)
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg fonts-dejavu-core
+          # Produktions-Image (Alpine) legt die Schrift unter /usr/share/fonts/dejavu/ ab
+          # (siehe backend/Dockerfile + WATERMARK_FONT in exportController.js) – Ubuntu
+          # verwendet einen anderen Pfad, daher hier nachbilden statt Code für CI anzupassen.
+          sudo mkdir -p /usr/share/fonts/dejavu
+          sudo cp /usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf /usr/share/fonts/dejavu/DejaVuSans-Bold.ttf
+
       - name: Test
         run: npm test
 
