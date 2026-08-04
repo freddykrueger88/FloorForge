@@ -225,7 +225,7 @@
     },
     "purpose": {
       "title": "Zweck & Speicherdauer",
-      "body": "Die Daten dienen ausschließlich der Bereitstellung der App-Funktionalität (Taktiktafel, Spielfeld-Verwaltung). Sie werden gespeichert, solange dein Konto besteht, und vollständig gelöscht, sobald du dein Konto löschst (Einstellungen → Konto → Account löschen)."
+      "body": "Die Daten dienen ausschließlich der Bereitstellung der App-Funktionalität (Taktiktafel, Spielfeld-Verwaltung). Sie werden gespeichert, solange dein Konto besteht, und aus der aktiven Datenbank vollständig gelöscht, sobald du dein Konto löschst (Einstellungen → Konto → Account löschen). Sofern der Betreiber automatische Backups aktiviert hat, können deine Daten in bereits erstellten Backup-Archiven noch bis zum Ablauf der eingestellten Aufbewahrungsfrist (max. 90 Tage) enthalten sein."
     },
     "rights": {
       "title": "Deine Rechte",

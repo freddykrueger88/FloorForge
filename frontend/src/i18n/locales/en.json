@@ -225,7 +225,7 @@
     },
     "purpose": {
       "title": "Purpose & retention period",
-      "body": "This data is used solely to provide the app's functionality (tactics board, board management). It is stored for as long as your account exists and is fully deleted as soon as you delete your account (Settings → Account → Delete account)."
+      "body": "This data is used solely to provide the app's functionality (tactics board, board management). It is stored for as long as your account exists and is fully deleted from the active database as soon as you delete your account (Settings → Account → Delete account). If the operator has enabled automatic backups, your data may still be contained in already-created backup archives until the configured retention period (max. 90 days) expires."
     },
     "rights": {
       "title": "Your rights",

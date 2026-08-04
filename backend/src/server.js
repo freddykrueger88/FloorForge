@@ -98,8 +98,20 @@ app.use(notFoundHandler);
 app.use(errorHandler);
 
 // ── Bootstrap ─────────────────────────────────
+// JWT_SECRET wurde bisher erst beim ersten Login-Versuch geprüft (jsonwebtoken
+// wirft dann eine kryptische Fehlermeldung) – hier stattdessen sofort beim
+// Start mit klarer Meldung abbrechen, falls es fehlt oder zu kurz ist.
+function validateEnv() {
+  const secret = process.env.JWT_SECRET;
+  if (!secret || secret.length < 32) {
+    logger.error('JWT_SECRET fehlt oder ist kürzer als 32 Zeichen – Server-Start abgebrochen.');
+    process.exit(1);
+  }
+}
+
 async function bootstrap() {
   try {
+    validateEnv();
     await connectRedis();
     await runMigrations();
     await rescheduleBackupCron();

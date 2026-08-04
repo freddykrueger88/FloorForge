@@ -142,12 +142,15 @@ export async function runMigrations() {
         board_id    UUID NOT NULL REFERENCES boards(id) ON DELETE CASCADE,
         user_id     UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
         format      TEXT NOT NULL CHECK (format IN ('gif', 'mp4', 'pdf', 'link', 'png')),
-        file_path   TEXT,
         share_token TEXT UNIQUE,
         expires_at  TIMESTAMPTZ,
         created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
       );
     `);
+    // Datensparsamkeit: nie genutzte Spalte (GIF/MP4-Exporte laufen über
+    // EXPORTS_DIR + zeitbasiertem Cleanup, PDF wird direkt gestreamt – nie
+    // auf Platte referenziert) – idempotent für bereits existierende DBs.
+    await client.query(`ALTER TABLE exports DROP COLUMN IF EXISTS file_path;`);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_exports_board_id ON exports(board_id);`);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_exports_share_token ON exports(share_token) WHERE share_token IS NOT NULL;`);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_exports_expires_at ON exports(expires_at) WHERE expires_at IS NOT NULL;`);
