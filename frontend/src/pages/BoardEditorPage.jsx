@@ -9,11 +9,11 @@
  *  - TeamColorPanel (Issue #14 – v0.4.0)
  *  - ExportPanel (Issue #15 – v0.5.0)
  */
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams, Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
 
-import { buildDefaultPlayers, IFF_FIELDS, DEFAULT_TEAM_COLORS, IFF_BALL_COLORS } from '../constants/fieldConfig.js';
+import { IFF_FIELDS, DEFAULT_TEAM_COLORS, IFF_BALL_COLORS } from '../constants/fieldConfig.js';
 import { POSITION_HINTS } from '../constants/positionHints.js';
 import { rescalePlayers, rescaleElements } from '../utils/fieldRescale.js';
 import { teamColorToFillStroke, normalizeStoredColor } from '../utils/color.js';
@@ -125,15 +125,6 @@ export default function BoardEditorPage() {
     loadFrames();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [boardId]);
-
-  const seededRef = useRef(null);
-  useEffect(() => { seededRef.current = null; }, [boardId]);
-  useEffect(() => {
-    if (!board || framesLoading || frames.length > 0) return;
-    if (seededRef.current === boardId) return;
-    seededRef.current = boardId;
-    addFrame(buildDefaultPlayers(board.fieldType), []);
-  }, [board, framesLoading, frames.length, boardId, addFrame]);
 
   const saveNotes = useCallback(async (nextNotes) => {
     if (!boardId) return;

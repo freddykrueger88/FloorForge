@@ -46,6 +46,33 @@ describe('Board CRUD', () => {
     boardId = res.body.data._id;
   });
 
+  it('legt sofort einen ersten Frame mit Standard-Aufstellung an', async () => {
+    const res = await request(app)
+      .get(`/api/boards/${boardId}/frames`)
+      .set('Cookie', userA.cookie);
+    expect(res.status).toBe(200);
+    expect(res.body.data).toHaveLength(1);
+    expect(res.body.data[0].players).toHaveLength(12); // Großfeld: 6 Heim + 6 Auswärts
+    expect(res.body.data[0].players.some((p) => p.team === 'home' && p.role === 'TW')).toBe(true);
+    expect(res.body.data[0].players.some((p) => p.team === 'away' && p.role === 'TW')).toBe(true);
+  });
+
+  it('legt bei anderem Feldtyp die passende Spieleranzahl an', async () => {
+    const createRes = await request(app)
+      .post('/api/boards')
+      .set('Cookie', userA.cookie)
+      .send({ name: 'Kleinfeld Board', fieldType: 'small' });
+    expect(createRes.status).toBe(201);
+
+    const framesRes = await request(app)
+      .get(`/api/boards/${createRes.body.data._id}/frames`)
+      .set('Cookie', userA.cookie);
+    expect(framesRes.body.data).toHaveLength(1);
+    expect(framesRes.body.data[0].players).toHaveLength(8); // Kleinfeld: 4 Heim + 4 Auswärts
+
+    await request(app).delete(`/api/boards/${createRes.body.data._id}`).set('Cookie', userA.cookie);
+  });
+
   it('lehnt einen ungültigen Feldtyp mit 422 ab', async () => {
     const res = await request(app)
       .post('/api/boards')

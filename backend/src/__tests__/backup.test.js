@@ -109,8 +109,11 @@ describe('GET /api/user/export', () => {
     const board = data.boards.find((b) => b.name === boardName);
     expect(board).toBeTruthy();
     expect(board.fieldType).toBe('large');
-    expect(board.frames).toHaveLength(1);
-    expect(board.frames[0].label).toBe('Frame 1');
+    // Boards bekommen seit der Standard-Aufstellungs-Änderung automatisch
+    // einen ersten Frame (Standard-Positionen) – hier zusätzlich zum
+    // manuell angelegten "Frame 1" erwartet.
+    expect(board.frames).toHaveLength(2);
+    expect(board.frames.some((f) => f.label === 'Frame 1')).toBe(true);
     expect(board.lines).toHaveLength(1);
     expect(board.lines[0].name).toBe('Sturm 1');
   });

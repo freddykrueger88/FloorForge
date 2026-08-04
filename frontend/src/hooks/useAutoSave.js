@@ -4,7 +4,7 @@
  */
 import { useState, useEffect, useRef, useCallback } from 'react';
 
-const DEBOUNCE_MS  = 2000;   // 2s nach letzter Änderung
+const DEBOUNCE_MS  = 300;    // kurz nach letzter Änderung (bündelt State-Updates im selben Tick)
 const INTERVAL_MS  = 30000;  // 30s Intervall
 
 export function useAutoSave(data, saveFn, enabled = true) {

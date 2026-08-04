@@ -81,7 +81,9 @@ describe('GET /api/share/:token (öffentlich)', () => {
     expect(res.status).toBe(200);
     expect(res.body.data.name).toBe('Share Test Board');
     expect(res.body.data.fieldType).toBe('large');
-    expect(res.body.data.frames).toHaveLength(2);
+    // Boards bekommen seit der Standard-Aufstellungs-Änderung automatisch
+    // einen ersten Frame – hier zusätzlich zu den 2 manuell angelegten.
+    expect(res.body.data.frames).toHaveLength(3);
     expect(res.body.data.notes).toBeUndefined();
   });
 

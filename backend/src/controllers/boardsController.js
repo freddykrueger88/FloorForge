@@ -8,6 +8,7 @@
 import pool from '../db/pool.js';
 import logger from '../utils/logger.js';
 import { success, created, error } from '../utils/apiResponse.js';
+import { buildDefaultPlayers } from '../constants/defaultPositions.js';
 
 // snake_case (DB) → camelCase (API/Frontend)
 function toApiBoard(row) {
@@ -68,22 +69,42 @@ export async function getBoard(req, res) {
 }
 
 // POST /api/boards
+// Legt Board + ersten Frame mit Standard-Aufstellung atomar in einer
+// Transaktion an – Spieler stehen dadurch garantiert ab dem ersten
+// Laden auf dem Feld, unabhängig von Client-seitigem Timing.
 export async function createBoard(req, res) {
+  const client = await pool.connect();
   try {
     const {
       name, fieldType = 'large', theme = 'dark',
       homeColor = '#1d4ed8', awayColor = '#dc2626', ballColor = '#ffffff',
     } = req.body;
-    const result = await pool.query(
+
+    await client.query('BEGIN');
+
+    const result = await client.query(
       `INSERT INTO boards (user_id, name, field_type, theme, home_color, away_color, ball_color)
        VALUES ($1, $2, $3, $4, $5, $6, $7)
        RETURNING *`,
       [req.user.id, name, fieldType, theme, homeColor, awayColor, ballColor]
     );
-    res.status(201).json(created(toApiBoard(result.rows[0])));
+    const board = result.rows[0];
+
+    const dataJson = { label: '', players: buildDefaultPlayers(fieldType), elements: [] };
+    await client.query(
+      `INSERT INTO frames (board_id, order_index, data_json, duration_ms)
+       VALUES ($1, 0, $2::jsonb, 1000)`,
+      [board.id, JSON.stringify(dataJson)]
+    );
+
+    await client.query('COMMIT');
+    res.status(201).json(created(toApiBoard(board)));
   } catch (err) {
+    await client.query('ROLLBACK');
     logger.error('[createBoard]', err);
     res.status(500).json(error('Interner Serverfehler'));
+  } finally {
+    client.release();
   }
 }
 
