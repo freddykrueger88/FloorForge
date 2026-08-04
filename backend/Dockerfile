@@ -3,7 +3,7 @@
 # ================================================
 
 # ── Base ─────────────────────────────────────────
-FROM node:20-alpine AS base
+FROM node:24-alpine AS base
 WORKDIR /app
 
 # Systemabhängigkeiten (python3/make/g++ für bcrypt native bindings, ffmpeg
@@ -29,7 +29,7 @@ RUN npm ci --omit=dev
 COPY . .
 
 # ── Production ───────────────────────────────────
-FROM node:20-alpine AS production
+FROM node:24-alpine AS production
 WORKDIR /app
 
 # ffmpeg wird zur Laufzeit für den GIF-/MP4-Export gebraucht (Issue #15,

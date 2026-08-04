@@ -3,7 +3,7 @@
 # ================================================
 
 # ── Build Stage ──────────────────────────────────
-FROM node:22-alpine AS builder
+FROM node:24-alpine AS builder
 WORKDIR /app
 
 # Build-Argument für API-URL
@@ -17,7 +17,7 @@ COPY . .
 RUN npm run build
 
 # ── Production: Nginx ─────────────────────────────
-FROM nginx:1.27-alpine AS production
+FROM nginx:1.30-alpine AS production
 
 # Non-root: nginx läuft als nginx user
 RUN chown -R nginx:nginx /var/cache/nginx /var/run && \
