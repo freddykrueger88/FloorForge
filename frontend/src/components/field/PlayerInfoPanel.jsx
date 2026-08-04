@@ -6,7 +6,9 @@ import { useTranslation } from 'react-i18next';
 import { POSITION_HINTS } from '../../constants/positionHints.js';
 import styles from './PlayerInfoPanel.module.css';
 
-export default function PlayerInfoPanel({ player, onClose, onReset, onNameChange }) {
+export default function PlayerInfoPanel({
+  player, onClose, onReset, onNameChange, rosterPlayers, onAssignRoster,
+}) {
   const { t, i18n } = useTranslation();
 
   if (!player) return null;
@@ -46,6 +48,30 @@ export default function PlayerInfoPanel({ player, onClose, onReset, onNameChange
           onChange={(e) => onNameChange?.(player.id, e.target.value)}
         />
       </label>
+
+      {/* Issue #53 – optionale Zuweisung aus dem zentralen Kader */}
+      {rosterPlayers?.length > 0 && (
+        <label className={styles.nameLabel} htmlFor="player-roster-select">
+          {t('roster.assignFromRoster')}
+          <select
+            id="player-roster-select"
+            className={styles.nameInput}
+            value=""
+            onChange={(e) => {
+              const rosterPlayer = rosterPlayers.find((p) => p._id === e.target.value);
+              if (rosterPlayer) onAssignRoster?.(player.id, rosterPlayer);
+            }}
+            aria-label={t('roster.assignFromRosterAriaLabel')}
+          >
+            <option value="">{t('roster.assignFromRosterNone')}</option>
+            {rosterPlayers.map((p) => (
+              <option key={p._id} value={p._id}>
+                {p.jerseyNumber != null ? `#${p.jerseyNumber} ` : ''}{p.name}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
 
       <p className={styles.hint}>{info.hint}</p>
 

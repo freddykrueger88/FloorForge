@@ -201,6 +201,22 @@ export async function runMigrations() {
     `);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_training_session_items_session_id ON training_session_items(session_id);`);
 
+    // ── roster_players (Issue #53 – zentraler Team-Kader) ───────────────────
+    // Nutzer-gebunden, unabhängig von Boards. Rein additiv/optional: Board-
+    // Spielerdaten (players_json) bleiben frei editierbar, ein Kader-Eintrag
+    // dient nur als Vorlage zum Zuweisen (kein Zwang zur Nutzung).
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS roster_players (
+        id             UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        user_id        UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        name           TEXT NOT NULL,
+        jersey_number  INTEGER,
+        role           TEXT CHECK (role IN ('TW', 'V', 'C', 'S')),
+        created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      );
+    `);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_roster_players_user_id ON roster_players(user_id);`);
+
     // ── exports ───────────────────────────────────────────────────────────
     // format: 'gif' | 'mp4' | 'pdf' | 'link' | 'png'
     await client.query(`

@@ -37,6 +37,7 @@ import { useBoardsApi } from '../hooks/useBoardsApi.js';
 import { useFrames } from '../hooks/useFrames.js';
 import { useLines } from '../hooks/useLines.js';
 import { useFormations } from '../hooks/useFormations.js';
+import { useRoster } from '../hooks/useRoster.js';
 import { useField } from '../hooks/useField.js';
 import { useDrawing } from '../hooks/useDrawing.js';
 import { useAutoSave } from '../hooks/useAutoSave.js';
@@ -89,6 +90,7 @@ export default function BoardEditorPage() {
   const drawing = useDrawing();
   const lines = useLines(boardId);
   const formations = useFormations();
+  const roster = useRoster();
 
   const [livePlayers, setLivePlayers] = useState([]);
   const [selectedPlayerId, setSelectedPlayerId] = useState(null);
@@ -112,6 +114,14 @@ export default function BoardEditorPage() {
     setLivePlayers((prev) => prev.map((p) => (p.id === id ? { ...p, name } : p)));
   }, []);
 
+  // Issue #53 – Spieler direkt aus dem zentralen Kader zuweisen (Name +
+  // Rückennummer), rein optional, ersetzt nicht die freie Eingabe
+  const handleAssignRoster = useCallback((id, rosterPlayer) => {
+    setLivePlayers((prev) => prev.map((p) => (p.id === id
+      ? { ...p, name: rosterPlayer.name, number: rosterPlayer.jerseyNumber ?? undefined }
+      : p)));
+  }, []);
+
   const anim = useAnimation({ frames, activeIndex, goToFrame, arrowKeysEnabled: !selectedPlayerId });
 
   useEffect(() => {
@@ -127,6 +137,7 @@ export default function BoardEditorPage() {
     }).catch(() => {});
     loadFrames();
     formations.fetchFormations();
+    roster.fetchRoster().catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [boardId]);
 
@@ -435,6 +446,8 @@ export default function BoardEditorPage() {
                 player={livePlayers.find((p) => p.id === selectedPlayerId)}
                 onClose={() => handleSelectPlayer(null)}
                 onNameChange={handleNameChange}
+                rosterPlayers={roster.rosterPlayers}
+                onAssignRoster={handleAssignRoster}
               />
             </div>
           )}

@@ -24,7 +24,6 @@ async function createBoard(cookie, name = 'Testboard') {
 
 let owner;
 let other;
-let ownerBoardId;
 let otherBoardId;
 
 beforeAll(async () => {
@@ -32,7 +31,6 @@ beforeAll(async () => {
   await runMigrations();
   owner = await registerAndLogin('owner');
   other = await registerAndLogin('other');
-  ownerBoardId = await createBoard(owner.cookie, 'Passübung');
   otherBoardId = await createBoard(other.cookie, 'Fremdes Board');
 });
 

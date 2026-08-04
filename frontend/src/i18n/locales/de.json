@@ -10,7 +10,8 @@
     "logout": "Abmelden",
     "mainNavigation": "Hauptnavigation",
     "brandHome": "Zur Startseite",
-    "trainings": "Trainings"
+    "trainings": "Trainings",
+    "roster": "Kader"
   },
   "field": {
     "large": "Großfeld (40×20m)",
@@ -626,5 +627,29 @@
     "removeItemAriaLabel": "Übung entfernen",
     "removeItemTitle": "Entfernen",
     "addItem": "Übung hinzufügen"
+  },
+  "roster": {
+    "title": "Kader",
+    "count_one": "{{count}} Spieler im Kader",
+    "count_other": "{{count}} Spieler im Kader",
+    "noPlayersYet": "Noch kein Kader angelegt",
+    "emptyStateDesc": "Lege deinen Team-Kader an, um Spieler mit Name und Rückennummer wiederzuverwenden.",
+    "namePlaceholder": "Name",
+    "nameAriaLabel": "Name des neuen Kader-Spielers",
+    "numberPlaceholder": "Nr.",
+    "numberAriaLabel": "Rückennummer des neuen Kader-Spielers",
+    "roleAriaLabel": "Position des neuen Kader-Spielers",
+    "roleNone": "–",
+    "add": "Hinzufügen",
+    "limitHint": "Maximal 40 Kader-Spieler",
+    "rowNameAriaLabel": "Name von {{name}}",
+    "rowNumberAriaLabel": "Rückennummer von {{name}}",
+    "rowRoleAriaLabel": "Position von {{name}}",
+    "deleteAriaLabel": "{{name}} aus dem Kader entfernen",
+    "deleteTitle": "Entfernen",
+    "assignFromRoster": "Aus Kader zuweisen",
+    "assignFromRosterAriaLabel": "Spieler aus dem Kader zuweisen",
+    "assignFromRosterNone": "– Kader-Spieler wählen –",
+    "emptyRosterHint": "Noch kein Kader angelegt – auf der Kader-Seite anlegbar."
   }
 }

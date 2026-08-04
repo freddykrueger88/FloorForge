@@ -1,0 +1,190 @@
+.page {
+  max-width: var(--content-narrow, 720px);
+  margin-inline: auto;
+  padding: var(--space-8) var(--space-6);
+  min-height: 100dvh;
+}
+
+.header { margin-bottom: var(--space-6); }
+.title {
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.1;
+}
+.subtitle {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  margin-top: var(--space-1);
+}
+
+.addForm {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-2);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.nameInput {
+  flex: 1;
+  min-width: 160px;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface-offset);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  color: var(--color-text);
+  min-height: 44px;
+}
+.numberInput {
+  width: 80px;
+  padding: var(--space-3) var(--space-3);
+  background: var(--color-surface-offset);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  color: var(--color-text);
+  min-height: 44px;
+}
+.roleSelect {
+  width: 90px;
+  padding: var(--space-3);
+  background: var(--color-surface-offset);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  color: var(--color-text);
+  min-height: 44px;
+}
+.nameInput:focus-visible,
+.numberInput:focus-visible,
+.roleSelect:focus-visible {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-highlight);
+}
+
+.addBtn {
+  padding: var(--space-3) var(--space-5);
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  min-height: 44px;
+  transition: background var(--transition-interactive);
+}
+.addBtn:hover:not(:disabled) { background: var(--color-primary-hover); }
+.addBtn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.limitHint {
+  font-size: var(--text-xs);
+  color: var(--color-text-faint);
+  font-style: italic;
+  margin-bottom: var(--space-4);
+}
+
+.errorBanner {
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-error-highlight);
+  color: var(--color-error);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-4);
+  font-size: var(--text-sm);
+}
+
+.emptyState {
+  padding: var(--space-10) var(--space-8);
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+.emptyIcon { font-size: 2.5rem; margin-bottom: var(--space-3); }
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: var(--space-4) 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.rowNameInput {
+  flex: 1;
+  min-width: 100px;
+  padding: var(--space-2) var(--space-3);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-text);
+}
+.rowNumberInput {
+  width: 60px;
+  padding: var(--space-2) var(--space-2);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  color: var(--color-text);
+}
+.rowRoleSelect {
+  width: 80px;
+  padding: var(--space-2);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  color: var(--color-text);
+}
+.rowNameInput:hover, .rowNameInput:focus-visible,
+.rowNumberInput:hover, .rowNumberInput:focus-visible,
+.rowRoleSelect:hover, .rowRoleSelect:focus-visible {
+  border-color: var(--color-border);
+  background: var(--color-surface-offset);
+}
+.rowNameInput:focus-visible,
+.rowNumberInput:focus-visible,
+.rowRoleSelect:focus-visible {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.deleteBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-faint);
+  flex-shrink: 0;
+  transition: background var(--transition-interactive), color var(--transition-interactive);
+}
+.deleteBtn:hover {
+  background: var(--color-error-highlight);
+  color: var(--color-error);
+}

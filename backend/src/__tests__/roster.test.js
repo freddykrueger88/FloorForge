@@ -1,0 +1,150 @@
+import './setup.js';
+import request from 'supertest';
+import app from '../server.js';
+import pool from '../db/pool.js';
+import redisClient, { connectRedis } from '../db/redis.js';
+import { runMigrations } from '../db/migrate.js';
+
+const TEST_EMAIL_PREFIX = 'roster-test-';
+const uniqueEmail = (tag) => `${TEST_EMAIL_PREFIX}${tag}-${Math.floor(Math.random() * 1e9)}@example.com`;
+
+async function registerAndLogin(tag) {
+  const email = uniqueEmail(tag);
+  const res = await request(app).post('/api/auth/register').send({ email, password: 'Testpass123' });
+  return { email, cookie: res.headers['set-cookie'][0] };
+}
+
+let owner;
+let other;
+
+beforeAll(async () => {
+  await connectRedis();
+  await runMigrations();
+  owner = await registerAndLogin('owner');
+  other = await registerAndLogin('other');
+});
+
+afterAll(async () => {
+  await pool.query('DELETE FROM users WHERE email LIKE $1', [`${TEST_EMAIL_PREFIX}%`]);
+  await pool.end();
+  await redisClient.quit();
+});
+
+describe('GET /api/roster', () => {
+  it('liefert eine leere Liste für einen frischen Nutzer', async () => {
+    const res = await request(app).get('/api/roster').set('Cookie', owner.cookie);
+    expect(res.status).toBe(200);
+    expect(res.body.data).toEqual([]);
+  });
+
+  it('lehnt nicht authentifizierte Anfragen mit 401 ab', async () => {
+    const res = await request(app).get('/api/roster');
+    expect(res.status).toBe(401);
+  });
+});
+
+describe('POST /api/roster', () => {
+  it('legt einen neuen Kader-Spieler an', async () => {
+    const res = await request(app)
+      .post('/api/roster')
+      .set('Cookie', owner.cookie)
+      .send({ name: 'Max Mustermann', jerseyNumber: 7, role: 'S' });
+    expect(res.status).toBe(201);
+    expect(res.body.data.name).toBe('Max Mustermann');
+    expect(res.body.data.jerseyNumber).toBe(7);
+    expect(res.body.data.role).toBe('S');
+  });
+
+  it('legt einen Kader-Spieler ohne Nummer/Position an', async () => {
+    const res = await request(app)
+      .post('/api/roster')
+      .set('Cookie', owner.cookie)
+      .send({ name: 'Ohne Details' });
+    expect(res.status).toBe(201);
+    expect(res.body.data.jerseyNumber).toBeNull();
+    expect(res.body.data.role).toBeNull();
+  });
+
+  it('lehnt einen Kader-Spieler ohne Namen mit 422 ab', async () => {
+    const res = await request(app).post('/api/roster').set('Cookie', owner.cookie).send({});
+    expect(res.status).toBe(422);
+  });
+
+  it('lehnt eine ungültige Rückennummer mit 422 ab', async () => {
+    const res = await request(app)
+      .post('/api/roster')
+      .set('Cookie', owner.cookie)
+      .send({ name: 'Zu hohe Nummer', jerseyNumber: 150 });
+    expect(res.status).toBe(422);
+  });
+
+  it('lehnt eine ungültige Position mit 422 ab', async () => {
+    const res = await request(app)
+      .post('/api/roster')
+      .set('Cookie', owner.cookie)
+      .send({ name: 'Falsche Position', role: 'X' });
+    expect(res.status).toBe(422);
+  });
+
+  it('lehnt einen 41. Kader-Spieler mit 400 ab (Maximal 40)', async () => {
+    for (let i = 0; i < 38; i++) {
+      const res = await request(app)
+        .post('/api/roster')
+        .set('Cookie', owner.cookie)
+        .send({ name: `Spieler ${i}` });
+      expect(res.status).toBe(201);
+    }
+    const overLimit = await request(app)
+      .post('/api/roster')
+      .set('Cookie', owner.cookie)
+      .send({ name: 'Zu viel' });
+    expect(overLimit.status).toBe(400);
+  });
+});
+
+describe('PUT/DELETE /api/roster/:id + Ownership', () => {
+  let playerId;
+
+  beforeAll(async () => {
+    const res = await request(app)
+      .post('/api/roster')
+      .set('Cookie', other.cookie)
+      .send({ name: 'Fremder Spieler', jerseyNumber: 9 });
+    playerId = res.body.data._id;
+  });
+
+  it('erlaubt dem Eigentümer, den Kader-Spieler zu ändern', async () => {
+    const res = await request(app)
+      .put(`/api/roster/${playerId}`)
+      .set('Cookie', other.cookie)
+      .send({ jerseyNumber: 11, role: 'C' });
+    expect(res.status).toBe(200);
+    expect(res.body.data.jerseyNumber).toBe(11);
+    expect(res.body.data.role).toBe('C');
+  });
+
+  it('verweigert einem fremden User das Ändern mit 404', async () => {
+    const res = await request(app)
+      .put(`/api/roster/${playerId}`)
+      .set('Cookie', owner.cookie)
+      .send({ name: 'Übernommen' });
+    expect(res.status).toBe(404);
+  });
+
+  it('verweigert einem fremden User das Löschen mit 404', async () => {
+    const res = await request(app).delete(`/api/roster/${playerId}`).set('Cookie', owner.cookie);
+    expect(res.status).toBe(404);
+  });
+
+  it('erlaubt dem Eigentümer, den Kader-Spieler zu löschen', async () => {
+    const res = await request(app).delete(`/api/roster/${playerId}`).set('Cookie', other.cookie);
+    expect(res.status).toBe(200);
+  });
+
+  it('liefert 404 beim Löschen eines nicht existierenden Kader-Spielers', async () => {
+    const res = await request(app)
+      .delete('/api/roster/00000000-0000-0000-0000-000000000000')
+      .set('Cookie', other.cookie);
+    expect(res.status).toBe(404);
+  });
+});

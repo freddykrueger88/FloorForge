@@ -10,7 +10,8 @@
     "logout": "Logout",
     "mainNavigation": "Main navigation",
     "brandHome": "Go to homepage",
-    "trainings": "Trainings"
+    "trainings": "Trainings",
+    "roster": "Roster"
   },
   "field": {
     "large": "Full Field (40×20m)",
@@ -626,5 +627,29 @@
     "removeItemAriaLabel": "Remove drill",
     "removeItemTitle": "Remove",
     "addItem": "Add drill"
+  },
+  "roster": {
+    "title": "Roster",
+    "count_one": "{{count}} player in roster",
+    "count_other": "{{count}} players in roster",
+    "noPlayersYet": "No roster yet",
+    "emptyStateDesc": "Create your team roster to reuse players with name and jersey number.",
+    "namePlaceholder": "Name",
+    "nameAriaLabel": "Name of the new roster player",
+    "numberPlaceholder": "No.",
+    "numberAriaLabel": "Jersey number of the new roster player",
+    "roleAriaLabel": "Position of the new roster player",
+    "roleNone": "–",
+    "add": "Add",
+    "limitHint": "Maximum 40 roster players",
+    "rowNameAriaLabel": "Name of {{name}}",
+    "rowNumberAriaLabel": "Jersey number of {{name}}",
+    "rowRoleAriaLabel": "Position of {{name}}",
+    "deleteAriaLabel": "Remove {{name}} from roster",
+    "deleteTitle": "Remove",
+    "assignFromRoster": "Assign from roster",
+    "assignFromRosterAriaLabel": "Assign a player from the roster",
+    "assignFromRosterNone": "– Select roster player –",
+    "emptyRosterHint": "No roster yet – create one on the roster page."
   }
 }
