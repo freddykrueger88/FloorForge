@@ -64,7 +64,28 @@ FloorForge/
 - DSGVO-konform, keine externen Dienste ohne Zustimmung
 - Passwörter gehasht mit `bcrypt` (min. 12 Rounds)
 - JWT-Authentifizierung mit sicheren HttpOnly Cookies
-- HTTPS via Reverse Proxy empfohlen (z.B. Nginx/Traefik)
+- HTTPS via Reverse Proxy empfohlen – fertiges Beispiel mit Caddy (automatisches Let's-Encrypt-Zertifikat) liegt bei, siehe unten
+
+### 🔐 HTTPS via Caddy (optional)
+
+Ohne eigenen Reverse-Proxy läuft FloorForge nur über HTTP – für den
+Betrieb über das offene Internet nicht empfehlenswert. `docker-compose.tls.yml`
+stellt ein fertiges Overlay mit [Caddy](https://caddyserver.com/) bereit,
+das automatisch ein Let's-Encrypt-Zertifikat für deine Domain besorgt und
+erneuert. Voraussetzung: die Domain zeigt per DNS bereits auf diesen
+Server, Port 80+443 sind erreichbar.
+
+```bash
+DOMAIN=floorforge.example.com docker compose \
+  -f docker-compose.yml -f docker-compose.tls.yml up -d
+```
+
+Danach erreichbar unter `https://floorforge.example.com`. Das Frontend
+ist dann nicht mehr direkt über `APP_PORT` erreichbar, nur noch über
+Caddy (Port 80/443). Erfordert Docker Compose ≥ 2.24 (`!reset`-Syntax in
+`docker-compose.tls.yml`); bei älteren Versionen stattdessen die
+`ports:`-Zeile für `frontend` in `docker-compose.yml` manuell
+auskommentieren.
 
 ## 📄 Lizenz
 
