@@ -62,7 +62,7 @@ export async function runBackupNow() {
       await writeZip(path.join(runDir, `${id}.zip`), data);
       count++;
     } catch (err) {
-      logger.error(`Backup failed for user ${id}:`, err.message);
+      logger.error(`Backup failed for user ${id}:`, err);
     }
   }
 

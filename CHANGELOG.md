@@ -13,7 +13,19 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
-Keine offenen Änderungen – aktueller Stand ist v0.9.0.
+### Fixed
+- CI: `EXPORTS_DIR` im Backend-Testjob (`.github/workflows/ci.yml`) auf
+  `${{ runner.temp }}/exports` gesetzt statt des Produktions-Defaults
+  `/app/exports`, der nur innerhalb des Docker-Containers beschreibbar
+  ist – auf dem bare GitHub-Actions-Runner (non-root) führte das seit
+  dem MP4-Export-Feature (Commit `b6a5a2e`) durchgehend zu `EACCES` in
+  `POST /api/export/gif`/`mp4` und damit zu 3 fehlschlagenden Tests in
+  `export.test.js`. Die produktive Docker-Umgebung war davon nie
+  betroffen. Zusätzlich: verschluckte Fehlermeldungen in
+  `exportController.js`/`backupCron.js` behoben (`err` statt
+  `err.message` an den Logger übergeben – Winstons Format gibt einen
+  reinen String-Zweitparameter sonst nicht aus), was die Diagnose
+  unnötig erschwert hat.
 
 ---
 

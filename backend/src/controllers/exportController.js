@@ -43,7 +43,7 @@ async function cleanupOldExports() {
       }
     }
   } catch (err) {
-    logger.warn('Export cleanup error:', err.message);
+    logger.warn('Export cleanup error:', err);
   }
 }
 
@@ -148,7 +148,7 @@ export async function startGifExport(req, res) {
     jobs.get(jobId).progress = 100;
     logger.info(`Export done: ${jobId}`);
   } catch (err) {
-    logger.error(`Export failed (${jobId}):`, err.message);
+    logger.error(`Export failed (${jobId}):`, err);
     if (jobs.has(jobId)) {
       jobs.get(jobId).status  = 'error';
       jobs.get(jobId).message = err.message;
@@ -186,7 +186,7 @@ export async function startMp4Export(req, res) {
     jobs.get(jobId).progress = 100;
     logger.info(`Export done: ${jobId}`);
   } catch (err) {
-    logger.error(`Export failed (${jobId}):`, err.message);
+    logger.error(`Export failed (${jobId}):`, err);
     if (jobs.has(jobId)) {
       jobs.get(jobId).status  = 'error';
       jobs.get(jobId).message = err.message;
@@ -221,6 +221,6 @@ export function downloadExport(req, res) {
   }
   const filename = job.format === 'mp4' ? 'floorforge-export.mp4' : 'floorforge-export.gif';
   res.download(filePath, filename, (err) => {
-    if (err) logger.warn(`Download error (${jobId}):`, err.message);
+    if (err) logger.warn(`Download error (${jobId}):`, err);
   });
 }
