@@ -28,7 +28,7 @@ import PlayerAccessibleList from '../components/field/PlayerAccessibleList.jsx';
 import { DrawingToolbar } from '../components/drawing/index.js';
 import { FrameTimeline } from '../components/frames/index.js';
 import { PlaybackControls } from '../components/playback/index.js';
-import { NotesPanel, ExportPanel } from '../components/board/index.js';
+import { NotesPanel, ExportPanel, PdfExportPanel } from '../components/board/index.js';
 import { LinesPanel } from '../components/lines/index.js';
 
 import { useBoardsApi } from '../hooks/useBoardsApi.js';
@@ -411,6 +411,7 @@ export default function BoardEditorPage() {
             canAddLine={lines.canAddLine}
           />
           <ExportPanel boardId={boardId} frames={frames} renderFrame={renderFrame} />
+          <PdfExportPanel frames={frames} renderFrame={renderFrame} boardName={board?.name} />
           <NotesPanel value={notes} onChange={setNotes} />
         </div>
       </div>

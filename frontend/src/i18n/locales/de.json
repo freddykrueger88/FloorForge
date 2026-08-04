@@ -284,6 +284,19 @@
     "creating": "Erstellt…",
     "createLink": "🔗 Link erstellen"
   },
+  "pdfExport": {
+    "title": "📄 PDF-Taktikblatt",
+    "minFramesHint": "Mindestens 1 Frame benötigt.",
+    "framesPerPage": "Frames pro Seite",
+    "paperSize": "Papierformat",
+    "letter": "Letter (US)",
+    "notePlaceholder": "Notiz (optional)",
+    "rendering": "Rendert…",
+    "preview": "👁 Vorschau",
+    "hidePreview": "Vorschau ausblenden",
+    "exporting": "Erstellt…",
+    "create": "📄 PDF erstellen"
+  },
   "notes": {
     "ariaLabel": "Notizen zu diesem Spielfeld",
     "title": "📝 Notizen",

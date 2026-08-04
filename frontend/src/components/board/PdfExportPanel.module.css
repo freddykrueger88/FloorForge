@@ -1,0 +1,151 @@
+.panel {
+  padding: 12px;
+  background: #1e2128;
+  border-radius: 8px;
+  border: 1px solid #2d3340;
+  color: #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.title {
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin: 0;
+  color: #cbd5e1;
+}
+
+.hint {
+  font-size: 0.78rem;
+  color: #64748b;
+  margin: 0;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.optLabel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.82rem;
+  color: #94a3b8;
+  gap: 8px;
+}
+
+.select {
+  background: #23272e;
+  border: 1px solid #3a3f4b;
+  border-radius: 5px;
+  color: #e2e8f0;
+  padding: 3px 6px;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.notesList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 160px;
+  overflow-y: auto;
+}
+
+.noteRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.noteFrameLabel {
+  flex-shrink: 0;
+  width: 64px;
+  font-size: 0.76rem;
+  color: #64748b;
+}
+
+.noteInput {
+  flex: 1;
+  min-width: 0;
+  background: #23272e;
+  border: 1px solid #3a3f4b;
+  border-radius: 5px;
+  color: #e2e8f0;
+  padding: 4px 8px;
+  font-size: 0.78rem;
+}
+
+.statusMsg {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  margin: 0;
+}
+.statusError { color: #f87171; }
+
+.previewGrid {
+  display: grid;
+  gap: 6px;
+  background: #111318;
+  border-radius: 6px;
+  padding: 8px;
+}
+
+.previewCell {
+  background: #1a1e27;
+  border-radius: 4px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.previewImg {
+  width: 100%;
+  display: block;
+  border-radius: 3px;
+  background: #23272e;
+}
+
+.previewNote {
+  margin: 0;
+  font-size: 0.72rem;
+  color: #94a3b8;
+  text-align: center;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.exportBtn {
+  flex: 1;
+  padding: 7px 12px;
+  background: #2563eb;
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.exportBtn:hover:not(:disabled) { background: #1d4ed8; }
+.exportBtn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.resetBtn {
+  padding: 7px 10px;
+  background: #23272e;
+  border: 1px solid #3a3f4b;
+  border-radius: 6px;
+  color: #94a3b8;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+.resetBtn:hover:not(:disabled) { color: #e2e8f0; }
+.resetBtn:disabled { opacity: 0.4; cursor: not-allowed; }

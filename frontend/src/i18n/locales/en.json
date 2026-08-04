@@ -284,6 +284,19 @@
     "creating": "Creating…",
     "createLink": "🔗 Create link"
   },
+  "pdfExport": {
+    "title": "📄 PDF Tactics Sheet",
+    "minFramesHint": "At least 1 frame required.",
+    "framesPerPage": "Frames per page",
+    "paperSize": "Paper size",
+    "letter": "Letter (US)",
+    "notePlaceholder": "Note (optional)",
+    "rendering": "Rendering…",
+    "preview": "👁 Preview",
+    "hidePreview": "Hide preview",
+    "exporting": "Creating…",
+    "create": "📄 Create PDF"
+  },
   "notes": {
     "ariaLabel": "Notes for this board",
     "title": "📝 Notes",
