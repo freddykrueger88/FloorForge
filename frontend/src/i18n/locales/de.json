@@ -439,16 +439,9 @@
       "confirm": "Spielfeld anlegen"
     },
     "deleteBoard": {
-      "step1Title": "Spielfeld löschen?",
-      "step1Message": "Möchtest du „{{name}}“ wirklich löschen?",
-      "step1Confirm": "Ja, löschen",
-      "step2Title": "Wirklich sicher?",
-      "step2Message": "Diese Aktion ist unwiderruflich. Alle Daten gehen verloren.",
-      "step2Confirm": "Ja, bin ich sicher",
-      "step3Title": "Letzte Warnung!",
-      "step3Message": "„{{name}}“ wird endgültig und unwiderruflich gelöscht.",
-      "step3Confirm": "Endgültig löschen",
-      "stepIndicator": "Schritt {{step}} von {{total}}",
+      "title": "Spielfeld löschen?",
+      "message": "„{{name}}“ wird unwiderruflich gelöscht – alle Frames, Zeichnungen und Notizen gehen verloren.",
+      "confirm": "Endgültig löschen",
       "cancel": "Abbrechen",
       "deleting": "Lösche…"
     },

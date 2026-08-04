@@ -23,16 +23,16 @@ const DEFAULT_POSITIONS_LARGE = {
     { id: 'h2', role: 'V',  position: 'Verteidiger',  x: 7.0,  y: 6.0  },
     { id: 'h3', role: 'V',  position: 'Verteidiger',  x: 7.0,  y: 14.0 },
     { id: 'h4', role: 'C',  position: 'Center',       x: 16.0, y: 10.0 },
-    { id: 'h5', role: 'S',  position: 'Stürmer',      x: 22.0, y: 7.0  },
-    { id: 'h6', role: 'S',  position: 'Stürmer',      x: 22.0, y: 13.0 },
+    { id: 'h5', role: 'S',  position: 'Stürmer',      x: 18.0, y: 7.0  },
+    { id: 'h6', role: 'S',  position: 'Stürmer',      x: 18.0, y: 13.0 },
   ],
   away: [
     { id: 'a1', role: 'TW', position: 'Torwart',     x: 38.0, y: 10.0 },
     { id: 'a2', role: 'V',  position: 'Verteidiger',  x: 33.0, y: 6.0  },
     { id: 'a3', role: 'V',  position: 'Verteidiger',  x: 33.0, y: 14.0 },
     { id: 'a4', role: 'C',  position: 'Center',       x: 24.0, y: 10.0 },
-    { id: 'a5', role: 'S',  position: 'Stürmer',      x: 18.0, y: 7.0  },
-    { id: 'a6', role: 'S',  position: 'Stürmer',      x: 18.0, y: 13.0 },
+    { id: 'a5', role: 'S',  position: 'Stürmer',      x: 22.0, y: 7.0  },
+    { id: 'a6', role: 'S',  position: 'Stürmer',      x: 22.0, y: 13.0 },
   ],
 };
 
@@ -40,8 +40,8 @@ const FIELD_PLAYER_SLOTS = [
   { role: 'V', xRatio: 0.20, yOffsetRatio: -0.35 },
   { role: 'V', xRatio: 0.20, yOffsetRatio: 0.35 },
   { role: 'C', xRatio: 0.38, yOffsetRatio: 0 },
-  { role: 'S', xRatio: 0.50, yOffsetRatio: -0.3 },
-  { role: 'S', xRatio: 0.50, yOffsetRatio: 0.3 },
+  { role: 'S', xRatio: 0.42, yOffsetRatio: -0.3 },
+  { role: 'S', xRatio: 0.42, yOffsetRatio: 0.3 },
 ];
 
 function buildMirroredPositions(field) {

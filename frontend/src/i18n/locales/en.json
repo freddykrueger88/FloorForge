@@ -439,16 +439,9 @@
       "confirm": "Create field"
     },
     "deleteBoard": {
-      "step1Title": "Delete field?",
-      "step1Message": "Do you really want to delete \"{{name}}\"?",
-      "step1Confirm": "Yes, delete",
-      "step2Title": "Are you sure?",
-      "step2Message": "This action cannot be undone. All data will be lost.",
-      "step2Confirm": "Yes, I'm sure",
-      "step3Title": "Final warning!",
-      "step3Message": "\"{{name}}\" will be permanently and irrevocably deleted.",
-      "step3Confirm": "Delete permanently",
-      "stepIndicator": "Step {{step}} of {{total}}",
+      "title": "Delete field?",
+      "message": "\"{{name}}\" will be permanently deleted – all frames, drawings and notes will be lost.",
+      "confirm": "Delete permanently",
       "cancel": "Cancel",
       "deleting": "Deleting…"
     },

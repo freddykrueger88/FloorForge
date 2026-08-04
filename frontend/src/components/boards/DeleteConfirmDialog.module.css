@@ -30,8 +30,7 @@
 }
 @keyframes slideUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } }
 
-.warn   { border-color: var(--color-warning); }
-.danger { border-color: var(--color-error);   }
+.danger { border-color: var(--color-error); }
 
 .icon  { font-size: 2.5rem; }
 .title { font-size: var(--text-lg); font-weight: 700; color: var(--color-text); }
@@ -79,7 +78,5 @@
   transition: background var(--transition-interactive);
 }
 .confirmBtn:disabled { opacity: 0.4; cursor: not-allowed; }
-.confirm_warn   { background: var(--color-warning); color: #fff; }
-.confirm_warn:hover:not(:disabled)   { background: var(--color-warning-hover); }
-.confirm_danger { background: var(--color-error);   color: #fff; }
-.confirm_danger:hover:not(:disabled) { background: var(--color-error-hover);   }
+.confirm_danger { background: var(--color-error); color: #fff; }
+.confirm_danger:hover:not(:disabled) { background: var(--color-error-hover); }
