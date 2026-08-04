@@ -10,7 +10,7 @@
  */
 import fs from 'fs/promises';
 import path from 'path';
-import archiver from 'archiver';
+import { ZipArchive } from 'archiver';
 import { createWriteStream } from 'fs';
 import cron from 'node-cron';
 import pool from '../db/pool.js';
@@ -30,7 +30,7 @@ async function writeZip(filePath, data) {
   await fs.mkdir(path.dirname(filePath), { recursive: true });
   return new Promise((resolve, reject) => {
     const output = createWriteStream(filePath);
-    const archive = archiver('zip', { zlib: { level: 9 } });
+    const archive = new ZipArchive({ zlib: { level: 9 } });
     output.on('close', resolve);
     archive.on('error', reject);
     archive.pipe(output);

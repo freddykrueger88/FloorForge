@@ -5,7 +5,7 @@
  * das Aufräumen, siehe backend/src/db/migrate.js.
  */
 import jwt from 'jsonwebtoken';
-import archiver from 'archiver';
+import { ZipArchive } from 'archiver';
 import AdmZip from 'adm-zip';
 import pool from '../db/pool.js';
 import redisClient from '../db/redis.js';
@@ -119,7 +119,7 @@ export async function exportAccount(req, res) {
     res.setHeader('Content-Type', 'application/zip');
     res.setHeader('Content-Disposition', `attachment; filename="floorforge-backup-${dateStr}.zip"`);
 
-    const archive = archiver('zip', { zlib: { level: 9 } });
+    const archive = new ZipArchive({ zlib: { level: 9 } });
     archive.on('error', (err) => { throw err; });
     archive.pipe(res);
     archive.append(JSON.stringify(data, null, 2), { name: 'backup.json' });
