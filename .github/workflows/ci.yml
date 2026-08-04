@@ -40,7 +40,7 @@ jobs:
       REDIS_HOST: localhost
       REDIS_PORT: 6379
       REDIS_PASSWORD: ''
-      EXPORTS_DIR: ${{ runner.temp }}/exports
+      EXPORTS_DIR: /tmp/floorforge-exports-ci
     steps:
       - uses: actions/checkout@v7
 
