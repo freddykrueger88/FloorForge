@@ -36,6 +36,15 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   `err.message` an den Logger übergeben – Winstons Format gibt einen
   reinen String-Zweitparameter sonst nicht aus), was die Diagnose
   unnötig erschwert hat.
+- Gezeichnete Pfeile/Linien im Board-Editor gingen beim Wechsel des
+  Frames verloren (#54): Autosave beobachtete bisher nur `livePlayers`,
+  nicht `drawing.elements` – reines Zeichnen löste dadurch nie ein
+  Speichern aus. Der anschließende Frame-Wechsel überschrieb den
+  lokalen Zeichenstatus dann mit dem (noch leeren) gespeicherten Stand
+  des neuen Frames. Autosave beobachtet jetzt beide zusammen, zusätzlich
+  wird vor einem manuellen Frame-Wechsel explizit ein ausstehendes
+  Speichern abgewartet, damit auch sehr kurz aufeinanderfolgende
+  Aktionen (zeichnen → sofort Frame wechseln) nichts verlieren.
 
 ---
 

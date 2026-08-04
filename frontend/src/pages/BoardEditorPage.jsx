@@ -159,16 +159,30 @@ export default function BoardEditorPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeFrame?._id, anim.playing]);
 
-  const saveActiveFrame = useCallback(async (players) => {
+  const saveActiveFrame = useCallback(async ({ players, elements }) => {
     if (!activeFrame?._id) return;
-    await updateFrame(activeFrame._id, { players, elements: drawing.elements });
-  }, [activeFrame, updateFrame, drawing.elements]);
+    await updateFrame(activeFrame._id, { players, elements });
+  }, [activeFrame, updateFrame]);
 
-  const { status: saveStatus } = useAutoSave(
-    livePlayers,
+  // Issue #54: vorher wurde nur livePlayers beobachtet – gezeichnete
+  // Pfeile/Linien lösten dadurch kein Autosave aus und gingen beim
+  // Frame-Wechsel verloren, da drawing.elements noch nicht gespeichert war.
+  const { status: saveStatus, saveNow: saveFrameNow } = useAutoSave(
+    { players: livePlayers, elements: drawing.elements },
     saveActiveFrame,
     !!activeFrame && !anim.playing && canEdit,
   );
+
+  // Zusätzlich zum Debounce explizit vor einem manuellen Frame-Wechsel
+  // flushen, damit auch sehr kurz aufeinanderfolgende Aktionen (zeichnen
+  // → sofort Frame wechseln, innerhalb der 300ms-Debounce-Zeit) nichts
+  // verlieren.
+  const handleFrameSelect = useCallback(async (index) => {
+    if (canEdit && !anim.playing) {
+      await saveFrameNow();
+    }
+    goToFrame(index);
+  }, [canEdit, anim.playing, saveFrameNow, goToFrame]);
 
   const handleDragEndPlayer = useCallback((id, rawX, rawY) => {
     const currentField = IFF_FIELDS[field.fieldType] ?? IFF_FIELDS.large;
@@ -522,7 +536,7 @@ export default function BoardEditorPage() {
       <FrameTimeline
         frames={frames}
         activeIndex={activeIndex}
-        onSelect={goToFrame}
+        onSelect={handleFrameSelect}
         onAdd={canEdit ? () => addFrame(livePlayers, drawing.elements) : undefined}
         onDelete={canEdit ? deleteFrame : undefined}
         onReorder={canEdit ? reorderFrames : undefined}
