@@ -180,8 +180,11 @@
       "lines": "Lines",
       "formations": "Formationen",
       "export": "Export",
-      "notes": "Notizen"
-    }
+      "notes": "Notizen",
+      "settings": "Einstellungen"
+    },
+    "collapsePanel": "Menü einklappen",
+    "expandPanel": "Menü ausklappen"
   },
   "boardsPage": {
     "count_one": "{{count}} Spielfeld",

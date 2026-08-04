@@ -16,14 +16,20 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ### Changed
 - Board-Editor: rechtes Menü (Zeichnen-Koordinaten, Lines, Formationen,
   Export, PDF-Export, Notizen) von einer schmalen 220px-Seitenleiste in
-  eine Tab-Leiste unter dem Spielfeld verschoben – das Feld bekommt
-  dadurch die volle Breite, die sechs Panels sind jetzt über Tabs
-  (Zeichnen/Lines/Formationen/Export/Notizen) statt einer langen
-  Scroll-Liste erreichbar (neue Komponente `BoardSidePanelTabs`).
-- Board-Editor: "Namen anzeigen"-Schalter aus dem überfüllten
-  Header-Menü (Farben/Feldtyp/Hinweise/Teilen/Tastaturkürzel) heraus in
-  eine eigene, deutlich sichtbare Zeile direkt über dem Spielfeld
-  verschoben (neue Komponente `FieldNamesBar`).
+  eine Tab-Leiste unter der Frame-Timeline verschoben – das Feld bekommt
+  dadurch die volle Breite (neue Komponente `BoardSidePanelTabs`). Das
+  Menü ist standardmäßig eingeklappt (nur die Tab-Leiste sichtbar) und
+  klappt erst auf Klick auf, damit der Fokus auf dem Spielfeld bleibt
+  statt auf einem dauerhaft großen Panel darunter.
+- Board-Editor: Frame-Timeline (Frame 1, Frame 2, …) sitzt jetzt über
+  dem Tab-Menü statt darunter.
+- Board-Editor: "Namen anzeigen", Positions-Hinweise, Spielfeld-Typ und
+  "Board teilen" aus dem Header-Menü heraus in einen eigenen
+  "Einstellungen"-Tab im unteren Menü verschoben (neue Komponente
+  `FieldSettingsPanel`, nutzt intern `FieldNamesBar`). Teamfarben und
+  Tastaturkürzel bleiben bewusst im Header, da sie ohne Menü-Klick
+  schnell erreichbar sein sollen. Die nun ungenutzte `FieldToolbar`
+  wurde entfernt.
 
 ### Fixed
 - CI: `EXPORTS_DIR` im Backend-Testjob (`.github/workflows/ci.yml`) auf

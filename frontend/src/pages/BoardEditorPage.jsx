@@ -21,8 +21,7 @@ import useAnnounceStore from '../store/announceStore.js';
 import useThemeStore from '../store/themeStore.js';
 
 import FieldContainer from '../components/field/FieldContainer.jsx';
-import FieldToolbar from '../components/field/FieldToolbar.jsx';
-import FieldNamesBar from '../components/field/FieldNamesBar.jsx';
+import FieldSettingsPanel from '../components/field/FieldSettingsPanel.jsx';
 import FieldTypeChangeDialog from '../components/field/FieldTypeChangeDialog.jsx';
 import PlayerInfoPanel from '../components/field/PlayerInfoPanel.jsx';
 import TeamColorPanel from '../components/field/TeamColorPanel.jsx';
@@ -366,24 +365,6 @@ export default function BoardEditorPage() {
               onChangeBallColor={handleChangeBallColor}
             />
           )}
-          <FieldToolbar
-            fieldType={field.fieldType}
-            availableFields={field.availableFields}
-            onRequestFieldTypeChange={canEdit ? handleRequestFieldTypeChange : undefined}
-            showHints={showHints}
-            onToggleShowHints={toggleShowHints}
-          />
-          {board?.accessLevel === 'owner' && (
-            <button
-              type="button"
-              className={styles.helpBtn}
-              onClick={() => setShowShareModal(true)}
-              aria-label={t('boardShare.openLabel')}
-              title={t('boardShare.openLabel')}
-            >
-              🤝
-            </button>
-          )}
           <button
             type="button"
             className={styles.helpBtn}
@@ -421,13 +402,6 @@ export default function BoardEditorPage() {
         activeIndex={activeIndex}
         frameCount={frames.length}
         progress={anim.progress}
-      />
-
-      <FieldNamesBar
-        showNames={showNames}
-        onToggleShowNames={() => setShowNames((v) => !v)}
-        namePosition={namePosition}
-        onSetNamePosition={setNamePosition}
       />
 
       <div className={styles.body}>
@@ -502,6 +476,18 @@ export default function BoardEditorPage() {
           </div>
         </div>
 
+        <FrameTimeline
+          frames={frames}
+          activeIndex={activeIndex}
+          onSelect={handleFrameSelect}
+          onAdd={canEdit ? () => addFrame(livePlayers, drawing.elements) : undefined}
+          onDelete={canEdit ? deleteFrame : undefined}
+          onReorder={canEdit ? reorderFrames : undefined}
+          loading={framesLoading}
+          currentPlayers={livePlayers}
+          currentElements={drawing.elements}
+        />
+
         <BoardSidePanelTabs
           tabs={[
             canEdit && {
@@ -566,21 +552,29 @@ export default function BoardEditorPage() {
               icon: '📝',
               content: <NotesPanel value={notes} onChange={setNotes} readonly={!canEdit} />,
             },
+            {
+              id: 'settings',
+              label: t('boardEditor.tabs.settings'),
+              icon: '⚙️',
+              content: (
+                <FieldSettingsPanel
+                  showNames={showNames}
+                  onToggleShowNames={() => setShowNames((v) => !v)}
+                  namePosition={namePosition}
+                  onSetNamePosition={setNamePosition}
+                  showHints={showHints}
+                  onToggleShowHints={toggleShowHints}
+                  fieldType={field.fieldType}
+                  availableFields={field.availableFields}
+                  onRequestFieldTypeChange={canEdit ? handleRequestFieldTypeChange : undefined}
+                  onOpenShare={() => setShowShareModal(true)}
+                  showShareButton={board?.accessLevel === 'owner'}
+                />
+              ),
+            },
           ].filter(Boolean)}
         />
       </div>
-
-      <FrameTimeline
-        frames={frames}
-        activeIndex={activeIndex}
-        onSelect={handleFrameSelect}
-        onAdd={canEdit ? () => addFrame(livePlayers, drawing.elements) : undefined}
-        onDelete={canEdit ? deleteFrame : undefined}
-        onReorder={canEdit ? reorderFrames : undefined}
-        loading={framesLoading}
-        currentPlayers={livePlayers}
-        currentElements={drawing.elements}
-      />
     </main>
   );
 }

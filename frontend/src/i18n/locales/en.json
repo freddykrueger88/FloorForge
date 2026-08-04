@@ -180,8 +180,11 @@
       "lines": "Lines",
       "formations": "Formations",
       "export": "Export",
-      "notes": "Notes"
-    }
+      "notes": "Notes",
+      "settings": "Settings"
+    },
+    "collapsePanel": "Collapse panel",
+    "expandPanel": "Expand panel"
   },
   "boardsPage": {
     "count_one": "{{count}} board",

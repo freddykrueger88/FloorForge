@@ -1,7 +1,7 @@
 /**
- * FieldNamesBar – Namen ein-/ausblenden, eigene Zeile direkt über dem Feld
- * (Issue #29, ausgelagert aus FieldToolbar – vorher im überfüllten
- * Header-Menü zu unauffällig platziert)
+ * FieldNamesBar – Namen ein-/ausblenden + Positions-Auswahl
+ * (Issue #29, ausgelagert aus FieldToolbar; eingebettet im
+ * "Einstellungen"-Tab von BoardSidePanelTabs)
  */
 import { useTranslation } from 'react-i18next';
 import styles from './FieldNamesBar.module.css';
