@@ -12,16 +12,16 @@
   "dependencies": {
     "@fontsource/opendyslexic": "^5.3.0",
     "axios": "^1.7.3",
-    "i18next": "^23.12.2",
+    "i18next": "^26.3.6",
     "i18next-browser-languagedetector": "^8.0.0",
-    "konva": "^9.3.15",
+    "konva": "^10.3.0",
     "qrcode": "^1.5.4",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
-    "react-i18next": "^14.1.2",
+    "react-i18next": "^17.0.11",
     "react-konva": "^19.2.5",
     "react-router": "^8.3.0",
-    "zustand": "^4.5.4"
+    "zustand": "^5.0.14"
   },
   "devDependencies": {
     "@eslint/js": "^9.8.0",

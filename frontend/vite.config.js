@@ -63,10 +63,12 @@ export default defineConfig({
     sourcemap: false,
     rollupOptions: {
       output: {
-        manualChunks: {
-          router: ['react-router'],
-          konva:  ['konva', 'react-konva'],
-          i18n:   ['i18next', 'react-i18next', 'i18next-browser-languagedetector'],
+        // Vite 8/Rolldown: die Objekt-Form von manualChunks wurde entfernt,
+        // Funktions-Form ist der Ersatz (identisches Chunking-Verhalten)
+        manualChunks(id) {
+          if (id.includes('node_modules/react-router')) return 'router';
+          if (id.includes('node_modules/konva') || id.includes('node_modules/react-konva')) return 'konva';
+          if (id.includes('node_modules/i18next') || id.includes('node_modules/react-i18next') || id.includes('node_modules/i18next-browser-languagedetector')) return 'i18n';
         },
       },
     },
