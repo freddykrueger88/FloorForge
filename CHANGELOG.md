@@ -13,6 +13,18 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Changed
+- Board-Editor: rechtes Menü (Zeichnen-Koordinaten, Lines, Formationen,
+  Export, PDF-Export, Notizen) von einer schmalen 220px-Seitenleiste in
+  eine Tab-Leiste unter dem Spielfeld verschoben – das Feld bekommt
+  dadurch die volle Breite, die sechs Panels sind jetzt über Tabs
+  (Zeichnen/Lines/Formationen/Export/Notizen) statt einer langen
+  Scroll-Liste erreichbar (neue Komponente `BoardSidePanelTabs`).
+- Board-Editor: "Namen anzeigen"-Schalter aus dem überfüllten
+  Header-Menü (Farben/Feldtyp/Hinweise/Teilen/Tastaturkürzel) heraus in
+  eine eigene, deutlich sichtbare Zeile direkt über dem Spielfeld
+  verschoben (neue Komponente `FieldNamesBar`).
+
 ### Fixed
 - CI: `EXPORTS_DIR` im Backend-Testjob (`.github/workflows/ci.yml`) auf
   `/tmp/floorforge-exports-ci` gesetzt statt des Produktions-Defaults

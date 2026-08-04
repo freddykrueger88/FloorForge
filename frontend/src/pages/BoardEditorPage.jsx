@@ -22,6 +22,7 @@ import useThemeStore from '../store/themeStore.js';
 
 import FieldContainer from '../components/field/FieldContainer.jsx';
 import FieldToolbar from '../components/field/FieldToolbar.jsx';
+import FieldNamesBar from '../components/field/FieldNamesBar.jsx';
 import FieldTypeChangeDialog from '../components/field/FieldTypeChangeDialog.jsx';
 import PlayerInfoPanel from '../components/field/PlayerInfoPanel.jsx';
 import TeamColorPanel from '../components/field/TeamColorPanel.jsx';
@@ -29,7 +30,7 @@ import PlayerAccessibleList from '../components/field/PlayerAccessibleList.jsx';
 import { DrawingToolbar, DrawingCoordinatesForm } from '../components/drawing/index.js';
 import { FrameTimeline } from '../components/frames/index.js';
 import { PlaybackControls } from '../components/playback/index.js';
-import { NotesPanel, ExportPanel, PdfExportPanel, ShortcutsOverlay, ShareBoardModal } from '../components/board/index.js';
+import { NotesPanel, ExportPanel, PdfExportPanel, ShortcutsOverlay, ShareBoardModal, BoardSidePanelTabs } from '../components/board/index.js';
 import { LinesPanel } from '../components/lines/index.js';
 import { FormationsPanel } from '../components/formations/index.js';
 
@@ -366,10 +367,6 @@ export default function BoardEditorPage() {
             />
           )}
           <FieldToolbar
-            showNames={showNames}
-            onToggleShowNames={() => setShowNames((v) => !v)}
-            namePosition={namePosition}
-            onSetNamePosition={setNamePosition}
             fieldType={field.fieldType}
             availableFields={field.availableFields}
             onRequestFieldTypeChange={canEdit ? handleRequestFieldTypeChange : undefined}
@@ -426,111 +423,151 @@ export default function BoardEditorPage() {
         progress={anim.progress}
       />
 
-      <div className={styles.body}>
-        {canEdit && (
-          <DrawingToolbar
-            activeTool={drawing.activeTool}
-            setActiveTool={drawing.setActiveTool}
-            activeColor={drawing.activeColor}
-            setActiveColor={drawing.setActiveColor}
-            strokeWidth={drawing.strokeWidth}
-            setStrokeWidth={drawing.setStrokeWidth}
-            onUndo={drawing.undo}
-            onRedo={drawing.redo}
-            onClear={drawing.clearAll}
-            canUndo={drawing.canUndo}
-            canRedo={drawing.canRedo}
-            elementCount={drawing.elements.length}
-            undoStack={drawing.undoStack}
-            redoStack={drawing.redoStack}
-            onJumpHistory={drawing.jumpHistory}
-          />
-        )}
-        <div className={styles.fieldArea}>
-          <FieldContainer
-            fieldType={field.fieldType}
-            showGrid={field.showGrid}
-            gridSize={field.gridSize}
-            theme={activeTheme}
-            readonly={anim.playing || !canEdit}
-            players={displayedPlayers}
-            selectedPlayerId={selectedPlayerId}
-            onSelectPlayer={handleSelectPlayer}
-            onDragEndPlayer={handleDragEndPlayer}
-            homeColor={teamColorToFillStroke(homeColor, DEFAULT_TEAM_COLORS.home.fill)}
-            awayColor={teamColorToFillStroke(awayColor, DEFAULT_TEAM_COLORS.away.fill)}
-            ballColor={ballColor}
-            drawingElements={anim.playing ? (activeFrame?.elements ?? []) : drawing.elements}
-            selectedDrawingId={drawing.selectedId}
-            activeTool={drawing.activeTool}
-            isDrawing={drawing.isDrawing}
-            onPointerDown={drawing.handlePointerDown}
-            onPointerMove={drawing.handlePointerMove}
-            onPointerUp={drawing.handlePointerUp}
-            onElementClick={drawing.handleElementClick}
-            showNames={showNames}
-            namePosition={namePosition}
-            showHints={showHints}
-            activeLinePlayerIds={lines.activeLine?.playerIds ?? null}
-            activeLineColor={lines.activeLine?.color ?? null}
-          />
+      <FieldNamesBar
+        showNames={showNames}
+        onToggleShowNames={() => setShowNames((v) => !v)}
+        namePosition={namePosition}
+        onSetNamePosition={setNamePosition}
+      />
 
-          {!anim.playing && (
-            <PlayerAccessibleList
-              players={livePlayers}
+      <div className={styles.body}>
+        <div className={styles.middleRow}>
+          {canEdit && (
+            <DrawingToolbar
+              activeTool={drawing.activeTool}
+              setActiveTool={drawing.setActiveTool}
+              activeColor={drawing.activeColor}
+              setActiveColor={drawing.setActiveColor}
+              strokeWidth={drawing.strokeWidth}
+              setStrokeWidth={drawing.setStrokeWidth}
+              onUndo={drawing.undo}
+              onRedo={drawing.redo}
+              onClear={drawing.clearAll}
+              canUndo={drawing.canUndo}
+              canRedo={drawing.canRedo}
+              elementCount={drawing.elements.length}
+              undoStack={drawing.undoStack}
+              redoStack={drawing.redoStack}
+              onJumpHistory={drawing.jumpHistory}
+            />
+          )}
+          <div className={styles.fieldArea}>
+            <FieldContainer
+              fieldType={field.fieldType}
+              showGrid={field.showGrid}
+              gridSize={field.gridSize}
+              theme={activeTheme}
+              readonly={anim.playing || !canEdit}
+              players={displayedPlayers}
               selectedPlayerId={selectedPlayerId}
               onSelectPlayer={handleSelectPlayer}
-            />
-          )}
-
-          {!anim.playing && selectedPlayerId && (
-            <div className={styles.infoPanelWrap}>
-              <PlayerInfoPanel
-                player={livePlayers.find((p) => p.id === selectedPlayerId)}
-                onClose={() => handleSelectPlayer(null)}
-                onNameChange={handleNameChange}
-                rosterPlayers={roster.rosterPlayers}
-                onAssignRoster={handleAssignRoster}
-              />
-            </div>
-          )}
-        </div>
-
-        <div className={styles.sidebar}>
-          {canEdit && (
-            <DrawingCoordinatesForm
+              onDragEndPlayer={handleDragEndPlayer}
+              homeColor={teamColorToFillStroke(homeColor, DEFAULT_TEAM_COLORS.home.fill)}
+              awayColor={teamColorToFillStroke(awayColor, DEFAULT_TEAM_COLORS.away.fill)}
+              ballColor={ballColor}
+              drawingElements={anim.playing ? (activeFrame?.elements ?? []) : drawing.elements}
+              selectedDrawingId={drawing.selectedId}
               activeTool={drawing.activeTool}
-              field={IFF_FIELDS[field.fieldType] ?? IFF_FIELDS.large}
-              onAddArrow={drawing.addArrowElement}
-              onAddFreehand={drawing.addFreehandElement}
+              isDrawing={drawing.isDrawing}
+              onPointerDown={drawing.handlePointerDown}
+              onPointerMove={drawing.handlePointerMove}
+              onPointerUp={drawing.handlePointerUp}
+              onElementClick={drawing.handleElementClick}
+              showNames={showNames}
+              namePosition={namePosition}
+              showHints={showHints}
+              activeLinePlayerIds={lines.activeLine?.playerIds ?? null}
+              activeLineColor={lines.activeLine?.color ?? null}
             />
-          )}
-          {canEdit && (
-            <LinesPanel
-              lines={lines.lines}
-              activeLineId={lines.activeLineId}
-              players={livePlayers}
-              onAddLine={lines.addLine}
-              onRenameLine={(id, name) => lines.updateLine(id, { name })}
-              onDeleteLine={lines.deleteLine}
-              onSetActiveLine={lines.setActiveLine}
-              onTogglePlayer={lines.togglePlayerInLine}
-              canAddLine={lines.canAddLine}
-            />
-          )}
-          {canEdit && (
-            <FormationsPanel
-              formations={formations.formations}
-              onSave={handleSaveFormation}
-              onLoad={handleLoadFormation}
-              onDelete={formations.deleteFormation}
-              canAddFormation={formations.canAddFormation}
-            />
-          )}
-          <ExportPanel boardId={boardId} frames={frames} renderFrame={renderFrame} />
-          <PdfExportPanel frames={frames} renderFrame={renderFrame} boardName={board?.name} />
-          <NotesPanel value={notes} onChange={setNotes} readonly={!canEdit} />
+
+            {!anim.playing && (
+              <PlayerAccessibleList
+                players={livePlayers}
+                selectedPlayerId={selectedPlayerId}
+                onSelectPlayer={handleSelectPlayer}
+              />
+            )}
+
+            {!anim.playing && selectedPlayerId && (
+              <div className={styles.infoPanelWrap}>
+                <PlayerInfoPanel
+                  player={livePlayers.find((p) => p.id === selectedPlayerId)}
+                  onClose={() => handleSelectPlayer(null)}
+                  onNameChange={handleNameChange}
+                  rosterPlayers={roster.rosterPlayers}
+                  onAssignRoster={handleAssignRoster}
+                />
+              </div>
+            )}
+          </div>
         </div>
+
+        <BoardSidePanelTabs
+          tabs={[
+            canEdit && {
+              id: 'draw',
+              label: t('boardEditor.tabs.draw'),
+              icon: '✏️',
+              content: (
+                <DrawingCoordinatesForm
+                  activeTool={drawing.activeTool}
+                  field={IFF_FIELDS[field.fieldType] ?? IFF_FIELDS.large}
+                  onAddArrow={drawing.addArrowElement}
+                  onAddFreehand={drawing.addFreehandElement}
+                />
+              ),
+            },
+            canEdit && {
+              id: 'lines',
+              label: t('boardEditor.tabs.lines'),
+              icon: '🥍',
+              content: (
+                <LinesPanel
+                  lines={lines.lines}
+                  activeLineId={lines.activeLineId}
+                  players={livePlayers}
+                  onAddLine={lines.addLine}
+                  onRenameLine={(id, name) => lines.updateLine(id, { name })}
+                  onDeleteLine={lines.deleteLine}
+                  onSetActiveLine={lines.setActiveLine}
+                  onTogglePlayer={lines.togglePlayerInLine}
+                  canAddLine={lines.canAddLine}
+                />
+              ),
+            },
+            canEdit && {
+              id: 'formations',
+              label: t('boardEditor.tabs.formations'),
+              icon: '⭐',
+              content: (
+                <FormationsPanel
+                  formations={formations.formations}
+                  onSave={handleSaveFormation}
+                  onLoad={handleLoadFormation}
+                  onDelete={formations.deleteFormation}
+                  canAddFormation={formations.canAddFormation}
+                />
+              ),
+            },
+            {
+              id: 'export',
+              label: t('boardEditor.tabs.export'),
+              icon: '📤',
+              content: (
+                <>
+                  <ExportPanel boardId={boardId} frames={frames} renderFrame={renderFrame} />
+                  <PdfExportPanel frames={frames} renderFrame={renderFrame} boardName={board?.name} />
+                </>
+              ),
+            },
+            {
+              id: 'notes',
+              label: t('boardEditor.tabs.notes'),
+              icon: '📝',
+              content: <NotesPanel value={notes} onChange={setNotes} readonly={!canEdit} />,
+            },
+          ].filter(Boolean)}
+        />
       </div>
 
       <FrameTimeline

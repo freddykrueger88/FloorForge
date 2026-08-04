@@ -26,6 +26,7 @@
     "canvasAriaLabel_one": "Floorball-Spielfeld: {{label}}, {{count}} Spieler. Über Tab einzeln erreichbar.",
     "canvasAriaLabel_other": "Floorball-Spielfeld: {{label}}, {{count}} Spieler. Über Tab einzeln erreichbar.",
     "toolbarLabel": "Feld-Einstellungen",
+    "namesToolbarLabel": "Namenseinstellungen",
     "changeFieldType": "Spielfeld-Typ ändern",
     "toggleNames": "Spielernamen ein-/ausblenden",
     "showNames": "Namen anzeigen",
@@ -172,7 +173,15 @@
     "saving": "💾 Speichert…",
     "saved": "✓ Gespeichert",
     "saveError": "⚠ Fehler beim Speichern",
-    "saveOffline": "📡 Offline – wird synchronisiert"
+    "saveOffline": "📡 Offline – wird synchronisiert",
+    "tabsAriaLabel": "Werkzeuge",
+    "tabs": {
+      "draw": "Zeichnen",
+      "lines": "Lines",
+      "formations": "Formationen",
+      "export": "Export",
+      "notes": "Notizen"
+    }
   },
   "boardsPage": {
     "count_one": "{{count}} Spielfeld",

@@ -26,6 +26,7 @@
     "canvasAriaLabel_one": "Floorball field: {{label}}, {{count}} player. Reachable individually via Tab.",
     "canvasAriaLabel_other": "Floorball field: {{label}}, {{count}} players. Reachable individually via Tab.",
     "toolbarLabel": "Field settings",
+    "namesToolbarLabel": "Name settings",
     "changeFieldType": "Change field type",
     "toggleNames": "Show/hide player names",
     "showNames": "Show names",
@@ -172,7 +173,15 @@
     "saving": "💾 Saving…",
     "saved": "✓ Saved",
     "saveError": "⚠ Error saving",
-    "saveOffline": "📡 Offline – will sync"
+    "saveOffline": "📡 Offline – will sync",
+    "tabsAriaLabel": "Tools",
+    "tabs": {
+      "draw": "Draw",
+      "lines": "Lines",
+      "formations": "Formations",
+      "export": "Export",
+      "notes": "Notes"
+    }
   },
   "boardsPage": {
     "count_one": "{{count}} board",
