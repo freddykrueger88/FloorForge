@@ -8,7 +8,7 @@ import { FIELD_TYPE_LABELS } from '../../constants/fieldConfig.js';
 import { formatDate } from '../../utils/formatDate.js';
 import styles from './BoardCard.module.css';
 
-export default function BoardCard({ board, onClick, onRename, onDelete }) {
+export default function BoardCard({ board, onClick, onRename, onDelete, playbooks, onChangePlaybook }) {
   const { t } = useTranslation();
   const [editing, setEditing] = useState(false);
   const [name,    setName   ] = useState(board.name);
@@ -78,6 +78,24 @@ export default function BoardCard({ board, onClick, onRename, onDelete }) {
           🗑
         </button>
       </div>
+
+      {/* Playbook-Zuordnung (Issue #52) */}
+      {playbooks && (
+        <div className={styles.playbookRow}>
+          <select
+            className={styles.playbookSelect}
+            value={board.playbookId ?? ''}
+            onClick={(e) => e.stopPropagation()}
+            onChange={(e) => { e.stopPropagation(); onChangePlaybook(e.target.value || null); }}
+            aria-label={t('playbooks.assignLabel')}
+          >
+            <option value="">{t('playbooks.noPlaybook')}</option>
+            {playbooks.map((pb) => (
+              <option key={pb._id} value={pb._id}>{pb.name}</option>
+            ))}
+          </select>
+        </div>
+      )}
     </article>
   );
 }

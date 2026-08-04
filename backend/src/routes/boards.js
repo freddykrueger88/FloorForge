@@ -31,6 +31,7 @@ const validateBoard = [
   body('homeColor').optional().matches(/^#[0-9a-fA-F]{6}$/).withMessage('Heimfarbe muss ein Hex-Code sein'),
   body('awayColor').optional().matches(/^#[0-9a-fA-F]{6}$/).withMessage('Auswärtsfarbe muss ein Hex-Code sein'),
   body('ballColor').optional().matches(/^#[0-9a-fA-F]{6}$/).withMessage('Ballfarbe muss ein Hex-Code sein'),
+  body('playbookId').optional({ nullable: true }).isUUID().withMessage('Ungültige Playbook-ID'),
 ];
 
 const validateCreateBoard = [

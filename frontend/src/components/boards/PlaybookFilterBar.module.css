@@ -1,0 +1,101 @@
+.bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-6);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  padding: 2px;
+  cursor: pointer;
+  transition: background var(--transition-interactive), color var(--transition-interactive), border-color var(--transition-interactive);
+}
+
+button.chip {
+  padding: var(--space-2) var(--space-4);
+}
+
+.chipLabel {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  padding: var(--space-2) 0 var(--space-2) var(--space-4);
+}
+
+.chip:hover,
+.chipLabel:hover {
+  border-color: var(--color-primary);
+  color: var(--color-text);
+}
+
+.chipActive {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-text-inverse);
+}
+.chipActive .chipLabel { color: var(--color-text-inverse); }
+
+.chipDelete {
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: inherit;
+  opacity: 0.6;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  font-size: 0.7rem;
+}
+.chipDelete:hover {
+  opacity: 1;
+  background: var(--color-error-highlight);
+  color: var(--color-error);
+}
+
+.newChip {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-primary);
+  background: var(--color-primary-highlight);
+  border: 1px dashed var(--color-primary);
+  border-radius: var(--radius-full);
+  padding: var(--space-2) var(--space-4);
+  cursor: pointer;
+}
+.newChip:hover { background: var(--color-primary-highlight); filter: brightness(1.05); }
+
+.newInput {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-text);
+  background: var(--color-surface-offset);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-full);
+  padding: var(--space-2) var(--space-4);
+  outline: none;
+  width: 160px;
+}
+.newInput:focus-visible {
+  box-shadow: 0 0 0 3px var(--color-primary-highlight);
+}
+
+.limitHint {
+  font-size: var(--text-xs);
+  color: var(--color-text-faint);
+  font-style: italic;
+}

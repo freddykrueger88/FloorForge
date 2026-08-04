@@ -560,5 +560,19 @@
       "attackerDesc": "Sucht den Torabschluss, presst die gegnerische Abwehr."
     },
     "sourceNote": "Quellen: IFF Rules of the Game, IFF 3v3 Rules, IFF Material Regulations."
+  },
+  "playbooks": {
+    "filterAriaLabel": "Nach Playbook filtern",
+    "all": "Alle",
+    "unassigned": "Ohne Playbook",
+    "newChip": "Neu",
+    "newNamePlaceholder": "Name des Playbooks",
+    "newNameAriaLabel": "Name für neues Playbook",
+    "deleteAriaLabel": "Playbook \"{{name}}\" löschen",
+    "deleteTitle": "Playbook löschen",
+    "limitHint": "Maximal 15 Playbooks",
+    "assignLabel": "Playbook zuordnen",
+    "noPlaybook": "Kein Playbook",
+    "noBoardsInFilter": "Keine Spielfelder in diesem Playbook"
   }
 }

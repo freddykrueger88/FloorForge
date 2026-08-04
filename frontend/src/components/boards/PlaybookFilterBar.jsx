@@ -1,0 +1,99 @@
+/**
+ * PlaybookFilterBar – Filter-Leiste für Playbooks/Board-Sammlungen (Issue #52)
+ * "Alle" / "Ohne Playbook" / je Playbook als Chip, plus Inline-Anlegen.
+ */
+import { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import styles from './PlaybookFilterBar.module.css';
+
+export default function PlaybookFilterBar({
+  playbooks, boards, activeFilter, onFilterChange,
+  onCreatePlaybook, onDeletePlaybook, canAddPlaybook,
+}) {
+  const { t } = useTranslation();
+  const [creating, setCreating] = useState(false);
+  const [name,     setName    ] = useState('');
+  const inputRef = useRef(null);
+
+  useEffect(() => { if (creating) inputRef.current?.focus(); }, [creating]);
+
+  const unassignedCount = boards.filter((b) => !b.playbookId).length;
+
+  const commitCreate = async () => {
+    const trimmed = name.trim();
+    if (trimmed) {
+      try {
+        const newPlaybook = await onCreatePlaybook(trimmed);
+        onFilterChange(newPlaybook._id);
+      } catch { /* Fehler bereits im Hook gesetzt */ }
+    }
+    setName('');
+    setCreating(false);
+  };
+
+  return (
+    <div className={styles.bar} role="group" aria-label={t('playbooks.filterAriaLabel')}>
+      <button
+        className={`${styles.chip} ${activeFilter === 'all' ? styles.chipActive : ''}`}
+        onClick={() => onFilterChange('all')}
+        aria-pressed={activeFilter === 'all'}
+      >
+        {t('playbooks.all')} · {boards.length}
+      </button>
+
+      <button
+        className={`${styles.chip} ${activeFilter === 'none' ? styles.chipActive : ''}`}
+        onClick={() => onFilterChange('none')}
+        aria-pressed={activeFilter === 'none'}
+      >
+        {t('playbooks.unassigned')} · {unassignedCount}
+      </button>
+
+      {playbooks.map((pb) => (
+        <span
+          key={pb._id}
+          className={`${styles.chip} ${activeFilter === pb._id ? styles.chipActive : ''}`}
+        >
+          <button
+            className={styles.chipLabel}
+            onClick={() => onFilterChange(pb._id)}
+            aria-pressed={activeFilter === pb._id}
+          >
+            {pb.name} · {boards.filter((b) => b.playbookId === pb._id).length}
+          </button>
+          <button
+            className={styles.chipDelete}
+            onClick={() => onDeletePlaybook(pb._id)}
+            aria-label={t('playbooks.deleteAriaLabel', { name: pb.name })}
+            title={t('playbooks.deleteTitle')}
+          >
+            ✕
+          </button>
+        </span>
+      ))}
+
+      {creating ? (
+        <input
+          ref={inputRef}
+          className={styles.newInput}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          onBlur={commitCreate}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter')  commitCreate();
+            if (e.key === 'Escape') { setName(''); setCreating(false); }
+          }}
+          maxLength={40}
+          placeholder={t('playbooks.newNamePlaceholder')}
+          aria-label={t('playbooks.newNameAriaLabel')}
+        />
+      ) : canAddPlaybook ? (
+        <button className={styles.newChip} onClick={() => setCreating(true)}>
+          + {t('playbooks.newChip')}
+        </button>
+      ) : (
+        <span className={styles.limitHint}>{t('playbooks.limitHint')}</span>
+      )}
+    </div>
+  );
+}

@@ -560,5 +560,19 @@
       "attackerDesc": "Seeks goal-scoring opportunities, presses the opposing defense."
     },
     "sourceNote": "Sources: IFF Rules of the Game, IFF 3v3 Rules, IFF Material Regulations."
+  },
+  "playbooks": {
+    "filterAriaLabel": "Filter by playbook",
+    "all": "All",
+    "unassigned": "Unassigned",
+    "newChip": "New",
+    "newNamePlaceholder": "Playbook name",
+    "newNameAriaLabel": "Name for new playbook",
+    "deleteAriaLabel": "Delete playbook \"{{name}}\"",
+    "deleteTitle": "Delete playbook",
+    "limitHint": "Maximum 15 playbooks",
+    "assignLabel": "Assign playbook",
+    "noPlaybook": "No playbook",
+    "noBoardsInFilter": "No boards in this playbook"
   }
 }

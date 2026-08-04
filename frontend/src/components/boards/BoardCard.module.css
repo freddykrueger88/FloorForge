@@ -108,3 +108,19 @@
   background: var(--color-error-highlight);
   color: var(--color-error);
 }
+
+.playbookRow {
+  padding: 0 var(--space-4) var(--space-3);
+  background: var(--color-surface);
+}
+
+.playbookSelect {
+  width: 100%;
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  background: var(--color-surface-offset);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-1) var(--space-2);
+  cursor: pointer;
+}

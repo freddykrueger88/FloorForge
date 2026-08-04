@@ -27,9 +27,19 @@ function toApiBoard(row) {
     activeLineId: row.active_line_id,
     players:      row.players_json,
     elements:     row.elements_json,
+    playbookId:   row.playbook_id,
     createdAt:    row.created_at,
     updatedAt:    row.updated_at,
   };
+}
+
+// Issue #52: verhindert Zuordnung eines Boards zu einem fremden Playbook
+async function assertPlaybookOwnership(playbookId, userId) {
+  const result = await pool.query(
+    'SELECT id FROM playbooks WHERE id = $1 AND user_id = $2',
+    [playbookId, userId]
+  );
+  return result.rows.length > 0;
 }
 
 // GET /api/boards – nur Metadaten, kein players/elements (Kachel-/Galerie-Übersicht)
@@ -37,7 +47,7 @@ export async function getBoards(req, res) {
   try {
     const result = await pool.query(
       `SELECT id, name, notes, field_type, theme, home_color, away_color, ball_color,
-              show_grid, show_names, name_position, created_at, updated_at
+              show_grid, show_names, name_position, playbook_id, created_at, updated_at
        FROM boards
        WHERE user_id = $1 AND deleted_at IS NULL
        ORDER BY updated_at DESC
@@ -73,20 +83,30 @@ export async function getBoard(req, res) {
 // Transaktion an – Spieler stehen dadurch garantiert ab dem ersten
 // Laden auf dem Feld, unabhängig von Client-seitigem Timing.
 export async function createBoard(req, res) {
+  const {
+    name, fieldType = 'large', theme = 'dark',
+    homeColor = '#1d4ed8', awayColor = '#dc2626', ballColor = '#ffffff',
+    playbookId = null,
+  } = req.body;
+
+  try {
+    if (playbookId && !(await assertPlaybookOwnership(playbookId, req.user.id))) {
+      return res.status(404).json(error('Playbook nicht gefunden'));
+    }
+  } catch (err) {
+    logger.error('[createBoard]', err);
+    return res.status(500).json(error('Interner Serverfehler'));
+  }
+
   const client = await pool.connect();
   try {
-    const {
-      name, fieldType = 'large', theme = 'dark',
-      homeColor = '#1d4ed8', awayColor = '#dc2626', ballColor = '#ffffff',
-    } = req.body;
-
     await client.query('BEGIN');
 
     const result = await client.query(
-      `INSERT INTO boards (user_id, name, field_type, theme, home_color, away_color, ball_color)
-       VALUES ($1, $2, $3, $4, $5, $6, $7)
+      `INSERT INTO boards (user_id, name, field_type, theme, home_color, away_color, ball_color, playbook_id)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
        RETURNING *`,
-      [req.user.id, name, fieldType, theme, homeColor, awayColor, ballColor]
+      [req.user.id, name, fieldType, theme, homeColor, awayColor, ballColor, playbookId]
     );
     const board = result.rows[0];
 
@@ -122,10 +142,15 @@ const UPDATABLE_COLUMNS = {
   namePosition: 'name_position',
   players:      'players_json',
   elements:     'elements_json',
+  playbookId:   'playbook_id',
 };
 
 export async function updateBoard(req, res) {
   try {
+    if (req.body.playbookId && !(await assertPlaybookOwnership(req.body.playbookId, req.user.id))) {
+      return res.status(404).json(error('Playbook nicht gefunden'));
+    }
+
     const sets = [];
     const values = [];
     let i = 1;

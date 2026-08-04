@@ -2,15 +2,17 @@
  * BoardsPage – Übersichtsseite aller Spielfelder
  * Kachel-Ansicht mit Anlegen, Umbenennen, Löschen
  */
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useBoardsApi } from '../hooks/useBoardsApi.js';
 import { useSettings } from '../hooks/useSettings.js';
+import { usePlaybooks } from '../hooks/usePlaybooks.js';
 import BoardCard from '../components/boards/BoardCard.jsx';
 import BoardPostcard from '../components/boards/BoardPostcard.jsx';
 import NewBoardModal from '../components/boards/NewBoardModal.jsx';
 import DeleteConfirmDialog from '../components/boards/DeleteConfirmDialog.jsx';
+import PlaybookFilterBar from '../components/boards/PlaybookFilterBar.jsx';
 import styles from './BoardsPage.module.css';
 
 const VIEW_STORAGE_KEY = 'floorforge:boardsView';
@@ -20,10 +22,15 @@ export default function BoardsPage() {
   const navigate = useNavigate();
   const { loading, error, fetchBoards, createBoard, updateBoard, deleteBoard } = useBoardsApi();
   const { settings } = useSettings();
+  const {
+    playbooks, fetchPlaybooks, createPlaybook, deletePlaybook, canAddPlaybook,
+  } = usePlaybooks();
 
   const [boards,        setBoards       ] = useState([]);
   const [showNewModal,  setShowNewModal  ] = useState(false);
   const [deleteTarget,  setDeleteTarget  ] = useState(null); // { id, name }
+  // Playbook-Filter (Issue #52): 'all' | 'none' | playbookId
+  const [playbookFilter, setPlaybookFilter] = useState('all');
   // Ansicht: Postkarten-Galerie ↔ Kompakt-Kachel (Issue #30)
   const [view, setView] = useState(() => localStorage.getItem(VIEW_STORAGE_KEY) || 'postcard');
 
@@ -37,6 +44,26 @@ export default function BoardsPage() {
   }, [fetchBoards]);
 
   useEffect(() => { load(); }, [load]);
+  useEffect(() => { fetchPlaybooks(); }, [fetchPlaybooks]);
+
+  const filteredBoards = useMemo(() => {
+    if (playbookFilter === 'all') return boards;
+    if (playbookFilter === 'none') return boards.filter((b) => !b.playbookId);
+    return boards.filter((b) => b.playbookId === playbookFilter);
+  }, [boards, playbookFilter]);
+
+  const handleChangeBoardPlaybook = async (boardId, playbookId) => {
+    try {
+      const updated = await updateBoard(boardId, { playbookId });
+      setBoards((prev) => prev.map((b) => b._id === boardId ? updated : b));
+    } catch { /* error via hook */ }
+  };
+
+  const handleDeletePlaybook = async (id) => {
+    await deletePlaybook(id);
+    setBoards((prev) => prev.map((b) => b.playbookId === id ? { ...b, playbookId: null } : b));
+    setPlaybookFilter((prev) => prev === id ? 'all' : prev);
+  };
 
   const handleCreate = async (data) => {
     try {
@@ -112,6 +139,18 @@ export default function BoardsPage() {
         </div>
       </div>
 
+      {boards.length > 0 && (
+        <PlaybookFilterBar
+          playbooks={playbooks}
+          boards={boards}
+          activeFilter={playbookFilter}
+          onFilterChange={setPlaybookFilter}
+          onCreatePlaybook={createPlaybook}
+          onDeletePlaybook={handleDeletePlaybook}
+          canAddPlaybook={canAddPlaybook}
+        />
+      )}
+
       {error && (
         <div className={styles.errorBanner} role="alert">
           ⚠️ {error}
@@ -136,18 +175,25 @@ export default function BoardsPage() {
             {t('boardsPage.createFirstBoard')}
           </button>
         </div>
+      ) : filteredBoards.length === 0 ? (
+        <div className={styles.emptyState} role="status">
+          <div className={styles.emptyIcon} aria-hidden="true">🗂️</div>
+          <p>{t('playbooks.noBoardsInFilter')}</p>
+        </div>
       ) : (
         <ul
           className={view === 'postcard' ? styles.postcardGrid : styles.grid}
           role="list"
           aria-label={t('nav.boards')}
         >
-          {boards.map((board) => (
+          {filteredBoards.map((board) => (
             <li key={board._id}>
               {view === 'postcard' ? (
                 <BoardPostcard
                   board={board}
                   onClick={() => navigate(`/board/${board._id}`)}
+                  playbooks={playbooks}
+                  onChangePlaybook={(playbookId) => handleChangeBoardPlaybook(board._id, playbookId)}
                 />
               ) : (
                 <BoardCard
@@ -155,6 +201,8 @@ export default function BoardsPage() {
                   onClick={() => navigate(`/board/${board._id}`)}
                   onRename={(name) => handleRename(board._id, name)}
                   onDelete={() => setDeleteTarget({ id: board._id, name: board.name })}
+                  playbooks={playbooks}
+                  onChangePlaybook={(playbookId) => handleChangeBoardPlaybook(board._id, playbookId)}
                 />
               )}
             </li>

@@ -14,7 +14,7 @@ import { FIELD_TYPE_LABELS } from '../../constants/fieldConfig.js';
 import { formatDate } from '../../utils/formatDate.js';
 import styles from './BoardPostcard.module.css';
 
-export default function BoardPostcard({ board, onClick }) {
+export default function BoardPostcard({ board, onClick, playbooks, onChangePlaybook }) {
   const { t } = useTranslation();
   const hasNotes = board.notes && board.notes.trim().length > 0;
 
@@ -62,6 +62,23 @@ export default function BoardPostcard({ board, onClick }) {
             <span className={styles.chip} style={{ background: board.awayColor ?? '#dc2626' }} title={t('teams.away')} />
           </span>
         </div>
+
+        {/* Playbook-Zuordnung (Issue #52) */}
+        {playbooks && (
+          <select
+            className={styles.playbookSelect}
+            value={board.playbookId ?? ''}
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => e.stopPropagation()}
+            onChange={(e) => { e.stopPropagation(); onChangePlaybook(e.target.value || null); }}
+            aria-label={t('playbooks.assignLabel')}
+          >
+            <option value="">{t('playbooks.noPlaybook')}</option>
+            {playbooks.map((pb) => (
+              <option key={pb._id} value={pb._id}>{pb.name}</option>
+            ))}
+          </select>
+        )}
       </div>
     </article>
   );

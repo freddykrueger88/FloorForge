@@ -83,6 +83,18 @@ export async function runMigrations() {
     await client.query(`CREATE INDEX IF NOT EXISTS idx_boards_user_id ON boards(user_id);`);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_boards_created_at ON boards(created_at DESC);`);
 
+    // ── playbooks (Issue #52 – Board-Sammlungen) ────────────────────────────
+    // Muss vor der boards.playbook_id-Spalte angelegt werden (FK-Ziel).
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS playbooks (
+        id         UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        user_id    UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        name       TEXT NOT NULL,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      );
+    `);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_playbooks_user_id ON playbooks(user_id);`);
+
     // ── boards: zusätzliche Spalten für Editor-Einstellungen ─────────────
     // (nachträglich ergänzt – ALTER statt neuer CREATE TABLE, damit bestehende
     //  Daten erhalten bleiben; alle Statements sind idempotent)
@@ -101,7 +113,12 @@ export async function runMigrations() {
     await client.query(`ALTER TABLE boards ADD COLUMN IF NOT EXISTS elements_json JSONB NOT NULL DEFAULT '[]';`);
     await client.query(`ALTER TABLE boards ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ DEFAULT NULL;`);
     await client.query(`ALTER TABLE boards ADD COLUMN IF NOT EXISTS active_line_id UUID DEFAULT NULL;`);
+    // Issue #52 – nullable, ON DELETE SET NULL: löscht man ein Playbook,
+    // bleiben die zugeordneten Boards erhalten, nur die Zuordnung entfällt.
+    await client.query(`ALTER TABLE boards ADD COLUMN IF NOT EXISTS playbook_id UUID
+      REFERENCES playbooks(id) ON DELETE SET NULL;`);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_boards_deleted_at ON boards(deleted_at) WHERE deleted_at IS NOT NULL;`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_boards_playbook_id ON boards(playbook_id) WHERE playbook_id IS NOT NULL;`);
 
     // ── frames ────────────────────────────────────────────────────────────
     // data_json: { players: [...], arrows: [...], lines: [...] }

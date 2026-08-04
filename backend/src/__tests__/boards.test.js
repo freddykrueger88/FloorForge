@@ -125,6 +125,85 @@ describe('Board CRUD', () => {
   });
 });
 
+describe('Board playbookId (Issue #52)', () => {
+  let playbookId;
+  let foreignPlaybookId;
+
+  beforeAll(async () => {
+    const pbRes = await request(app)
+      .post('/api/playbooks')
+      .set('Cookie', userA.cookie)
+      .send({ name: 'Standardsituationen' });
+    playbookId = pbRes.body.data._id;
+
+    const foreignRes = await request(app)
+      .post('/api/playbooks')
+      .set('Cookie', userB.cookie)
+      .send({ name: 'Fremdes Playbook' });
+    foreignPlaybookId = foreignRes.body.data._id;
+  });
+
+  it('legt ein Board mit eigener playbookId an', async () => {
+    const res = await request(app)
+      .post('/api/boards')
+      .set('Cookie', userA.cookie)
+      .send({ name: 'Zugeordnetes Board', fieldType: 'large', playbookId });
+    expect(res.status).toBe(201);
+    expect(res.body.data.playbookId).toBe(playbookId);
+  });
+
+  it('lehnt das Anlegen mit einer fremden playbookId mit 404 ab', async () => {
+    const res = await request(app)
+      .post('/api/boards')
+      .set('Cookie', userA.cookie)
+      .send({ name: 'Fremdzuordnung', fieldType: 'large', playbookId: foreignPlaybookId });
+    expect(res.status).toBe(404);
+  });
+
+  it('erlaubt das Ändern der playbookId auf ein eigenes Playbook', async () => {
+    const boardRes = await request(app)
+      .post('/api/boards')
+      .set('Cookie', userA.cookie)
+      .send({ name: 'Wird umgehängt', fieldType: 'large' });
+    const boardId = boardRes.body.data._id;
+
+    const res = await request(app)
+      .put(`/api/boards/${boardId}`)
+      .set('Cookie', userA.cookie)
+      .send({ playbookId });
+    expect(res.status).toBe(200);
+    expect(res.body.data.playbookId).toBe(playbookId);
+  });
+
+  it('lehnt das Ändern der playbookId auf ein fremdes Playbook mit 404 ab', async () => {
+    const boardRes = await request(app)
+      .post('/api/boards')
+      .set('Cookie', userA.cookie)
+      .send({ name: 'Bleibt ohne Playbook', fieldType: 'large' });
+    const boardId = boardRes.body.data._id;
+
+    const res = await request(app)
+      .put(`/api/boards/${boardId}`)
+      .set('Cookie', userA.cookie)
+      .send({ playbookId: foreignPlaybookId });
+    expect(res.status).toBe(404);
+  });
+
+  it('setzt playbookId auf null, wenn das zugehörige Playbook gelöscht wird', async () => {
+    const boardRes = await request(app)
+      .post('/api/boards')
+      .set('Cookie', userA.cookie)
+      .send({ name: 'Wird verwaist', fieldType: 'large', playbookId });
+    const boardId = boardRes.body.data._id;
+
+    await request(app).delete(`/api/playbooks/${playbookId}`).set('Cookie', userA.cookie);
+
+    const res = await request(app).get(`/api/boards/${boardId}`).set('Cookie', userA.cookie);
+    expect(res.status).toBe(200);
+    expect(res.body.data.playbookId).toBeNull();
+  });
+});
+
 describe('Frames ownership', () => {
   let boardId;
 

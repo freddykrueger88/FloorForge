@@ -1,0 +1,56 @@
+/**
+ * usePlaybooks – State-Management für Playbooks/Board-Sammlungen (Issue #52)
+ * Nutzer-gebunden (nicht board-gebunden) – über alle eigenen Boards
+ * hinweg wiederverwendbar.
+ */
+import { useState, useCallback } from 'react';
+import { apiFetch } from '../utils/apiFetch.js';
+
+const BASE = '/api/playbooks';
+
+export function usePlaybooks() {
+  const [playbooks, setPlaybooks] = useState([]);
+  const [loading,   setLoading  ] = useState(false);
+  const [error,     setError    ] = useState(null);
+
+  const fetchPlaybooks = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await apiFetch(BASE);
+      setPlaybooks(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const createPlaybook = useCallback(async (name) => {
+    try {
+      const newPlaybook = await apiFetch(BASE, {
+        method: 'POST',
+        body: JSON.stringify({ name }),
+      });
+      setPlaybooks((prev) => [...prev, newPlaybook]);
+      return newPlaybook;
+    } catch (err) {
+      setError(err.message);
+      throw err;
+    }
+  }, []);
+
+  const deletePlaybook = useCallback(async (id) => {
+    try {
+      await apiFetch(`${BASE}/${id}`, { method: 'DELETE' });
+      setPlaybooks((prev) => prev.filter((p) => p._id !== id));
+    } catch (err) {
+      setError(err.message);
+    }
+  }, []);
+
+  return {
+    playbooks, loading, error,
+    fetchPlaybooks, createPlaybook, deletePlaybook,
+    canAddPlaybook: playbooks.length < 15,
+  };
+}
