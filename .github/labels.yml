@@ -120,3 +120,7 @@
 - name: v0.8.0
   color: "ededed"
   description: "Milestone: v0.8.0 MP4, PDF, EN"
+
+- name: v0.9.0
+  color: "ededed"
+  description: "Milestone: v0.9.0 Playbooks, Trainingsplaner, Kader, PWA, Sharing, Modernisierung"
