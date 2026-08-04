@@ -134,6 +134,22 @@ export async function runMigrations() {
       CHECK (type IN ('offense', 'defense', 'special'));`);
     await client.query(`ALTER TABLE lines ADD COLUMN IF NOT EXISTS order_index INTEGER NOT NULL DEFAULT 0;`);
 
+    // ── formation_templates (Issue #46 – wiederverwendbare Aufstellungen) ──
+    // Nutzer-gebunden statt board-gebunden – über alle eigenen Boards
+    // hinweg wiederverwendbar.
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS formation_templates (
+        id           UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        user_id      UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        name         TEXT NOT NULL,
+        field_type   TEXT NOT NULL DEFAULT 'large'
+                     CHECK (field_type IN ('large', 'small', 'street', '3v3')),
+        players_json JSONB NOT NULL DEFAULT '[]',
+        created_at   TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      );
+    `);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_formation_templates_user_id ON formation_templates(user_id);`);
+
     // ── exports ───────────────────────────────────────────────────────────
     // format: 'gif' | 'mp4' | 'pdf' | 'link' | 'png'
     await client.query(`

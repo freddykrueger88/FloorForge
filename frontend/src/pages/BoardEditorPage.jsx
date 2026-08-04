@@ -31,10 +31,12 @@ import { FrameTimeline } from '../components/frames/index.js';
 import { PlaybackControls } from '../components/playback/index.js';
 import { NotesPanel, ExportPanel, PdfExportPanel, ShortcutsOverlay } from '../components/board/index.js';
 import { LinesPanel } from '../components/lines/index.js';
+import { FormationsPanel } from '../components/formations/index.js';
 
 import { useBoardsApi } from '../hooks/useBoardsApi.js';
 import { useFrames } from '../hooks/useFrames.js';
 import { useLines } from '../hooks/useLines.js';
+import { useFormations } from '../hooks/useFormations.js';
 import { useField } from '../hooks/useField.js';
 import { useDrawing } from '../hooks/useDrawing.js';
 import { useAutoSave } from '../hooks/useAutoSave.js';
@@ -86,6 +88,7 @@ export default function BoardEditorPage() {
 
   const drawing = useDrawing();
   const lines = useLines(boardId);
+  const formations = useFormations();
 
   const [livePlayers, setLivePlayers] = useState([]);
   const [selectedPlayerId, setSelectedPlayerId] = useState(null);
@@ -123,6 +126,7 @@ export default function BoardEditorPage() {
       lines.loadLines(b?.activeLineId ?? null);
     }).catch(() => {});
     loadFrames();
+    formations.fetchFormations();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [boardId]);
 
@@ -265,6 +269,26 @@ export default function BoardEditorPage() {
       setPendingFieldType(null);
     }
   }, [pendingFieldType, field, boardId, updateBoard, livePlayers, drawing, activeFrame, updateFrame, frames]);
+
+  // Formations-Vorlagen (Issue #46): aktuelle Aufstellung speichern bzw.
+  // eine gespeicherte Vorlage laden. Beim Laden übernimmt setLivePlayers
+  // direkt – die Persistenz läuft wie bei Drag&Drop automatisch über den
+  // bestehenden useAutoSave-Hook, kein eigener Save-Call nötig.
+  const handleSaveFormation = useCallback((name) => {
+    formations.saveFormation({ name, fieldType: field.fieldType, players: livePlayers });
+  }, [formations, field.fieldType, livePlayers]);
+
+  const handleLoadFormation = useCallback((template) => {
+    if (template.fieldType === field.fieldType) {
+      setLivePlayers(template.players);
+      return;
+    }
+    const sourceField = IFF_FIELDS[template.fieldType] ?? IFF_FIELDS.large;
+    const targetField = IFF_FIELDS[field.fieldType] ?? IFF_FIELDS.large;
+    const scaleX = targetField.width / sourceField.width;
+    const scaleY = targetField.height / sourceField.height;
+    setLivePlayers(rescalePlayers(template.players, scaleX, scaleY));
+  }, [field.fieldType]);
 
   // Issue #15 – renderFrame: rendert einen Frame offline als PNG via Konva
   // Nutzt Konva.Stage direkt (kein React), um ein unsichtbares Canvas zu erstellen
@@ -433,6 +457,13 @@ export default function BoardEditorPage() {
             onSetActiveLine={lines.setActiveLine}
             onTogglePlayer={lines.togglePlayerInLine}
             canAddLine={lines.canAddLine}
+          />
+          <FormationsPanel
+            formations={formations.formations}
+            onSave={handleSaveFormation}
+            onLoad={handleLoadFormation}
+            onDelete={formations.deleteFormation}
+            canAddFormation={formations.canAddFormation}
           />
           <ExportPanel boardId={boardId} frames={frames} renderFrame={renderFrame} />
           <PdfExportPanel frames={frames} renderFrame={renderFrame} boardName={board?.name} />

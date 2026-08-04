@@ -12,6 +12,7 @@ import shareViewRoutes from './shareView.js';
 import settingsRoutes from './settings.js';
 import userRoutes from './user.js';
 import adminRoutes from './admin.js';
+import formationRoutes from './formations.js';
 // import tacticsRoutes from './tactics.js'; // Issue #7
 
 const router = Router();
@@ -27,6 +28,7 @@ router.use('/share', shareViewRoutes);
 router.use('/settings', settingsRoutes);
 router.use('/user', userRoutes);
 router.use('/admin', adminRoutes);
+router.use('/formations', formationRoutes);
 // router.use('/tactics', tacticsRoutes);
 
 export default router;

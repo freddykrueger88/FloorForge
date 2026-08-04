@@ -303,6 +303,21 @@
     "title": "📝 Notes",
     "placeholder": "Notes for this board…"
   },
+  "formations": {
+    "sectionAriaLabel": "Formation templates",
+    "expand": "Expand formations panel",
+    "collapse": "Collapse formations panel",
+    "title": "Formations",
+    "emptyHint": "No templates saved yet",
+    "loadTitle": "Load formation",
+    "deleteAriaLabel": "Delete template \"{{name}}\"",
+    "deleteTitle": "Delete template",
+    "newNamePlaceholder": "Template name",
+    "newNameAriaLabel": "Name for new formation template",
+    "saveAriaLabel": "Save current formation as template",
+    "saveTitle": "Save current formation",
+    "limitHint": "Maximum 20 templates"
+  },
   "lines": {
     "typeOffense": "Offense",
     "typeDefense": "Defense",

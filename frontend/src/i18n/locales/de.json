@@ -303,6 +303,21 @@
     "title": "📝 Notizen",
     "placeholder": "Notizen zu diesem Spielfeld…"
   },
+  "formations": {
+    "sectionAriaLabel": "Formations-Vorlagen",
+    "expand": "Formationen-Panel ausklappen",
+    "collapse": "Formationen-Panel einklappen",
+    "title": "Formationen",
+    "emptyHint": "Noch keine Vorlagen gespeichert",
+    "loadTitle": "Aufstellung laden",
+    "deleteAriaLabel": "Vorlage \"{{name}}\" löschen",
+    "deleteTitle": "Vorlage löschen",
+    "newNamePlaceholder": "Name der Vorlage",
+    "newNameAriaLabel": "Name für neue Formations-Vorlage",
+    "saveAriaLabel": "Aktuelle Aufstellung als Vorlage speichern",
+    "saveTitle": "Aktuelle Aufstellung speichern",
+    "limitHint": "Maximal 20 Vorlagen"
+  },
   "lines": {
     "typeOffense": "Sturm",
     "typeDefense": "Defense",
