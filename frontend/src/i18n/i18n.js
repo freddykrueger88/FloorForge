@@ -18,4 +18,11 @@ i18n
     },
   });
 
+// WCAG 3.1.1 (Language of Page): <html lang> muss die tatsächlich
+// angezeigte Sprache widerspiegeln, sonst liest ein Screenreader
+// englischen Text mit deutschen Ausspracheregeln vor (und umgekehrt)
+const syncHtmlLang = (lng) => { document.documentElement.lang = lng; };
+i18n.on('languageChanged', syncHtmlLang);
+if (i18n.language) syncHtmlLang(i18n.language);
+
 export default i18n;
