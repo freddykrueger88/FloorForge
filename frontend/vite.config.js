@@ -18,7 +18,7 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          router: ['react-router-dom'],
+          router: ['react-router'],
           konva:  ['konva', 'react-konva'],
           i18n:   ['i18next', 'react-i18next', 'i18next-browser-languagedetector'],
         },

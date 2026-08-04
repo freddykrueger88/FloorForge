@@ -3,7 +3,7 @@
  * Darstellung, Spielfeld-Standards, Barrierefreiheit, Konto, Admin.
  */
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import useAuthStore from '../store/authStore.js';
 import useThemeStore from '../store/themeStore.js';

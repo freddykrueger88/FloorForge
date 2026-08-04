@@ -3,7 +3,7 @@
  * (Issue #16 – v0.5.0). Kein Login nötig, kein Editieren möglich.
  */
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import FieldContainer from '../components/field/FieldContainer.jsx';
 import { PlaybackControls } from '../components/playback/index.js';
