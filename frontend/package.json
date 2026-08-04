@@ -24,8 +24,8 @@
     "qrcode":             "^1.5.4"
   },
   "devDependencies": {
-    "@vitejs/plugin-react": "^4.3.1",
-    "vite":                 "^5.4.0",
+    "@vitejs/plugin-react": "^5.0.4",
+    "vite":                 "^7.1.12",
     "eslint":               "^9.8.0",
     "@eslint/js":           "^9.8.0",
     "eslint-plugin-react":  "^7.35.0",
