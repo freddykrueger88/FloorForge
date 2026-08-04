@@ -4,6 +4,7 @@
  */
 import { useTranslation } from 'react-i18next';
 import { TOOLS, TOOL_ORDER, DEFAULT_COLORS, STROKE_WIDTHS } from '../../constants/drawingConfig.js';
+import HistoryPanel from './HistoryPanel.jsx';
 import styles from './DrawingToolbar.module.css';
 
 export default function DrawingToolbar({
@@ -19,6 +20,9 @@ export default function DrawingToolbar({
   canUndo = false,
   canRedo = false,
   elementCount = 0,
+  undoStack = [],
+  redoStack = [],
+  onJumpHistory,
 }) {
   const { t, i18n } = useTranslation();
   const isDE = !i18n.language?.startsWith('en');
@@ -133,6 +137,7 @@ export default function DrawingToolbar({
           title={t('drawing.clearAll')}
           aria-label={t('drawing.clearAll')}
         >🗑</button>
+        <HistoryPanel undoStack={undoStack} redoStack={redoStack} onJump={onJumpHistory} />
       </div>
     </aside>
   );

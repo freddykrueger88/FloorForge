@@ -46,8 +46,11 @@ export function useDrawing() {
   const currentElRef = useRef(null); // Laufendes Freihand-Element
 
   // ── Undo/Redo Helpers ──────────────────────────────────────────────
-  const pushUndo = useCallback((prevElements) => {
-    setUndoStack((s) => [...s.slice(-MAX_UNDO_STEPS + 1), prevElements]);
+  // Jeder Stack-Eintrag trägt neben dem Element-Snapshot ein "label"
+  // (Aktions-Typ, z.B. 'add'/'delete'/'move') – Grundlage für die
+  // sichtbare Verlaufsliste (Issue #48), nicht nur linear vor/zurück.
+  const pushUndo = useCallback((prevElements, label = 'change') => {
+    setUndoStack((s) => [...s.slice(-MAX_UNDO_STEPS + 1), { elements: prevElements, label }]);
     setRedoStack([]);
   }, []);
 
@@ -55,10 +58,10 @@ export function useDrawing() {
     setUndoStack((prev) => {
       if (prev.length === 0) return prev;
       const newStack = [...prev];
-      const snapshot = newStack.pop();
+      const entry = newStack.pop();
       setElements((cur) => {
-        setRedoStack((r) => [...r, cur]);
-        return snapshot;
+        setRedoStack((r) => [...r, { elements: cur, label: entry.label }]);
+        return entry.elements;
       });
       return newStack;
     });
@@ -68,33 +71,41 @@ export function useDrawing() {
     setRedoStack((prev) => {
       if (prev.length === 0) return prev;
       const newStack = [...prev];
-      const snapshot = newStack.pop();
+      const entry = newStack.pop();
       setElements((cur) => {
-        setUndoStack((u) => [...u, cur]);
-        return snapshot;
+        setUndoStack((u) => [...u, { elements: cur, label: entry.label }]);
+        return entry.elements;
       });
       return newStack;
     });
   }, []);
 
+  // Springt direkt zu einem Punkt in der Verlaufsliste (Issue #48) – ruft
+  // die bereits geprüfte undo()/redo()-Logik wiederholt auf, statt die
+  // Stack-Mechanik ein zweites Mal zu implementieren.
+  const jumpHistory = useCallback((steps) => {
+    if (steps > 0) { for (let i = 0; i < steps; i++) redo(); }
+    else if (steps < 0) { for (let i = 0; i < -steps; i++) undo(); }
+  }, [undo, redo]);
+
   // ── Element CRUD ───────────────────────────────────────────────────────
   const addElement = useCallback((el) => {
     setElements((prev) => {
-      pushUndo(prev);
+      pushUndo(prev, 'add');
       return [...prev, { ...el, id: uid() }];
     });
   }, [pushUndo]);
 
   const updateElement = useCallback((id, patch) => {
     setElements((prev) => {
-      pushUndo(prev);
+      pushUndo(prev, 'update');
       return prev.map((el) => el.id === id ? { ...el, ...patch } : el);
     });
   }, [pushUndo]);
 
   const deleteElement = useCallback((id) => {
     setElements((prev) => {
-      pushUndo(prev);
+      pushUndo(prev, 'delete');
       return prev.filter((el) => el.id !== id);
     });
     setSelectedId((s) => s === id ? null : s);
@@ -111,7 +122,7 @@ export function useDrawing() {
   const clearAll = useCallback(() => {
     setElements((prev) => {
       if (prev.length === 0) return prev;
-      pushUndo(prev);
+      pushUndo(prev, 'clear');
       return [];
     });
     setSelectedId(null);
@@ -137,7 +148,7 @@ export function useDrawing() {
       };
       currentElRef.current = el.id;
       setElements((prev) => {
-        pushUndo(prev);
+        pushUndo(prev, 'freehand');
         return [...prev, el];
       });
     } else {
@@ -154,7 +165,7 @@ export function useDrawing() {
       };
       currentElRef.current = el.id;
       setElements((prev) => {
-        pushUndo(prev);
+        pushUndo(prev, activeTool);
         return [...prev, el];
       });
     }
@@ -209,7 +220,7 @@ export function useDrawing() {
       arrowHead: toolDef.arrowHead ?? true,
     };
     setElements((prev) => {
-      pushUndo(prev);
+      pushUndo(prev, tool);
       return [...prev, el];
     });
     useAnnounceStore.getState().announce(t('drawing.announceElementAdded'));
@@ -226,7 +237,7 @@ export function useDrawing() {
       arrowHead: false,
     };
     setElements((prev) => {
-      pushUndo(prev);
+      pushUndo(prev, 'freehand');
       return [...prev, el];
     });
     useAnnounceStore.getState().announce(t('drawing.announceElementAdded'));
@@ -277,7 +288,8 @@ export function useDrawing() {
     activeColor, setActiveColor: changeColor,
     strokeWidth, setStrokeWidth: changeStrokeWidth,
     // Undo/Redo
-    undo, redo,
+    undo, redo, jumpHistory,
+    undoStack, redoStack,
     canUndo: undoStack.length > 0,
     canRedo: redoStack.length > 0,
     // Aktionen

@@ -34,6 +34,22 @@
 }
 .backLink:hover { background: var(--color-primary-highlight); }
 
+.helpBtn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font-size: var(--text-sm);
+  transition: var(--transition-interactive);
+}
+.helpBtn:hover { background: var(--color-surface-offset); color: var(--color-text); }
+
 .title {
   font-size: var(--text-base);
   font-weight: 600;

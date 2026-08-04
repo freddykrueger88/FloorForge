@@ -29,7 +29,7 @@ import PlayerAccessibleList from '../components/field/PlayerAccessibleList.jsx';
 import { DrawingToolbar, DrawingCoordinatesForm } from '../components/drawing/index.js';
 import { FrameTimeline } from '../components/frames/index.js';
 import { PlaybackControls } from '../components/playback/index.js';
-import { NotesPanel, ExportPanel, PdfExportPanel } from '../components/board/index.js';
+import { NotesPanel, ExportPanel, PdfExportPanel, ShortcutsOverlay } from '../components/board/index.js';
 import { LinesPanel } from '../components/lines/index.js';
 
 import { useBoardsApi } from '../hooks/useBoardsApi.js';
@@ -208,6 +208,18 @@ export default function BoardEditorPage() {
     return () => window.removeEventListener('keydown', handler);
   }, [selectedPlayerId, livePlayers, anim.playing, handleDragEndPlayer, handleSelectPlayer]);
 
+  // "?"-Taste öffnet die Tastaturkürzel-Übersicht (Issue #47)
+  const [showShortcuts, setShowShortcuts] = useState(false);
+  useEffect(() => {
+    const handler = (e) => {
+      const tag = document.activeElement?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+      if (e.key === '?') { e.preventDefault(); setShowShortcuts(true); }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
+
   const displayedPlayers = anim.playing ? anim.displayPlayers : livePlayers;
 
   const [pendingFieldType, setPendingFieldType] = useState(null);
@@ -300,8 +312,19 @@ export default function BoardEditorPage() {
             showHints={showHints}
             onToggleShowHints={toggleShowHints}
           />
+          <button
+            type="button"
+            className={styles.helpBtn}
+            onClick={() => setShowShortcuts(true)}
+            aria-label={t('shortcuts.openLabel')}
+            title={t('shortcuts.openLabel')}
+          >
+            ⌨
+          </button>
         </div>
       </header>
+
+      {showShortcuts && <ShortcutsOverlay onClose={() => setShowShortcuts(false)} />}
 
       {pendingFieldType && (
         <FieldTypeChangeDialog
@@ -341,6 +364,9 @@ export default function BoardEditorPage() {
           canUndo={drawing.canUndo}
           canRedo={drawing.canRedo}
           elementCount={drawing.elements.length}
+          undoStack={drawing.undoStack}
+          redoStack={drawing.redoStack}
+          onJumpHistory={drawing.jumpHistory}
         />
         <div className={styles.fieldArea}>
           <FieldContainer
