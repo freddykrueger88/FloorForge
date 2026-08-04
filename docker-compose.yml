@@ -2,10 +2,10 @@ name: floorforge
 
 services:
   # ────────────────────────────────────────
-  # PostgreSQL 16
+  # PostgreSQL 18
   # ────────────────────────────────────────
   db:
-    image: postgres:16-alpine
+    image: postgres:18-alpine
     container_name: floorforge_db
     restart: unless-stopped
     user: postgres
@@ -14,7 +14,16 @@ services:
       POSTGRES_USER: ${DB_USER:-floorforge}
       POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
     volumes:
-      - db_data:/var/lib/postgresql/data
+      # Neues Volume statt db_data (Issue Modernisierung Phase 5): das
+      # Datenverzeichnis-Format ist zwischen Postgres-Majors inkompatibel,
+      # ein Image-Tag-Wechsel allein würde den Container-Start verhindern.
+      # Migration erfolgte per pg_dump/pg_restore, altes db_data-Volume
+      # bleibt als Fallback erhalten (siehe CHANGELOG.md).
+      # Ab Postgres 18 erwartet das offizielle Image den Mount-Punkt eine
+      # Ebene höher (/var/lib/postgresql statt .../data, pg_ctlcluster-
+      # kompatibles Layout) – ein Mount direkt auf .../data verweigert den
+      # Start ("unused mount/volume").
+      - db_data_pg18:/var/lib/postgresql
     networks:
       - internal
     healthcheck:
@@ -113,8 +122,13 @@ services:
       start_period: 20s
 
 volumes:
+  # Altes Postgres-16-Volume bewusst NICHT entfernt (Fallback bis der
+  # Umstieg auf Postgres 18 manuell bestätigt ist), wird aber von keinem
+  # Service mehr referenziert.
   db_data:
     name: floorforge_db_data
+  db_data_pg18:
+    name: floorforge_db_data_pg18
   redis_data:
     name: floorforge_redis_data
   exports_data:

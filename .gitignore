@@ -21,6 +21,10 @@ docker/volumes/
 exports/
 uploads/
 
+# Datenbank-Backups (können personenbezogene Daten enthalten – nie versionieren)
+.backups/
+*.dump
+
 # Logs
 logs/
 *.log

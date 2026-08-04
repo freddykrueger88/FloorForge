@@ -16,7 +16,7 @@ jobs:
         working-directory: backend
     services:
       postgres:
-        image: postgres:16-alpine
+        image: postgres:18-alpine
         env:
           POSTGRES_DB: floorforge_test
           POSTGRES_USER: floorforge
