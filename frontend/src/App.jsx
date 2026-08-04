@@ -6,6 +6,7 @@ import { apiFetch } from './utils/apiFetch.js';
 import { applyGlobalPreferences } from './utils/applyPreferences.js';
 import ColorBlindFilters from './components/a11y/ColorBlindFilters.jsx';
 import LiveRegion from './components/a11y/LiveRegion.jsx';
+import Header from './components/layout/Header.jsx';
 import Footer from './components/layout/Footer.jsx';
 import './styles/tokens.css';
 import './styles/base.css';
@@ -71,6 +72,7 @@ export default function App() {
     <BrowserRouter>
       <ColorBlindFilters />
       <LiveRegion />
+      <Header />
       <Suspense fallback={<Loader />}>
         <Routes>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />

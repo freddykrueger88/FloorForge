@@ -41,7 +41,6 @@ export default function SharePage() {
   if (loading) {
     return (
       <main className={styles.page} role="main" aria-busy="true" id="main-content">
-        <a href="#main-content" className="sr-only sr-only-focusable">{t('accessibility.skipToContent')}</a>
         <p className={styles.centerMsg}>{t('sharePage.loading')}</p>
       </main>
     );
@@ -50,7 +49,6 @@ export default function SharePage() {
   if (error || !board) {
     return (
       <main className={styles.page} role="main" id="main-content">
-        <a href="#main-content" className="sr-only sr-only-focusable">{t('accessibility.skipToContent')}</a>
         <p className={styles.centerMsg} role="alert">⚠️ {error ?? t('sharePage.linkInvalid')}</p>
       </main>
     );
@@ -61,7 +59,6 @@ export default function SharePage() {
 
   return (
     <main className={styles.page} role="main" id="main-content">
-      <a href="#main-content" className="sr-only sr-only-focusable">{t('accessibility.skipToContent')}</a>
       <header className={styles.header}>
         <h1 className={styles.title}>{board.name}</h1>
         <span className={styles.badge}>👁 {t('sharePage.readonlyBadge')}</span>

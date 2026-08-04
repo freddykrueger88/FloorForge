@@ -1,19 +1,19 @@
 .page {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: calc(100vh - var(--header-height));
   overflow: hidden;
-  background: var(--page-bg, #111318);
-  color: var(--page-color, #e2e8f0);
+  background: var(--color-bg);
+  color: var(--color-text);
 }
 
 .header {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 8px 16px;
-  background: var(--header-bg, #1a1e27);
-  border-bottom: 1px solid var(--header-border, #2d3340);
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
   flex-shrink: 0;
   flex-wrap: wrap;
 }
@@ -21,21 +21,21 @@
 .headerControls {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   margin-left: auto;
 }
 
 .backLink {
   font-size: 1.2rem;
-  color: var(--link-color, #60a5fa);
+  color: var(--color-primary);
   text-decoration: none;
-  padding: 2px 6px;
-  border-radius: 4px;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
 }
-.backLink:hover { background: rgba(96,165,250,0.1); }
+.backLink:hover { background: var(--color-primary-highlight); }
 
 .title {
-  font-size: 1rem;
+  font-size: var(--text-base);
   font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
@@ -44,8 +44,8 @@
 }
 
 .saveStatus {
-  font-size: 0.78rem;
-  color: #64748b;
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
   white-space: nowrap;
 }
 
@@ -69,15 +69,15 @@
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--space-2);
   overflow-y: auto;
-  padding: 8px;
-  border-left: 1px solid #2d3340;
+  padding: var(--space-2);
+  border-left: 1px solid var(--color-border);
 }
 
 .infoPanelWrap {
   position: absolute;
-  bottom: 16px;
-  left: 16px;
+  bottom: var(--space-4);
+  left: var(--space-4);
   z-index: 100;
 }

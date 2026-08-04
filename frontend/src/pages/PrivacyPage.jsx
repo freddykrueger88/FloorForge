@@ -9,7 +9,6 @@ export default function PrivacyPage() {
   const { t } = useTranslation();
   return (
     <main className={styles.page} id="main-content">
-      <a href="#main-content" className="sr-only sr-only-focusable">{t('accessibility.skipToContent')}</a>
       <header className={styles.header}>
         <h1 className={styles.title}>{t('privacyPage.title')}</h1>
       </header>

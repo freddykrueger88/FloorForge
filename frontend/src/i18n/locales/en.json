@@ -7,7 +7,9 @@
     "dashboard": "Dashboard",
     "boards": "Boards",
     "settings": "Settings",
-    "logout": "Logout"
+    "logout": "Logout",
+    "mainNavigation": "Main navigation",
+    "brandHome": "Go to homepage"
   },
   "field": {
     "large": "Full Field (40×20m)",
@@ -187,7 +189,6 @@
     "count_one": "{{count}} board",
     "count_other": "{{count}} boards",
     "noBoardsYet": "No boards yet",
-    "openSettings": "Open settings",
     "newBoardAriaLabel": "Create a new board",
     "newBoard": "New board",
     "viewToggleLabel": "Switch view",

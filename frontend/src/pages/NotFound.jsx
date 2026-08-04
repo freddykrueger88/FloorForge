@@ -5,7 +5,6 @@ export default function NotFound() {
   const { t } = useTranslation();
   return (
     <main role="main" id="main-content" style={{ padding: '2rem', textAlign: 'center', color: 'var(--color-text)' }}>
-      <a href="#main-content" className="sr-only sr-only-focusable">{t('accessibility.skipToContent')}</a>
       <h1>{t('notFound.title')}</h1>
       <p>{t('errors.notFound')}</p>
       <Link to="/">{t('notFound.homeLink')}</Link>

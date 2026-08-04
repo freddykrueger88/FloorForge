@@ -10,7 +10,6 @@ export default function RulesPage() {
   const { t } = useTranslation();
   return (
     <main className={styles.page} id="main-content">
-      <a href="#main-content" className="sr-only sr-only-focusable">{t('accessibility.skipToContent')}</a>
       <header className={styles.header}>
         <h1 className={styles.title}>{t('rules.title')}</h1>
       </header>

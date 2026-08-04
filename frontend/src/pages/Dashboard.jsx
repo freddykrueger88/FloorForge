@@ -24,7 +24,6 @@ export default function Dashboard() {
 
   return (
     <main className={styles.page} role="main">
-      <a href="#main-content" className="sr-only sr-only-focusable">{t('accessibility.skipToContent')}</a>
       <div className={styles.card} id="main-content">
         <div className={styles.logo} aria-hidden="true">🏒</div>
 

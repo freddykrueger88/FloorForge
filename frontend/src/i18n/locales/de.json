@@ -7,7 +7,9 @@
     "dashboard": "Dashboard",
     "boards": "Spielfelder",
     "settings": "Einstellungen",
-    "logout": "Abmelden"
+    "logout": "Abmelden",
+    "mainNavigation": "Hauptnavigation",
+    "brandHome": "Zur Startseite"
   },
   "field": {
     "large": "Großfeld (40×20m)",
@@ -187,7 +189,6 @@
     "count_one": "{{count}} Spielfeld",
     "count_other": "{{count}} Spielfelder",
     "noBoardsYet": "Noch kein Spielfeld angelegt",
-    "openSettings": "Einstellungen öffnen",
     "newBoardAriaLabel": "Neues Spielfeld anlegen",
     "newBoard": "Neues Spielfeld",
     "viewToggleLabel": "Ansicht wechseln",

@@ -199,7 +199,6 @@ export default function SettingsPage() {
 
   return (
     <main className={styles.page} id="main-content">
-      <a href="#main-content" className="sr-only sr-only-focusable">{t('accessibility.skipToContent')}</a>
       <header className={styles.header}>
         <Link to="/boards" className={styles.backLink} aria-label={t('settings.backLink')}>←</Link>
         <h1 className={styles.title}>{t('settings.title')}</h1>

@@ -1,25 +1,25 @@
 .page {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: calc(100vh - var(--header-height));
   overflow: hidden;
-  background: #111318;
-  color: #e2e8f0;
+  background: var(--color-bg);
+  color: var(--color-text);
 }
 
 .header {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px 16px;
-  background: #1a1e27;
-  border-bottom: 1px solid #2d3340;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
   flex-shrink: 0;
   flex-wrap: wrap;
 }
 
 .title {
-  font-size: 1rem;
+  font-size: var(--text-base);
   font-weight: 600;
   margin: 0;
   white-space: nowrap;
@@ -29,8 +29,8 @@
 
 .badge {
   margin-left: auto;
-  font-size: 0.78rem;
-  color: #94a3b8;
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
   white-space: nowrap;
 }
 
@@ -38,13 +38,13 @@
   flex: 1;
   position: relative;
   min-height: 0;
-  padding: 12px;
+  padding: var(--space-3);
 }
 
 .centerMsg {
   margin: auto;
-  padding: 24px;
-  font-size: 1rem;
-  color: #94a3b8;
+  padding: var(--space-6);
+  font-size: var(--text-base);
+  color: var(--color-text-muted);
   text-align: center;
 }

@@ -16,14 +16,20 @@
   --color-text-muted:       #8b949e;
   --color-text-faint:       #484f58;
   --color-text-inverse:     #0f1117;
-  --color-primary:          #58a6ff;
-  --color-primary-hover:    #79b8ff;
-  --color-primary-active:   #388bfd;
-  --color-primary-highlight:#1f3a5f;
+  /* Marken-Akzent: sportliches Orange, angelehnt an DEFAULT_BALL_COLOR
+     '#f97316' aus FloorballField.jsx – bewusst dieselbe Farbfamilie wie
+     der Ball im Spielfeld-Rendering, für eine kohärente Markenidentität */
+  --color-primary:          #ff7a1a;
+  --color-primary-hover:    #ff9645;
+  --color-primary-active:   #e8620a;
+  --color-primary-highlight:#3a2210;
   --color-error:            #f85149;
+  --color-error-hover:      #ff6b63;
   --color-error-highlight:  #3d1f1f;
   --color-success:          #3fb950;
   --color-warning:          #d29922;
+  --color-warning-hover:    #e6ac3d;
+  --color-surface-offset-2: #2a3038;
   --color-border-radius:    0.5rem;
   --radius-sm:  0.25rem;
   --radius-md:  0.5rem;
@@ -39,6 +45,9 @@
   --space-1: 0.25rem; --space-2: 0.5rem;  --space-3: 0.75rem;
   --space-4: 1rem;    --space-6: 1.5rem;  --space-8: 2rem;
   --space-10: 2.5rem; --space-12: 3rem;   --space-16: 4rem;
+  --space-20: 5rem;
+  --content-wide: 76rem;
+  --header-height: var(--space-16);
   --text-xs:   clamp(0.75rem,  0.7rem  + 0.25vw, 0.875rem);
   --text-sm:   clamp(0.875rem, 0.8rem  + 0.35vw, 1rem);
   --text-base: clamp(1rem,     0.95rem + 0.25vw, 1.125rem);
@@ -59,14 +68,20 @@
   --color-text-muted:       #656d76;
   --color-text-faint:       #afb8c1;
   --color-text-inverse:     #ffffff;
-  --color-primary:          #0969da;
-  --color-primary-hover:    #0860ca;
-  --color-primary-active:   #0550ae;
-  --color-primary-highlight:#ddf4ff;
+  /* Dunkleres "Burnt Orange" statt des vollgesättigten Marken-Orange:
+     #f97316 auf Weiß fällt unter WCAG-AA 4.5:1 für Text/Links,
+     #c2410c besteht (~5.5:1) */
+  --color-primary:          #c2410c;
+  --color-primary-hover:    #9a3412;
+  --color-primary-active:   #7c2d12;
+  --color-primary-highlight:#ffedd5;
   --color-error:            #d1242f;
+  --color-error-hover:      #e0353f;
   --color-error-highlight:  #fff0ee;
   --color-success:          #1a7f37;
   --color-warning:          #9a6700;
+  --color-warning-hover:    #b17d00;
+  --color-surface-offset-2: #c0c9d1;
   --shadow-sm: 0 1px 2px oklch(0.2 0.01 80 / 0.06);
   --shadow-md: 0 4px 12px oklch(0.2 0.01 80 / 0.08);
   --shadow-lg: 0 12px 32px oklch(0.2 0.01 80 / 0.12);
@@ -90,9 +105,12 @@
   --color-primary-active:   #c0d8ff;
   --color-primary-highlight:#002e70;
   --color-error:            #ff6b6b;
+  --color-error-hover:      #ff8787;
   --color-error-highlight:  #3d0000;
   --color-success:          #4ade80;
   --color-warning:          #fbbf24;
+  --color-warning-hover:    #fcd34d;
+  --color-surface-offset-2: #003a8c;
   --shadow-sm: 0 1px 2px oklch(0 0 0 / 0.4);
   --shadow-md: 0 4px 12px oklch(0 0 0 / 0.5);
   --shadow-lg: 0 12px 32px oklch(0 0 0 / 0.6);
@@ -147,9 +165,12 @@ body {
   --color-primary-active:   #c00510;
   --color-primary-highlight:#2d0005;
   --color-error:            #ff6b6b;
+  --color-error-hover:      #ff8787;
   --color-error-highlight:  #2d0000;
   --color-success:          #22c55e;
   --color-warning:          #f59e0b;
+  --color-warning-hover:    #fbbf24;
+  --color-surface-offset-2: #2c2c2c;
   --shadow-sm: 0 1px 2px oklch(0 0 0 / 0.4);
   --shadow-md: 0 4px 12px oklch(0 0 0 / 0.5);
   --shadow-lg: 0 12px 32px oklch(0 0 0 / 0.6);

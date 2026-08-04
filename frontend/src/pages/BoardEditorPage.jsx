@@ -18,6 +18,7 @@ import { POSITION_HINTS } from '../constants/positionHints.js';
 import { rescalePlayers, rescaleElements } from '../utils/fieldRescale.js';
 import { teamColorToFillStroke, normalizeStoredColor } from '../utils/color.js';
 import useAnnounceStore from '../store/announceStore.js';
+import useThemeStore from '../store/themeStore.js';
 
 import FieldContainer from '../components/field/FieldContainer.jsx';
 import FieldToolbar from '../components/field/FieldToolbar.jsx';
@@ -50,6 +51,7 @@ const EXPORT_H = 720;
 export default function BoardEditorPage() {
   const { id: boardId } = useParams();
   const { t, i18n } = useTranslation();
+  const activeTheme = useThemeStore((s) => s.theme);
 
   const { fetchBoard, updateBoard } = useBoardsApi();
   const [board, setBoard] = useState(null);
@@ -279,7 +281,6 @@ export default function BoardEditorPage() {
 
   return (
     <main className={styles.page} role="main" id="main-content">
-      <a href="#main-content" className="sr-only sr-only-focusable">{t('accessibility.skipToContent')}</a>
       <header className={styles.header}>
         <Link to="/boards" className={styles.backLink} aria-label={t('boardEditor.backToBoards')}>←</Link>
         <h1 className={styles.title}>{board?.name ?? t('board.untitled')}</h1>
@@ -355,7 +356,7 @@ export default function BoardEditorPage() {
             fieldType={field.fieldType}
             showGrid={field.showGrid}
             gridSize={field.gridSize}
-            theme="dark"
+            theme={activeTheme}
             readonly={anim.playing}
             players={displayedPlayers}
             selectedPlayerId={selectedPlayerId}

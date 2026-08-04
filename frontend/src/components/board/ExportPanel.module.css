@@ -1,49 +1,49 @@
 .panel {
-  padding: 12px;
-  background: #1e2128;
-  border-radius: 8px;
-  border: 1px solid #2d3340;
-  color: #e2e8f0;
+  padding: var(--space-3);
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--space-2);
 }
 
 .title {
-  font-size: 0.88rem;
+  font-size: var(--text-sm);
   font-weight: 600;
   margin: 0;
-  color: #cbd5e1;
+  color: var(--color-text);
 }
 
 .hint {
-  font-size: 0.78rem;
-  color: #64748b;
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
   margin: 0;
 }
 
 .options {
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: var(--space-2);
 }
 
 .optLabel {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.82rem;
-  color: #94a3b8;
-  gap: 8px;
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  gap: var(--space-2);
 }
 
 .select {
-  background: #23272e;
-  border: 1px solid #3a3f4b;
-  border-radius: 5px;
-  color: #e2e8f0;
-  padding: 3px 6px;
-  font-size: 0.82rem;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--text-xs);
   cursor: pointer;
 }
 .select:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -51,124 +51,126 @@
 .checkLabel {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 0.82rem;
-  color: #94a3b8;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
   cursor: pointer;
   user-select: none;
 }
 
 .formatGroup {
   display: flex;
-  gap: 14px;
+  gap: var(--space-4);
 }
 
 .progressBar {
   height: 6px;
-  background: #2d3340;
-  border-radius: 3px;
+  background: var(--color-border);
+  border-radius: var(--radius-sm);
   overflow: hidden;
 }
 .progressFill {
   height: 100%;
-  background: linear-gradient(90deg, #3b82f6, #60a5fa);
-  border-radius: 3px;
+  background: var(--color-primary);
+  border-radius: var(--radius-sm);
   transition: width 0.3s ease;
 }
 
 .statusMsg {
-  font-size: 0.8rem;
-  color: #94a3b8;
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
   margin: 0;
 }
-.statusError { color: #f87171; }
+.statusError { color: var(--color-error); }
 
 .actions {
   display: flex;
-  gap: 8px;
+  gap: var(--space-2);
   flex-wrap: wrap;
 }
 
 .exportBtn {
   flex: 1;
-  padding: 7px 12px;
-  background: #2563eb;
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-primary);
   border: none;
-  border-radius: 6px;
-  color: #fff;
-  font-size: 0.85rem;
+  border-radius: var(--radius-md);
+  color: var(--color-text-inverse);
+  font-size: var(--text-sm);
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: var(--transition-interactive);
 }
-.exportBtn:hover:not(:disabled) { background: #1d4ed8; }
+.exportBtn:hover:not(:disabled) { background: var(--color-primary-hover); }
 .exportBtn:disabled { opacity: 0.4; cursor: not-allowed; }
 
 .downloadBtn {
   flex: 1;
-  padding: 7px 12px;
-  background: #16a34a;
-  border-radius: 6px;
-  color: #fff;
-  font-size: 0.85rem;
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-success);
+  border-radius: var(--radius-md);
+  color: var(--color-text-inverse);
+  font-size: var(--text-sm);
   font-weight: 600;
   text-decoration: none;
   text-align: center;
-  transition: background 0.15s;
+  transition: var(--transition-interactive);
 }
-.downloadBtn:hover { background: #15803d; }
+.downloadBtn:hover { filter: brightness(0.9); }
 
 .resetBtn {
-  padding: 7px 10px;
-  background: #23272e;
-  border: 1px solid #3a3f4b;
-  border-radius: 6px;
-  color: #94a3b8;
-  font-size: 0.82rem;
+  padding: var(--space-2);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
   cursor: pointer;
 }
-.resetBtn:hover { color: #e2e8f0; }
+.resetBtn:hover { color: var(--color-text); }
 
 .divider {
   height: 1px;
-  background: #2d3340;
+  background: var(--color-border);
   border: none;
-  margin: 2px 0;
+  margin: var(--space-1) 0;
 }
 
 .shareRow {
   display: flex;
-  gap: 6px;
+  gap: var(--space-1);
 }
 
 .urlInput {
   flex: 1;
   min-width: 0;
-  background: #23272e;
-  border: 1px solid #3a3f4b;
-  border-radius: 5px;
-  color: #e2e8f0;
-  padding: 6px 8px;
-  font-size: 0.78rem;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--text-xs);
 }
 
 .copyBtn {
-  padding: 6px 10px;
-  background: #23272e;
-  border: 1px solid #3a3f4b;
-  border-radius: 6px;
-  color: #e2e8f0;
-  font-size: 0.82rem;
+  padding: var(--space-1) var(--space-2);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  font-size: var(--text-xs);
   cursor: pointer;
   white-space: nowrap;
 }
-.copyBtn:hover { background: #2d3340; }
+.copyBtn:hover { background: var(--color-surface-offset); }
 
 .qrWrap {
   display: flex;
   justify-content: center;
-  padding: 8px;
+  padding: var(--space-2);
+  /* Immer weißer Hintergrund, unabhängig vom Theme – QR-Codes brauchen
+     ausreichenden Hell/Dunkel-Kontrast zum Scannen */
   background: #fff;
-  border-radius: 6px;
+  border-radius: var(--radius-md);
 }
 .qrWrap img { display: block; width: 120px; height: 120px; }
