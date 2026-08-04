@@ -178,6 +178,21 @@ export function useDrawing() {
     currentElRef.current = null;
   }, []);
 
+  // Fallback fürs Loslassen: das gerade gezeichnete Element (Pfeilspitze am
+  // Cursor) liegt über dem unsichtbaren Hit-Rect und kann dessen
+  // onMouseUp/onTouchEnd verdecken (Konva liefert das Event an das
+  // oberste getroffene Shape) – window-Listener garantiert das Loslassen
+  // unabhängig davon, welches Konva-Shape gerade getroffen wird
+  useEffect(() => {
+    if (!isDrawing) return undefined;
+    window.addEventListener('mouseup', handlePointerUp);
+    window.addEventListener('touchend', handlePointerUp);
+    return () => {
+      window.removeEventListener('mouseup', handlePointerUp);
+      window.removeEventListener('touchend', handlePointerUp);
+    };
+  }, [isDrawing, handlePointerUp]);
+
   // Eraser: Element per Klick löschen
   const handleElementClick = useCallback((id) => {
     if (activeTool === 'eraser') {
