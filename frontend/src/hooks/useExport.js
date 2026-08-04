@@ -1,6 +1,6 @@
 /**
- * useExport – GIF-Export Hook
- * Issue #15 – v0.5.0
+ * useExport – GIF-/MP4-Export Hook
+ * Issue #15 (GIF) – v0.5.0, Issue #23 (MP4) – v0.8.0
  *
  * Rendert alle Board-Frames als PNG via Konva Stage.toDataURL(),
  * schickt sie ans Backend und pollt den Job-Status.
@@ -13,7 +13,7 @@ const POLL_INTERVAL_MS = 1200;
 export function useExport() {
   const [status,   setStatus  ] = useState('idle'); // idle | rendering | uploading | processing | done | error
   const [progress, setProgress] = useState(0);
-  const [gifUrl,   setGifUrl  ] = useState(null);
+  const [fileUrl,  setFileUrl ] = useState(null);
   const [error,    setError   ] = useState(null);
   const pollRef = useRef(null);
 
@@ -21,20 +21,21 @@ export function useExport() {
     clearInterval(pollRef.current);
     setStatus('idle');
     setProgress(0);
-    setGifUrl(null);
+    setFileUrl(null);
     setError(null);
   }, []);
 
   /**
    * stageRef: React ref zu einer Konva Stage-Instanz (per board frame)
    * frames:   Array der Board-Frames (mit .players und .elements)
-   * opts:     { fps, width, loop }
+   * opts:     { fps, width, loop, format, watermark }
+   * format:   'gif' (Default) | 'mp4' – wählt Endpunkt und Body-Felder
    *
    * Weil alle Frames in der gleichen Stage gerendert werden müssen,
    * nimmt der Hook eine render-Funktion entgegen:
    * renderFrame(frame) => Promise<string>  (data:image/png;base64,...)
    */
-  const startExport = useCallback(async ({ frames, renderFrame, fps = 4, width = 720, loop = true }) => {
+  const startExport = useCallback(async ({ frames, renderFrame, fps = 4, width = 720, loop = true, format = 'gif', watermark = true }) => {
     if (!frames?.length || frames.length < 2) {
       setError('Mindestens 2 Frames benötigt.');
       setStatus('error');
@@ -56,16 +57,19 @@ export function useExport() {
       // 2. PNGs ans Backend senden
       setStatus('uploading');
       setProgress(45);
-      const res = await fetch(`${API}/api/export/gif`, {
+      const body = format === 'mp4'
+        ? { frames: pngs, fps, width, watermark }
+        : { frames: pngs, fps, width, loop };
+      const res = await fetch(`${API}/api/export/${format}`, {
         method:      'POST',
         credentials: 'include',
         headers:     { 'Content-Type': 'application/json' },
-        body:        JSON.stringify({ frames: pngs, fps, width, loop }),
+        body:        JSON.stringify(body),
       });
 
       if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body.message ?? `HTTP ${res.status}`);
+        const resBody = await res.json().catch(() => ({}));
+        throw new Error(resBody.message ?? `HTTP ${res.status}`);
       }
 
       const { jobId } = await res.json();
@@ -80,7 +84,7 @@ export function useExport() {
           setProgress(50 + Math.round((data.progress ?? 0) * 0.5)); // 50-100%
           if (data.status === 'done') {
             clearInterval(pollRef.current);
-            setGifUrl(`${API}/api/export/download/${jobId}`);
+            setFileUrl(`${API}/api/export/download/${jobId}`);
             setStatus('done');
             setProgress(100);
           } else if (data.status === 'error') {
@@ -101,5 +105,5 @@ export function useExport() {
     }
   }, [reset]);
 
-  return { status, progress, gifUrl, error, startExport, reset };
+  return { status, progress, fileUrl, error, startExport, reset };
 }

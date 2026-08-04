@@ -58,6 +58,11 @@
   user-select: none;
 }
 
+.formatGroup {
+  display: flex;
+  gap: 14px;
+}
+
 .progressBar {
   height: 6px;
   background: #2d3340;

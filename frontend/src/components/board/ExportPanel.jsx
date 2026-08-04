@@ -23,11 +23,13 @@ function formatExpiry(iso) {
 
 export default function ExportPanel({ boardId, frames, renderFrame }) {
   const { t } = useTranslation();
+  const [format, setFormat] = useState('gif');
   const [fps,   setFps  ] = useState(4);
   const [width, setWidth] = useState(720);
   const [loop,  setLoop ] = useState(true);
+  const [watermark, setWatermark] = useState(true);
 
-  const { status, progress, gifUrl, error, startExport, reset } = useExport();
+  const { status, progress, fileUrl, error, startExport, reset } = useExport();
 
   // Issue #16 – Share-Link
   const share = useShare(boardId);
@@ -59,7 +61,7 @@ export default function ExportPanel({ boardId, frames, renderFrame }) {
   const canExport = frames?.length >= 2 && !busy;
 
   const handleExport = () => {
-    startExport({ frames, renderFrame, fps, width, loop });
+    startExport({ frames, renderFrame, fps, width, loop, format, watermark });
   };
 
   const statusLabel = {
@@ -80,6 +82,29 @@ export default function ExportPanel({ boardId, frames, renderFrame }) {
       )}
 
       <div className={styles.options}>
+        <div className={styles.formatGroup} role="radiogroup" aria-label={t('export.formatLabel')}>
+          <label className={styles.checkLabel}>
+            <input
+              type="radio"
+              name="export-format"
+              checked={format === 'gif'}
+              onChange={() => setFormat('gif')}
+              disabled={busy}
+            />
+            {t('export.formatGif')}
+          </label>
+          <label className={styles.checkLabel}>
+            <input
+              type="radio"
+              name="export-format"
+              checked={format === 'mp4'}
+              onChange={() => setFormat('mp4')}
+              disabled={busy}
+            />
+            {t('export.formatMp4')}
+          </label>
+        </div>
+
         <label className={styles.optLabel}>
           {t('export.fps')}
           <select
@@ -108,15 +133,27 @@ export default function ExportPanel({ boardId, frames, renderFrame }) {
           </select>
         </label>
 
-        <label className={styles.checkLabel}>
-          <input
-            type="checkbox"
-            checked={loop}
-            onChange={(e) => setLoop(e.target.checked)}
-            disabled={busy}
-          />
-          {t('export.loop')}
-        </label>
+        {format === 'gif' ? (
+          <label className={styles.checkLabel}>
+            <input
+              type="checkbox"
+              checked={loop}
+              onChange={(e) => setLoop(e.target.checked)}
+              disabled={busy}
+            />
+            {t('export.loop')}
+          </label>
+        ) : (
+          <label className={styles.checkLabel}>
+            <input
+              type="checkbox"
+              checked={watermark}
+              onChange={(e) => setWatermark(e.target.checked)}
+              disabled={busy}
+            />
+            {t('export.watermark')}
+          </label>
+        )}
       </div>
 
       {busy && (
@@ -135,11 +172,11 @@ export default function ExportPanel({ boardId, frames, renderFrame }) {
         {status === 'done' ? (
           <>
             <a
-              href={gifUrl}
-              download="floorforge.gif"
+              href={fileUrl}
+              download={format === 'mp4' ? 'floorforge.mp4' : 'floorforge.gif'}
               className={styles.downloadBtn}
             >
-              {t('export.download')}
+              {format === 'mp4' ? t('export.downloadMp4') : t('export.download')}
             </a>
             <button className={styles.resetBtn} onClick={reset}>{t('export.exportAgain')}</button>
           </>
@@ -150,7 +187,7 @@ export default function ExportPanel({ boardId, frames, renderFrame }) {
             disabled={!canExport}
             aria-disabled={!canExport}
           >
-            {busy ? t('export.exporting') : t('export.create')}
+            {busy ? t('export.exporting') : (format === 'mp4' ? t('export.createMp4') : t('export.create'))}
           </button>
         )}
       </div>

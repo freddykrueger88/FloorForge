@@ -6,8 +6,9 @@
 FROM node:20-alpine AS base
 WORKDIR /app
 
-# Systemabhängigkeiten (python3/make/g++ für bcrypt native bindings, ffmpeg für GIF-Export)
-RUN apk add --no-cache python3 make g++ ffmpeg
+# Systemabhängigkeiten (python3/make/g++ für bcrypt native bindings, ffmpeg
+# für GIF-/MP4-Export, font-dejavu fürs MP4-Wasserzeichen – Issue #23)
+RUN apk add --no-cache python3 make g++ ffmpeg font-dejavu
 
 # Abhängigkeiten zuerst kopieren (Layer-Cache nutzen)
 COPY package*.json ./
@@ -31,8 +32,9 @@ COPY . .
 FROM node:20-alpine AS production
 WORKDIR /app
 
-# ffmpeg wird zur Laufzeit für den GIF-Export gebraucht (Issue #15, exportController.js)
-RUN apk add --no-cache ffmpeg
+# ffmpeg wird zur Laufzeit für den GIF-/MP4-Export gebraucht (Issue #15,
+# #23, exportController.js), font-dejavu fürs MP4-Wasserzeichen
+RUN apk add --no-cache ffmpeg font-dejavu
 
 # Nur Produktions-Abhängigkeiten
 COPY --from=builder /app/node_modules ./node_modules
