@@ -660,5 +660,24 @@
     "syncingBanner_other": "Synchronisiere {{count}} Änderungen...",
     "synced": "Alle Änderungen synchronisiert",
     "syncedWithErrors": "Synchronisiert – einzelne Änderungen konnten nicht übernommen werden"
+  },
+  "boardShare": {
+    "title": "Board teilen",
+    "close": "Schließen",
+    "emailPlaceholder": "E-Mail-Adresse",
+    "emailAriaLabel": "E-Mail-Adresse des Kollaborators",
+    "permissionAriaLabel": "Berechtigung",
+    "permissionRead": "Lesen",
+    "permissionWrite": "Bearbeiten",
+    "add": "Hinzufügen",
+    "adding": "Wird hinzugefügt...",
+    "loading": "Lädt Kollaboratoren...",
+    "noCollaborators": "Noch niemand hat Zugriff auf dieses Board.",
+    "rowPermissionAriaLabel": "Berechtigung von {{email}}",
+    "removeAriaLabel": "{{email}} entfernen",
+    "removeTitle": "Entfernen",
+    "openLabel": "Board teilen",
+    "readonlyBadge": "Nur Lesezugriff",
+    "writeBadge": "Mitbearbeiter"
   }
 }

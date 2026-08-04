@@ -660,5 +660,24 @@
     "syncingBanner_other": "Syncing {{count}} changes...",
     "synced": "All changes synced",
     "syncedWithErrors": "Synced – some changes could not be applied"
+  },
+  "boardShare": {
+    "title": "Share board",
+    "close": "Close",
+    "emailPlaceholder": "Email address",
+    "emailAriaLabel": "Collaborator's email address",
+    "permissionAriaLabel": "Permission",
+    "permissionRead": "Read",
+    "permissionWrite": "Edit",
+    "add": "Add",
+    "adding": "Adding...",
+    "loading": "Loading collaborators...",
+    "noCollaborators": "No one has access to this board yet.",
+    "rowPermissionAriaLabel": "Permission for {{email}}",
+    "removeAriaLabel": "Remove {{email}}",
+    "removeTitle": "Remove",
+    "openLabel": "Share board",
+    "readonlyBadge": "Read only",
+    "writeBadge": "Collaborator"
   }
 }

@@ -9,6 +9,7 @@
 import pool from '../db/pool.js';
 import logger from '../utils/logger.js';
 import { success, created, error } from '../utils/apiResponse.js';
+import { assertBoardAccess } from '../utils/boardAccess.js';
 
 const MAX_LINES = 10;
 
@@ -23,18 +24,10 @@ export function toApiLine(row) {
   };
 }
 
-async function assertBoardOwnership(boardId, userId) {
-  const result = await pool.query(
-    'SELECT id FROM boards WHERE id = $1 AND user_id = $2 AND deleted_at IS NULL',
-    [boardId, userId]
-  );
-  return result.rows.length > 0;
-}
-
 // GET /api/boards/:id/lines
 export async function getLines(req, res) {
   try {
-    if (!(await assertBoardOwnership(req.params.id, req.user.id))) {
+    if (!(await assertBoardAccess(req.params.id, req.user.id, 'read'))) {
       return res.status(404).json(error('Board nicht gefunden'));
     }
     const result = await pool.query(
@@ -51,7 +44,7 @@ export async function getLines(req, res) {
 // POST /api/boards/:id/lines
 export async function createLine(req, res) {
   try {
-    if (!(await assertBoardOwnership(req.params.id, req.user.id))) {
+    if (!(await assertBoardAccess(req.params.id, req.user.id, 'write'))) {
       return res.status(404).json(error('Board nicht gefunden'));
     }
 
@@ -82,7 +75,7 @@ export async function createLine(req, res) {
 // PUT /api/boards/:id/lines/:lineId
 export async function updateLine(req, res) {
   try {
-    if (!(await assertBoardOwnership(req.params.id, req.user.id))) {
+    if (!(await assertBoardAccess(req.params.id, req.user.id, 'write'))) {
       return res.status(404).json(error('Board nicht gefunden'));
     }
 
@@ -118,7 +111,7 @@ export async function updateLine(req, res) {
 // DELETE /api/boards/:id/lines/:lineId
 export async function deleteLine(req, res) {
   try {
-    if (!(await assertBoardOwnership(req.params.id, req.user.id))) {
+    if (!(await assertBoardAccess(req.params.id, req.user.id, 'write'))) {
       return res.status(404).json(error('Board nicht gefunden'));
     }
     const result = await pool.query(
@@ -143,7 +136,7 @@ export async function deleteLine(req, res) {
 // PUT /api/boards/:id/lines/active   Body: { lineId: string | null }
 export async function setActiveLine(req, res) {
   try {
-    if (!(await assertBoardOwnership(req.params.id, req.user.id))) {
+    if (!(await assertBoardAccess(req.params.id, req.user.id, 'write'))) {
       return res.status(404).json(error('Board nicht gefunden'));
     }
     const { lineId } = req.body;

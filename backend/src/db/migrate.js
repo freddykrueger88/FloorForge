@@ -217,6 +217,23 @@ export async function runMigrations() {
     `);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_roster_players_user_id ON roster_players(user_id);`);
 
+    // ── board_collaborators (Issue #51 MVP – Board-Sharing) ─────────────────
+    // Kein Echtzeit-Sync (das wäre ein deutlich größerer Scope, siehe
+    // Issue-Text) – nur ein Berechtigungsmodell: read (ansehen) oder
+    // write (voll editieren wie der Owner, außer Löschen/Sharing selbst).
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS board_collaborators (
+        id         UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        board_id   UUID NOT NULL REFERENCES boards(id) ON DELETE CASCADE,
+        user_id    UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        permission TEXT NOT NULL DEFAULT 'read' CHECK (permission IN ('read', 'write')),
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        UNIQUE (board_id, user_id)
+      );
+    `);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_board_collaborators_board_id ON board_collaborators(board_id);`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_board_collaborators_user_id ON board_collaborators(user_id);`);
+
     // ── exports ───────────────────────────────────────────────────────────
     // format: 'gif' | 'mp4' | 'pdf' | 'link' | 'png'
     await client.query(`

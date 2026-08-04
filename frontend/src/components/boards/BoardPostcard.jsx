@@ -17,6 +17,7 @@ import styles from './BoardPostcard.module.css';
 export default function BoardPostcard({ board, onClick, playbooks, onChangePlaybook }) {
   const { t } = useTranslation();
   const hasNotes = board.notes && board.notes.trim().length > 0;
+  const isOwner = (board.accessLevel ?? 'owner') === 'owner';
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -57,14 +58,19 @@ export default function BoardPostcard({ board, onClick, playbooks, onChangePlayb
             {FIELD_TYPE_LABELS[board.fieldType] ?? board.fieldType}
           </span>
           <span className={styles.date}>📅 {formatDate(board.updatedAt)}</span>
+          {!isOwner && (
+            <span className={styles.badge}>
+              {board.accessLevel === 'write' ? `✏️ ${t('boardShare.writeBadge')}` : `👁 ${t('boardShare.readonlyBadge')}`}
+            </span>
+          )}
           <span className={styles.colorChips} aria-hidden="true">
             <span className={styles.chip} style={{ background: board.homeColor ?? '#1d4ed8' }} title={t('teams.home')} />
             <span className={styles.chip} style={{ background: board.awayColor ?? '#dc2626' }} title={t('teams.away')} />
           </span>
         </div>
 
-        {/* Playbook-Zuordnung (Issue #52) */}
-        {playbooks && (
+        {/* Playbook-Zuordnung (Issue #52, nur Owner) */}
+        {playbooks && isOwner && (
           <select
             className={styles.playbookSelect}
             value={board.playbookId ?? ''}

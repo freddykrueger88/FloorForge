@@ -12,7 +12,7 @@ import styles from './NotesPanel.module.css';
 
 const MAX_LENGTH = 500;
 
-export default function NotesPanel({ value = '', onChange }) {
+export default function NotesPanel({ value = '', onChange, readonly = false }) {
   const { t } = useTranslation();
   const [draft, setDraft] = useState(value);
 
@@ -32,6 +32,7 @@ export default function NotesPanel({ value = '', onChange }) {
         className={styles.textarea}
         value={draft}
         onChange={handleChange}
+        readOnly={readonly}
         maxLength={MAX_LENGTH}
         placeholder={t('notes.placeholder')}
         rows={5}

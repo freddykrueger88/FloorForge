@@ -13,6 +13,7 @@ export default function BoardCard({ board, onClick, onRename, onDelete, playbook
   const [editing, setEditing] = useState(false);
   const [name,    setName   ] = useState(board.name);
   const inputRef = useRef(null);
+  const isOwner = (board.accessLevel ?? 'owner') === 'owner';
 
   useEffect(() => {
     if (editing) inputRef.current?.select();
@@ -39,9 +40,14 @@ export default function BoardCard({ board, onClick, onRename, onDelete, playbook
         <span className={styles.fieldIcon} aria-hidden="true">🏑</span>
         <span className={styles.fieldType}>{FIELD_TYPE_LABELS[board.fieldType] ?? board.fieldType}</span>
         <span className={styles.date}>{formatDate(board.updatedAt)}</span>
+        {!isOwner && (
+          <span className={styles.accessBadge}>
+            {board.accessLevel === 'write' ? `✏️ ${t('boardShare.writeBadge')}` : `👁 ${t('boardShare.readonlyBadge')}`}
+          </span>
+        )}
       </button>
 
-      {/* Name – Doppelklick zum Umbenennen */}
+      {/* Name – Doppelklick zum Umbenennen (nur Owner) */}
       <div className={styles.nameRow}>
         {editing ? (
           <input
@@ -57,7 +63,7 @@ export default function BoardCard({ board, onClick, onRename, onDelete, playbook
             maxLength={80}
             aria-label={t('boardCard.renameAriaLabel')}
           />
-        ) : (
+        ) : isOwner ? (
           <button
             className={styles.nameBtn}
             onDoubleClick={() => setEditing(true)}
@@ -67,20 +73,24 @@ export default function BoardCard({ board, onClick, onRename, onDelete, playbook
           >
             {board.name}
           </button>
+        ) : (
+          <span className={styles.nameBtn}>{board.name}</span>
         )}
 
-        <button
-          className={styles.deleteBtn}
-          onClick={(e) => { e.stopPropagation(); onDelete(); }}
-          aria-label={t('boardCard.deleteAriaLabel')}
-          title={t('boardCard.deleteTitle')}
-        >
-          🗑
-        </button>
+        {isOwner && (
+          <button
+            className={styles.deleteBtn}
+            onClick={(e) => { e.stopPropagation(); onDelete(); }}
+            aria-label={t('boardCard.deleteAriaLabel')}
+            title={t('boardCard.deleteTitle')}
+          >
+            🗑
+          </button>
+        )}
       </div>
 
-      {/* Playbook-Zuordnung (Issue #52) */}
-      {playbooks && (
+      {/* Playbook-Zuordnung (Issue #52, nur Owner) */}
+      {playbooks && isOwner && (
         <div className={styles.playbookRow}>
           <select
             className={styles.playbookSelect}

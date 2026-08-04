@@ -9,6 +9,7 @@ import pool from '../db/pool.js';
 import logger from '../utils/logger.js';
 import { success, created, error } from '../utils/apiResponse.js';
 import { buildDefaultPlayers } from '../constants/defaultPositions.js';
+import { getBoardAccessLevel } from '../utils/boardAccess.js';
 
 // snake_case (DB) → camelCase (API/Frontend)
 function toApiBoard(row) {
@@ -28,6 +29,9 @@ function toApiBoard(row) {
     players:      row.players_json,
     elements:     row.elements_json,
     playbookId:   row.playbook_id,
+    // Issue #51 MVP – 'owner' | 'write' | 'read', fehlt die Spalte (z.B.
+    // direkt nach createBoard/updateBoard) ist der Requester immer Owner.
+    accessLevel:  row.access_level ?? 'owner',
     createdAt:    row.created_at,
     updatedAt:    row.updated_at,
   };
@@ -43,13 +47,24 @@ async function assertPlaybookOwnership(playbookId, userId) {
 }
 
 // GET /api/boards – nur Metadaten, kein players/elements (Kachel-/Galerie-Übersicht)
+// Issue #51 MVP: neben eigenen Boards auch mit dem Nutzer geteilte Boards.
 export async function getBoards(req, res) {
   try {
     const result = await pool.query(
-      `SELECT id, name, notes, field_type, theme, home_color, away_color, ball_color,
-              show_grid, show_names, name_position, playbook_id, created_at, updated_at
-       FROM boards
-       WHERE user_id = $1 AND deleted_at IS NULL
+      `SELECT * FROM (
+         SELECT id, name, notes, field_type, theme, home_color, away_color, ball_color,
+                show_grid, show_names, name_position, playbook_id, created_at, updated_at,
+                'owner'::text AS access_level
+         FROM boards
+         WHERE user_id = $1 AND deleted_at IS NULL
+         UNION ALL
+         SELECT b.id, b.name, b.notes, b.field_type, b.theme, b.home_color, b.away_color, b.ball_color,
+                b.show_grid, b.show_names, b.name_position, b.playbook_id, b.created_at, b.updated_at,
+                bc.permission AS access_level
+         FROM boards b
+         JOIN board_collaborators bc ON bc.board_id = b.id
+         WHERE bc.user_id = $1 AND b.deleted_at IS NULL
+       ) combined
        ORDER BY updated_at DESC
        LIMIT 200`,
       [req.user.id]
@@ -64,14 +79,18 @@ export async function getBoards(req, res) {
 // GET /api/boards/:id
 export async function getBoard(req, res) {
   try {
+    const accessLevel = await getBoardAccessLevel(req.params.id, req.user.id);
+    if (!accessLevel) {
+      return res.status(404).json(error('Spielfeld nicht gefunden'));
+    }
     const result = await pool.query(
-      `SELECT * FROM boards WHERE id = $1 AND user_id = $2 AND deleted_at IS NULL`,
-      [req.params.id, req.user.id]
+      `SELECT * FROM boards WHERE id = $1 AND deleted_at IS NULL`,
+      [req.params.id]
     );
     if (result.rows.length === 0) {
       return res.status(404).json(error('Spielfeld nicht gefunden'));
     }
-    res.json(success(toApiBoard(result.rows[0])));
+    res.json(success(toApiBoard({ ...result.rows[0], access_level: accessLevel })));
   } catch (err) {
     logger.error('[getBoard]', err);
     res.status(500).json(error('Interner Serverfehler'));
@@ -147,6 +166,14 @@ const UPDATABLE_COLUMNS = {
 
 export async function updateBoard(req, res) {
   try {
+    // Issue #51 MVP: Owner ODER write-Kollaborator darf ändern (Löschen/
+    // Sharing bleiben separat strikt Owner-only, siehe deleteBoard unten
+    // und boardCollaboratorsController.js).
+    const accessLevel = await getBoardAccessLevel(req.params.id, req.user.id);
+    if (accessLevel !== 'owner' && accessLevel !== 'write') {
+      return res.status(404).json(error('Spielfeld nicht gefunden'));
+    }
+
     if (req.body.playbookId && !(await assertPlaybookOwnership(req.body.playbookId, req.user.id))) {
       return res.status(404).json(error('Playbook nicht gefunden'));
     }
@@ -168,10 +195,10 @@ export async function updateBoard(req, res) {
       return res.status(400).json(error('Keine gültigen Felder zum Aktualisieren'));
     }
 
-    values.push(req.params.id, req.user.id);
+    values.push(req.params.id);
     const result = await pool.query(
       `UPDATE boards SET ${sets.join(', ')}
-       WHERE id = $${i} AND user_id = $${i + 1} AND deleted_at IS NULL
+       WHERE id = $${i} AND deleted_at IS NULL
        RETURNING *`,
       values
     );
@@ -179,7 +206,7 @@ export async function updateBoard(req, res) {
     if (result.rows.length === 0) {
       return res.status(404).json(error('Spielfeld nicht gefunden'));
     }
-    res.json(success(toApiBoard(result.rows[0])));
+    res.json(success(toApiBoard({ ...result.rows[0], access_level: accessLevel })));
   } catch (err) {
     logger.error('[updateBoard]', err);
     res.status(500).json(error('Interner Serverfehler'));

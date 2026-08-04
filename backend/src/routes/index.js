@@ -7,6 +7,7 @@ import authRoutes from './auth.js';
 import boardRoutes from './boards.js';
 import frameRoutes from './frames.js';
 import lineRoutes from './lines.js';
+import boardCollaboratorRoutes from './boardCollaborators.js';
 import exportRoutes from './exports.js';
 import shareViewRoutes from './shareView.js';
 import settingsRoutes from './settings.js';
@@ -24,6 +25,7 @@ router.use('/auth',               authRoutes);
 router.use('/boards',             boardRoutes);
 router.use('/boards/:id/frames',  frameRoutes);
 router.use('/boards/:id/lines',   lineRoutes);
+router.use('/boards/:id/collaborators', boardCollaboratorRoutes);
 // GIF-Export braucht großes JSON-Limit (Base64-PNGs) – nur auf diesem Sub-Router
 router.use('/export', express.json({ limit: '50mb' }), exportRoutes);
 // Öffentliche Share-Link-Ansicht – bewusst NICHT hinter authenticate (Issue #16)

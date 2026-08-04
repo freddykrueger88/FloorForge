@@ -3,11 +3,13 @@
  *
  * Persistenz: eigene `frames`-Tabelle (Postgres), 1 Zeile pro Frame,
  * referenziert über board_id. data_json hält { players, elements }.
- * Jeder Zugriff wird über einen Board-Ownership-Check (user_id) abgesichert.
+ * Jeder Zugriff wird über assertBoardAccess() abgesichert (Owner oder
+ * Kollaborator mit ausreichender Berechtigung, Issue #51).
  */
 import pool from '../db/pool.js';
 import logger from '../utils/logger.js';
 import { success, created, error } from '../utils/apiResponse.js';
+import { assertBoardAccess } from '../utils/boardAccess.js';
 
 const MAX_FRAMES = 50;
 
@@ -23,19 +25,10 @@ export function toApiFrame(row) {
   };
 }
 
-// Stellt sicher, dass das Board existiert UND dem eingeloggten User gehört.
-async function assertBoardOwnership(boardId, userId) {
-  const result = await pool.query(
-    'SELECT id FROM boards WHERE id = $1 AND user_id = $2 AND deleted_at IS NULL',
-    [boardId, userId]
-  );
-  return result.rows.length > 0;
-}
-
 // GET /api/boards/:id/frames
 export async function getFrames(req, res) {
   try {
-    if (!(await assertBoardOwnership(req.params.id, req.user.id))) {
+    if (!(await assertBoardAccess(req.params.id, req.user.id, 'read'))) {
       return res.status(404).json(error('Board nicht gefunden'));
     }
     const result = await pool.query(
@@ -53,7 +46,7 @@ export async function getFrames(req, res) {
 export async function addFrame(req, res) {
   const client = await pool.connect();
   try {
-    if (!(await assertBoardOwnership(req.params.id, req.user.id))) {
+    if (!(await assertBoardAccess(req.params.id, req.user.id, 'write'))) {
       return res.status(404).json(error('Board nicht gefunden'));
     }
 
@@ -96,7 +89,7 @@ export async function addFrame(req, res) {
 // PUT /api/boards/:id/frames/:frameId
 export async function updateFrame(req, res) {
   try {
-    if (!(await assertBoardOwnership(req.params.id, req.user.id))) {
+    if (!(await assertBoardAccess(req.params.id, req.user.id, 'write'))) {
       return res.status(404).json(error('Board nicht gefunden'));
     }
 
@@ -132,7 +125,7 @@ export async function updateFrame(req, res) {
 export async function deleteFrame(req, res) {
   const client = await pool.connect();
   try {
-    if (!(await assertBoardOwnership(req.params.id, req.user.id))) {
+    if (!(await assertBoardAccess(req.params.id, req.user.id, 'write'))) {
       return res.status(404).json(error('Board nicht gefunden'));
     }
 
@@ -181,7 +174,7 @@ export async function deleteFrame(req, res) {
 export async function reorderFrames(req, res) {
   const client = await pool.connect();
   try {
-    if (!(await assertBoardOwnership(req.params.id, req.user.id))) {
+    if (!(await assertBoardAccess(req.params.id, req.user.id, 'write'))) {
       return res.status(404).json(error('Board nicht gefunden'));
     }
 

@@ -29,7 +29,7 @@ import PlayerAccessibleList from '../components/field/PlayerAccessibleList.jsx';
 import { DrawingToolbar, DrawingCoordinatesForm } from '../components/drawing/index.js';
 import { FrameTimeline } from '../components/frames/index.js';
 import { PlaybackControls } from '../components/playback/index.js';
-import { NotesPanel, ExportPanel, PdfExportPanel, ShortcutsOverlay } from '../components/board/index.js';
+import { NotesPanel, ExportPanel, PdfExportPanel, ShortcutsOverlay, ShareBoardModal } from '../components/board/index.js';
 import { LinesPanel } from '../components/lines/index.js';
 import { FormationsPanel } from '../components/formations/index.js';
 
@@ -146,7 +146,11 @@ export default function BoardEditorPage() {
     await updateBoard(boardId, { notes: nextNotes });
   }, [boardId, updateBoard]);
 
-  useAutoSave(notes, saveNotes, !!board);
+  // Issue #51 MVP: read-Kollaboratoren dürfen nicht schreiben – Autosave
+  // sonst würde alle 30s unnötig gegen die (jetzt korrekt 404 liefernde)
+  // API laufen und einen Dauer-Fehlerstatus anzeigen.
+  const canEdit = board?.accessLevel !== 'read';
+  useAutoSave(notes, saveNotes, !!board && canEdit);
 
   useEffect(() => {
     if (anim.playing) return;
@@ -163,7 +167,7 @@ export default function BoardEditorPage() {
   const { status: saveStatus } = useAutoSave(
     livePlayers,
     saveActiveFrame,
-    !!activeFrame && !anim.playing,
+    !!activeFrame && !anim.playing && canEdit,
   );
 
   const handleDragEndPlayer = useCallback((id, rawX, rawY) => {
@@ -225,6 +229,8 @@ export default function BoardEditorPage() {
 
   // "?"-Taste öffnet die Tastaturkürzel-Übersicht (Issue #47)
   const [showShortcuts, setShowShortcuts] = useState(false);
+  // Issue #51 MVP – Board-Sharing (Owner-only)
+  const [showShareModal, setShowShareModal] = useState(false);
   useEffect(() => {
     const handler = (e) => {
       const tag = document.activeElement?.tagName;
@@ -322,6 +328,12 @@ export default function BoardEditorPage() {
       <header className={styles.header}>
         <Link to="/boards" className={styles.backLink} aria-label={t('boardEditor.backToBoards')}>←</Link>
         <h1 className={styles.title}>{board?.name ?? t('board.untitled')}</h1>
+        {board?.accessLevel === 'read' && (
+          <span className={styles.readonlyBadge}>👁 {t('boardShare.readonlyBadge')}</span>
+        )}
+        {board?.accessLevel === 'write' && (
+          <span className={styles.readonlyBadge}>✏️ {t('boardShare.writeBadge')}</span>
+        )}
         <span className={styles.saveStatus} aria-live="polite">
           {saveStatus === 'saving'  && t('boardEditor.saving')}
           {saveStatus === 'saved'   && t('boardEditor.saved')}
@@ -329,14 +341,16 @@ export default function BoardEditorPage() {
           {saveStatus === 'error'   && t('boardEditor.saveError')}
         </span>
         <div className={styles.headerControls}>
-          <TeamColorPanel
-            homeColor={homeColor}
-            awayColor={awayColor}
-            ballColor={ballColor}
-            onChangeHomeColor={handleChangeHomeColor}
-            onChangeAwayColor={handleChangeAwayColor}
-            onChangeBallColor={handleChangeBallColor}
-          />
+          {canEdit && (
+            <TeamColorPanel
+              homeColor={homeColor}
+              awayColor={awayColor}
+              ballColor={ballColor}
+              onChangeHomeColor={handleChangeHomeColor}
+              onChangeAwayColor={handleChangeAwayColor}
+              onChangeBallColor={handleChangeBallColor}
+            />
+          )}
           <FieldToolbar
             showNames={showNames}
             onToggleShowNames={() => setShowNames((v) => !v)}
@@ -344,10 +358,21 @@ export default function BoardEditorPage() {
             onSetNamePosition={setNamePosition}
             fieldType={field.fieldType}
             availableFields={field.availableFields}
-            onRequestFieldTypeChange={handleRequestFieldTypeChange}
+            onRequestFieldTypeChange={canEdit ? handleRequestFieldTypeChange : undefined}
             showHints={showHints}
             onToggleShowHints={toggleShowHints}
           />
+          {board?.accessLevel === 'owner' && (
+            <button
+              type="button"
+              className={styles.helpBtn}
+              onClick={() => setShowShareModal(true)}
+              aria-label={t('boardShare.openLabel')}
+              title={t('boardShare.openLabel')}
+            >
+              🤝
+            </button>
+          )}
           <button
             type="button"
             className={styles.helpBtn}
@@ -361,6 +386,7 @@ export default function BoardEditorPage() {
       </header>
 
       {showShortcuts && <ShortcutsOverlay onClose={() => setShowShortcuts(false)} />}
+      {showShareModal && <ShareBoardModal boardId={boardId} onClose={() => setShowShareModal(false)} />}
 
       {pendingFieldType && (
         <FieldTypeChangeDialog
@@ -387,30 +413,32 @@ export default function BoardEditorPage() {
       />
 
       <div className={styles.body}>
-        <DrawingToolbar
-          activeTool={drawing.activeTool}
-          setActiveTool={drawing.setActiveTool}
-          activeColor={drawing.activeColor}
-          setActiveColor={drawing.setActiveColor}
-          strokeWidth={drawing.strokeWidth}
-          setStrokeWidth={drawing.setStrokeWidth}
-          onUndo={drawing.undo}
-          onRedo={drawing.redo}
-          onClear={drawing.clearAll}
-          canUndo={drawing.canUndo}
-          canRedo={drawing.canRedo}
-          elementCount={drawing.elements.length}
-          undoStack={drawing.undoStack}
-          redoStack={drawing.redoStack}
-          onJumpHistory={drawing.jumpHistory}
-        />
+        {canEdit && (
+          <DrawingToolbar
+            activeTool={drawing.activeTool}
+            setActiveTool={drawing.setActiveTool}
+            activeColor={drawing.activeColor}
+            setActiveColor={drawing.setActiveColor}
+            strokeWidth={drawing.strokeWidth}
+            setStrokeWidth={drawing.setStrokeWidth}
+            onUndo={drawing.undo}
+            onRedo={drawing.redo}
+            onClear={drawing.clearAll}
+            canUndo={drawing.canUndo}
+            canRedo={drawing.canRedo}
+            elementCount={drawing.elements.length}
+            undoStack={drawing.undoStack}
+            redoStack={drawing.redoStack}
+            onJumpHistory={drawing.jumpHistory}
+          />
+        )}
         <div className={styles.fieldArea}>
           <FieldContainer
             fieldType={field.fieldType}
             showGrid={field.showGrid}
             gridSize={field.gridSize}
             theme={activeTheme}
-            readonly={anim.playing}
+            readonly={anim.playing || !canEdit}
             players={displayedPlayers}
             selectedPlayerId={selectedPlayerId}
             onSelectPlayer={handleSelectPlayer}
@@ -455,33 +483,39 @@ export default function BoardEditorPage() {
         </div>
 
         <div className={styles.sidebar}>
-          <DrawingCoordinatesForm
-            activeTool={drawing.activeTool}
-            field={IFF_FIELDS[field.fieldType] ?? IFF_FIELDS.large}
-            onAddArrow={drawing.addArrowElement}
-            onAddFreehand={drawing.addFreehandElement}
-          />
-          <LinesPanel
-            lines={lines.lines}
-            activeLineId={lines.activeLineId}
-            players={livePlayers}
-            onAddLine={lines.addLine}
-            onRenameLine={(id, name) => lines.updateLine(id, { name })}
-            onDeleteLine={lines.deleteLine}
-            onSetActiveLine={lines.setActiveLine}
-            onTogglePlayer={lines.togglePlayerInLine}
-            canAddLine={lines.canAddLine}
-          />
-          <FormationsPanel
-            formations={formations.formations}
-            onSave={handleSaveFormation}
-            onLoad={handleLoadFormation}
-            onDelete={formations.deleteFormation}
-            canAddFormation={formations.canAddFormation}
-          />
+          {canEdit && (
+            <DrawingCoordinatesForm
+              activeTool={drawing.activeTool}
+              field={IFF_FIELDS[field.fieldType] ?? IFF_FIELDS.large}
+              onAddArrow={drawing.addArrowElement}
+              onAddFreehand={drawing.addFreehandElement}
+            />
+          )}
+          {canEdit && (
+            <LinesPanel
+              lines={lines.lines}
+              activeLineId={lines.activeLineId}
+              players={livePlayers}
+              onAddLine={lines.addLine}
+              onRenameLine={(id, name) => lines.updateLine(id, { name })}
+              onDeleteLine={lines.deleteLine}
+              onSetActiveLine={lines.setActiveLine}
+              onTogglePlayer={lines.togglePlayerInLine}
+              canAddLine={lines.canAddLine}
+            />
+          )}
+          {canEdit && (
+            <FormationsPanel
+              formations={formations.formations}
+              onSave={handleSaveFormation}
+              onLoad={handleLoadFormation}
+              onDelete={formations.deleteFormation}
+              canAddFormation={formations.canAddFormation}
+            />
+          )}
           <ExportPanel boardId={boardId} frames={frames} renderFrame={renderFrame} />
           <PdfExportPanel frames={frames} renderFrame={renderFrame} boardName={board?.name} />
-          <NotesPanel value={notes} onChange={setNotes} />
+          <NotesPanel value={notes} onChange={setNotes} readonly={!canEdit} />
         </div>
       </div>
 
@@ -489,9 +523,9 @@ export default function BoardEditorPage() {
         frames={frames}
         activeIndex={activeIndex}
         onSelect={goToFrame}
-        onAdd={() => addFrame(livePlayers, drawing.elements)}
-        onDelete={deleteFrame}
-        onReorder={reorderFrames}
+        onAdd={canEdit ? () => addFrame(livePlayers, drawing.elements) : undefined}
+        onDelete={canEdit ? deleteFrame : undefined}
+        onReorder={canEdit ? reorderFrames : undefined}
         loading={framesLoading}
         currentPlayers={livePlayers}
         currentElements={drawing.elements}
