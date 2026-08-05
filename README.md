@@ -72,6 +72,7 @@ Alle Variablen mit Beschreibung stehen in [`.env.example`](./.env.example). Die 
 | `REDIS_PASSWORD` | **Ändern!** Redis-Passwort | – |
 | `COOKIE_SECURE` | Session-Cookie nur über HTTPS senden. `false`, solange kein TLS-Reverse-Proxy davorsteht (sonst verwirft der Browser das Login-Cookie) | `true` |
 | `SHARE_LINK_EXPIRES_HOURS` | Gültigkeitsdauer öffentlicher Share-Links | `72` |
+| `SMTP_HOST` | Optional – SMTP-Server für Kollaborator-Benachrichtigungsmails. Leer = kein Mailversand, App funktioniert trotzdem voll | – |
 
 ## 📁 Projektstruktur
 

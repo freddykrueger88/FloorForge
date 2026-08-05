@@ -5,10 +5,16 @@
  * würde auch write-Kollaboratoren durchlassen – Kollaborator-Verwaltung
  * ist bewusst strenger als normales "write"). Ein Kollaborator wird per
  * bereits existierender E-Mail-Adresse hinzugefügt (kein Einladungs-/
- * Token-Flow – passt zum Self-Hosted-Team-Kontext dieser App).
+ * Token-Flow für noch nicht registrierte Adressen – passt zum
+ * Self-Hosted-Team-Kontext dieser App). Ist SMTP konfiguriert (siehe
+ * utils/mailer.js), bekommt der hinzugefügte Nutzer eine kurze
+ * Benachrichtigungs-Mail; ohne SMTP-Konfiguration passiert einfach
+ * nichts, die Kollaborator-Verwaltung selbst funktioniert unabhängig
+ * davon immer.
  */
 import pool from '../db/pool.js';
 import logger from '../utils/logger.js';
+import { sendMail } from '../utils/mailer.js';
 import { success, created, error } from '../utils/apiResponse.js';
 
 const MAX_COLLABORATORS_PER_BOARD = 10;
@@ -23,12 +29,15 @@ function toApiCollaborator(row) {
   };
 }
 
+// Gibt das Board (mit Name, für die Einladungs-Mail) statt nur eines
+// Booleans zurück – bleibt an allen bisherigen `if (!(await
+// assertBoardOwner(...)))`-Aufrufstellen kompatibel (null ist falsy).
 async function assertBoardOwner(boardId, userId) {
   const result = await pool.query(
-    'SELECT id FROM boards WHERE id = $1 AND user_id = $2 AND deleted_at IS NULL',
+    'SELECT id, name FROM boards WHERE id = $1 AND user_id = $2 AND deleted_at IS NULL',
     [boardId, userId]
   );
-  return result.rows.length > 0;
+  return result.rows[0] ?? null;
 }
 
 // GET /api/boards/:id/collaborators
@@ -54,7 +63,8 @@ export async function getCollaborators(req, res) {
 // POST /api/boards/:id/collaborators
 export async function addCollaborator(req, res) {
   try {
-    if (!(await assertBoardOwner(req.params.id, req.user.id))) {
+    const board = await assertBoardOwner(req.params.id, req.user.id);
+    if (!board) {
       return res.status(404).json(error('Board nicht gefunden'));
     }
 
@@ -92,6 +102,14 @@ export async function addCollaborator(req, res) {
       'INSERT INTO board_collaborators (board_id, user_id, permission) VALUES ($1, $2, $3) RETURNING *',
       [req.params.id, targetUser.id, permission]
     );
+
+    const appUrl = (process.env.CORS_ORIGIN || '').replace(/\/$/, '');
+    sendMail({
+      to: targetUser.email,
+      subject: `FloorForge: Zugriff auf Board "${board.name}"`,
+      text: `Du wurdest als Kollaborator (${permission === 'write' ? 'Bearbeiten' : 'Lesen'}) zum Board "${board.name}" hinzugefügt.\n\n${appUrl ? `${appUrl}/boards` : 'Öffne die FloorForge-App'}, um es zu sehen.`,
+    });
+
     res.status(201).json(created(toApiCollaborator({ ...result.rows[0], email: targetUser.email })));
   } catch (err) {
     logger.error('[addCollaborator]', err);

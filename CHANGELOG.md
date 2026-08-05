@@ -13,6 +13,16 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Added
+- Optionaler SMTP-Mailversand (`backend/src/utils/mailer.js`,
+  `nodemailer`): wird beim Hinzufügen eines Kollaborators (Issue #51)
+  genutzt, um eine kurze Benachrichtigungsmail zu verschicken. Ohne
+  `SMTP_HOST` bleibt die App unverändert voll funktionsfähig, es wird
+  nur nichts verschickt – bewusst kein Zwang zur Mailserver-Einrichtung
+  für Self-Hoster. Neue Env-Vars in `.env.example`/`docker-compose.yml`:
+  `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`,
+  `SMTP_PASSWORD`, `SMTP_FROM`.
+
 ### Changed
 - Board-Editor: rechtes Menü (Zeichnen-Koordinaten, Lines, Formationen,
   Export, PDF-Export, Notizen) von einer schmalen 220px-Seitenleiste in
