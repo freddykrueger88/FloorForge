@@ -22,43 +22,10 @@ Es soll der zentrale Ort sein für:
 
 # 2. Repository-Struktur
 
-Empfohlene Struktur:
-
-```text id="8a2r7m"
-openfloorball-coach/
-
-├── app/
-│
-├── components/
-│
-├── features/
-│
-├── domain/
-│
-├── services/
-│
-├── database/
-│
-├── tests/
-│
-├── docs/
-│
-├── architecture/
-│
-├── scripts/
-│
-├── infrastructure/
-│
-├── examples/
-│
-├── README.md
-│
-├── LICENSE
-│
-├── CONTRIBUTING.md
-│
-└── SECURITY.md
-```
+Die kanonische, detaillierte Ordnerstruktur steht in
+`REPOSITORY_STRUCTURE.md` (nach Dokument-Konsolidierung einzige
+Quelle für die Ordnerstruktur – vorher gab es hier, in CLAUDE.md und
+in REPOSITORY_STRUCTURE.md drei unterschiedliche Vorschläge).
 
 ---
 

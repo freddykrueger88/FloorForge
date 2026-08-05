@@ -4,6 +4,11 @@
 
 ## Deployment-, Hosting- und Betriebsstrategie
 
+> Zusammengeführt aus DEPLOYMENT.md und DEPLOYMENT_AND_HOSTING.md
+> (beide Dokumente deckten denselben Inhalt mit fast identischer
+> Struktur ab) im Zuge der Dokument-Konsolidierung nach der
+> Projektanalyse.
+
 ---
 
 # 1. Ziel
@@ -16,6 +21,7 @@ Unterstützte Szenarien:
 * eigener Vereinsserver
 * private Cloud
 * öffentliche Hosting-Umgebung
+* gemeinschaftliches Hosting mehrerer Vereine (mit sauberer Datentrennung)
 
 ---
 
@@ -28,444 +34,301 @@ Der Betrieb folgt diesen Regeln:
 * transparente Infrastruktur
 * sichere Updates
 * einfache Wiederherstellung
+* Open Source, EU-Datenschutz, Portabilität
 
 ---
 
-# 3. Betriebsmodelle
+# 3. Hosting-Philosophie
+
+Die Plattform darf nicht von einem einzelnen Anbieter abhängig sein.
+
+Ziele: Self Hosting möglich, Anbieterwechsel möglich, offene Standards.
+
+---
+
+# 4. Betriebsmodelle
 
 ## Modell A – Lokaler Betrieb
 
-Geeignet für:
-
-* Entwicklung
-* kleine Vereine
-* Tests
-
-Beispiel:
+Geeignet für: Entwicklung, kleine Vereine, Tests.
 
 ```text
-Trainer-PC
-
-↓
-
-Docker Umgebung
-
-↓
-
-OpenFloorball
+Trainer-PC → Docker Umgebung → OpenFloorball
 ```
 
 ---
 
 ## Modell B – Vereinsserver
 
-Geeignet für:
-
-* Vereine
-* Schulen
-* Verbände
-
-Beispiel:
+Geeignet für: Vereine, Schulen, Verbände, Akademien. Ein Verein betreibt seine eigene Instanz.
 
 ```text
-Verein
-
-↓
-
-eigener Server
-
-↓
-
-OpenFloorball
-
-↓
-
-eigene Daten
+Verein → eigener Server → OpenFloorball → eigene Daten
 ```
 
 ---
 
-## Modell C – Managed Hosting
+## Modell C – Managed / Gemeinschaftliches Hosting
 
-Geeignet für:
+Geeignet für größere Organisationen, mehrere Teams, mehrere Vereine auf einer Plattform –
+mit sauberer Datentrennung und eigenen Bereichen je Verein.
 
-* größere Organisationen
-* mehrere Teams
-* professionelle Nutzung
-
-Grundregel:
-
-Auch beim Hosting bleiben Datenhoheit und Transparenz erhalten.
+Grundregel: Auch beim Hosting bleiben Datenhoheit und Transparenz erhalten.
 
 ---
 
-# 4. Containerstrategie
+## Modell D – Entwicklerumgebung
 
-Standard:
-
-Docker
+Für Beiträge, Tests, Weiterentwicklung.
 
 ---
 
-Ziel:
+# 5. Containerstrategie
 
-Eine Installation soll reproduzierbar sein.
-
----
-
-Beispiel:
+Standard: Docker. Ziel: Eine Installation soll reproduzierbar sein.
 
 ```text
 docker-compose.yml
-
-|
-
 ├── frontend
-
 ├── backend
-
 ├── database
-
 ├── storage
-
 └── monitoring
 ```
 
----
-
-# 5. Entwicklungsumgebung
-
-Lokaler Start:
-
-Ein Entwickler benötigt:
-
-* Git
-* Docker
-* Node.js
-* Paketmanager
+Das Projekt sollte enthalten: Dockerfile, Compose-Konfiguration, Entwicklungsumgebung.
 
 ---
 
-Ziel:
+# 6. Entwicklungsumgebung
 
-Ein neuer Entwickler kann das Projekt schnell starten.
+Ein Entwickler benötigt: Git, Docker, Node.js, Paketmanager.
+
+Ein neuer Entwickler sollte:
+
+1. Repository klonen
+2. Umgebung starten
+3. Tests ausführen
+4. Änderung machen können
 
 ---
 
-# 6. Umgebungen
+# 7. Umgebungen
 
 Es gibt mindestens drei Umgebungen:
 
----
-
 ## Development
 
-Für:
-
-* Entwicklung
-* Experimente
-
----
+Für Entwicklung, Experimente.
 
 ## Testing
 
-Für:
-
-* automatische Tests
-* Qualitätssicherung
-
----
+Für automatische Tests, Qualitätssicherung.
 
 ## Production
 
-Für:
-
-* echte Nutzer
-* echte Daten
+Für echte Nutzer, echte Daten.
 
 ---
 
-# 7. Konfiguration
+# 8. Konfiguration
 
-Keine geheimen Daten im Code.
+Keine geheimen Daten im Code (nicht: Passwörter, API-Schlüssel, Tokens im Repository).
 
-Nicht:
-
-```text
-Passwörter im Repository
-```
+Verwenden: Environment Variables, Secret Management.
 
 ---
 
-Verwenden:
+# 9. Datenbankbetrieb
 
-* Environment Variables
-* Secret Management
+Standard: PostgreSQL.
 
----
-
-# 8. Datenbankbetrieb
-
-Standard:
-
-PostgreSQL
+Anforderungen: regelmäßige Backups, Migrationen, Verschlüsselung, Zugriffskontrolle, sichere Updates.
 
 ---
 
-Anforderungen:
+# 10. Dateispeicher
 
-* regelmäßige Backups
-* Migrationen
-* Verschlüsselung
-* Zugriffskontrolle
+Für Bilder, Videos, Dokumente.
 
----
-
-# 9. Backup-Strategie
-
-Backups müssen enthalten:
-
-* Datenbank
-* Benutzerinhalte
-* Taktiken
-* Trainingsdaten
-* Medien
+Anforderungen: Zugriffskontrolle, Löschbarkeit, Größenlimits.
 
 ---
 
-Backup-Regeln:
+# 11. EU-Hosting
 
-* automatisiert
-* verschlüsselt
-* regelmäßig getestet
+Bevorzugen: Rechenzentren innerhalb der EU, transparente Datenschutzbedingungen.
+
+Vor Nutzung prüfen: Auftragsverarbeitung, Sicherheitsstandards, Datenstandort.
 
 ---
 
-# 10. Wiederherstellung
+# 12. Backup-Strategie
+
+Backups müssen enthalten: Datenbank, Benutzerinhalte, Taktiken, Trainingsdaten, Medien, Konfiguration.
+
+Backup-Regeln: automatisiert, verschlüsselt, regelmäßig getestet.
+
+---
+
+# 13. Wiederherstellung
 
 Ein Backup ist nur wertvoll, wenn es zurückgespielt werden kann.
 
-Regel:
-
-Recovery-Prozesse regelmäßig testen.
+Regelmäßig testen: Datenbank-Restore, Dateiwiederherstellung, Systemstart.
 
 ---
 
-# 11. Updates
-
-Updates müssen sicher erfolgen.
-
-Ablauf:
+# 14. Updates
 
 ```text
-Neue Version
+Neue Version → Tests → Backup → Update → Kontrolle
+```
 
-↓
+Updates müssen nachvollziehbar, sicher und rücksetzbar sein.
 
-Tests
+---
 
-↓
+# 15. Versionierung
 
-Backup
+Semantic Versioning, z.B. `1.4.2` = Major.Minor.Patch
 
-↓
+---
 
-Update
+# 16. Release-Prozess
 
-↓
-
-Kontrolle
+```text
+Entwicklung → Tests → Release Candidate → Veröffentlichung
 ```
 
 ---
 
-# 12. Versionierung
+# 17. Monitoring
 
-Verwenden:
+Beobachten: Systemzustand, Fehler, Geschwindigkeit, Speicher, Verfügbarkeit, Ladezeiten, Datenbankleistung.
 
-Semantic Versioning
-
-Beispiel:
-
-```text
-1.4.2
-```
-
-Bedeutung:
-
-Major.Minor.Patch
+Nicht überwachen: Trainingsverhalten, persönliche Aktivitäten, unnötige Nutzerdaten.
 
 ---
 
-# 13. Monitoring
+# 18. Logging
 
-Monitoring soll technische Probleme erkennen.
+Logs enthalten nur notwendige technische Informationen (Ereignisse, Fehler, Systeminformationen).
 
-Beobachten:
-
-* Systemzustand
-* Fehler
-* Geschwindigkeit
-* Speicher
+Keine Speicherung von: Passwörtern, privaten Inhalten, unnötigen Personeninformationen.
 
 ---
 
-Nicht überwachen:
+# 19. Datenschutz im Betrieb
 
-* Trainingsverhalten
-* persönliche Aktivitäten
-* unnötige Nutzerdaten
+Pflichten: Datenminimierung, Löschbarkeit, Zugriffskontrolle, Transparenz.
 
----
-
-# 14. Logging
-
-Logs enthalten nur notwendige Informationen.
-
-Keine Speicherung von:
-
-* Passwörtern
-* privaten Inhalten
-* unnötigen Personeninformationen
+Administratoren müssen wissen: welche Daten existieren, wo sie liegen, wie sie gelöscht werden.
 
 ---
 
-# 15. Datenschutz im Betrieb
+# 20. Rechteverwaltung
 
-Pflichten:
+Zugriffe nach Prinzip "Nur was notwendig ist":
 
-* Datenminimierung
-* Löschbarkeit
-* Zugriffskontrolle
-* Transparenz
-
----
-
-# 16. Rechteverwaltung
-
-Zugriffe nach Prinzip:
-
-"Nur was notwendig ist."
+* Trainer: eigene Teams, eigene Inhalte
+* Administrator: Verwaltung
+* Spieler: freigegebene Inhalte
 
 ---
 
-Beispiele:
+# 21. Sicherheit im Betrieb
 
-Trainer:
-
-* eigene Teams
-* eigene Inhalte
-
-Administrator:
-
-* Verwaltung
-
-Spieler:
-
-* freigegebene Inhalte
+Regelmäßig: Updates einspielen, Abhängigkeiten prüfen, Berechtigungen/Zugriffe kontrollieren, Konfiguration prüfen.
 
 ---
 
-# 17. Sicherheit
+# 22. Skalierung
 
-Regelmäßige Prüfungen:
+Nicht früh überdimensionieren. Start: eine stabile Anwendung.
 
-* Abhängigkeiten
-* Sicherheitsupdates
-* Berechtigungen
-* Konfiguration
+Später: mehrere Instanzen, Caching, verteilte Systeme.
 
 ---
 
-# 18. Skalierung
-
-Nicht früh überdimensionieren.
-
-Start:
-
-eine stabile Anwendung.
-
----
-
-Später:
-
-* mehrere Instanzen
-* Caching
-* verteilte Systeme
-
----
-
-# 19. Offline First
-
-Besonderer Fokus:
+# 23. Offline First
 
 Sportumgebungen haben nicht immer perfekte Verbindung.
 
-Unterstützen:
-
-* lokale Speicherung
-* Synchronisation
-* Konfliktlösung
+Unterstützen: lokale Speicherung, Synchronisation, Konfliktlösung.
 
 ---
 
-# 20. Export und Migration
+# 24. Export und Migration
 
 Ein Nutzer muss seine Daten jederzeit mitnehmen können.
 
-Unterstützen:
-
-* kompletter Export
-* offene Formate
-* Import in andere Systeme
+Unterstützen: kompletter Export, offene Formate, Import in andere Systeme.
 
 ---
 
-# 21. Abhängigkeiten
+# 25. Lizenzierung
 
-Externe Dienste werden dokumentiert.
-
-Für jede Abhängigkeit prüfen:
-
-* Lizenz
-* Datenschutz
-* Verfügbarkeit
-* Alternative
+Die Software benötigt: klare Open-Source-Lizenz, dokumentierte Beiträge, transparente Regeln.
 
 ---
 
-# 22. Disaster Recovery
+# 26. Abhängigkeiten
 
-Für kritische Systeme:
-
-Dokumentieren:
-
-* Wiederherstellung
-* Verantwortlichkeiten
-* Notfallmaßnahmen
+Für jede externe Abhängigkeit/jeden externen Dienst prüfen: Lizenz, Datenschutz, Wartungsstatus, Verfügbarkeit, Alternative.
 
 ---
 
-# 23. Hosting-Grundsatz
+# 27. Cloud-Dienste
+
+Vor Nutzung eines Cloud-Dienstes prüfen:
+
+* Brauchen wir den Dienst wirklich?
+* Gibt es eine offene Alternative?
+* Werden Daten übertragen – wohin?
+
+---
+
+# 28. Disaster Recovery
+
+Für kritische Systeme dokumentieren: Wiederherstellung, Verantwortlichkeiten, Notfallmaßnahmen.
+
+---
+
+# 29. Dokumentation
+
+Bereitstellen: Installationsanleitung, Update-Anleitung, Backup-Anleitung, Entwicklerdokumentation.
+
+---
+
+# 30. Hosting-Grundsatz
 
 Die Plattform darf nicht nur funktionieren, wenn ein einzelner Anbieter existiert.
 
 ---
 
-# 24. Claude-Code-Regeln
+# 31. Zukunftssicherheit
 
-Bei jeder Infrastrukturänderung prüfen:
-
-1. Ist Self Hosting weiterhin möglich?
-2. Werden Daten minimiert?
-3. Sind Backups vorhanden?
-4. Ist die Änderung dokumentiert?
-5. Kann ein anderer Entwickler sie verstehen?
+Architektur vermeiden: proprietäre Datenformate, Anbieterabhängigkeiten, geschlossene Systeme.
 
 ---
 
-# 25. Leitgedanke
+# 32. Claude-Code-Regeln
+
+Bei jeder Infrastruktur-/Deployment-Änderung prüfen:
+
+1. Ist Self Hosting weiterhin möglich?
+2. Werden Daten minimiert/geschützt?
+3. Sind Backups vorhanden?
+4. Ist die Änderung dokumentiert?
+5. Können Nutzer migrieren?
+6. Werden offene Standards genutzt?
+7. Kann ein anderer Entwickler sie verstehen?
+
+---
+
+# 33. Leitgedanke
 
 Eine gute Plattform ist nicht nur eine Anwendung.
 
-Sie ist ein System, das auch nach Jahren zuverlässig, sicher und unabhängig betrieben werden kann.
+Sie ist ein System, das auch nach Jahren zuverlässig, sicher und unabhängig betrieben werden kann – und das nicht nur denen gehört, die es entwickeln, sondern auch denen, die es betreiben und nutzen.

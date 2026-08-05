@@ -234,24 +234,8 @@ Danach folgen die Installationsschritte der jeweiligen Entwicklungsumgebung.
 
 # Projektstruktur
 
-```text
-OpenFloorball/
-
-├── apps/
-
-├── packages/
-
-├── database/
-
-├── docs/
-
-├── examples/
-
-├── tests/
-
-└── infrastructure/
-
-```
+Die kanonische, detaillierte Ordnerstruktur steht in
+`docs/planning/REPOSITORY_STRUCTURE.md`.
 
 ---
 

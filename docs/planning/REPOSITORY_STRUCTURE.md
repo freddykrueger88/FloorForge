@@ -443,16 +443,15 @@ Die wichtigsten Dateien für Claude Code:
 Priorität:
 
 ```text
-1. CLAUDE_CODE_MASTER_PROMPT.md
+1. CLAUDE.md (Projekt-Root – wird automatisch geladen, einzige
+   verbindliche Arbeitsanweisung nach Konsolidierung der vormals vier
+   separaten Claude-Code-Dokumente)
 
-2. CLAUDE_CODE_RULES.md
+2. README.md
 
-3. README.md
+3. docs/
 
-4. docs/
-
-5. Tests
-
+4. Tests
 ```
 
 ---

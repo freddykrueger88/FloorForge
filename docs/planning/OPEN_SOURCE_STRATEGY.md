@@ -2,13 +2,22 @@
 
 # OpenFloorball Coach Platform
 
-## Open-Source-Strategie und Community-Modell
+## Open-Source-Strategie, Governance und Projektorganisation
+
+> Zusammengeführt aus OPEN_SOURCE_STRATEGY.md und
+> OPEN_SOURCE_GOVERNANCE.md im Zuge der Dokument-Konsolidierung nach
+> der Projektanalyse. Die beiden Dokumente hatten leicht
+> unterschiedliche Maintainer-Hierarchien (3-stufig "Core Maintainer/
+> Domain Maintainer/Community Contributor" vs. 4-stufig "Community →
+> Contributor → Maintainer → Core Team") – aufgelöst zugunsten der
+> klareren 4-stufigen Aufstiegs-Pipeline, mit "Domain Maintainer" als
+> Spezialisierung innerhalb der Maintainer-Stufe.
 
 ---
 
 # 1. Grundidee
 
-OpenFloorball Coach wird als offene Plattform entwickelt.
+OpenFloorball Coach wird als offene Plattform entwickelt, die langfristig als offenes Projekt bestehen soll.
 
 Offen bedeutet:
 
@@ -17,36 +26,37 @@ Offen bedeutet:
 * transparente Entwicklung
 * nachvollziehbare Entscheidungen
 * gemeinschaftliche Verbesserung
+* nachhaltige Pflege
 
 ---
 
-# 2. Warum Open Source?
+# 2. Grundprinzipien
 
-Open Source passt zur Vision der Plattform.
+Das Projekt basiert auf:
 
-Vorteile:
+* Offenheit
+* Respekt
+* Transparenz
+* technischer Qualität
+* gemeinsamer Verantwortung
+
+Projektwerte: Wissen teilen, Vereine stärken, Nachwuchs fördern, digitale Selbstbestimmung.
+
+---
+
+# 3. Warum Open Source?
 
 ## Vertrauen
 
-Nutzer können nachvollziehen:
+Nutzer können nachvollziehen, wie Daten verarbeitet werden, welche Funktionen existieren, welche Technologien genutzt werden.
 
-* wie Daten verarbeitet werden
-* welche Funktionen existieren
-* welche Technologien genutzt werden
+## Nachhaltigkeit / keine Abhängigkeit von Einzelpersonen
 
----
-
-## Nachhaltigkeit
-
-Die Plattform hängt nicht ausschließlich von einem Unternehmen ab.
-
----
+Die Plattform hängt nicht ausschließlich von einem Unternehmen, einer Person oder einem einzelnen Verein ab.
 
 ## Gemeinschaft
 
 Trainer, Vereine und Entwickler können gemeinsam verbessern.
-
----
 
 ## Innovation
 
@@ -54,359 +64,214 @@ Neue Ideen können schneller entstehen.
 
 ---
 
-# 3. Lizenzstrategie
-
-Empfohlene Basis:
+# 4. Lizenzstrategie
 
 ## Software
 
-Eine Open-Source-Lizenz wird verwendet.
+Eine Open-Source-Lizenz wird verwendet. Mögliche Optionen: AGPLv3, GPLv3, Apache License 2.0, MIT License.
 
-Mögliche Optionen:
+Die endgültige Entscheidung benötigt Prüfung hinsichtlich: Community-Ziele, kommerzielle Nutzung, Schutz vor proprietären Ablegern.
 
-* AGPLv3
-* GPLv3
-* Apache License 2.0
-* MIT License
+Ziele der Lizenz: freie Nutzung ermöglichen, Beiträge schützen, Offenheit erhalten.
 
----
+## Inhalte und Code trennen
 
-Die endgültige Entscheidung benötigt Prüfung hinsichtlich:
+Softwarelizenz ≠ Inhaltslizenz. Beispiel: Code unter Open-Source-Lizenz, Taktiken/Übungen unter separater Inhaltslizenz.
 
-* Community-Ziele
-* kommerzielle Nutzung
-* Schutz vor proprietären Ablegern
+## Daten gehören den Nutzern
 
----
-
-# 4. Daten gehören den Nutzern
-
-Die Softwarelizenz und die Datenhoheit sind getrennte Themen.
-
-Grundsatz:
-
-Der Nutzer besitzt seine Inhalte.
-
-Dazu gehören:
-
-* Taktiken
-* Übungen
-* Trainingspläne
-* Analysen
-* Vereinswissen
+Die Softwarelizenz und die Datenhoheit sind getrennte Themen. Der Nutzer besitzt seine Inhalte (Taktiken, Übungen, Trainingspläne, Analysen, Vereinswissen).
 
 ---
 
 # 5. Offene Datenformate
 
-Vermeiden:
+Vermeiden: Daten nur innerhalb der Plattform nutzbar machen.
 
-Daten nur innerhalb der Plattform nutzbar machen.
-
----
-
-Unterstützen:
-
-* JSON
-* CSV
-* offene Standards
+Unterstützen: JSON, CSV, offene Standards.
 
 ---
 
-# 6. Repository-Struktur
+# 6. Projektstruktur / Rollen-Hierarchie
 
-Öffentlich nachvollziehbar:
-
-```text id="xv18fm"
-
-/
-
-├── src
-
-├── docs
-
-├── architecture
-
-├── decisions
-
-├── tests
-
-├── examples
-
-└── community
-
+```text
+Community
+  ↓
+Contributor
+  ↓
+Maintainer
+  ↓
+Core Team
 ```
 
----
+## Community
 
-# 7. Entwicklung öffentlich gestalten
+Können: Ideen einbringen, Fehler melden, Dokumentation verbessern, Inhalte teilen.
 
-Mögliche öffentliche Bereiche:
+## Contributor
 
-## Issues
+Leisten aktive Beiträge: Code, Übersetzungen, Designs, Tests, Floorball-Wissen.
 
-Für:
+## Maintainer
 
-* Fehler
-* Ideen
-* Diskussionen
+Verantworten: Qualität, Reviews, Releases, technische Richtung. Innerhalb dieser Stufe gibt es fachliche Spezialisierung als **Domain Maintainer** – Experten für Floorball, UX, Datenschutz oder KI, die nicht zwingend für die gesamte Architektur verantwortlich sind.
 
----
+## Core Team
 
-## Discussions
-
-Für:
-
-* Architekturfragen
-* neue Konzepte
-* Community-Austausch
+Entscheidet über: Architektur, langfristige Strategie, wichtige Änderungen.
 
 ---
 
-## Roadmap
+# 7. Entscheidungsprozesse
 
-Öffentlich sichtbar.
+Entscheidungen sollen nachvollziehbar, dokumentiert und offen diskutierbar sein.
+
+Größere technische Entscheidungen benötigen ein Dokument:
+
+```text
+Problem → Optionen → Bewertung → Entscheidung
+```
+
+(siehe ADR-Format in DECISIONS.md)
 
 ---
 
 # 8. Beitragsmodell
 
-Beiträge können sein:
+* Entwickler: Code, Tests, Architektur
+* Trainer: Anforderungen, Feedback, Übungen, Taktiken
+* Designer: UX, Grafiken, Bedienkonzepte
+* Übersetzer: Sprache, Fachbegriffe
 
-## Entwickler
-
-* Code
-* Tests
-* Architektur
-
----
-
-## Trainer
-
-* Anforderungen
-* Feedback
-* Übungen
-* Taktiken
+Jeder Beitrag sollte verständlich, getestet und dokumentiert sein.
 
 ---
 
-## Designer
+# 9. Umgang mit Beiträgen / Feature-Anfragen
 
-* UX
-* Grafiken
-* Bedienkonzepte
+Jeder Beitrag bzw. jede neue Idee wird bewertet nach:
 
----
-
-## Übersetzer
-
-* Sprache
-* Fachbegriffe
-
----
-
-# 9. Maintainer-Modell
-
-Ein gesundes Projekt benötigt klare Verantwortung.
-
----
-
-Rollen:
-
-## Core Maintainer
-
-Verantwortlich für:
-
-* Architektur
-* Releases
-* Qualität
-
----
-
-## Domain Maintainer
-
-Experten für:
-
-* Floorball
-* UX
-* Datenschutz
-* KI
-
----
-
-## Community Contributor
-
-Beitragende ohne dauerhafte Verantwortung.
-
----
-
-# 10. Entscheidungsprozesse
-
-Entscheidungen sollen transparent sein.
-
-Große Änderungen benötigen:
-
-* Diskussion
-* Begründung
-* ADR
-
----
-
-# 11. Umgang mit Beiträgen
-
-Jeder Beitrag wird bewertet nach:
-
-1. Nutzerwert
-2. Qualität
+1. Nutzerwert / Nutzen
+2. Qualität / Aufwand
 3. Sicherheit
 4. Datenschutz
 5. Wartbarkeit
 
----
-
-# 12. Community-Kultur
-
-Grundregeln:
-
-Wir diskutieren Ideen.
-
-Wir respektieren Menschen.
+Nicht jede Idee wird umgesetzt – Frage: Verbessert es wirklich Training oder Vereinsarbeit? (keine Feature-Überladung)
 
 ---
 
-Nicht akzeptiert:
+# 10. Pull Requests und Code Review
 
-* persönliche Angriffe
-* Diskriminierung
-* absichtliche Sabotage
-* Missbrauch
+Ein Pull Request benötigt: Beschreibung, Begründung, Tests, mögliche Auswirkungen.
 
----
+Code Review prüft: Funktion, Sicherheit, Datenschutz, Architektur, Wartbarkeit.
 
-# 13. Dokumentation als Pflicht
+Branch-Strategie:
 
-Ein Open-Source-Projekt lebt von Dokumentation.
-
-Pflicht:
-
-* Installation
-* Entwicklung
-* Architektur
-* Beiträge
-* Nutzung
+```text
+main → development → feature branches
+```
 
 ---
 
-# 14. Beispiele und Vorlagen
+# 11. Dokumentationspflicht
 
-Die Community soll Inhalte teilen können.
+Ein Open-Source-Projekt lebt von Dokumentation. Pflicht: Installation, Entwicklung, Architektur, Beiträge, Nutzung.
 
-Beispiele:
-
-* Trainingsübungen
-* Taktikvorlagen
-* Standardsituationen
+Neue Funktionen benötigen: technische Dokumentation, Nutzerbeschreibung, gegebenenfalls Beispiele.
 
 ---
 
-Dabei beachten:
+# 12. Beispiele und Vorlagen
 
-* Urheberrechte
-* Datenschutz
-* Einwilligungen
+Die Community soll Inhalte teilen können (Trainingsübungen, Taktikvorlagen, Standardsituationen).
 
----
-
-# 15. Kommerzielle Nutzung
-
-Open Source bedeutet nicht automatisch kostenloser Betrieb.
-
-Mögliche Modelle:
-
-## Support
-
-* Vereine
-* Verbände
-* Bildungseinrichtungen
+Dabei beachten: Urheberrechte, Datenschutz, Einwilligungen.
 
 ---
 
-## Hosting
+# 13. Community-Kultur und Code of Conduct
 
-Optional:
+Grundregeln: Wir diskutieren Ideen, wir respektieren Menschen, respektvolle Kommunikation, konstruktive Kritik, faire Zusammenarbeit.
 
-* verwaltete Instanzen
-* professionelle Services
+Nicht akzeptiert: persönliche Angriffe, Diskriminierung, Belästigung, absichtliche Sabotage, Missbrauch der Plattform.
 
----
-
-## Entwicklungspartnerschaften
-
-Mit:
-
-* Verbänden
-* Vereinen
-* Bildungspartnern
+(vollständiger Verhaltenskodex siehe CODE_OF_CONDUCT.md)
 
 ---
 
-# 16. Keine Datenmonetarisierung
+# 14. Datenschutz in der Community
 
-Grundsatz:
+Offene Entwicklung bedeutet nicht offene persönliche Daten.
 
-Nutzerdaten werden nicht verkauft.
-
-Keine:
-
-* Werbeprofile
-* versteckte Datenanalyse
-* Weitergabe ohne Zustimmung
+Schutz: keine privaten Nutzerdaten im Repository, keine echten Spielerinformationen in Tests.
 
 ---
 
-# 17. Langfristige Nachhaltigkeit
+# 15. Sicherheit melden
 
-Das Projekt benötigt:
+Sicherheitsprobleme nicht öffentlich veröffentlichen.
 
-* aktive Maintainer
-* klare Finanzierung
-* gute Dokumentation
-* stabile Architektur
-
----
-
-# 18. Community-getriebene Entwicklung
-
-Neue Funktionen entstehen durch:
-
-* echte Probleme
-* Trainerfeedback
-* technische Möglichkeiten
-
-Nicht durch:
-
-* kurzfristige Trends
+```text
+Meldung → Prüfung → Behebung → Veröffentlichung
+```
 
 ---
 
-# 19. Vision
+# 16. Roadmap-Entwicklung
 
-OpenFloorball Coach soll zeigen:
-
-Eine moderne Sportplattform kann gleichzeitig sein:
-
-* leistungsfähig
-* offen
-* sicher
-* datenschutzfreundlich
-* gemeinschaftlich
+Die Community kann mitgestalten, aber die Strategie bleibt nachvollziehbar und transparent dokumentiert.
 
 ---
 
-# 20. Leitgedanke
+# 17. Kommerzielle Nutzung und Finanzierung
 
-Der Code gehört der Community.
+Open Source bedeutet nicht automatisch kostenloser Betrieb. Mögliche Modelle:
 
-Das Wissen gehört den Trainern.
+* Support für Vereine, Verbände, Bildungseinrichtungen
+* Hosting (verwaltete Instanzen, professionelle Services)
+* Entwicklungspartnerschaften mit Verbänden, Vereinen, Bildungspartnern
+* Spenden, Förderungen, Vereinsunterstützung
 
-Die Kontrolle bleibt bei den Nutzern.
+Nicht: Verkauf persönlicher Daten, verstecktes Tracking, Werbeprofile, Datenweitergabe ohne Zustimmung.
+
+---
+
+# 18. Community-Wissen
+
+Floorball-Fachwissen ist wertvoll. Daher: Autoren sichtbar machen, Quellen respektieren, Lizenzen beachten.
+
+---
+
+# 19. Langfristige Nachhaltigkeit
+
+Das Projekt benötigt: aktive Maintainer, klare Finanzierung, gute Dokumentation, stabile Architektur, stabile Releases, aktive Community, einfache Mitarbeit.
+
+Neue Funktionen entstehen durch echte Probleme, Trainerfeedback, technische Möglichkeiten – nicht durch kurzfristige Trends.
+
+---
+
+# 20. Claude-Code-Regeln
+
+Bei Projektentscheidungen prüfen:
+
+1. Unterstützt es Offenheit?
+2. Ist es langfristig wartbar?
+3. Gibt es eine Community-Perspektive?
+4. Werden Nutzerrechte respektiert?
+5. Vermeidet es Abhängigkeiten?
+
+---
+
+# 21. Vision
+
+OpenFloorball Coach soll zeigen: Eine moderne Sportplattform kann gleichzeitig leistungsfähig, offen, sicher, datenschutzfreundlich und gemeinschaftlich sein.
+
+---
+
+# 22. Leitgedanke
+
+Der Code gehört der Community. Das Wissen gehört den Trainern. Die Kontrolle bleibt bei den Nutzern.
+
+Open Source bedeutet nicht nur, Code sichtbar zu machen – es bedeutet, gemeinsam Verantwortung zu übernehmen.

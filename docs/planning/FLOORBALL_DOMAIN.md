@@ -2,7 +2,12 @@
 
 # OpenFloorball Coach Platform
 
-## Fachkonzept Floorball / Unihockey
+## Fachkonzept und Fachmodell für Floorball, Unihockey und Unihoc
+
+> Zusammengeführt aus FLOORBALL_DOMAIN.md und FLOORBALL_DOMAIN_MODEL.md
+> im Zuge der Dokument-Konsolidierung nach der Projektanalyse – beide
+> behandelten dieselben sportfachlichen Grundlagen mit unterschiedlicher
+> Struktur und teils unterschiedlichem Fokus, ohne sich zu widersprechen.
 
 ---
 
@@ -10,7 +15,12 @@
 
 Dieses Dokument beschreibt die sportfachlichen Grundlagen der Plattform.
 
-Die Software soll die Denkweise von Floorball-Trainern unterstützen.
+Die Software soll die Denkweise von Floorball-Trainern unterstützen und nicht nur Objekte auf einem Spielfeld abbilden, sondern:
+
+* Spielideen
+* taktische Prinzipien
+* Trainingslogik
+* Coachingwissen
 
 Technische Entscheidungen müssen die Realität des Sports berücksichtigen.
 
@@ -18,16 +28,16 @@ Technische Entscheidungen müssen die Realität des Sports berücksichtigen.
 
 # 2. Sportverständnis
 
-Floorball ist ein schneller Teamsport mit:
+Floorball ist ein schneller, dynamischer, räumlicher, entscheidungsorientierter Teamsport mit:
 
 * hoher Dynamik
 * schnellen Umschaltmomenten
 * kleinen Entscheidungsfenstern
 * komplexen Raumaufteilungen
 
-Ein gutes Coaching-Werkzeug muss deshalb nicht nur Positionen darstellen.
+Ein gutes Coaching-Werkzeug muss deshalb nicht nur Positionen darstellen, sondern Bewegungen, Räume, Beziehungen und Entscheidungen abbilden.
 
-Es muss Bewegungen, Räume und Entscheidungen abbilden.
+Eine Spielsituation besteht aus: **Raum + Spieler + Ball + Zeit + Entscheidung + Ziel**.
 
 ---
 
@@ -35,477 +45,253 @@ Es muss Bewegungen, Räume und Entscheidungen abbilden.
 
 Das System muss ein standardisiertes Floorballfeld abbilden.
 
-Grundelemente:
-
-* Spielfeldgrenzen
-* Tore
-* Torraum
-* Schutzzone
-* Mittellinie
-* Ecken
-* Wechselzonen
+Grundelemente: Spielfeldgrenzen/Bande, Tore, Torraum, Schutzzone/Schusszonen, Mittellinie, Ecken, Wechselzonen, Freiräume, gefährliche Räume.
 
 ---
 
 # 4. Spielerrollen
 
-Ein Spieler ist mehr als eine Position.
-
-Das System unterscheidet:
-
----
+Ein Spieler ist mehr als eine Position. Grundrollen:
 
 ## Torhüter
 
-Aufgaben:
-
-* Raumverteidigung
-* Spielaufbau
-* Kommunikation
-* erste Spieleröffnung
-
----
+Aufgaben: Raumverteidigung/Torverteidigung, Spielaufbau, Kommunikation, erste Spieleröffnung.
 
 ## Verteidiger
 
-Aufgaben:
-
-* Aufbau
-* Absicherung
-* Zweikämpfe
-* Passlinien kontrollieren
-
----
+Aufgaben: Aufbau, Absicherung, Zweikämpfe, Passlinien kontrollieren, Raumkontrolle.
 
 ## Center
 
-Aufgaben:
+Aufgaben: Verbindung zwischen Linien, Raumkontrolle, Spielsteuerung, Umschalten.
 
-* Verbindung zwischen Linien
-* Raumkontrolle
-* Umschalten
+## Stürmer / Flügelspieler
 
----
+Aufgaben: Druck erzeugen, Abschlüsse, Räume öffnen, Breite geben, Pressing.
 
-## Stürmer
+## Position ist nicht Rolle
 
-Aufgaben:
-
-* Druck erzeugen
-* Abschlüsse
-* Räume öffnen
+Wichtig: Ein Spieler steht nicht nur an einem Punkt. Eine Position bedeutet aktueller Raum, Aufgabe und Entscheidungsmöglichkeit.
 
 ---
 
 # 5. Formationen
 
-Das System soll Formationen darstellen können.
-
-Beispiele:
+Das System soll Formationen darstellen können, z.B.:
 
 ## 2-1-2
 
-Klassische offensive Struktur.
-
-Eigenschaften:
-
-* zwei Verteidiger
-* zentraler Spieler
-* zwei Angreifer
-
----
+Klassische offensive Struktur: zwei Verteidiger, zentraler Spieler, zwei Angreifer.
 
 ## 2-2-1
 
-Ausgewogene Struktur.
-
-Eigenschaften:
-
-* stabile Absicherung
-* flexible Offensive
-
----
+Ausgewogene Struktur: stabile Absicherung, flexible Offensive.
 
 ## 3-2
 
-Offensive Variante.
-
-Eigenschaften:
-
-* mehr Druck
-* Risiko im Umschalten
+Offensive Variante: mehr Druck, Risiko im Umschalten.
 
 ---
 
-# 6. Spielsituationen
+# 6. Grundprinzipien Offensive
 
-Taktiken sollen Situationen abbilden.
+* **Breite** – Räume öffnen
+* **Tiefe** – Verteidigung auseinanderziehen
+* **Dreiecke** – mehrere Passoptionen erzeugen
+* **Bewegung ohne Ball** – Räume schaffen
+
+Mögliche Elemente im Spielaufbau: erste Linie, Unterstützer, Passdreiecke, Freilaufen.
+
+Angriffssysteme: kontrollierter Aufbau, schnelles Umschalten, Positionsspiel, Rotationen.
 
 ---
+
+# 7. Grundprinzipien Defensive
+
+* **Innenraum schützen** – gefährliche Abschlüsse verhindern
+* **Kommunikation** – gemeinsames Verhalten
+* **Übergeben und Übernehmen** – Gegner kontrollieren
+
+Defensive Konzepte:
+
+* **Mannorientiert** – Spieler verteidigen direkte Gegenspieler
+* **Raumorientiert** – Spieler kontrollieren Räume
+* **Hybrid/Mischformen** – Kombination aus beidem
+
+---
+
+# 8. Spielsituationen
+
+Taktiken sollen Situationen abbilden:
 
 ## Offensive Situationen
 
-Beispiele:
-
-* Spielaufbau
-* Angriffsdrittel
-* Ballbesitz
-* Chancen kreieren
-
----
+Spielaufbau, Angriffsdrittel, Ballbesitz, Chancen kreieren.
 
 ## Defensive Situationen
 
-Beispiele:
+Gegneraufbau, Ballverlust, Rückzug, Verteidigung des Slots.
 
-* Gegneraufbau
-* Ballverlust
-* Rückzug
-* Verteidigung des Slots
+## Umschalten (besonders wichtig)
 
----
+**Ballgewinn** → sofortige Entscheidungen: Konter, Sicherheit, Neuaufbau.
 
-## Umschalten
-
-Besonders wichtig.
-
-Situationen:
-
-* Ballgewinn → Angriff
-* Ballverlust → Verteidigung
+**Ballverlust** → Entscheidungen: sofortiges Pressing, Rückzug, Raum schließen.
 
 ---
 
-# 7. Raumkonzepte
+# 9. Raumkonzepte
 
-Floorball ist stark raumorientiert.
-
-Das System muss unterstützen:
-
-* Zonen
-* Räume
-* Korridore
-* Passlinien
-* Überzahlen
+Floorball ist stark raumorientiert. Das System muss unterstützen: Zonen, Räume, Korridore, Passlinien, Überzahlen.
 
 ---
 
-# 8. Bewegungsarten
+# 10. Bewegungsarten
 
-Bewegungen benötigen Fachbedeutung.
-
----
-
-## Laufweg
-
-Spieler bewegt sich ohne Ball.
+* **Laufweg** – Spieler bewegt sich ohne Ball
+* **Supportbewegung** – Spieler bietet Passoption
+* **Rotation** – Spieler tauschen Positionen
+* **Hinterlaufen** – Spieler erzeugt Raum hinter einem Mitspieler
+* **Schnittbewegung** – Spieler läuft in freien Raum
 
 ---
 
-## Supportbewegung
-
-Spieler bietet Passoption.
-
----
-
-## Rotation
-
-Spieler tauschen Positionen.
-
----
-
-## Hinterlaufen
-
-Spieler erzeugt Raum hinter einem Mitspieler.
-
----
-
-## Schnittbewegung
-
-Spieler läuft in freien Raum.
-
----
-
-# 9. Ballaktionen
-
-Objekte:
-
----
+# 11. Ballaktionen
 
 ## Pass
 
-Eigenschaften:
-
-* Start
-* Ziel
-* Richtung
-* Geschwindigkeit
-
----
+Eigenschaften: Start, Ziel, Richtung, Geschwindigkeit.
 
 ## Schuss
 
-Eigenschaften:
-
-* Position
-* Ziel
-* Abschlussart
-
----
+Eigenschaften: Position, Ziel, Abschlussart.
 
 ## Ballführung
 
-Eigenschaften:
-
-* Raumgewinn
-* Gegnerbindung
+Eigenschaften: Raumgewinn, Gegnerbindung.
 
 ---
 
-# 10. Defensive Konzepte
+# 12. Pressing
 
-Unterstützte Konzepte:
+Pressing ist nicht nur "Angreifen" – es besteht aus Auslöser, Pressingzone/Richtung, Laufwege, Absicherung/Unterstützer.
 
----
+Beispiel-Kette: Auslöser (schlechter erster Kontakt) → Druck erzeugen → Passweg schließen.
 
-## Mannorientiert
+Stufen:
 
-Spieler verteidigen direkte Gegenspieler.
-
----
-
-## Raumorientiert
-
-Spieler kontrollieren Räume.
+* **Hohes Pressing** – Ziel: früher Ballgewinn
+* **Mittleres Pressing** – Ziel: Gegner kontrollieren
+* **Tiefes Verteidigen** – Ziel: Räume schließen
 
 ---
 
-## Hybrid
+# 13. Powerplay
 
-Kombination aus beidem.
+Überzahlspiel (5 gegen 4 oder 6 gegen 5). Benötigt: Überzahlformation/Raumaufteilung, Passwege/Passdreiecke, Rotationen/Bewegung, Abschlussoptionen.
 
----
-
-# 11. Pressing
-
-Pressing ist ein wichtiger Analysebereich.
-
-Das System kann darstellen:
-
-* Auslöser
-* Pressingzone
-* Laufwege
-* Unterstützer
+Beispielformationen: 2-2, 3-1, Diamant.
 
 ---
 
-Beispiele:
+# 14. Boxplay
 
-## Hohes Pressing
-
-Ziel:
-
-Früher Ballgewinn.
+Unterzahlspiel. Darstellung: Blockformation, Zentrum schützen, Verschieben, Pass-/Schusswege schließen, Kommunikation.
 
 ---
 
-## Mittleres Pressing
+# 15. Standardsituationen
 
-Ziel:
-
-Gegner kontrollieren.
+Unterstützen: Freischläge, Bullys, Ecken, Auslösungen.
 
 ---
 
-## Tiefes Verteidigen
+# 16. Torhüterspiel
 
-Ziel:
-
-Räume schließen.
+Eigene Kategorie. Mögliche Inhalte: Stellungsspiel, Auswurf, Kommunikation, Überzahlspiel.
 
 ---
 
-# 12. Powerplay
+# 17. Trainingsmodell und Altersgruppen
 
-Spezielle Spielsituation.
+Trainingsmodell:
 
-Standard:
+```text
+Ziel → Organisation → Übung → Coachingpunkte → Reflexion
+```
 
-5 gegen 4
+Eine Übung sollte speichern können: Ziel, Organisation, Ablauf, Coachingpunkte, Variationen.
 
-oder
+Altersgruppen: Anfänger (Fokus: Technik, Spielverständnis, Spaß), Nachwuchs/Jugend (Fokus: Entscheidungen, Taktik, Entwicklung), Erwachsene/Leistungssport (Fokus: System, Leistung, Analyse).
 
-6 gegen 5
-
----
-
-Das System benötigt:
-
-* Überzahlformation
-* Passwege
-* Rotationen
-* Abschlussoptionen
-
----
-
-Beispiele:
-
-## 2-2 Formation
-
-## 3-1 Formation
-
-## Diamant
-
----
-
-# 13. Boxplay
-
-Unterzahlspiel.
-
-Darstellung:
-
-* Blockformation
-* Verschieben
-* Passwege schließen
-
----
-
-# 14. Standardsituationen
-
-Unterstützen:
-
-* Freischläge
-* Bullys
-* Ecken
-* Auslösungen
-
----
-
-# 15. Torhüterspiel
-
-Eigene Kategorie.
-
-Mögliche Inhalte:
-
-* Stellungsspiel
-* Auswurf
-* Kommunikation
-* Überzahlspiel
-
----
-
-# 16. Nachwuchstraining
-
-Besondere Anforderungen.
-
-Die Plattform soll Altersgruppen berücksichtigen.
-
-Beispiele:
-
-## Anfänger
-
-Fokus:
-
-* Technik
-* Spielverständnis
-* Spaß
-
----
-
-## Jugend
-
-Fokus:
-
-* Entscheidungen
-* Taktik
-* Entwicklung
-
----
-
-## Erwachsene
-
-Fokus:
-
-* System
-* Leistung
-* Analyse
-
----
-
-# 17. Trainingsmethodik
-
-Eine Übung sollte speichern können:
-
-* Ziel
-* Organisation
-* Ablauf
-* Coachingpunkte
-* Variationen
+Entwicklungsprinzip: Eine U10-Taktik ist nicht einfach eine kleinere Erwachsenentaktik. Berücksichtigen: Alter, Erfahrung, Lernziel.
 
 ---
 
 # 18. Coachingpunkte
 
-Trainerwissen ist oft textbasiert.
-
-Unterstützung:
-
-* Hinweise
-* Schlüsselwörter
-* Beobachtungspunkte
+Trainerwissen ist oft textbasiert. Ein Coachingpunkt beschreibt, was der Spieler verstehen soll.
 
 Beispiele:
 
-"Erster Kontakt nach vorne."
-
-"Kopf hoch vor Ballannahme."
-
-"Nach Pass sofort neu anbieten."
-
----
-
-# 19. Analyseprinzip
-
-Analyse soll Fragen beantworten:
-
-Nicht:
-
-"Wie viele Daten haben wir?"
-
-Sondern:
-
-"Was können wir verbessern?"
+* "Erster Kontakt nach vorne."
+* "Kopf hoch vor Ballannahme."
+* "Nach Pass sofort neu anbieten / Raum öffnen."
+* "Erster Blick nach vorne."
 
 ---
 
-# 20. Datenmodell-Erweiterungen
+# 19. Fachsprache
 
-Mögliche zukünftige Objekte:
+Die Plattform verwendet bevorzugt: Ballgewinn, Umschalten, Raum, Passweg, Abschluss. Vermeidet: unnötige Computersprache.
+
+---
+
+# 20. Analyseprinzip
+
+Analyse soll Fragen beantworten – nicht "Wie viele Daten haben wir?", sondern "Was können wir verbessern?".
+
+---
+
+# 21. Datenmodell-Erweiterungen
+
+Mögliche zukünftige fachliche Objekte:
 
 ```text
 TacticalPrinciple
-
 GameSituation
-
 CoachingPoint
-
 PlayerRole
-
 TrainingObjective
-
 DrillVariation
+```
+
+Ein Taktik-Konzept kann darüber hinaus enthalten:
+
+```typescript
+Concept {
+  name
+  category
+  principle
+  coachingPoints[]
+}
 ```
 
 ---
 
-# 21. KI und Floorball-Wissen
+# 22. Keine absolute Wahrheit
 
-KI darf nur auf Grundlage dieses Fachmodells arbeiten.
+Floorball besitzt verschiedene Spielphilosophien. Die Software soll Möglichkeiten zeigen, nicht eine einzige richtige Lösung behaupten.
 
-Sie soll:
+---
+
+# 23. KI und Floorball-Wissen
+
+KI darf nur auf Grundlage dieses Fachmodells arbeiten. Sie soll:
 
 * Trainerbegriffe verstehen
 * taktische Zusammenhänge erkennen
+* erkennen, dass ein Vorschlag von Spielniveau, Altersgruppe und Ziel abhängt
 * passende Vorschläge machen
 
 Sie soll nicht:
@@ -516,23 +302,26 @@ Sie soll nicht:
 
 ---
 
-# 22. Fachliche Qualitätsprüfung
+# 24. Zukunft
 
-Jede neue Funktion prüfen:
-
-1. Passt sie zu Floorball?
-2. Versteht ein Trainer den Nutzen?
-3. Unterstützt sie echte Spielsituationen?
-4. Ist sie einfacher als bestehende Lösungen?
+Mögliche Erweiterungen: Taktikdatenbank, Trainerwissen-Sammlung, Verbandsempfehlungen, Ausbildungsinhalte.
 
 ---
 
-# 23. Leitgedanke
+# 25. Fachliche Qualitätsprüfung / Claude-Code-Regeln
 
-OpenFloorball Coach soll nicht einfach ein digitales Whiteboard sein.
+Bei neuen Floorball-Funktionen prüfen:
 
-Es soll ein digitales Werkzeug für Floorball-Denken werden.
+1. Ist das ein echtes sportliches Konzept?
+2. Würde ein Trainer diesen Begriff verwenden?
+3. Hilft es beim Lernen? Unterstützt es echte Spielsituationen?
+4. Ist es altersgerecht?
+5. Kann es erklärt werden? Ist es einfacher als bestehende Lösungen?
 
-Die Software bildet nicht nur Bewegungen ab.
+---
 
-Sie bewahrt Wissen.
+# 26. Leitgedanke
+
+OpenFloorball Coach soll nicht einfach ein digitales Whiteboard sein. Es soll ein digitales Werkzeug für Floorball-Denken werden.
+
+Die Software bildet nicht nur Bewegungen ab – sie bewahrt Wissen. Sie soll nicht nur wissen, wo ein Spieler steht, sondern verstehen, warum er dort steht.

@@ -1145,6 +1145,18 @@ Vermeide:
 
 * riesige Umbauten ohne Notwendigkeit
 
+Beispiel für Commit-Nachrichten:
+
+Gut: `Add tactic scene saving`, `Fix offline sync conflict handling`
+
+Schlecht: `changes`
+
+---
+
+# 20.5 Kommentare
+
+Kommentare erklären, warum etwas so funktioniert – nicht, was der Code offensichtlich bereits zeigt.
+
 ---
 
 # 21. Architecture Decision Records (ADR)
@@ -1184,37 +1196,10 @@ Beispiele:
 
 Bevorzuge eine klare Struktur.
 
-Beispiel:
-
-```
-/
-├── CLAUDE.md
-├── README.md
-├── PRODUCT.md
-├── PRINCIPLES.md
-├── ARCHITECTURE.md
-├── PRIVACY.md
-├── SECURITY.md
-├── AI.md
-├── ROADMAP.md
-├── CONTRIBUTING.md
-├── DECISIONS.md
-│
-├── apps/
-│   ├── web/
-│   ├── mobile/
-│   └── desktop/
-│
-├── packages/
-│   ├── ui/
-│   ├── api/
-│   ├── database/
-│   └── shared/
-│
-├── docs/
-│
-└── tests/
-```
+Die verbindliche, detaillierte Ordnerstruktur steht in
+`docs/planning/REPOSITORY_STRUCTURE.md` (einzige kanonische Quelle,
+nach Dokument-Konsolidierung – vorher gab es hier, in GITHUB_SETUP.md
+und in REPOSITORY_STRUCTURE.md drei unterschiedliche Vorschläge).
 
 Die genaue Struktur darf sich ändern, aber die Prinzipien bleiben.
 

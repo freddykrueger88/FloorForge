@@ -1,199 +1,259 @@
-# SECURITY.md
+# PRIVACY.md
 
 # OpenFloorball Coach Platform
 
-## Sicherheitskonzept
+## Datenschutzkonzept, DSGVO-Compliance und Datenmodell für Nutzer
+
+> Zusammengeführt aus PRIVACY_POLICY_AND_DATA_MODEL.md und
+> GDPR_COMPLIANCE.md im Zuge der Dokument-Konsolidierung nach der
+> Projektanalyse. Die ursprüngliche PRIVACY.md wurde entfernt: ihr
+> Inhalt war fälschlich ein Sicherheitskonzept (deckungsgleich mit
+> SECURITY.md/SECURITY_ARCHITECTURE.md) statt Datenschutzinhalt –
+> vermutlich ein Kopierfehler beim Anlegen der Dokumente. Dieses
+> Dokument ist jetzt die korrekt benannte, einzige Quelle für
+> Datenschutz-/DSGVO-Themen.
 
 ---
 
 # 1. Ziel
 
-Die Plattform verarbeitet Trainingsdaten, Vereinswissen und möglicherweise personenbezogene Informationen.
+OpenFloorball verarbeitet Daten nur, wenn dies für den Zweck der Plattform notwendig ist.
 
-Sicherheit ist daher ein Grundbestandteil des Produkts.
+Grundsatz: So wenig Daten wie möglich, so viel Funktionalität wie nötig.
 
----
-
-# 2. Security by Design
-
-Sicherheit wird bereits bei Architekturentscheidungen berücksichtigt.
-
-Nicht:
-
-Feature bauen → Sicherheit nachrüsten
-
-Sondern:
-
-Sicherheit planen → Feature entwickeln
+Die Plattform fragt nicht "Welche Daten können wir sammeln?", sondern "Welche Daten benötigen wir wirklich?".
 
 ---
 
-# 3. Bedrohungsmodell
+# 2. Datenschutzprinzipien (DSGVO Art. 5)
 
-Berücksichtige:
+Die Plattform folgt DSGVO, Privacy by Design, Privacy by Default, Datenminimierung, Transparenz, Nutzerkontrolle. Konkret nach Art. 5 DSGVO:
 
-## Unberechtigter Zugriff
-
-Schutz durch:
-
-* Authentifizierung
-* Rollen
-* Berechtigungen
-
----
-
-## Datenverlust
-
-Schutz durch:
-
-* Backups
-* Wiederherstellung
-* Synchronisation
+* **Rechtmäßigkeit** – jede Verarbeitung benötigt eine nachvollziehbare Grundlage
+* **Zweckbindung** – Daten werden nur für den angegebenen Zweck genutzt
+* **Datenminimierung** – nur notwendige Daten speichern
+* **Richtigkeit** – Nutzer können Daten korrigieren
+* **Speicherbegrenzung** – Daten werden nicht unbegrenzt behalten
+* **Integrität und Vertraulichkeit** – Daten werden geschützt
 
 ---
 
-## Datenlecks
+# 3. Zweck der Datenverarbeitung
 
-Schutz durch:
-
-* Verschlüsselung
-* minimale Datenspeicherung
-* sichere APIs
+Daten werden verarbeitet für: Benutzerverwaltung, Zusammenarbeit innerhalb von Teams, Speicherung von Taktiken, Trainingsplanung, technische Sicherheit.
 
 ---
 
-## Missbrauch von Berechtigungen
+# 4. Dateninventar
 
-Schutz durch:
+Vor jeder neuen Funktion dokumentieren, welche Daten entstehen:
 
-* Least Privilege Prinzip
-* klare Rollen
-* Audit Logs
-
----
-
-# 4. Authentifizierung
-
-Unterstützung:
-
-* sichere Passwörter
-* optionale Mehrfaktor-Authentifizierung
-* sichere Sessionverwaltung
+```text
+Funktion: Trainingsplanung
+Daten: Titel, Beschreibung, Datum
+Personenbezug: möglich
+```
 
 ---
 
-# 5. Autorisierung
+# 5. Nutzergruppen
 
-Jeder Zugriff wird geprüft.
-
-Beispiel:
-
-Ein Spieler darf nicht automatisch:
-
-* Trainerdaten sehen
-* interne Notizen lesen
-* Vereinsverwaltung ändern
+```text
+Administrator → Vereinsverantwortlicher → Trainer → Spieler → Gast/Nutzer
+```
 
 ---
 
-# 6. Verschlüsselung
+# 6. Datenkategorien
 
-Verwende:
+* **Technische Daten** – Version, Gerätestatus, Fehlerinformationen
+* **Kontodaten** – Benutzername, Login-Daten
+* **Vereinsdaten** – Vereinsname, Teamstruktur, Organisationsstruktur
+* **Sportdaten** – Taktiken, Übungen, Trainingspläne
+* **Personenbezogene Daten** – Name, Kontaktinformationen
 
-* sichere Transportverschlüsselung
-* sichere Speicherung sensibler Daten
-
----
-
-# 7. Secrets Management
-
-Keine Secrets im Code.
-
-Nicht erlaubt:
-
-* API Keys im Repository
-* Passwörter in Konfigurationen
-* Tokens in Logs
+Grundsatz der Datentrennung: persönliche Kontodaten, Vereinsdaten, Trainingsdaten und taktische Inhalte werden getrennt gehalten.
 
 ---
 
-# 8. Logging
+# 7. Benutzerdaten
 
-Logs dürfen keine sensiblen Daten enthalten.
+Minimal notwendig: Benutzername, Login-Information, Rolle, technische Sicherheitsinformationen.
 
-Nicht speichern:
-
-* Passwörter
-* private Inhalte
-* unnötige personenbezogene Daten
+Nicht standardmäßig speichern: Adresse, Geburtsdatum, private Telefonnummer, persönliche Leistungsprofile.
 
 ---
 
-# 9. Dependency Security
+# 8. Vereins- und Teamdaten
 
-Regelmäßig prüfen:
+Ein Verein kann speichern: Vereinsname, Teams, Inhalte, Organisationsstruktur.
 
-* Sicherheitsupdates
-* bekannte Schwachstellen
-* veraltete Bibliotheken
+Ein Team kann speichern: Teamname, Altersgruppe, Trainingsinhalte, gemeinsame Ressourcen.
 
 ---
 
-# 10. Open Source Sicherheit
+# 9. Spielerdaten und Nachwuchsbereich
 
-Open Source bedeutet:
+Grundprinzip: so wenig wie möglich. Mögliche Speicherung: Anzeigename, Position, Trainingszuordnung.
 
-Transparenz.
-
-Nicht:
-
-fehlende Sicherheit.
-
-Bevorzuge:
-
-* nachvollziehbaren Code
-* Reviews
-* automatisierte Tests
-* klare Verantwortlichkeiten
+Besondere Vorsicht bei Kindern, Jugendlichen und personenbezogenen Informationen – Regel: keine unnötigen personenbezogenen Daten.
 
 ---
 
-# 11. Backup Konzept
+# 10. Keine unnötigen Spielerprofile
 
-Backups müssen:
-
-* verschlüsselt sein
-* getestet werden
-* wiederherstellbar sein
-
-Ein Backup gilt erst als Backup, wenn Wiederherstellung funktioniert.
+Die Plattform erstellt keine automatischen Leistungsrankings, Talentbewertungen oder Persönlichkeitsprofile, und entscheidet nicht automatisch über Spielerqualität, Talent, Auswahl oder Entwicklungschancen.
 
 ---
 
-# 12. Sicherheitsmeldungen
+# 11. Taktik- und Trainingsdaten
 
-Das Projekt sollte einen klaren Prozess besitzen:
+Taktiken gehören grundsätzlich den Nutzern bzw. Organisationen, die sie erstellen. Gespeichert werden: Positionen, Bewegungen, Beschreibungen, Varianten.
 
-* Sicherheitslücken melden
-* Bewertung durchführen
-* Lösungen veröffentlichen
+Trainingsdaten: Übungen, Trainingspläne, Coachingpunkte.
 
 ---
 
-# 13. Sichere Entwicklung
+# 12. Registrierung und Gastnutzung
 
-Jede Änderung prüfen auf:
+Registrierung nach Minimalprinzip: nur notwendige Informationen (Benutzername, sichere Anmeldung). Nicht automatisch: Geburtsdatum, Adresse, Telefonnummer.
 
-* Datenschutz
-* Berechtigungen
-* Eingabevalidierung
-* Fehlerbehandlung
-* Datenzugriffe
+Wo möglich: Funktionen ohne Konto ermöglichen (z.B. Taktik ansehen, Beispielinhalte testen).
 
 ---
 
-# 14. Grundregel
+# 13. Datenzugriff
 
-Die Plattform schützt nicht nur Daten.
+Zugriff erfolgt nach Rollen, z.B. Trainer darf Team-Inhalte bearbeiten, Spieler darf freigegebene Inhalte ansehen.
 
-Sie schützt das Vertrauen der Trainer und Vereine.
+---
+
+# 14. Einwilligungen
+
+Wenn eine Einwilligung notwendig ist, muss sie freiwillig, verständlich und widerrufbar sein.
+
+---
+
+# 15. Transparenz
+
+Nutzer müssen jederzeit verstehen: welche Daten gespeichert werden, warum, und wie lange.
+
+---
+
+# 16. Nutzerrechte
+
+Die Plattform unterstützt:
+
+* **Auskunft** – welche Daten gespeichert sind
+* **Berichtigung** – Daten ändern
+* **Löschung** – Daten entfernen
+* **Export** – Daten mitnehmen
+* **Einschränkung** – Verarbeitung begrenzen
+
+---
+
+# 17. Löschkonzept
+
+Daten werden nicht unbegrenzt behalten (Aufbewahrung nicht länger als notwendig).
+
+Beim Löschen eines Kontos:
+
+```text
+Konto gelöscht → personenbezogene Daten entfernen → Inhalte prüfen → Besitz übertragen oder löschen
+```
+
+---
+
+# 18. Vereinswechsel
+
+Wichtiger Fall: ein Trainer verlässt den Verein. Zu klären: Wem gehören Taktiken? Was bleibt Vereinswissen? Was darf exportiert werden?
+
+---
+
+# 19. Datenexport
+
+Export muss vollständige Daten in offenen Formaten ermöglichen (JSON, CSV, offene Dokumentformate), ohne künstliche Sperre.
+
+---
+
+# 20. Analyse, Statistik, Cookies und Tracking
+
+Keine versteckte Nutzerüberwachung/-verfolgung. Statistiken bevorzugt anonymisiert und aggregiert.
+
+Grundsatz zu Cookies/Tracking: so wenig wie möglich. Keine Werbeprofile, Tracking-Netzwerke oder unnötigen Cookies/Tracking-Technologien.
+
+---
+
+# 21. Hosting und Drittanbieter
+
+Bevorzugt: EU-Hosting, transparente Anbieter, offene Infrastruktur. Zu prüfen: Auftragsverarbeitung, Speicherort, Sicherheitsmaßnahmen.
+
+Jeder externe Dienst benötigt Prüfung: Brauchen wir ihn wirklich? Welche Daten erhält er? Gibt es eine datenschutzfreundliche Alternative? Nur nutzen, wenn notwendig, datenschutzrechtlich geprüft und transparent dokumentiert.
+
+---
+
+# 22. KI-Verarbeitung und Datenschutz
+
+Vor KI-Verarbeitung prüfen: Welche Daten gehen an das Modell? Ist die Verarbeitung notwendig? Welche Rechtsgrundlage? Gibt es lokale Alternativen?
+
+Nicht ohne klare Grundlage senden: private Spielerdaten, Kinderinformationen, sensible Vereinsdaten.
+
+---
+
+# 23. Datenschutz durch Architektur
+
+Gutes Beispiel: lokale Taktikspeicherung.
+
+Schlechtes Beispiel: jede Bewegung jedes Nutzers zentral speichern.
+
+---
+
+# 24. Privacy Review für neue Funktionen
+
+```text
+Neue Funktion → Datenanalyse → Risiko prüfen → Alternative suchen → Umsetzen
+```
+
+---
+
+# 25. Betreiberpflichten und Dokumentation
+
+Betreiber müssen wissen: welche Daten gespeichert werden, wer Zugriff hat, wie Löschung funktioniert.
+
+Pflicht: Datenfluss, Speicherorte und Verantwortlichkeiten dokumentieren.
+
+---
+
+# 26. Sicherheitsverletzungen
+
+Bei Datenschutzproblemen: erkennen, bewerten, dokumentieren, reagieren.
+
+---
+
+# 27. Open-Source-Transparenz
+
+Offener Code bedeutet, dass Menschen nachvollziehen können, wie Daten verarbeitet werden – das bedeutet aber nicht, persönliche Daten offenzulegen.
+
+---
+
+# 28. Verantwortung
+
+Datenschutz ist nicht nur eine rechtliche Pflicht. Er ist Teil des Vertrauens zwischen Spielern, Trainern, Vereinen und Plattform. Datenschutz ist kein Hindernis für Innovation – er ist die Grundlage für Vertrauen.
+
+---
+
+# 29. Claude-Code-Regeln
+
+Bei jeder neuen Datenfunktion / vor jeder Implementierung prüfen:
+
+1. Ist diese Information / dieser Datenpunkt notwendig?
+2. Gibt es eine weniger sensible / lokale Alternative?
+3. Kann der Nutzer Kontrolle behalten und selbst löschen?
+4. Kann die Information exportiert und gelöscht werden?
+5. Ist Zweck und Verarbeitung dokumentiert?
+
+---
+
+# 30. Leitgedanke
+
+Eine gute Sportplattform sammelt nicht möglichst viele Daten. Sie schützt das Vertrauen der Menschen, die sie nutzen.
