@@ -51,6 +51,21 @@
   text-align: center;
 }
 
+.filterRow {
+  padding: var(--space-3) var(--space-4) 0;
+}
+
+.categorySelect {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-2);
+  color: var(--color-text);
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+
 .list {
   list-style: none;
   padding: var(--space-3) var(--space-4);
@@ -80,12 +95,26 @@
 .boardBtnActive { border-color: var(--color-primary) !important; background: var(--color-primary-highlight) !important; }
 
 .boardName { font-size: var(--text-sm); font-weight: 600; color: var(--color-text); }
+.boardMeta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
 .boardType {
   font-size: var(--text-xs);
   color: var(--color-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
   flex-shrink: 0;
+}
+.categoryBadge {
+  font-size: var(--text-xs);
+  color: var(--color-primary);
+  background: var(--color-primary-highlight);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
 }
 
 .actions {
