@@ -22,6 +22,8 @@ router.get   ('/',     getSessions);
 router.post  ('/',     [
   body('name').trim().notEmpty().withMessage('Name ist erforderlich').isLength({ max: 80 }),
   body('teamId').optional({ nullable: true }).isUUID().withMessage('Ungültige Team-ID'),
+  body('scheduledDate').optional({ nullable: true }).isISO8601().withMessage('Ungültiges Datum').bail().isLength({ max: 10 }),
+  body('goal').optional().isLength({ max: 200 }).withMessage('Ziel max. 200 Zeichen'),
   validate,
 ], createSession);
 router.get   ('/:id',  [idParam, validate], getSession);
@@ -29,6 +31,8 @@ router.put   ('/:id',  [
   idParam,
   body('name').optional().trim().notEmpty().withMessage('Name ist erforderlich').isLength({ max: 80 }),
   body('notes').optional().isLength({ max: 1000 }).withMessage('Notizen max. 1000 Zeichen'),
+  body('scheduledDate').optional({ nullable: true }).isISO8601().withMessage('Ungültiges Datum').bail().isLength({ max: 10 }),
+  body('goal').optional().isLength({ max: 200 }).withMessage('Ziel max. 200 Zeichen'),
   validate,
 ], updateSession);
 router.delete('/:id',  [idParam, validate], deleteSession);

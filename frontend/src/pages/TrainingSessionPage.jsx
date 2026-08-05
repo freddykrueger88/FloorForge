@@ -29,12 +29,14 @@ export default function TrainingSessionPage() {
   const { fetchBoard } = useBoardsApi();
   const { exporting, error: exportError, exportPdf } = usePdfExport();
 
-  const [editingName, setEditingName] = useState(false);
-  const [name,        setName       ] = useState('');
-  const [notes,       setNotes      ] = useState('');
-  const [showPicker,  setShowPicker ] = useState(false);
-  const [adding,      setAdding     ] = useState(false);
-  const [pdfError,    setPdfError   ] = useState(null);
+  const [editingName,   setEditingName  ] = useState(false);
+  const [name,          setName         ] = useState('');
+  const [notes,         setNotes        ] = useState('');
+  const [scheduledDate, setScheduledDate] = useState('');
+  const [goal,          setGoal         ] = useState('');
+  const [showPicker,    setShowPicker   ] = useState(false);
+  const [adding,        setAdding       ] = useState(false);
+  const [pdfError,      setPdfError     ] = useState(null);
   const nameInputRef = useRef(null);
 
   const load = useCallback(async () => {
@@ -44,7 +46,12 @@ export default function TrainingSessionPage() {
   useEffect(() => { load(); }, [load]);
 
   useEffect(() => {
-    if (session) { setName(session.name); setNotes(session.notes ?? ''); }
+    if (session) {
+      setName(session.name);
+      setNotes(session.notes ?? '');
+      setScheduledDate(session.scheduledDate ?? '');
+      setGoal(session.goal ?? '');
+    }
   }, [session]);
 
   useEffect(() => {
@@ -63,6 +70,19 @@ export default function TrainingSessionPage() {
   const commitNotes = async () => {
     if (notes !== (session?.notes ?? '')) {
       try { await updateSession(id, { notes }); } catch { /* error via hook */ }
+    }
+  };
+
+  const commitScheduledDate = async (value) => {
+    setScheduledDate(value);
+    if (value !== (session?.scheduledDate ?? '')) {
+      try { await updateSession(id, { scheduledDate: value === '' ? null : value }); } catch { /* error via hook */ }
+    }
+  };
+
+  const commitGoal = async () => {
+    if (goal !== (session?.goal ?? '')) {
+      try { await updateSession(id, { goal }); } catch { /* error via hook */ }
     }
   };
 
@@ -160,6 +180,29 @@ export default function TrainingSessionPage() {
           {exporting ? t('trainings.exporting') : t('trainings.exportPdf')}
         </button>
       </header>
+
+      <div className={styles.metaRow}>
+        <label className={styles.metaField}>
+          {t('trainings.dateLabel')}
+          <input
+            type="date"
+            className={styles.dateInput}
+            value={scheduledDate}
+            onChange={(e) => commitScheduledDate(e.target.value)}
+            aria-label={t('trainings.dateAriaLabel')}
+          />
+        </label>
+        <input
+          type="text"
+          className={styles.goalInput}
+          value={goal}
+          onChange={(e) => setGoal(e.target.value)}
+          onBlur={commitGoal}
+          placeholder={t('trainings.goalPlaceholder')}
+          maxLength={200}
+          aria-label={t('trainings.goalAriaLabel')}
+        />
+      </div>
 
       <textarea
         className={styles.notes}

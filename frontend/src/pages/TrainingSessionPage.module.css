@@ -63,6 +63,44 @@
 .exportBtn:hover:not(:disabled) { background: var(--color-primary-hover); }
 .exportBtn:disabled { opacity: 0.45; cursor: not-allowed; }
 
+.metaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+.metaField {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+.dateInput {
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-surface-offset);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  color: var(--color-text);
+}
+.goalInput {
+  flex: 1;
+  min-width: 200px;
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-surface-offset);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  color: var(--color-text);
+}
+.dateInput:focus-visible,
+.goalInput:focus-visible {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-highlight);
+}
+
 .notes {
   width: 100%;
   padding: var(--space-3) var(--space-4);

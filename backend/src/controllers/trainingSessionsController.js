@@ -21,16 +21,30 @@ import { deleteCommentsForResource } from './commentsController.js';
 const MAX_SESSIONS = 20;
 const MAX_ITEMS_PER_SESSION = 30;
 
+// node-postgres liefert DATE-Spalten als Date-Objekt in der lokalen
+// Zeitzone des Prozesses – über die lokalen Getter statt toISOString()
+// zurück in "YYYY-MM-DD" wandeln, damit ein Datum ohne Uhrzeit nicht
+// durch eine UTC-Konvertierung um einen Tag verschieben kann.
+function toDateString(date) {
+  if (!date) return null;
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
 function toApiSession(row) {
   return {
-    _id:          row.id,
-    name:         row.name,
-    notes:        row.notes,
-    teamId:       row.team_id,
-    itemCount:    Number(row.item_count ?? 0),
-    totalMinutes: Number(row.total_minutes ?? 0),
-    createdAt:    row.created_at,
-    updatedAt:    row.updated_at,
+    _id:           row.id,
+    name:          row.name,
+    notes:         row.notes,
+    teamId:        row.team_id,
+    scheduledDate: toDateString(row.scheduled_date),
+    goal:          row.goal,
+    itemCount:     Number(row.item_count ?? 0),
+    totalMinutes:  Number(row.total_minutes ?? 0),
+    createdAt:     row.created_at,
+    updatedAt:     row.updated_at,
   };
 }
 
@@ -112,7 +126,7 @@ export async function getSessions(req, res) {
 // POST /api/trainings
 export async function createSession(req, res) {
   try {
-    const { name, teamId = null } = req.body;
+    const { name, teamId = null, scheduledDate = null, goal = '' } = req.body;
 
     if (teamId && !(await assertTeamAccess(teamId, req.user.id, 'coach'))) {
       return res.status(404).json(error('Team nicht gefunden'));
@@ -127,8 +141,9 @@ export async function createSession(req, res) {
     }
 
     const result = await pool.query(
-      'INSERT INTO training_sessions (user_id, name, team_id) VALUES ($1, $2, $3) RETURNING *',
-      [req.user.id, name, teamId]
+      `INSERT INTO training_sessions (user_id, name, team_id, scheduled_date, goal)
+       VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+      [req.user.id, name, teamId, scheduledDate, goal]
     );
     res.status(201).json(created(toApiSession({ ...result.rows[0], item_count: 0, total_minutes: 0 })));
   } catch (err) {
@@ -171,6 +186,8 @@ export async function updateSession(req, res) {
 
     if (req.body.name !== undefined) { sets.push(`name = $${i}`); values.push(req.body.name); i += 1; }
     if (req.body.notes !== undefined) { sets.push(`notes = $${i}`); values.push(req.body.notes); i += 1; }
+    if (req.body.scheduledDate !== undefined) { sets.push(`scheduled_date = $${i}`); values.push(req.body.scheduledDate); i += 1; }
+    if (req.body.goal !== undefined) { sets.push(`goal = $${i}`); values.push(req.body.goal); i += 1; }
 
     if (sets.length === 0) {
       return res.status(400).json(error('Keine gültigen Felder zum Aktualisieren'));

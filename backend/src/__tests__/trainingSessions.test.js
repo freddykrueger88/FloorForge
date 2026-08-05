@@ -124,6 +124,60 @@ describe('Session CRUD + Ownership', () => {
   });
 });
 
+describe('Datum und Ziel (ROADMAP Phase 3)', () => {
+  // Eigener Nutzer statt `owner`, da `owner` in den Tests oben bereits
+  // sein MAX_SESSIONS=20-Kontingent ausgeschöpft hat.
+  let dateUser;
+
+  beforeAll(async () => {
+    dateUser = await registerAndLogin('date');
+  });
+
+  it('legt eine Trainingseinheit mit Datum und Ziel an', async () => {
+    const res = await request(app)
+      .post('/api/trainings')
+      .set('Cookie', dateUser.cookie)
+      .send({ name: 'Geplante Einheit', scheduledDate: '2026-09-15', goal: 'Passgenauigkeit verbessern' });
+    expect(res.status).toBe(201);
+    expect(res.body.data.scheduledDate).toBe('2026-09-15');
+    expect(res.body.data.goal).toBe('Passgenauigkeit verbessern');
+  });
+
+  it('legt eine Trainingseinheit ohne Datum/Ziel mit sinnvollen Defaults an', async () => {
+    const res = await request(app)
+      .post('/api/trainings')
+      .set('Cookie', dateUser.cookie)
+      .send({ name: 'Spontane Einheit' });
+    expect(res.status).toBe(201);
+    expect(res.body.data.scheduledDate).toBeNull();
+    expect(res.body.data.goal).toBe('');
+  });
+
+  it('lehnt ein ungültiges Datum mit 422 ab', async () => {
+    const res = await request(app)
+      .post('/api/trainings')
+      .set('Cookie', dateUser.cookie)
+      .send({ name: 'Ungültig', scheduledDate: 'nicht-ein-datum' });
+    expect(res.status).toBe(422);
+  });
+
+  it('aktualisiert Datum und Ziel einer bestehenden Session', async () => {
+    const createRes = await request(app)
+      .post('/api/trainings')
+      .set('Cookie', dateUser.cookie)
+      .send({ name: 'Wird aktualisiert' });
+    const id = createRes.body.data._id;
+
+    const updateRes = await request(app)
+      .put(`/api/trainings/${id}`)
+      .set('Cookie', dateUser.cookie)
+      .send({ scheduledDate: '2026-10-01', goal: 'Zonenverteidigung' });
+    expect(updateRes.status).toBe(200);
+    expect(updateRes.body.data.scheduledDate).toBe('2026-10-01');
+    expect(updateRes.body.data.goal).toBe('Zonenverteidigung');
+  });
+});
+
 describe('Items: CRUD, Ownership, Limit, Reorder, Cascade', () => {
   // Eigener Nutzer statt `owner`, da `owner` in den Tests oben bereits
   // sein MAX_SESSIONS=20-Kontingent ausgeschöpft hat.

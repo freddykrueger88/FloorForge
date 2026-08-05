@@ -379,6 +379,14 @@ export async function runMigrations() {
     await client.query(`ALTER TABLE teams ADD COLUMN IF NOT EXISTS organization_id UUID REFERENCES organizations(id) ON DELETE SET NULL;`);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_teams_organization_id ON teams(organization_id) WHERE organization_id IS NOT NULL;`);
 
+    // ── ROADMAP Phase 3 (Trainingsplanung): Datum + Ziel einer
+    // Trainingseinheit – laut Roadmap gehören "Datum, Dauer, Ziel,
+    // Übungen" zu den Kernfeldern; Dauer/Übungen sind über
+    // training_session_items bereits abgedeckt.
+    await client.query(`ALTER TABLE training_sessions ADD COLUMN IF NOT EXISTS scheduled_date DATE;`);
+    await client.query(`ALTER TABLE training_sessions ADD COLUMN IF NOT EXISTS goal TEXT NOT NULL DEFAULT '';`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_training_sessions_scheduled_date ON training_sessions(scheduled_date) WHERE scheduled_date IS NOT NULL;`);
+
     // ── exports ───────────────────────────────────────────────────────────
     // format: 'gif' | 'mp4' | 'pdf' | 'link' | 'png'
     await client.query(`

@@ -4,6 +4,7 @@
  */
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { formatDateOnly } from '../../utils/formatDate.js';
 import styles from './TrainingSessionCard.module.css';
 
 export default function TrainingSessionCard({ session, teamName, onClick, onRename, onDelete }) {
@@ -35,6 +36,9 @@ export default function TrainingSessionCard({ session, teamName, onClick, onRena
           {t('trainings.itemCount', { count: session.itemCount })}
           {session.itemCount > 0 && ` · ${t('trainings.totalMinutes', { count: session.totalMinutes })}`}
         </span>
+        {session.scheduledDate && (
+          <span className={styles.dateBadge}>📅 {formatDateOnly(session.scheduledDate)}</span>
+        )}
         {teamName && <span className={styles.teamBadge}>{teamName}</span>}
       </button>
 
