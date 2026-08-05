@@ -183,6 +183,7 @@
     "themeToggle": "Toggle theme"
   },
   "auth": {
+    "slogan": "Because tactics is more than just chalk on the board.",
     "loginTitle": "Log in",
     "loginError": "Login failed. Please try again.",
     "loggingIn": "Logging in…",
@@ -287,7 +288,8 @@
   },
   "footer": {
     "privacyLink": "Privacy",
-    "rulesLink": "Rules"
+    "rulesLink": "Rules",
+    "credit": "Made with ❤️ for the floorball community"
   },
   "privacyPage": {
     "title": "Privacy Policy",

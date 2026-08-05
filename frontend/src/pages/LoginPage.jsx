@@ -45,6 +45,7 @@ export default function LoginPage() {
           </svg>
           <span className="auth-app-name">OpenFloorball</span>
         </div>
+        <p className="auth-slogan">{t('auth.slogan')}</p>
 
         <h1 className="auth-title">{t('auth.loginTitle')}</h1>
 

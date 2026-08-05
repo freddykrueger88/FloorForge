@@ -24,7 +24,7 @@
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  margin-bottom: var(--space-8);
+  margin-bottom: var(--space-3);
 }
 
 .auth-app-name {
@@ -33,6 +33,13 @@
   font-weight: 700;
   color: var(--color-text);
   letter-spacing: -0.02em;
+}
+
+.auth-slogan {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  font-style: italic;
+  margin-bottom: var(--space-8);
 }
 
 .auth-title {

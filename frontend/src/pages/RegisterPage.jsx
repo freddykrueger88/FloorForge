@@ -42,6 +42,7 @@ export default function RegisterPage() {
           </svg>
           <span className="auth-app-name">OpenFloorball</span>
         </div>
+        <p className="auth-slogan">{t('auth.slogan')}</p>
 
         <h1 className="auth-title">{t('auth.registerTitle')}</h1>
         <p className="auth-hint">{t('auth.firstUserAdmin')}</p>
