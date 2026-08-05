@@ -97,3 +97,64 @@ describe('GET /api/share/:token (öffentlich)', () => {
     expect(res.status).toBe(422);
   });
 });
+
+// Minimales valides 1×1-PNG (transparent), base64-kodiert
+const TINY_PNG_DATA_URL = 'data:image/png;base64,'
+  + 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=';
+
+describe('POST /api/export/frame-share', () => {
+  it('lehnt ein fremdes Board mit 404 ab', async () => {
+    const res = await request(app)
+      .post('/api/export/frame-share')
+      .set('Cookie', other.cookie)
+      .send({ boardId, image: TINY_PNG_DATA_URL });
+    expect(res.status).toBe(404);
+  });
+
+  it('lehnt eine Anfrage ohne boardId/image mit 400 ab', async () => {
+    const res = await request(app)
+      .post('/api/export/frame-share')
+      .set('Cookie', owner.cookie)
+      .send({ boardId });
+    expect(res.status).toBe(400);
+  });
+
+  it('erzeugt einen Frame-Share für den Eigentümer', async () => {
+    const res = await request(app)
+      .post('/api/export/frame-share')
+      .set('Cookie', owner.cookie)
+      .send({ boardId, image: TINY_PNG_DATA_URL });
+    expect(res.status).toBe(201);
+    expect(res.body.data.token).toMatch(/^[0-9a-f-]{36}$/);
+  });
+
+  it('lehnt nicht authentifizierte Anfragen mit 401 ab', async () => {
+    const res = await request(app)
+      .post('/api/export/frame-share')
+      .send({ boardId, image: TINY_PNG_DATA_URL });
+    expect(res.status).toBe(401);
+  });
+});
+
+describe('GET /api/share/frame/:token (öffentlich)', () => {
+  let frameToken;
+
+  beforeAll(async () => {
+    const res = await request(app)
+      .post('/api/export/frame-share')
+      .set('Cookie', owner.cookie)
+      .send({ boardId, image: TINY_PNG_DATA_URL });
+    frameToken = res.body.data.token;
+  });
+
+  it('liefert das Bild ohne Cookie/Login', async () => {
+    const res = await request(app).get(`/api/share/frame/${frameToken}`);
+    expect(res.status).toBe(200);
+    expect(res.headers['content-type']).toBe('image/png');
+  });
+
+  it('lehnt einen erfundenen Token mit 404 ab', async () => {
+    const res = await request(app).get('/api/share/frame/00000000-0000-0000-0000-000000000000');
+    expect(res.status).toBe(404);
+  });
+});

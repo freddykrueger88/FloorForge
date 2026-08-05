@@ -197,7 +197,10 @@
     "compactView": "Compact tile view",
     "loadingBoards": "Loading boards...",
     "emptyStateDesc": "Create your first board and start planning your tactics.",
-    "createFirstBoard": "Create your first board"
+    "createFirstBoard": "Create your first board",
+    "opponentSearchPlaceholder": "🔍 Search by opponent…",
+    "opponentSearchAriaLabel": "Search boards by opponent",
+    "noBoardsMatchFilter": "No boards match this filter"
   },
   "notFound": {
     "title": "404",
@@ -284,7 +287,13 @@
     "qrAlt": "QR code for the share link",
     "newLink": "Create new link",
     "creating": "Creating…",
-    "createLink": "🔗 Create link"
+    "createLink": "🔗 Create link",
+    "frameShareTitle": "🖼️ Share current frame",
+    "frameShareHint": "Shares only the currently displayed frame as an image, accessible without login — e.g. for WhatsApp. Expires automatically.",
+    "frameShareLinkAriaLabel": "Image link",
+    "createFrameShare": "🖼️ Create image link",
+    "creatingFrame": "Creating…",
+    "newFrameShare": "Create new image link"
   },
   "pdfExport": {
     "title": "📄 PDF Tactics Sheet",
@@ -464,7 +473,8 @@
     "renameTitle": "Double-click to rename",
     "renameNameAriaLabel": "{{name}} (double-click to rename)",
     "deleteAriaLabel": "Delete field",
-    "deleteTitle": "Delete"
+    "deleteTitle": "Delete",
+    "vsOpponent": "vs. {{opponent}}"
   },
   "boardPostcard": {
     "ariaLabel": "Board: {{name}}",
@@ -476,6 +486,8 @@
       "close": "Close",
       "nameLabel": "Field name",
       "namePlaceholder": "e.g. Game vs. Hamburg, Training 08/04",
+      "opponentLabel": "Opponent (optional)",
+      "opponentPlaceholder": "e.g. HC Hamburg",
       "fieldTypeLegend": "Field type",
       "fieldDescLarge": "40 × 20 m – Official IFF field",
       "fieldDescSmall": "20 × 14 m",

@@ -58,6 +58,9 @@ export default function BoardPostcard({ board, onClick, playbooks, onChangePlayb
             {FIELD_TYPE_LABELS[board.fieldType] ?? board.fieldType}
           </span>
           <span className={styles.date}>📅 {formatDate(board.updatedAt)}</span>
+          {board.opponent && (
+            <span className={styles.badge}>{t('boardCard.vsOpponent', { opponent: board.opponent })}</span>
+          )}
           {!isOwner && (
             <span className={styles.badge}>
               {board.accessLevel === 'write' ? `✏️ ${t('boardShare.writeBadge')}` : `👁 ${t('boardShare.readonlyBadge')}`}

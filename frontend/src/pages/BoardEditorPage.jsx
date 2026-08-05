@@ -81,6 +81,12 @@ export default function BoardEditorPage() {
     updateBoard(boardId, { ballColor: hex }).catch(() => {});
   }, [boardId, updateBoard]);
 
+  // ROADMAP-Backlog "Gegner-Tagging"
+  const handleChangeOpponent = useCallback((opponent) => {
+    setBoard((prev) => (prev ? { ...prev, opponent } : prev));
+    updateBoard(boardId, { opponent }).catch(() => {});
+  }, [boardId, updateBoard]);
+
   const field = useField('large');
   const {
     frames, activeFrame, activeIndex, loading: framesLoading,
@@ -541,7 +547,7 @@ export default function BoardEditorPage() {
               icon: '📤',
               content: (
                 <>
-                  <ExportPanel boardId={boardId} frames={frames} renderFrame={renderFrame} />
+                  <ExportPanel boardId={boardId} frames={frames} activeFrame={activeFrame} renderFrame={renderFrame} />
                   <PdfExportPanel frames={frames} renderFrame={renderFrame} boardName={board?.name} />
                 </>
               ),
@@ -569,6 +575,8 @@ export default function BoardEditorPage() {
                   onRequestFieldTypeChange={canEdit ? handleRequestFieldTypeChange : undefined}
                   onOpenShare={() => setShowShareModal(true)}
                   showShareButton={board?.accessLevel === 'owner'}
+                  opponent={board?.opponent}
+                  onChangeOpponent={canEdit ? handleChangeOpponent : undefined}
                 />
               ),
             },

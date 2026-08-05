@@ -117,6 +117,10 @@ export async function runMigrations() {
     // bleiben die zugeordneten Boards erhalten, nur die Zuordnung entfällt.
     await client.query(`ALTER TABLE boards ADD COLUMN IF NOT EXISTS playbook_id UUID
       REFERENCES playbooks(id) ON DELETE SET NULL;`);
+    // ROADMAP-Backlog "Gegner-Tagging": freies Textfeld statt eigener
+    // Tabelle – reicht für Filterung/Wiederfinden, kein Bedarf an
+    // strukturierten Gegner-Datensätzen.
+    await client.query(`ALTER TABLE boards ADD COLUMN IF NOT EXISTS opponent TEXT NOT NULL DEFAULT '';`);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_boards_deleted_at ON boards(deleted_at) WHERE deleted_at IS NOT NULL;`);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_boards_playbook_id ON boards(playbook_id) WHERE playbook_id IS NOT NULL;`);
 

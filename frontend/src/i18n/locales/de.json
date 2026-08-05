@@ -197,7 +197,10 @@
     "compactView": "Kompakt-Kachel-Ansicht",
     "loadingBoards": "Lädt Spielfelder...",
     "emptyStateDesc": "Erstelle dein erstes Spielfeld und beginne mit der Taktik-Planung.",
-    "createFirstBoard": "Erstes Spielfeld anlegen"
+    "createFirstBoard": "Erstes Spielfeld anlegen",
+    "opponentSearchPlaceholder": "🔍 Nach Gegner suchen…",
+    "opponentSearchAriaLabel": "Spielfelder nach Gegner durchsuchen",
+    "noBoardsMatchFilter": "Keine Spielfelder für diesen Filter"
   },
   "notFound": {
     "title": "404",
@@ -284,7 +287,13 @@
     "qrAlt": "QR-Code zum Share-Link",
     "newLink": "Neuen Link erstellen",
     "creating": "Erstellt…",
-    "createLink": "🔗 Link erstellen"
+    "createLink": "🔗 Link erstellen",
+    "frameShareTitle": "🖼️ Aktuellen Frame teilen",
+    "frameShareHint": "Teilt nur den aktuell angezeigten Frame als Bild, ohne Login abrufbar – z. B. für WhatsApp. Läuft automatisch ab.",
+    "frameShareLinkAriaLabel": "Bild-Link",
+    "createFrameShare": "🖼️ Bild-Link erstellen",
+    "creatingFrame": "Erstellt…",
+    "newFrameShare": "Neuen Bild-Link erstellen"
   },
   "pdfExport": {
     "title": "📄 PDF-Taktikblatt",
@@ -464,7 +473,8 @@
     "renameTitle": "Doppelklick zum Umbenennen",
     "renameNameAriaLabel": "{{name}} (Doppelklick zum Umbenennen)",
     "deleteAriaLabel": "Spielfeld löschen",
-    "deleteTitle": "Löschen"
+    "deleteTitle": "Löschen",
+    "vsOpponent": "vs. {{opponent}}"
   },
   "boardPostcard": {
     "ariaLabel": "Board: {{name}}",
@@ -476,6 +486,8 @@
       "close": "Schließen",
       "nameLabel": "Name des Spielfelds",
       "namePlaceholder": "z.B. Spiel vs. Hamburg, Training 04.08.",
+      "opponentLabel": "Gegner (optional)",
+      "opponentPlaceholder": "z.B. HC Hamburg",
       "fieldTypeLegend": "Spielfeld-Typ",
       "fieldDescLarge": "40 × 20 m – Offizielles IFF Spielfeld",
       "fieldDescSmall": "20 × 14 m",

@@ -18,6 +18,7 @@ export default function NewBoardModal({ onConfirm, onClose, loading, defaultFiel
   ];
 
   const [name,      setName     ] = useState('');
+  const [opponent,  setOpponent ] = useState('');
   const [fieldType, setFieldType] = useState(defaultFieldType);
   const nameRef = useRef(null);
   const containerRef = useRef(null);
@@ -28,7 +29,7 @@ export default function NewBoardModal({ onConfirm, onClose, loading, defaultFiel
     e.preventDefault();
     const trimmed = name.trim();
     if (!trimmed) { nameRef.current?.focus(); return; }
-    onConfirm({ name: trimmed, fieldType });
+    onConfirm({ name: trimmed, fieldType, opponent: opponent.trim() });
   };
 
   return (
@@ -61,6 +62,19 @@ export default function NewBoardModal({ onConfirm, onClose, loading, defaultFiel
             maxLength={80}
             required
             aria-required="true"
+          />
+
+          <label className={styles.label} htmlFor="board-opponent">
+            {t('dialogs.newBoard.opponentLabel')}
+          </label>
+          <input
+            id="board-opponent"
+            className={styles.input}
+            type="text"
+            value={opponent}
+            onChange={(e) => setOpponent(e.target.value)}
+            placeholder={t('dialogs.newBoard.opponentPlaceholder')}
+            maxLength={80}
           />
 
           <fieldset className={styles.fieldset}>

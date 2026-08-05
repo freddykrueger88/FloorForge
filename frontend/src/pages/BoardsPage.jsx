@@ -31,6 +31,9 @@ export default function BoardsPage() {
   const [deleteTarget,  setDeleteTarget  ] = useState(null); // { id, name }
   // Playbook-Filter (Issue #52): 'all' | 'none' | playbookId
   const [playbookFilter, setPlaybookFilter] = useState('all');
+  // Gegner-Suche (ROADMAP-Backlog): freie Textsuche statt fester Liste,
+  // da Gegner ein Freitextfeld ohne feste Werte ist
+  const [opponentQuery, setOpponentQuery] = useState('');
   // Ansicht: Postkarten-Galerie ↔ Kompakt-Kachel (Issue #30)
   const [view, setView] = useState(() => localStorage.getItem(VIEW_STORAGE_KEY) || 'postcard');
 
@@ -47,10 +50,15 @@ export default function BoardsPage() {
   useEffect(() => { fetchPlaybooks(); }, [fetchPlaybooks]);
 
   const filteredBoards = useMemo(() => {
-    if (playbookFilter === 'all') return boards;
-    if (playbookFilter === 'none') return boards.filter((b) => !b.playbookId);
-    return boards.filter((b) => b.playbookId === playbookFilter);
-  }, [boards, playbookFilter]);
+    let result = boards;
+    if (playbookFilter === 'none') result = result.filter((b) => !b.playbookId);
+    else if (playbookFilter !== 'all') result = result.filter((b) => b.playbookId === playbookFilter);
+
+    const query = opponentQuery.trim().toLowerCase();
+    if (query) result = result.filter((b) => b.opponent?.toLowerCase().includes(query));
+
+    return result;
+  }, [boards, playbookFilter, opponentQuery]);
 
   const handleChangeBoardPlaybook = async (boardId, playbookId) => {
     try {
@@ -116,6 +124,17 @@ export default function BoardsPage() {
           <span aria-hidden="true">➕</span> {t('boardsPage.newBoard')}
         </button>
 
+        {boards.length > 0 && (
+          <input
+            type="search"
+            className={styles.opponentSearch}
+            value={opponentQuery}
+            onChange={(e) => setOpponentQuery(e.target.value)}
+            placeholder={t('boardsPage.opponentSearchPlaceholder')}
+            aria-label={t('boardsPage.opponentSearchAriaLabel')}
+          />
+        )}
+
         {/* Postkarten-Galerie ↔ Kompakt-Kachel Toggle (Issue #30) */}
         <div className={styles.viewToggle} role="group" aria-label={t('boardsPage.viewToggleLabel')}>
           <button
@@ -178,7 +197,7 @@ export default function BoardsPage() {
       ) : filteredBoards.length === 0 ? (
         <div className={styles.emptyState} role="status">
           <div className={styles.emptyIcon} aria-hidden="true">🗂️</div>
-          <p>{t('playbooks.noBoardsInFilter')}</p>
+          <p>{t('boardsPage.noBoardsMatchFilter')}</p>
         </div>
       ) : (
         <ul

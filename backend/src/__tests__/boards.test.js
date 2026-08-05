@@ -125,6 +125,58 @@ describe('Board CRUD', () => {
   });
 });
 
+describe('Board opponent (ROADMAP-Backlog: Gegner-Tagging)', () => {
+  it('legt ein Board mit Gegner an und gibt ihn zurück', async () => {
+    const res = await request(app)
+      .post('/api/boards')
+      .set('Cookie', userA.cookie)
+      .send({ name: 'Gegner-Test', fieldType: 'large', opponent: 'HC Hamburg' });
+    expect(res.status).toBe(201);
+    expect(res.body.data.opponent).toBe('HC Hamburg');
+
+    const listRes = await request(app).get('/api/boards').set('Cookie', userA.cookie);
+    const found = listRes.body.data.find((b) => b._id === res.body.data._id);
+    expect(found.opponent).toBe('HC Hamburg');
+
+    await request(app).delete(`/api/boards/${res.body.data._id}`).set('Cookie', userA.cookie);
+  });
+
+  it('defaultet auf leeren String ohne opponent-Angabe', async () => {
+    const res = await request(app)
+      .post('/api/boards')
+      .set('Cookie', userA.cookie)
+      .send({ name: 'Ohne Gegner', fieldType: 'large' });
+    expect(res.status).toBe(201);
+    expect(res.body.data.opponent).toBe('');
+    await request(app).delete(`/api/boards/${res.body.data._id}`).set('Cookie', userA.cookie);
+  });
+
+  it('aktualisiert den Gegner per PUT', async () => {
+    const createRes = await request(app)
+      .post('/api/boards')
+      .set('Cookie', userA.cookie)
+      .send({ name: 'Gegner-Update-Test', fieldType: 'large' });
+    const id = createRes.body.data._id;
+
+    const res = await request(app)
+      .put(`/api/boards/${id}`)
+      .set('Cookie', userA.cookie)
+      .send({ opponent: 'SC Berlin' });
+    expect(res.status).toBe(200);
+    expect(res.body.data.opponent).toBe('SC Berlin');
+
+    await request(app).delete(`/api/boards/${id}`).set('Cookie', userA.cookie);
+  });
+
+  it('lehnt einen zu langen Gegner-Namen mit 422 ab', async () => {
+    const res = await request(app)
+      .post('/api/boards')
+      .set('Cookie', userA.cookie)
+      .send({ name: 'Zu lang', fieldType: 'large', opponent: 'X'.repeat(81) });
+    expect(res.status).toBe(422);
+  });
+});
+
 describe('Board playbookId (Issue #52)', () => {
   let playbookId;
   let foreignPlaybookId;

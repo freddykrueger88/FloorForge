@@ -21,7 +21,7 @@ function formatExpiry(iso) {
   return new Date(iso).toLocaleString('de-DE', { dateStyle: 'medium', timeStyle: 'short' });
 }
 
-export default function ExportPanel({ boardId, frames, renderFrame }) {
+export default function ExportPanel({ boardId, frames, activeFrame, renderFrame }) {
   const { t } = useTranslation();
   const [format, setFormat] = useState('gif');
   const [fps,   setFps  ] = useState(4);
@@ -52,6 +52,31 @@ export default function ExportPanel({ boardId, frames, renderFrame }) {
       await navigator.clipboard.writeText(share.shareUrl);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Zwischenablage evtl. ohne Berechtigung – Link steht trotzdem im Feld zum manuellen Kopieren
+    }
+  };
+
+  // Einzel-Frame-Share (ROADMAP-Backlog) – teilt nur den aktuellen Frame
+  const [frameCopied, setFrameCopied] = useState(false);
+
+  const handleCreateFrameShare = async () => {
+    if (!activeFrame) return;
+    setFrameCopied(false);
+    try {
+      const image = await renderFrame(activeFrame);
+      await share.createFrameShare(image);
+    } catch {
+      // Fehler wird über share.frameError angezeigt
+    }
+  };
+
+  const handleCopyFrameLink = async () => {
+    if (!share.frameShareUrl) return;
+    try {
+      await navigator.clipboard.writeText(share.frameShareUrl);
+      setFrameCopied(true);
+      setTimeout(() => setFrameCopied(false), 2000);
     } catch {
       // Zwischenablage evtl. ohne Berechtigung – Link steht trotzdem im Feld zum manuellen Kopieren
     }
@@ -236,6 +261,48 @@ export default function ExportPanel({ boardId, frames, renderFrame }) {
           disabled={share.loading || !frames?.length}
         >
           {share.loading ? t('export.creating') : t('export.createLink')}
+        </button>
+      )}
+
+      <hr className={styles.divider} />
+
+      {/* Einzel-Frame-Share (ROADMAP-Backlog) */}
+      <h3 className={styles.title}>{t('export.frameShareTitle')}</h3>
+      <p className={styles.hint}>
+        {t('export.frameShareHint')}
+        {share.frameExpiresAt && ` ${t('export.shareExpiry', { date: formatExpiry(share.frameExpiresAt) })}`}
+      </p>
+
+      {share.frameError && (
+        <p className={`${styles.statusMsg} ${styles.statusError}`}>{t('export.error', { error: share.frameError })}</p>
+      )}
+
+      {share.frameShareUrl ? (
+        <>
+          <div className={styles.shareRow}>
+            <input
+              type="text"
+              readOnly
+              value={share.frameShareUrl}
+              className={styles.urlInput}
+              onFocus={(e) => e.target.select()}
+              aria-label={t('export.frameShareLinkAriaLabel')}
+            />
+            <button className={styles.copyBtn} onClick={handleCopyFrameLink}>
+              {frameCopied ? t('export.copied') : t('export.copy')}
+            </button>
+          </div>
+          <button className={styles.resetBtn} onClick={share.resetFrameShare}>
+            {t('export.newFrameShare')}
+          </button>
+        </>
+      ) : (
+        <button
+          className={styles.exportBtn}
+          onClick={handleCreateFrameShare}
+          disabled={share.frameLoading || !activeFrame}
+        >
+          {share.frameLoading ? t('export.creatingFrame') : t('export.createFrameShare')}
         </button>
       )}
     </div>

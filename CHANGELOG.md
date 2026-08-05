@@ -22,6 +22,14 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   für Self-Hoster. Neue Env-Vars in `.env.example`/`docker-compose.yml`:
   `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`,
   `SMTP_PASSWORD`, `SMTP_FROM`.
+- Gegner-Tagging: Boards können beim Anlegen oder im Editor-
+  "Einstellungen"-Tab mit einem freien Gegner-Textfeld markiert werden
+  ("vs. Team X"), sichtbar als Badge auf Kachel/Postkarte, durchsuchbar
+  über ein neues Suchfeld in der Board-Übersicht.
+- Einzel-Frame-Share: der aktuell aktive Frame lässt sich als PNG-Link
+  ohne Login teilen (z. B. für WhatsApp), unabhängig vom vollen
+  Board-Share-Link. Nutzt die in der `exports`-Tabelle bereits
+  vorgesehene, aber nie implementierte `format='png'`-Option.
 
 ### Changed
 - Board-Editor: rechtes Menü (Zeichnen-Koordinaten, Lines, Formationen,

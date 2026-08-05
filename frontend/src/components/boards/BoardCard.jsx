@@ -40,6 +40,9 @@ export default function BoardCard({ board, onClick, onRename, onDelete, playbook
         <span className={styles.fieldIcon} aria-hidden="true">🏑</span>
         <span className={styles.fieldType}>{FIELD_TYPE_LABELS[board.fieldType] ?? board.fieldType}</span>
         <span className={styles.date}>{formatDate(board.updatedAt)}</span>
+        {board.opponent && (
+          <span className={styles.opponentBadge}>{t('boardCard.vsOpponent', { opponent: board.opponent })}</span>
+        )}
         {!isOwner && (
           <span className={styles.accessBadge}>
             {board.accessLevel === 'write' ? `✏️ ${t('boardShare.writeBadge')}` : `👁 ${t('boardShare.readonlyBadge')}`}

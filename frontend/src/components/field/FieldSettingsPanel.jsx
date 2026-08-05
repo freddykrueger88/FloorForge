@@ -4,6 +4,7 @@
  * Tastaturkürzel bleiben bewusst im Header (schnell erreichbar, ohne das
  * Menü aufklappen zu müssen).
  */
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import FieldNamesBar from './FieldNamesBar.jsx';
 import styles from './FieldSettingsPanel.module.css';
@@ -20,8 +21,19 @@ export default function FieldSettingsPanel({
   onRequestFieldTypeChange,
   onOpenShare,
   showShareButton,
+  opponent,
+  onChangeOpponent,
 }) {
   const { t } = useTranslation();
+  const [opponentDraft, setOpponentDraft] = useState(opponent ?? '');
+
+  useEffect(() => setOpponentDraft(opponent ?? ''), [opponent]);
+
+  const commitOpponent = () => {
+    const trimmed = opponentDraft.trim();
+    if (trimmed !== (opponent ?? '')) onChangeOpponent?.(trimmed);
+  };
+
   return (
     <section className={styles.panel} aria-label={t('boardEditor.tabs.settings')}>
       <FieldNamesBar
@@ -30,6 +42,22 @@ export default function FieldSettingsPanel({
         namePosition={namePosition}
         onSetNamePosition={onSetNamePosition}
       />
+
+      {onChangeOpponent && (
+        <label className={styles.fieldTypeRow}>
+          <span>{t('dialogs.newBoard.opponentLabel')}</span>
+          <input
+            type="text"
+            className={styles.opponentInput}
+            value={opponentDraft}
+            onChange={(e) => setOpponentDraft(e.target.value)}
+            onBlur={commitOpponent}
+            onKeyDown={(e) => { if (e.key === 'Enter') e.target.blur(); }}
+            placeholder={t('dialogs.newBoard.opponentPlaceholder')}
+            maxLength={80}
+          />
+        </label>
+      )}
 
       <button
         type="button"
