@@ -32,6 +32,12 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   wurde entfernt.
 
 ### Fixed
+- Board-Editor: bei aufgeklapptem unterem Tab-Menü schrumpft der
+  Feldbereich – die Zeichen-Werkzeugleiste (u.a. Linienstärke-Auswahl)
+  und das Spieler-Info-Fenster (Namen eintragen) hatten kein eigenes
+  Scrolling und wurden dadurch vom `overflow: hidden` des Feldbereichs
+  teilweise unsichtbar abgeschnitten statt sich anzupassen. Beide
+  scrollen jetzt intern, wenn der verfügbare Platz nicht mehr reicht.
 - CI: `EXPORTS_DIR` im Backend-Testjob (`.github/workflows/ci.yml`) auf
   `/tmp/floorforge-exports-ci` gesetzt statt des Produktions-Defaults
   `/app/exports`, der nur innerhalb des Docker-Containers beschreibbar

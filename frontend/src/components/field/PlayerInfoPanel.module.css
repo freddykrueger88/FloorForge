@@ -9,6 +9,11 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
+  /* Bei aufgeklapptem unterem Tab-Menü schrumpft das Spielfeld – ohne
+     eigenes Scrolling wurde das Panel dann vom overflow:hidden des
+     Feldbereichs oben abgeschnitten statt sich anzupassen. */
+  min-height: 0;
+  overflow-y: auto;
 }
 
 .header {

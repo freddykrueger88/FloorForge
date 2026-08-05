@@ -10,6 +10,11 @@
   min-width: 52px;
   align-items: center;
   user-select: none;
+  /* Wenn das untere Tab-Menü aufgeklappt ist, schrumpft die verfügbare
+     Höhe – ohne eigenes Scrolling wurden untere Einträge (z.B.
+     Linienstärke) vom overflow:hidden des .middleRow unsichtbar
+     abgeschnitten statt scrollbar zu bleiben. */
+  overflow-y: auto;
 }
 
 .group {
