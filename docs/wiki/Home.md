@@ -9,6 +9,7 @@ Willkommen im FloorForge Wiki! Hier findest du alle Informationen zur Installati
 - [Schnellstart mit Docker](./Installation-Docker.md)
 - [Manuelle Installation (Entwicklung)](./Installation-Entwicklung.md)
 - [Umgebungsvariablen (.env)](./Umgebungsvariablen.md)
+- [E-Mail-Versand einrichten (Gmail & Co.)](./E-Mail-Versand.md)
 
 ## 📱 Benutzung
 
