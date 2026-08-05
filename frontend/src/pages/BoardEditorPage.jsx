@@ -13,7 +13,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useParams, Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
 
-import { IFF_FIELDS, DEFAULT_TEAM_COLORS, IFF_BALL_COLORS } from '../constants/fieldConfig.js';
+import { IFF_FIELDS, DEFAULT_TEAM_COLORS, IFF_BALL_COLORS, ensureBall, BALL_ID } from '../constants/fieldConfig.js';
 import { POSITION_HINTS } from '../constants/positionHints.js';
 import { rescalePlayers, rescaleElements } from '../utils/fieldRescale.js';
 import { teamColorToFillStroke, normalizeStoredColor } from '../utils/color.js';
@@ -112,7 +112,7 @@ export default function BoardEditorPage() {
   const {
     frames, activeFrame, activeIndex, loading: framesLoading,
     loadFrames, addFrame, updateFrame, deleteFrame, reorderFrames, goToFrame,
-  } = useFrames(boardId);
+  } = useFrames(boardId, field.fieldType);
 
   const drawing = useDrawing();
   const lines = useLines(boardId);
@@ -220,6 +220,11 @@ export default function BoardEditorPage() {
 
   // Spieler-Auswahl per Screenreader ansagen (Issue #19 – Teil 2)
   const handleSelectPlayer = useCallback((id) => {
+    if (id === BALL_ID) {
+      useAnnounceStore.getState().announce(t('boardEditor.ballSelected'));
+      setSelectedPlayerId(id);
+      return;
+    }
     if (id) {
       const player = livePlayers.find((p) => p.id === id);
       const hintTable = POSITION_HINTS[i18n.language] ?? POSITION_HINTS.de;
@@ -333,19 +338,24 @@ export default function BoardEditorPage() {
   // direkt – die Persistenz läuft wie bei Drag&Drop automatisch über den
   // bestehenden useAutoSave-Hook, kein eigener Save-Call nötig.
   const handleSaveFormation = useCallback((name) => {
-    formations.saveFormation({ name, fieldType: field.fieldType, players: livePlayers });
+    // Formationen sind wiederverwendbare Spieler-Aufstellungen (Issue #46),
+    // keine vollständigen Szenen-Schnappschüsse – der Ball gehört nicht dazu.
+    const playersOnly = livePlayers.filter((p) => p.team !== 'ball');
+    formations.saveFormation({ name, fieldType: field.fieldType, players: playersOnly });
   }, [formations, field.fieldType, livePlayers]);
 
   const handleLoadFormation = useCallback((template) => {
+    // Formationen enthalten keinen Ball (siehe handleSaveFormation) – beim
+    // Laden ergänzen, statt den Ball aus der aktuellen Szene zu verlieren.
     if (template.fieldType === field.fieldType) {
-      setLivePlayers(template.players);
+      setLivePlayers(ensureBall(template.players, field.fieldType));
       return;
     }
     const sourceField = IFF_FIELDS[template.fieldType] ?? IFF_FIELDS.large;
     const targetField = IFF_FIELDS[field.fieldType] ?? IFF_FIELDS.large;
     const scaleX = targetField.width / sourceField.width;
     const scaleY = targetField.height / sourceField.height;
-    setLivePlayers(rescalePlayers(template.players, scaleX, scaleY));
+    setLivePlayers(ensureBall(rescalePlayers(template.players, scaleX, scaleY), field.fieldType));
   }, [field.fieldType]);
 
   // Issue #15 – renderFrame: rendert einen Frame offline als PNG via Konva
@@ -489,7 +499,10 @@ export default function BoardEditorPage() {
               />
             )}
 
-            {!anim.playing && selectedPlayerId && (
+            {/* Der Ball hat keine Rolle/Namen/Roster-Zuordnung – das
+                rollenbasierte Info-Panel würde für ihn falsche Hinweise
+                anzeigen, daher bewusst nicht anzeigen. */}
+            {!anim.playing && selectedPlayerId && selectedPlayerId !== BALL_ID && (
               <div className={styles.infoPanelWrap}>
                 <PlayerInfoPanel
                   player={livePlayers.find((p) => p.id === selectedPlayerId)}

@@ -42,7 +42,8 @@
     "playerName": "Player name",
     "namePlaceholder": "Enter name…",
     "resetPositionTitle": "Reset player to starting position",
-    "resetPosition": "Reset position"
+    "resetPosition": "Reset position",
+    "ballLabel": "Ball"
   },
   "teams": {
     "home": "Home Team",
@@ -169,6 +170,7 @@
     "playerSelectedWithName": "{{role}} selected, {{name}}",
     "playerSelected": "{{role}} selected",
     "playerDeselected": "Player deselected",
+    "ballSelected": "Ball selected",
     "backToBoards": "Back to board overview",
     "saving": "💾 Saving…",
     "saved": "✓ Saved",

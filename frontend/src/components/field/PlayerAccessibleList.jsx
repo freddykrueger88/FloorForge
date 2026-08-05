@@ -21,7 +21,9 @@ export default function PlayerAccessibleList({ players = [], onSelectPlayer, sel
             onClick={() => onSelectPlayer?.(p.id)}
             aria-pressed={p.id === selectedPlayerId}
           >
-            {p.role}{p.name ? ` – ${p.name}` : ''} ({p.team === 'home' ? t('teams.home') : t('teams.away')})
+            {p.team === 'ball'
+              ? t('field.ballLabel')
+              : `${p.role}${p.name ? ` – ${p.name}` : ''} (${p.team === 'home' ? t('teams.home') : t('teams.away')})`}
           </button>
         </li>
       ))}

@@ -9,10 +9,19 @@
  */
 import { useState, useCallback } from 'react';
 import { apiFetch } from '../utils/apiFetch.js';
+import { ensureBall } from '../constants/fieldConfig.js';
 
 const BASE = (boardId) => `/api/boards/${boardId}/frames`;
 
-export function useFrames(boardId) {
+// ROADMAP-Backlog "beweglicher Ball": ältere, vor diesem Feature
+// gespeicherte Frames haben noch keinen Ball-Eintrag in players –
+// hier einmalig beim Laden ergänzen, statt an jeder Lesestelle
+// (Live-Editing, Animation-Interpolation) separat abzufangen.
+function withBall(frame, fieldType) {
+  return { ...frame, players: ensureBall(frame.players ?? [], fieldType) };
+}
+
+export function useFrames(boardId, fieldType = 'large') {
   const [frames,       setFrames      ] = useState([]);
   const [activeIndex,  setActiveIndex ] = useState(0);
   const [loading,      setLoading     ] = useState(false);
@@ -26,14 +35,14 @@ export function useFrames(boardId) {
     setLoading(true);
     try {
       const data = await apiFetch(BASE(boardId));
-      setFrames(data);
+      setFrames(data.map((f) => withBall(f, fieldType)));
       setActiveIndex(0);
     } catch (err) {
       setError(err.message);
     } finally {
       setLoading(false);
     }
-  }, [boardId]);
+  }, [boardId, fieldType]);
 
   // ── Frame hinzufügen (kopiert aktuellen Zustand) ──
   const addFrame = useCallback(async (currentPlayers, currentElements, label = '') => {
@@ -43,14 +52,14 @@ export function useFrames(boardId) {
         method: 'POST',
         body: JSON.stringify({ players: currentPlayers, elements: currentElements, label }),
       });
-      setFrames((prev) => [...prev, newFrame]);
+      setFrames((prev) => [...prev, withBall(newFrame, fieldType)]);
       setActiveIndex((prev) => prev + 1); // Neuer Frame direkt aktiv
     } catch (err) {
       setError(err.message);
     } finally {
       setLoading(false);
     }
-  }, [boardId]);
+  }, [boardId, fieldType]);
 
   // ── Frame aktualisieren (Spieler/Elemente speichern) ──
   const updateFrame = useCallback(async (frameId, patch) => {
@@ -59,11 +68,11 @@ export function useFrames(boardId) {
         method: 'PUT',
         body: JSON.stringify(patch),
       });
-      setFrames((prev) => prev.map((f) => f._id === frameId ? updated : f));
+      setFrames((prev) => prev.map((f) => f._id === frameId ? withBall(updated, fieldType) : f));
     } catch (err) {
       setError(err.message);
     }
-  }, [boardId]);
+  }, [boardId, fieldType]);
 
   // ── Frame löschen ──
   const deleteFrame = useCallback(async (frameId) => {

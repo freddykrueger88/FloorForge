@@ -193,7 +193,21 @@ export function buildDefaultPlayers(fieldType) {
   const positions = DEFAULT_POSITIONS_BY_FIELD[fieldType] ?? DEFAULT_POSITIONS_BY_FIELD.large;
   const home = (positions.home ?? []).map((p) => ({ ...p, team: 'home' }));
   const away = (positions.away ?? []).map((p) => ({ ...p, team: 'away' }));
-  return [...home, ...away];
+  return ensureBall([...home, ...away], fieldType);
+}
+
+// ROADMAP-Backlog "beweglicher Ball": der Ball wird bewusst NICHT als
+// eigenes Datenmodell/eigene Spalte eingeführt, sondern als Eintrag mit
+// team:'ball' im selben players-Array wie die Spieler – dadurch
+// funktionieren Drag & Drop (id-Match), Frame-Persistenz und die
+// Frame-zu-Frame-Interpolation in useAnimation.js unverändert mit,
+// ohne dass Backend/Datenmodell etwas davon wissen müssen.
+export const BALL_ID = 'ball';
+
+export function ensureBall(players = [], fieldType = 'large') {
+  if (players.some((p) => p.team === 'ball')) return players;
+  const field = IFF_FIELDS[fieldType] ?? IFF_FIELDS.large;
+  return [...players, { id: BALL_ID, team: 'ball', role: null, x: field.width / 2, y: field.height / 2 }];
 }
 
 /**

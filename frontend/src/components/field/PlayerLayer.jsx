@@ -15,6 +15,7 @@
  */
 import { Layer } from 'react-konva';
 import PlayerToken from './PlayerToken.jsx';
+import BallToken from './BallToken.jsx';
 
 export default function PlayerLayer({
   players     = [],
@@ -23,6 +24,7 @@ export default function PlayerLayer({
   offsetY,
   homeColor   = { fill: '#1d4ed8', stroke: '#1e3a8a' },
   awayColor   = { fill: '#dc2626', stroke: '#991b1b' },
+  ballColor   = '#f97316',
   selectedId  = null,
   onSelect,
   onDragEnd,
@@ -38,6 +40,27 @@ export default function PlayerLayer({
   return (
     <Layer>
       {players.map((p) => {
+        // ROADMAP-Backlog "beweglicher Ball": der Ball ist ein Eintrag mit
+        // team:'ball' im selben Array wie die Spieler (siehe ensureBall()
+        // in constants/fieldConfig.js) – eigenes, einfacheres Token statt
+        // PlayerToken (keine Rolle, kein Torwart-Rautenform, kein Namenslabel).
+        if (p.team === 'ball') {
+          return (
+            <BallToken
+              key={p.id}
+              ball={p}
+              scale={scale}
+              offsetX={offsetX}
+              offsetY={offsetY}
+              color={ballColor}
+              isSelected={p.id === selectedId}
+              onSelect={onSelect}
+              onDragEnd={onDragEnd}
+              snapToGrid={snapToGrid}
+              readonly={readonly}
+            />
+          );
+        }
         const color = p.team === 'home' ? homeColor : awayColor;
         return (
           <PlayerToken

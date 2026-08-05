@@ -107,13 +107,17 @@ export default async function renderFieldFrame({
     layer.add(new Konva.Circle({ x: d.x, y: d.y, radius: lw * 2.5, fill: colors.line }));
   }
 
-  // Ball
-  layer.add(new Konva.Circle({ x: cx, y: cy, radius: ballR, fill: ballColor, stroke: 'rgba(0,0,0,0.4)', strokeWidth: Math.max(1, lw * 0.8) }));
-
-  // Spieler
+  // Spieler + Ball (ROADMAP-Backlog "beweglicher Ball": der Ball ist ein
+  // Eintrag mit team:'ball' im selben players-Array, siehe ensureBall() in
+  // constants/fieldConfig.js – kein fixer Mittelpunkt mehr, sondern die
+  // tatsächliche Position aus dem jeweiligen Frame)
   for (const p of players) {
     const px_ = ox + p.x * scale;
     const py_ = oy + p.y * scale;
+    if (p.team === 'ball') {
+      layer.add(new Konva.Circle({ x: px_, y: py_, radius: ballR, fill: ballColor, stroke: 'rgba(0,0,0,0.4)', strokeWidth: Math.max(1, lw * 0.8) }));
+      continue;
+    }
     const r   = Math.max(8, scale * 0.45);
     const col = p.team === 'home' ? homeColor : awayColor;
     layer.add(new Konva.Circle({ x: px_, y: py_, radius: r, fill: col.fill, stroke: col.stroke ?? col.fill, strokeWidth: Math.max(1.5, lw) }));

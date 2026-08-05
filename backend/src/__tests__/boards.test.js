@@ -52,9 +52,17 @@ describe('Board CRUD', () => {
       .set('Cookie', userA.cookie);
     expect(res.status).toBe(200);
     expect(res.body.data).toHaveLength(1);
-    expect(res.body.data[0].players).toHaveLength(12); // Großfeld: 6 Heim + 6 Auswärts
+    expect(res.body.data[0].players).toHaveLength(13); // Großfeld: 6 Heim + 6 Auswärts + Ball
     expect(res.body.data[0].players.some((p) => p.team === 'home' && p.role === 'TW')).toBe(true);
     expect(res.body.data[0].players.some((p) => p.team === 'away' && p.role === 'TW')).toBe(true);
+  });
+
+  it('platziert im ersten Frame einen beweglichen Ball am Feldmittelpunkt (ROADMAP-Backlog)', async () => {
+    const res = await request(app)
+      .get(`/api/boards/${boardId}/frames`)
+      .set('Cookie', userA.cookie);
+    const ball = res.body.data[0].players.find((p) => p.team === 'ball');
+    expect(ball).toEqual({ id: 'ball', team: 'ball', role: null, x: 20, y: 10 }); // Großfeld-Mittelpunkt
   });
 
   it('legt bei anderem Feldtyp die passende Spieleranzahl an', async () => {
@@ -68,7 +76,7 @@ describe('Board CRUD', () => {
       .get(`/api/boards/${createRes.body.data._id}/frames`)
       .set('Cookie', userA.cookie);
     expect(framesRes.body.data).toHaveLength(1);
-    expect(framesRes.body.data[0].players).toHaveLength(8); // Kleinfeld: 4 Heim + 4 Auswärts
+    expect(framesRes.body.data[0].players).toHaveLength(9); // Kleinfeld: 4 Heim + 4 Auswärts + Ball
 
     await request(app).delete(`/api/boards/${createRes.body.data._id}`).set('Cookie', userA.cookie);
   });

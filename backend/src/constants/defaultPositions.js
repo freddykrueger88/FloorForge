@@ -81,5 +81,10 @@ export function buildDefaultPlayers(fieldType) {
   const positions = DEFAULT_POSITIONS_BY_FIELD[fieldType] ?? DEFAULT_POSITIONS_BY_FIELD.large;
   const home = (positions.home ?? []).map((p) => ({ ...p, team: 'home' }));
   const away = (positions.away ?? []).map((p) => ({ ...p, team: 'away' }));
-  return [...home, ...away];
+  // ROADMAP-Backlog "beweglicher Ball": Eintrag im selben players-Array
+  // statt eigenem Datenmodell – siehe ensureBall() im Frontend-Pendant
+  // (frontend/src/constants/fieldConfig.js), MUSS synchron gehalten werden.
+  const dims = FIELD_DIMENSIONS[fieldType] ?? FIELD_DIMENSIONS.large;
+  const ball = { id: 'ball', team: 'ball', role: null, x: dims.width / 2, y: dims.height / 2 };
+  return [...home, ...away, ball];
 }

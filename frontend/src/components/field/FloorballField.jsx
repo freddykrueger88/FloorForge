@@ -12,7 +12,6 @@ import { DrawingLayer } from '../drawing/index.js';
 
 export { FIELD_COLORS };
 
-const BALL_RADIUS_M = 0.115; // IFF: Floorball-Durchmesser ca. 72mm → Radius ~0.115m (visuell leicht vergrößert)
 const DEFAULT_BALL_COLOR = '#f97316'; // Hot Orange
 const FACEOFF_INSET_M = 1.5; // IFF: Anspiel-Punkte 1,5m von den Langseiten entfernt
 
@@ -83,7 +82,6 @@ export default function FloorballField({
   const keeperDisplayD = Math.min(keeperD, keeperW * 0.8) * AREA_SCALE;
   const goalW_px = px(field.goalWidth),      goalD_px = px(field.goalDepth);
   const goalInset = px(field.goalLineInset);
-  const ballR = Math.max(4, px(BALL_RADIUS_M));
 
   // Anspiel-Punkte (IFF-Regelwerk): Mittelpunkt + 6 weitere Punkte auf der
   // Mittellinie und den gedachten Verlängerungen der Torlinien, je 1,5m von
@@ -135,15 +133,6 @@ export default function FloorballField({
             Bereich zwischen Bande und Tor bleibt frei bespielbar */}
         <Rect x={ox+goalInset-goalD_px} y={cy-goalW_px/2} width={goalD_px} height={goalW_px} fill="transparent" stroke={colors.goal} strokeWidth={lw2}/>
         <Rect x={ox+fieldW-goalInset} y={cy-goalW_px/2} width={goalD_px} height={goalW_px} fill="transparent" stroke={colors.goal} strokeWidth={lw2}/>
-        {/* Ball am Anstosspunkt (Spielfeldmitte) */}
-        <Circle
-          x={cx} y={cy}
-          radius={ballR}
-          fill={ballColor ?? DEFAULT_BALL_COLOR}
-          stroke="rgba(0,0,0,0.4)"
-          strokeWidth={Math.max(1, lw * 0.8)}
-          listening={false}
-        />
         <Text x={ox} y={oy-20} width={fieldW} align="center" text={field.label} fontSize={Math.max(10,px(0.6))} fill={colors.text} fontFamily="Inter, system-ui, sans-serif"/>
       </Layer>
 
@@ -168,7 +157,7 @@ export default function FloorballField({
         players={players}
         scale={scale}
         offsetX={ox} offsetY={oy}
-        homeColor={homeColor} awayColor={awayColor}
+        homeColor={homeColor} awayColor={awayColor} ballColor={ballColor}
         selectedId={selectedPlayerId}
         onSelect={onSelectPlayer}
         onDragEnd={onDragEndPlayer}
