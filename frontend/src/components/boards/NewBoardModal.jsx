@@ -55,71 +55,73 @@ export default function NewBoardModal({ onConfirm, onClose, loading, defaultFiel
         </header>
 
         <form onSubmit={handleSubmit} className={styles.form} noValidate>
-          <label className={styles.label} htmlFor="board-name">
-            {t('dialogs.newBoard.nameLabel')}
-          </label>
-          <input
-            ref={nameRef}
-            id="board-name"
-            className={styles.input}
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder={t('dialogs.newBoard.namePlaceholder')}
-            maxLength={80}
-            required
-            aria-required="true"
-          />
+          <div className={styles.fields}>
+            <label className={styles.label} htmlFor="board-name">
+              {t('dialogs.newBoard.nameLabel')}
+            </label>
+            <input
+              ref={nameRef}
+              id="board-name"
+              className={styles.input}
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder={t('dialogs.newBoard.namePlaceholder')}
+              maxLength={80}
+              required
+              aria-required="true"
+            />
 
-          <label className={styles.label} htmlFor="board-opponent">
-            {t('dialogs.newBoard.opponentLabel')}
-          </label>
-          <input
-            id="board-opponent"
-            className={styles.input}
-            type="text"
-            value={opponent}
-            onChange={(e) => setOpponent(e.target.value)}
-            placeholder={t('dialogs.newBoard.opponentPlaceholder')}
-            maxLength={80}
-          />
+            <label className={styles.label} htmlFor="board-opponent">
+              {t('dialogs.newBoard.opponentLabel')}
+            </label>
+            <input
+              id="board-opponent"
+              className={styles.input}
+              type="text"
+              value={opponent}
+              onChange={(e) => setOpponent(e.target.value)}
+              placeholder={t('dialogs.newBoard.opponentPlaceholder')}
+              maxLength={80}
+            />
 
-          <label className={styles.label} htmlFor="board-category">
-            {t('dialogs.newBoard.categoryLabel')}
-          </label>
-          <select
-            id="board-category"
-            className={styles.input}
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-          >
-            {CATEGORIES.map((c) => (
-              <option key={c} value={c}>{t(`exerciseCategory.${c || 'none'}`)}</option>
-            ))}
-          </select>
-
-          <fieldset className={styles.fieldset}>
-            <legend className={styles.legend}>{t('dialogs.newBoard.fieldTypeLegend')}</legend>
-            <div className={styles.typeGrid}>
-              {FIELD_TYPES.map(({ value, label, desc }) => (
-                <label
-                  key={value}
-                  className={`${styles.typeCard} ${fieldType === value ? styles.typeActive : ''}`}
-                >
-                  <input
-                    type="radio"
-                    name="fieldType"
-                    value={value}
-                    checked={fieldType === value}
-                    onChange={() => setFieldType(value)}
-                    className={styles.radioHidden}
-                  />
-                  <span className={styles.typeLabel}>{label}</span>
-                  <span className={styles.typeDesc}>{desc}</span>
-                </label>
+            <label className={styles.label} htmlFor="board-category">
+              {t('dialogs.newBoard.categoryLabel')}
+            </label>
+            <select
+              id="board-category"
+              className={styles.input}
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+            >
+              {CATEGORIES.map((c) => (
+                <option key={c} value={c}>{t(`exerciseCategory.${c || 'none'}`)}</option>
               ))}
-            </div>
-          </fieldset>
+            </select>
+
+            <fieldset className={styles.fieldset}>
+              <legend className={styles.legend}>{t('dialogs.newBoard.fieldTypeLegend')}</legend>
+              <div className={styles.typeGrid}>
+                {FIELD_TYPES.map(({ value, label, desc }) => (
+                  <label
+                    key={value}
+                    className={`${styles.typeCard} ${fieldType === value ? styles.typeActive : ''}`}
+                  >
+                    <input
+                      type="radio"
+                      name="fieldType"
+                      value={value}
+                      checked={fieldType === value}
+                      onChange={() => setFieldType(value)}
+                      className={styles.radioHidden}
+                    />
+                    <span className={styles.typeLabel}>{label}</span>
+                    <span className={styles.typeDesc}>{desc}</span>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+          </div>
 
           <div className={styles.actions}>
             <button type="button" className={styles.cancelBtn} onClick={onClose}>
