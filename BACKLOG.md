@@ -1,0 +1,543 @@
+# BACKLOG.md
+
+# OpenFloorball Coach Platform
+
+## Entwicklungs-Backlog
+
+---
+
+# Arbeitsprinzip
+
+Jede Aufgabe wird nach folgenden Kriterien bewertet:
+
+Priorität:
+
+* P0 = unverzichtbar für MVP
+* P1 = wichtig nach MVP
+* P2 = spätere Erweiterung
+* P3 = Zukunftsidee
+
+Jede Aufgabe benötigt:
+
+* klare Beschreibung
+* technische Überlegungen
+* Akzeptanzkriterien
+
+---
+
+# EPIC 001 – Projektfundament
+
+## Ziel
+
+Eine stabile Entwicklungsgrundlage schaffen.
+
+Priorität:
+
+P0
+
+---
+
+# ISSUE 001
+
+## Repository erstellen
+
+### Beschreibung
+
+Einrichtung der Projektstruktur.
+
+---
+
+## Aufgaben
+
+Erstellen:
+
+* Repository
+* README
+* CLAUDE.md
+* Dokumentationsstruktur
+* Lizenzdatei
+
+---
+
+## Akzeptanzkriterien
+
+* Projekt kann lokal gestartet werden
+* Dokumentation vorhanden
+* Entwicklungsregeln definiert
+
+---
+
+# ISSUE 002
+
+## Entwicklungsumgebung
+
+### Aufgaben
+
+Einrichten:
+
+* TypeScript
+* Linter
+* Formatter
+* Testing Framework
+* Build System
+
+---
+
+## Akzeptanzkriterien
+
+Ein Entwickler kann das Projekt nach Anleitung starten.
+
+---
+
+# ISSUE 003
+
+## Designsystem Grundstruktur
+
+### Aufgaben
+
+Erstellen:
+
+* Farben
+* Typografie
+* Buttons
+* Dialoge
+* Grundkomponenten
+
+---
+
+## Anforderungen
+
+Design muss unterstützen:
+
+* Desktop
+* Tablet
+* Touch
+
+---
+
+# EPIC 002 – Floorball Field Engine
+
+## Ziel
+
+Das digitale Spielfeld.
+
+Priorität:
+
+P0
+
+---
+
+# ISSUE 004
+
+## Floorballfeld rendern
+
+### Beschreibung
+
+Darstellung eines offiziellen Floorballfeldes.
+
+---
+
+## Anforderungen
+
+Unterstützen:
+
+* Linien
+* Tore
+* Zonen
+* Mittellinie
+
+---
+
+## Akzeptanzkriterien
+
+Das Feld wird korrekt dargestellt.
+
+---
+
+# ISSUE 005
+
+## Spielfeldinteraktion
+
+### Aufgaben
+
+Unterstützen:
+
+* Zoom
+* Verschieben
+* Touch-Gesten
+
+---
+
+## Akzeptanzkriterien
+
+Nutzung auf Tablet möglich.
+
+---
+
+# EPIC 003 – Spieler-System
+
+## Ziel
+
+Spielerobjekte verwalten.
+
+Priorität:
+
+P0
+
+---
+
+# ISSUE 006
+
+## Spielerobjekt erstellen
+
+### Eigenschaften
+
+* Position
+* Farbe
+* Nummer
+* Name
+* Teamzugehörigkeit
+
+---
+
+# ISSUE 007
+
+## Spieler bewegen
+
+Unterstützung:
+
+* Drag & Drop
+* Snap Funktionen optional
+
+---
+
+# ISSUE 008
+
+## Spielergruppen
+
+Unterstützung:
+
+* eigene Mannschaft
+* Gegner
+* Torhüter
+
+---
+
+# EPIC 004 – Taktikobjekte
+
+## Ziel
+
+Trainer können Situationen zeichnen.
+
+Priorität:
+
+P0
+
+---
+
+# ISSUE 009
+
+## Laufwege
+
+Unterstützen:
+
+* Linie
+* Richtung
+* Farbe
+* Geschwindigkeit
+
+---
+
+# ISSUE 010
+
+## Passwege
+
+Unterstützen:
+
+* Start
+* Ziel
+* Ballbewegung
+
+---
+
+# ISSUE 011
+
+## Schüsse
+
+Unterstützen:
+
+* Richtung
+* Ziel
+* Markierung
+
+---
+
+# ISSUE 012
+
+## Zonen und Markierungen
+
+Unterstützen:
+
+* Rechtecke
+* Kreise
+* Freihand
+* Text
+
+---
+
+# EPIC 005 – Szenen und Animation
+
+## Ziel
+
+Taktische Abläufe erklären.
+
+Priorität:
+
+P0
+
+---
+
+# ISSUE 013
+
+## Szenensystem
+
+Eine Taktik besteht aus mehreren Szenen.
+
+---
+
+## Beispiel
+
+```text
+Szene 1:
+Aufstellung
+
+Szene 2:
+Bewegung
+
+Szene 3:
+Abschluss
+```
+
+---
+
+# ISSUE 014
+
+## Timeline
+
+Minimal:
+
+* Start
+* Pause
+* Ende
+
+---
+
+# ISSUE 015
+
+## Animationssteuerung
+
+Unterstützen:
+
+* Wiederholung
+* Geschwindigkeit
+
+---
+
+# EPIC 006 – Speicherung
+
+## Ziel
+
+Taktiken dauerhaft speichern.
+
+Priorität:
+
+P0
+
+---
+
+# ISSUE 016
+
+## Datenmodell implementieren
+
+Objekte:
+
+* Tactic
+* Scene
+* Player
+* Movement
+
+---
+
+# ISSUE 017
+
+## Lokale Speicherung
+
+Unterstützung:
+
+* Browser Storage
+* IndexedDB
+
+---
+
+# ISSUE 018
+
+## Export und Import
+
+Formate:
+
+* JSON
+* PNG
+* PDF
+
+---
+
+# EPIC 007 – UX Qualität
+
+Priorität:
+
+P0
+
+---
+
+# ISSUE 019
+
+## Trainerfreundliche Oberfläche
+
+Prüfen:
+
+* wenige Klicks
+* klare Navigation
+* verständliche Begriffe
+
+---
+
+# ISSUE 020
+
+## Accessibility
+
+Prüfen:
+
+* Tastatur
+* Kontrast
+* Screenreader
+* Touch
+
+---
+
+# EPIC 008 – Qualität
+
+Priorität:
+
+P0
+
+---
+
+# ISSUE 021
+
+## Tests
+
+Erstellen:
+
+* Unit Tests
+* Integration Tests
+* UI Tests
+
+---
+
+# ISSUE 022
+
+## Performance
+
+Prüfen:
+
+* Rendering
+* Speicher
+* Animation
+* mobile Geräte
+
+---
+
+# EPIC 009 – Nach MVP
+
+Priorität:
+
+P1
+
+---
+
+## Teamfunktionen
+
+* Accounts
+* Teams
+* Rollen
+* Teilen
+
+---
+
+## Trainingsplanung
+
+* Übungen
+* Einheiten
+* Kalender
+
+---
+
+## Synchronisation
+
+* Offline Sync
+* Cloud Sync
+* Konfliktlösung
+
+---
+
+# EPIC 010 – Zukunft
+
+Priorität:
+
+P2/P3
+
+---
+
+## Videoanalyse
+
+* Clips
+* Markierungen
+* Taktiklayer
+
+---
+
+## KI-Assistent
+
+* Trainingsvorschläge
+* Taktikvarianten
+* Analysehilfe
+
+---
+
+## Community
+
+* Bibliotheken
+* Vorlagen
+* Austausch
+
+---
+
+# Entscheidungsregel
+
+Bei jedem neuen Issue prüfen:
+
+1. Unterstützt es Trainer?
+2. Passt es zur Architektur?
+3. Ist Datenschutz gewährleistet?
+4. Ist es die einfachste Lösung?
+5. Kann es modular umgesetzt werden?
+
+---
+
+# Ende Backlog
+
+OpenFloorball Coach wird Schritt für Schritt aufgebaut.
+
+Qualität vor Geschwindigkeit.
+
+Nachhaltigkeit vor kurzfristigen Features.
