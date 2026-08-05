@@ -2,68 +2,103 @@
 
 # OpenFloorball Coach Platform
 
-## Leitfaden für Beiträge und Zusammenarbeit
+## Leitfaden für Beiträge zur Open-Source-Community
 
 ---
 
 # 1. Willkommen
 
-OpenFloorball Coach ist ein Open-Source-Projekt.
+Danke für dein Interesse an OpenFloorball.
 
-Das Ziel ist, gemeinsam eine hochwertige, offene und nachhaltige Plattform für Floorball-Trainer zu entwickeln.
+Das Projekt lebt von Menschen, die Wissen, Ideen und Fähigkeiten teilen.
 
-Beiträge sind willkommen:
+Beiträge können sein:
 
-* Code
-* Dokumentation
+* Programmcode
+* Floorball-Wissen
+* Übungen
+* Taktiken
 * Übersetzungen
 * Designs
-* Ideen
+* Dokumentation
 * Tests
-* Fehlermeldungen
+* Feedback
+
+---
+
+# 2. Grundprinzip
+
+Jeder Beitrag soll das Projekt verbessern.
+
+Dabei zählen:
+
+* Qualität
+* Verständlichkeit
+* Respekt
+* Nachhaltigkeit
+
+---
+
+# 3. Welche Beiträge sind willkommen?
+
+## Entwickler
+
+Beispiele:
+
+* neue Funktionen
+* Fehlerbehebungen
+* Tests
+* Performance-Verbesserungen
+
+---
+
+## Trainer und Vereine
+
+Beispiele:
+
+* Trainingsübungen
+* Taktikbeispiele
+* Coachingwissen
 * Verbesserungsvorschläge
 
 ---
 
-# 2. Grundprinzipien für Beiträge
+## Designer
 
-Jeder Beitrag sollte diese Werte unterstützen:
+Beispiele:
 
-* Trainerorientierung
-* Datenschutz
-* Open Source
-* Sicherheit
-* Einfachheit
-* Nachhaltigkeit
-
-Ein technisch beeindruckendes Feature ist nicht automatisch ein gutes Feature.
-
-Der Nutzen entscheidet.
+* UI-Verbesserungen
+* Icons
+* Bedienkonzepte
 
 ---
 
-# 3. Bevor du Code schreibst
+## Übersetzer
 
-Vor größeren Änderungen:
+Beispiele:
 
-1. Problem verstehen
-2. Bestehende Architektur prüfen
-3. Alternativen bewerten
-4. Auswirkungen dokumentieren
-
-Bei größeren Änderungen:
-
-* Issue erstellen
-* Diskussion führen
-* Architekturentscheidung dokumentieren
+* neue Sprachen
+* bessere Formulierungen
+* Fachbegriffe
 
 ---
 
-# 4. Entwicklungsablauf
+# 4. Vor einer größeren Änderung
 
-Empfohlener Ablauf:
+Bei größeren Änderungen zuerst diskutieren.
 
-```
+Beispiele:
+
+* neue Architektur
+* große Funktionen
+* neue Abhängigkeiten
+
+---
+
+Ablauf:
+
+```text id="4m8q3x"
+
 Idee
 
 ↓
@@ -76,199 +111,288 @@ Planung
 
 ↓
 
-Implementierung
+Umsetzung
 
-↓
-
-Tests
-
-↓
-
-Review
-
-↓
-
-Dokumentation
-
-↓
-
-Veröffentlichung
 ```
 
 ---
 
-# 5. Code-Qualität
+# 5. Fehler melden
 
-Code soll sein:
+Ein guter Fehlerbericht enthält:
 
-* verständlich
-* wartbar
-* dokumentiert
-* getestet
-
-Bevorzuge:
-
-* klare Namen
-* kleine Funktionen
-* einfache Lösungen
-
-Vermeide:
-
-* unnötige Abstraktionen
-* versteckte Logik
-* technische Schulden
+* kurze Beschreibung
+* Schritte zur Wiederholung
+* erwartetes Verhalten
+* tatsächliches Verhalten
+* verwendetes Gerät
+* Version
 
 ---
 
-# 6. Pull Requests
+Beispiel:
 
-Jeder Pull Request sollte erklären:
+Nicht:
+
+"Das Board geht nicht."
+
+---
+
+Besser:
+
+"Wenn drei Spieler verschoben werden und danach gespeichert wird, erscheinen sie nach erneutem Öffnen an falscher Position."
+
+---
+
+# 6. Feature-Wünsche
+
+Neue Ideen beschreiben:
+
+* welches Problem besteht
+* wer davon profitiert
+* warum es wichtig ist
+
+---
+
+Nicht nur:
+
+"Bitte Funktion X hinzufügen."
+
+---
+
+Sondern:
+
+"Trainer benötigen X, weil Situation Y häufig auftritt."
+
+---
+
+# 7. Code-Beiträge
+
+Code sollte:
+
+* verständlich sein
+* getestet sein
+* dokumentiert sein
+
+---
+
+Vor einem Pull Request:
+
+Prüfen:
+
+* Tests erfolgreich
+* keine Warnungen
+* Dokumentation aktualisiert
+
+---
+
+# 8. Pull Requests
+
+Ein Pull Request sollte erklären:
 
 ## Was wurde geändert?
-
-Beschreibung der Änderung.
 
 ---
 
 ## Warum wurde es geändert?
 
-Welches Problem wird gelöst?
-
 ---
 
 ## Wie wurde es getestet?
 
-Welche Tests wurden durchgeführt?
+---
+
+## Gibt es Auswirkungen?
 
 ---
 
-## Datenschutzprüfung
+# 9. Kleine Pull Requests bevorzugt
 
-Wurden neue Daten verarbeitet?
+Besser:
 
-Wenn ja:
+Ein klarer kleiner Beitrag.
 
-* welche?
-* warum?
-* wie geschützt?
+Als:
 
----
-
-# 7. Tests
-
-Neue Funktionen benötigen Tests.
-
-Mindestens:
-
-* Logiktests
-* relevante Integrationstests
-
-Bei wichtigen Nutzerabläufen:
-
-* End-to-End Tests
+Eine große Änderung mit vielen Themen.
 
 ---
 
-# 8. Dokumentation
+# 10. Commit-Regeln
 
-Neue Funktionen benötigen:
+Commits sollen beschreiben:
 
-* technische Dokumentation
-* Benutzerinformationen
-
-Architekturänderungen benötigen:
-
-* ADR
-
----
-
-# 9. Sicherheit
-
-Nie committen:
-
-* Passwörter
-* API-Schlüssel
-* private Daten
-* Zugangsdaten
-
----
-
-# 10. Datenschutzprüfung
-
-Vor jedem Feature fragen:
-
-1. Werden neue Daten gespeichert?
-2. Sind diese notwendig?
-3. Können weniger Daten verwendet werden?
-4. Können Nutzer Kontrolle behalten?
-
----
-
-# 11. Design-Beiträge
-
-Designs sollen berücksichtigen:
-
-* einfache Bedienung
-* Accessibility
-* mobile Nutzung
-* Trainerworkflow
-
----
-
-# 12. Kommunikation
-
-Die Community soll respektvoll zusammenarbeiten.
-
-Wir diskutieren:
-
-* Ideen
-* technische Lösungen
-* Probleme
-
-Nicht:
-
-* Personen
-
----
-
-# 13. Commit-Regeln
-
-Commits sollen:
-
-* klein
-* nachvollziehbar
-* verständlich
-
-sein.
+Was wurde gemacht?
 
 Beispiele:
 
 Gut:
 
+```text id="7q2m4n"
+Add tactic export format
+
+Improve offline conflict handling
+
+Fix player positioning bug
 ```
-Add powerplay animation timeline
-```
+
+---
 
 Schlecht:
 
-```
-Updates
+```text id="1n8p6m"
+update
 ```
 
 ---
 
-# 14. Lizenz und Rechte
+# 11. Floorball-Inhalte beitragen
 
-Alle Beiträge müssen die Projektlizenz respektieren.
+Bei Übungen und Taktiken beachten:
 
-Beiträge müssen vom Einreicher rechtmäßig eingebracht werden können.
+* klare Beschreibung
+* Ziel der Übung
+* Altersgruppe
+* benötigte Spielerzahl
+* Coachingpunkte
 
 ---
 
-# 15. Unser Ziel
+Beispielstruktur:
 
-Wir bauen nicht nur Software.
+```text id="8p3m5q"
 
-Wir bauen eine offene Plattform für eine Sportgemeinschaft.
+Name
 
-Jeder Beitrag soll dieses Ziel unterstützen.
+Ziel
+
+Organisation
+
+Ablauf
+
+Varianten
+
+Coachingpunkte
+
+```
+
+---
+
+# 12. Quellen und Urheberrecht
+
+Beiträge dürfen keine geschützten Inhalte verletzen.
+
+Nicht hochladen:
+
+* fremde Trainingsunterlagen ohne Erlaubnis
+* geschützte Bilder
+* Videos ohne Rechte
+
+---
+
+# 13. Datenschutz bei Beiträgen
+
+Keine echten personenbezogenen Daten veröffentlichen.
+
+Nicht verwenden:
+
+* Spielerlisten
+* private Kontaktdaten
+* Kinderinformationen
+
+---
+
+# 14. Code Review
+
+Beiträge werden geprüft auf:
+
+* technische Qualität
+* Sicherheit
+* Datenschutz
+* Wartbarkeit
+
+---
+
+# 15. Fachliche Reviews
+
+Floorball-Inhalte können zusätzlich geprüft werden durch:
+
+* Trainer
+* erfahrene Spieler
+* Fachpersonen
+
+---
+
+# 16. Diskussionen
+
+Kommunikation soll sein:
+
+* respektvoll
+* sachlich
+* lösungsorientiert
+
+---
+
+Nicht akzeptiert:
+
+* persönliche Angriffe
+* Abwertung anderer Meinungen
+* diskriminierendes Verhalten
+
+---
+
+# 17. Entwicklung mit KI
+
+KI-generierter Code ist erlaubt.
+
+Aber:
+
+Der Beitragende bleibt verantwortlich.
+
+---
+
+Vor Einreichung prüfen:
+
+* funktioniert der Code?
+* wurde er verstanden?
+* wurde er getestet?
+
+---
+
+# 18. Lizenzierung von Beiträgen
+
+Mit einem Beitrag erklärst du dich bereit, dass er entsprechend der Projektregeln genutzt werden darf.
+
+---
+
+Die genauen Lizenzbedingungen werden im Projekt dokumentiert.
+
+---
+
+# 19. Neue Maintainer
+
+Aktive Mitglieder können Verantwortung übernehmen.
+
+Entscheidend sind:
+
+* Qualität der Beiträge
+* Zusammenarbeit
+* Zuverlässigkeit
+
+---
+
+# 20. Danke
+
+Jeder Beitrag hilft dabei, eine offene digitale Grundlage für Floorball zu schaffen.
+
+Ob Code, Wissen oder Feedback:
+
+Jede Verbesserung zählt.
+
+---
+
+# Leitgedanke
+
+Open Source bedeutet nicht nur gemeinsam Software zu schreiben.
+
+Open Source bedeutet gemeinsam Wissen aufzubauen.
