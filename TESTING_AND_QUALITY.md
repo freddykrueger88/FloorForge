@@ -8,289 +8,244 @@
 
 # 1. Ziel
 
-Die Plattform soll:
+OpenFloorball soll eine stabile und vertrauenswürdige Plattform werden.
 
-* zuverlässig
-* sicher
-* wartbar
-* verständlich
+Qualität bedeutet:
 
-entwickelt werden.
-
-Qualität entsteht nicht am Ende.
-
-Qualität entsteht während jeder Entwicklungsphase.
+* Funktionen funktionieren zuverlässig
+* Daten bleiben geschützt
+* Änderungen verursachen keine unerwarteten Fehler
+* Nutzer können sich auf das System verlassen
 
 ---
 
-# 2. Grundprinzip
+# 2. Qualitätsprinzipien
 
-Jede Funktion benötigt:
+Das Projekt folgt:
 
-```text id="8q4m2z"
+* Testbarkeit
+* Transparenz
+* Automatisierung
+* kontinuierlicher Verbesserung
 
-Planung
+---
+
+# 3. Definition von "fertig"
+
+Eine Funktion ist erst fertig, wenn:
+
+✅ Funktion implementiert
+✅ Tests vorhanden
+✅ Dokumentation aktualisiert
+✅ Datenschutz geprüft
+✅ Sicherheitsaspekte geprüft
+✅ Nutzerfluss verständlich
+
+---
+
+# 4. Testebenen
+
+Die Plattform verwendet mehrere Teststufen:
+
+```text id="4m7q9p"
+
+Unit Tests
 
 ↓
 
-Implementierung
+Integration Tests
 
 ↓
 
-Test
+End-to-End Tests
 
 ↓
 
-Review
-
-↓
-
-Dokumentation
+Manuelle Prüfung
 
 ```
 
 ---
 
-# 3. Testpyramide
+# 5. Unit Tests
 
-Die Plattform verwendet mehrere Testebenen.
-
----
-
-# Ebene 1: Unit Tests
-
-Testen einzelne Bausteine.
+Prüfen einzelne Komponenten.
 
 Beispiele:
 
 * Berechnungen
 * Datenverarbeitung
-* Hilfsfunktionen
+* Spielfeldlogik
+* Synchronisationslogik
 
 ---
 
-# Ebene 2: Integration Tests
+# 6. Integration Tests
 
-Testen Zusammenspiel.
+Prüfen das Zusammenspiel.
 
 Beispiele:
 
-* API
-* Datenbank
-* Synchronisation
+* Frontend mit API
+* API mit Datenbank
+* Synchronisation mit Speicherung
 
 ---
 
-# Ebene 3: End-to-End Tests
+# 7. End-to-End Tests
 
-Testen echte Nutzerabläufe.
+Prüfen reale Nutzerabläufe.
 
 Beispiele:
 
-Trainer erstellt Taktik.
+Trainer:
+
+```text id="7q2m5n"
+
+Login
 
 ↓
 
-Speichert.
+Taktik erstellen
 
 ↓
 
-Öffnet später wieder.
+Speichern
+
+↓
+
+Auf Tablet öffnen
+
+```
 
 ---
 
-# 4. Testabdeckung
+# 8. Taktikboard Tests
 
-Nicht die höchste Prozentzahl ist das Ziel.
+Besonders wichtig.
 
-Ziel:
+Testen:
 
-Die wichtigen Bereiche sind geschützt.
-
----
-
-Priorität:
-
-1. Daten
-2. Berechtigungen
-3. Taktiklogik
-4. Synchronisation
-5. UI-Kernfunktionen
-
----
-
-# 5. Taktikboard Tests
-
-Besonders testen:
-
----
-
-## Spielfeld
-
-Prüfen:
-
-* korrekte Darstellung
-* Skalierung
-* Positionierung
-
----
-
-## Spieler
-
-Prüfen:
-
-* platzieren
-* bewegen
-* speichern
-
----
-
-## Bewegungen
-
-Prüfen:
-
-* Laufwege
-* Pässe
-* Animationen
-
----
-
-# 6. Datenmodell Tests
-
-Prüfen:
-
-* Beziehungen
-* Validierung
-* Migrationen
-
----
-
-# 7. Datenschutz Tests
-
-Prüfen:
-
-* Löschung funktioniert
-* Export funktioniert
-* keine unnötigen Daten gespeichert werden
-
----
-
-# 8. Berechtigungs-Tests
-
-Jede Rolle testen.
-
-Beispiel:
-
-Trainer A:
-
-darf eigene Taktik bearbeiten.
-
----
-
-Trainer B:
-
-darf sie nicht bearbeiten.
+* Spieler bewegen
+* Laufwege erstellen
+* Szenen wechseln
+* Speichern
+* Laden
+* Exportieren
 
 ---
 
 # 9. Offline Tests
 
-Prüfen:
+Offline-Funktionen müssen geprüft werden.
 
-* App ohne Internet
-* Speicherung lokal
-* Synchronisation später
+Beispiele:
 
----
+Internetverlust:
 
-# 10. Konflikttests
+```text id="5n8m2q"
 
-Szenario:
-
-Gerät A verändert Inhalt.
-
-Gerät B verändert denselben Inhalt.
-
----
-
-Erwartung:
-
-Konflikt wird erkannt.
-
----
-
-# 11. Sicherheitstests
-
-Regelmäßig prüfen:
-
-* Abhängigkeiten
-* Zugriffskontrolle
-* Eingaben
-* APIs
-
----
-
-# 12. UI Tests
-
-Prüfen:
-
-* Navigation
-* Touch-Bedienung
-* wichtige Nutzerwege
-
----
-
-# 13. Accessibility Tests
-
-Pflicht:
-
-* Tastaturbedienung
-* Kontrast
-* Fokuszustände
-* verständliche Texte
-
----
-
-# 14. Performance Tests
-
-Besonders relevant:
-
-* viele Spielerobjekte
-* lange Animationen
-* große Bibliotheken
-
----
-
-# 15. Mobile Tests
-
-Testgeräte:
-
-* Smartphone
-* Tablet
-* verschiedene Bildschirmgrößen
-
----
-
-# 16. Browser-Unterstützung
-
-Definieren:
-
-* unterstützte Browser
-* Mindestversionen
-
----
-
-# 17. Automatisierung
-
-Jede Änderung sollte automatisch prüfen:
-
-```text id="5r7m9k"
-
-Code
+Änderung erstellen
 
 ↓
 
-Lint
+Verbindung verlieren
+
+↓
+
+Weiterarbeiten
+
+↓
+
+Synchronisieren
+
+```
+
+---
+
+# 10. Synchronisationsprüfung
+
+Testfälle:
+
+* gleiche Änderung auf zwei Geräten
+* Konflikte
+* Wiederherstellung
+
+---
+
+# 11. Mobile Tests
+
+Prüfen:
+
+* Tablet
+* Smartphone
+* verschiedene Bildschirmgrößen
+* Touch-Bedienung
+
+---
+
+# 12. Performance Tests
+
+Wichtige Szenarien:
+
+* große Taktiken
+* viele Übungen
+* große Bibliotheken
+* mehrere Nutzer
+
+---
+
+# 13. Sicherheitstests
+
+Prüfen:
+
+* Berechtigungen
+* Zugriffsschutz
+* Eingabevalidierung
+* sichere Datenverarbeitung
+
+---
+
+# 14. Datenschutztests
+
+Prüfen:
+
+* Datenlöschung
+* Export
+* Berechtigungen
+* minimale Speicherung
+
+---
+
+# 15. KI-Funktionstests
+
+KI-Funktionen benötigen zusätzliche Prüfung.
+
+Testen:
+
+* richtige Antworten
+* nachvollziehbare Ergebnisse
+* keine sensiblen Datenweitergabe
+
+---
+
+# 16. Keine personenbezogene Bewertung
+
+Tests müssen verhindern:
+
+* automatische Spielerbewertung
+* versteckte Profile
+* unerlaubte Analyse
+
+---
+
+# 17. Automatisierte Prüfungen
+
+Bei Änderungen automatisch ausführen:
+
+```text id="9p3m6q"
+
+Code Prüfung
 
 ↓
 
@@ -298,148 +253,152 @@ Tests
 
 ↓
 
-Build
+Security Scan
 
 ↓
 
-Security Check
+Build
 
 ```
 
 ---
 
-# 18. Continuous Integration
+# 18. Code Qualität
 
-Jeder Pull Request startet automatische Prüfungen.
+Prüfen:
+
+* verständliche Struktur
+* keine unnötige Komplexität
+* konsistente Standards
 
 ---
 
 # 19. Fehlerberichte
 
-Ein Fehler benötigt:
+Jeder Fehler sollte enthalten:
 
 * Beschreibung
-* Schritte zum Nachstellen
-* erwartetes Verhalten
-* tatsächliches Verhalten
+* Ursache
+* Lösung
+* Test zur Vermeidung
 
 ---
 
-# 20. Regressionstests
+# 20. Regression Tests
 
-Behobene Fehler werden dauerhaft getestet.
-
----
-
-# 21. Code Review
-
-Prüfung:
-
-## Funktion
-
-Löst die Änderung das Problem?
+Behobene Fehler sollen dauerhaft getestet werden.
 
 ---
 
-## Architektur
+Beispiel:
 
-Passt sie zum System?
+Ein Fehler im Taktikboard wird behoben.
 
----
+Danach:
 
-## Sicherheit
-
-Entstehen Risiken?
+Test bleibt bestehen.
 
 ---
 
-## Datenschutz
+# 21. Testdaten
 
-Werden Daten korrekt behandelt?
+Testdaten müssen:
 
----
+* anonym
+* realistisch
+* löschbar
 
-# 22. Dokumentationsprüfung
-
-Neue Funktionen benötigen:
-
-* technische Beschreibung
-* Nutzerbeschreibung
+sein.
 
 ---
 
-# 23. Testdaten
+# 22. Keine echten Nutzerdaten
 
-Keine echten personenbezogenen Daten verwenden.
+Nie verwenden:
 
-Verwenden:
-
-* Beispieldaten
-* anonymisierte Daten
-
----
-
-# 24. KI-generierter Code
-
-Besondere Prüfung.
-
-Claude Code erzeugter Code muss:
-
-* verstanden werden
-* getestet werden
-* dokumentiert werden
+* echte Spielerinformationen
+* private Vereinsdaten
+* Produktionsdaten
 
 ---
 
-# 25. Release-Kriterien
+# 23. Release-Prüfung
 
-Eine Version darf veröffentlicht werden wenn:
+Vor Veröffentlichung:
 
-* Tests erfolgreich
-* keine kritischen Fehler
-* Dokumentation aktuell
-* Sicherheitsprüfung bestanden
+Checkliste:
 
----
+```text id="2k7m9v"
 
-# 26. Qualitätsmetriken
+☑ Tests erfolgreich
 
-Beobachten:
+☑ Dokumentation aktuell
 
-* Fehleranzahl
-* Stabilität
-* Ladezeiten
-* Nutzerfeedback
+☑ Datenschutz geprüft
 
-Nicht:
+☑ Sicherheitsprüfung abgeschlossen
 
-unnötige Nutzerüberwachung.
+☑ Backup geprüft
+
+```
 
 ---
 
-# 27. Floorball-Fachprüfung
+# 24. Qualität bei Open Source
 
-Neue Funktionen prüfen:
+Jeder Beitrag soll:
 
-* entspricht sie echtem Training?
-* versteht ein Trainer sie?
-* verbessert sie den Ablauf?
+* nachvollziehbar
+* überprüfbar
+* wartbar
 
----
-
-# 28. Claude-Code-Arbeitsregel
-
-Kein Feature gilt als fertig ohne:
-
-1. Implementierung
-2. Test
-3. Dokumentation
-4. Review
+sein.
 
 ---
 
-# 29. Leitgedanke
+# 25. Claude-Code-Regeln
 
-Softwarequalität bedeutet nicht, dass keine Fehler existieren.
+Vor Abschluss einer Aufgabe:
 
-Softwarequalität bedeutet, dass Fehler kontrolliert erkannt und verbessert werden.
+Fragen:
+
+1. Welche Tests wurden ergänzt?
+2. Welche bestehenden Tests wurden geprüft?
+3. Welche Risiken entstehen?
+4. Welche Dokumentation wurde aktualisiert?
+
+---
+
+# 26. Prioritäten
+
+Wenn Zeit begrenzt ist:
+
+Priorität:
+
+1. Sicherheit
+2. Datenintegrität
+3. Kernfunktionen
+4. Benutzerfreundlichkeit
+5. Erweiterungen
+
+---
+
+# 27. Qualitätskultur
+
+Fehler sind Hinweise zur Verbesserung.
+
+Das Ziel ist nicht:
+
+Fehler zu verstecken.
+
+Das Ziel ist:
+
+das System besser zu machen.
+
+---
+
+# Leitgedanke
+
+Ein gutes Open-Source-Projekt wächst nicht nur durch neue Funktionen.
+
+Es wächst durch Vertrauen in die Qualität.
