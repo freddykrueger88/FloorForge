@@ -10,6 +10,7 @@ import useThemeStore from '../store/themeStore.js';
 import { useSettings } from '../hooks/useSettings.js';
 import { useAutoSave } from '../hooks/useAutoSave.js';
 import { useBackup } from '../hooks/useBackup.js';
+import { useTeams } from '../hooks/useTeams.js';
 import { apiFetch } from '../utils/apiFetch.js';
 import { applyGlobalPreferences } from '../utils/applyPreferences.js';
 import { formatDate } from '../utils/formatDate.js';
@@ -184,6 +185,88 @@ export default function SettingsPage() {
     }
   };
 
+  // ── Teams (ROADMAP Phase 2) ──────────────────────────────────────
+  const {
+    teams, error: teamsError,
+    fetchTeams, createTeam, deleteTeam,
+    fetchMembers, inviteMember, updateMemberRole, removeMember,
+  } = useTeams();
+  useEffect(() => { fetchTeams().catch(() => {}); }, [fetchTeams]);
+
+  const [newTeamName,    setNewTeamName]    = useState('');
+  const [expandedTeamId, setExpandedTeamId] = useState(null);
+  const [membersByTeam,  setMembersByTeam]  = useState({});
+  const [inviteForm,     setInviteForm]     = useState({ email: '', role: 'coach' });
+
+  const handleCreateTeam = async (e) => {
+    e.preventDefault();
+    const trimmed = newTeamName.trim();
+    if (!trimmed) return;
+    try {
+      await createTeam(trimmed);
+      setNewTeamName('');
+    } catch { /* error via hook */ }
+  };
+
+  const handleToggleTeam = async (teamId) => {
+    if (expandedTeamId === teamId) { setExpandedTeamId(null); return; }
+    setExpandedTeamId(teamId);
+    if (!membersByTeam[teamId]) {
+      try {
+        const members = await fetchMembers(teamId);
+        setMembersByTeam((prev) => ({ ...prev, [teamId]: members }));
+      } catch { /* error via hook */ }
+    }
+  };
+
+  const handleInvite = async (e, teamId) => {
+    e.preventDefault();
+    const trimmed = inviteForm.email.trim();
+    if (!trimmed) return;
+    try {
+      const member = await inviteMember(teamId, { email: trimmed, role: inviteForm.role });
+      setMembersByTeam((prev) => ({ ...prev, [teamId]: [...(prev[teamId] ?? []), member] }));
+      setInviteForm({ email: '', role: 'coach' });
+    } catch { /* error via hook */ }
+  };
+
+  const handleRoleChange = async (teamId, memberId, role) => {
+    try {
+      const updated = await updateMemberRole(teamId, memberId, role);
+      setMembersByTeam((prev) => ({
+        ...prev,
+        [teamId]: (prev[teamId] ?? []).map((m) => m._id === memberId ? updated : m),
+      }));
+    } catch { /* error via hook */ }
+  };
+
+  const handleRemoveMember = async (teamId, memberId) => {
+    try {
+      await removeMember(teamId, memberId);
+      setMembersByTeam((prev) => ({
+        ...prev,
+        [teamId]: (prev[teamId] ?? []).filter((m) => m._id !== memberId),
+      }));
+    } catch { /* error via hook */ }
+  };
+
+  const handleDeleteTeam = async (teamId) => {
+    try {
+      await deleteTeam(teamId);
+      setExpandedTeamId((prev) => prev === teamId ? null : prev);
+    } catch { /* error via hook */ }
+  };
+
+  const handleLeaveTeam = async (teamId) => {
+    const myMembership = (membersByTeam[teamId] ?? []).find((m) => m.userId === user.id);
+    if (!myMembership) return;
+    try {
+      await removeMember(teamId, myMembership._id);
+      await fetchTeams();
+      setExpandedTeamId((prev) => prev === teamId ? null : prev);
+    } catch { /* error via hook */ }
+  };
+
   // ── Darstellung/Barrierefreiheit/Spielfeld-Standards: sofort speichern ──
   const patch = async (fields) => {
     const updated = await updateSettings(fields);
@@ -210,6 +293,7 @@ export default function SettingsPage() {
           <a href="#spielfeld">{t('settings.nav.fieldStandards')}</a>
           <a href="#barrierefreiheit">{t('settings.nav.accessibility')}</a>
           <a href="#konto">{t('settings.nav.account')}</a>
+          <a href="#teams">{t('settings.nav.teams')}</a>
           <a href="#daten">{t('settings.nav.data')}</a>
           {isAdmin && <a href="#admin">{t('settings.nav.admin')}</a>}
         </nav>
@@ -454,6 +538,122 @@ export default function SettingsPage() {
             </div>
 
             <button className={styles.logoutBtn} onClick={logout}>{t('nav.logout')}</button>
+          </section>
+
+          {/* ── Teams (ROADMAP Phase 2) ──────────────────────────── */}
+          <section id="teams" className={styles.section}>
+            <h2>{t('settings.nav.teams')}</h2>
+            <p className={styles.hint}>{t('settings.teams.intro')}</p>
+
+            {teamsError && <p className={styles.msgError}>⚠️ {teamsError}</p>}
+
+            <form className={styles.subForm} onSubmit={handleCreateTeam}>
+              <h3 className={styles.subTitle}>{t('settings.teams.createTitle')}</h3>
+              <input
+                className={styles.textInput}
+                value={newTeamName}
+                onChange={(e) => setNewTeamName(e.target.value)}
+                placeholder={t('settings.teams.namePlaceholder')}
+                maxLength={80}
+                aria-label={t('settings.teams.namePlaceholder')}
+              />
+              <button type="submit" className={styles.submitBtn} disabled={!newTeamName.trim()}>
+                {t('settings.teams.createBtn')}
+              </button>
+            </form>
+
+            {teams.length === 0 ? (
+              <p className={styles.hint}>{t('settings.teams.noTeams')}</p>
+            ) : (
+              <ul className={styles.teamList} role="list">
+                {teams.map((team) => (
+                  <li key={team._id} className={styles.teamRow}>
+                    <button
+                      type="button"
+                      className={styles.teamHeader}
+                      onClick={() => handleToggleTeam(team._id)}
+                      aria-expanded={expandedTeamId === team._id}
+                    >
+                      <span>{team.name}</span>
+                      <span className={styles.roleBadge}>{t(`settings.teams.role.${team.role}`)}</span>
+                    </button>
+
+                    {expandedTeamId === team._id && (
+                      <div className={styles.teamDetail}>
+                        {team.role === 'owner' && (
+                          <form className={styles.subForm} onSubmit={(e) => handleInvite(e, team._id)}>
+                            <h3 className={styles.subTitle}>{t('settings.teams.inviteTitle')}</h3>
+                            <input
+                              type="email"
+                              className={styles.textInput}
+                              value={inviteForm.email}
+                              onChange={(e) => setInviteForm((f) => ({ ...f, email: e.target.value }))}
+                              placeholder={t('settings.teams.inviteEmailPlaceholder')}
+                              aria-label={t('settings.teams.inviteEmailPlaceholder')}
+                            />
+                            <select
+                              className={styles.select}
+                              value={inviteForm.role}
+                              onChange={(e) => setInviteForm((f) => ({ ...f, role: e.target.value }))}
+                              aria-label={t('settings.teams.inviteRoleAriaLabel')}
+                            >
+                              <option value="coach">{t('settings.teams.role.coach')}</option>
+                              <option value="member">{t('settings.teams.role.member')}</option>
+                            </select>
+                            <button type="submit" className={styles.submitBtn} disabled={!inviteForm.email.trim()}>
+                              {t('settings.teams.inviteBtn')}
+                            </button>
+                          </form>
+                        )}
+
+                        <ul className={styles.memberList} role="list">
+                          {(membersByTeam[team._id] ?? []).map((m) => (
+                            <li key={m._id} className={styles.memberRow}>
+                              <span className={styles.memberEmail}>{m.email}</span>
+                              {team.role === 'owner' ? (
+                                <>
+                                  <select
+                                    className={styles.select}
+                                    value={m.role}
+                                    onChange={(e) => handleRoleChange(team._id, m._id, e.target.value)}
+                                    aria-label={t('settings.teams.rowRoleAriaLabel', { email: m.email })}
+                                  >
+                                    <option value="owner">{t('settings.teams.role.owner')}</option>
+                                    <option value="coach">{t('settings.teams.role.coach')}</option>
+                                    <option value="member">{t('settings.teams.role.member')}</option>
+                                  </select>
+                                  <button
+                                    className={styles.smallBtnDanger}
+                                    onClick={() => handleRemoveMember(team._id, m._id)}
+                                    aria-label={t('settings.teams.removeMemberAriaLabel', { email: m.email })}
+                                  >
+                                    🗑
+                                  </button>
+                                </>
+                              ) : (
+                                <span className={styles.roleBadge}>{t(`settings.teams.role.${m.role}`)}</span>
+                              )}
+                            </li>
+                          ))}
+                        </ul>
+
+                        <div className={styles.teamActions}>
+                          {team.role === 'owner' ? (
+                            <button className={styles.smallBtnDanger} onClick={() => handleDeleteTeam(team._id)}>
+                              {t('settings.teams.deleteBtn')}
+                            </button>
+                          ) : (
+                            <button className={styles.smallBtnDanger} onClick={() => handleLeaveTeam(team._id)}>
+                              {t('settings.teams.leaveBtn')}
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
           </section>
 
           {/* ── Daten: Export/Import ─────────────────────────────── */}

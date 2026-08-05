@@ -6,7 +6,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import styles from './TrainingSessionCard.module.css';
 
-export default function TrainingSessionCard({ session, onClick, onRename, onDelete }) {
+export default function TrainingSessionCard({ session, teamName, onClick, onRename, onDelete }) {
   const { t } = useTranslation();
   const [editing, setEditing] = useState(false);
   const [name,    setName   ] = useState(session.name);
@@ -35,6 +35,7 @@ export default function TrainingSessionCard({ session, onClick, onRename, onDele
           {t('trainings.itemCount', { count: session.itemCount })}
           {session.itemCount > 0 && ` · ${t('trainings.totalMinutes', { count: session.totalMinutes })}`}
         </span>
+        {teamName && <span className={styles.teamBadge}>{teamName}</span>}
       </button>
 
       <div className={styles.nameRow}>

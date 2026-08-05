@@ -27,11 +27,11 @@ export function useRoster() {
     }
   }, []);
 
-  const addRosterPlayer = useCallback(async ({ name, jerseyNumber, role }) => {
+  const addRosterPlayer = useCallback(async ({ name, jerseyNumber, role, teamId }) => {
     try {
       const newPlayer = await apiFetch(BASE, {
         method: 'POST',
-        body: JSON.stringify({ name, jerseyNumber, role }),
+        body: JSON.stringify({ name, jerseyNumber, role, teamId }),
       });
       setRosterPlayers((prev) => [...prev, newPlayer]);
       return newPlayer;

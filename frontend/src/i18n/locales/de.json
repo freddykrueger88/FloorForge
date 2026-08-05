@@ -68,6 +68,7 @@
       "fieldStandards": "Spielfeld-Standards",
       "accessibility": "Barrierefreiheit",
       "account": "Konto",
+      "teams": "Teams",
       "data": "Daten",
       "admin": "Admin"
     },
@@ -131,7 +132,27 @@
     "scheduleDaily": "Täglich",
     "scheduleWeekly": "Wöchentlich",
     "retention": "Aufbewahrung (Anzahl Läufe)",
-    "loadingPage": "Wird geladen…"
+    "loadingPage": "Wird geladen…",
+    "teams": {
+      "intro": "Ein Team teilt Kader, Playbooks, Trainingspläne und Formationsvorlagen zwischen mehreren Trainern.",
+      "createTitle": "Neues Team",
+      "namePlaceholder": "Name des Teams",
+      "createBtn": "Team anlegen",
+      "noTeams": "Noch kein Team – lege eins an, um Inhalte mit Co-Trainern zu teilen.",
+      "inviteTitle": "Mitglied einladen",
+      "inviteEmailPlaceholder": "E-Mail-Adresse",
+      "inviteRoleAriaLabel": "Rolle des einzuladenden Mitglieds",
+      "inviteBtn": "Einladen",
+      "rowRoleAriaLabel": "Rolle von {{email}} ändern",
+      "removeMemberAriaLabel": "{{email}} aus dem Team entfernen",
+      "deleteBtn": "Team löschen",
+      "leaveBtn": "Team verlassen",
+      "role": {
+        "owner": "Cheftrainer",
+        "coach": "Co-Trainer",
+        "member": "Spieler"
+      }
+    }
   },
   "accessibility": {
     "skipToContent": "Zum Inhalt springen",
@@ -610,6 +631,8 @@
     "emptyStateDesc": "Erstelle deine erste Trainingseinheit und plane eine Sequenz aus mehreren Übungen.",
     "namePlaceholder": "Name der Trainingseinheit",
     "nameAriaLabel": "Name für neue Trainingseinheit",
+    "teamAriaLabel": "Team, mit dem diese Trainingseinheit geteilt wird",
+    "personalOption": "Persönlich (nicht geteilt)",
     "confirmCreate": "Anlegen",
     "cancelCreate": "Abbrechen",
     "newSession": "Neue Trainingseinheit",
@@ -666,6 +689,9 @@
     "numberAriaLabel": "Rückennummer des neuen Kader-Spielers",
     "roleAriaLabel": "Position des neuen Kader-Spielers",
     "roleNone": "–",
+    "teamAriaLabel": "Team, mit dem dieser Kader-Eintrag geteilt wird",
+    "personalOption": "Persönlich (nicht geteilt)",
+    "teamBadgeFallback": "Team",
     "add": "Hinzufügen",
     "limitHint": "Maximal 40 Kader-Spieler",
     "rowNameAriaLabel": "Name von {{name}}",

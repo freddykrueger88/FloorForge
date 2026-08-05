@@ -169,6 +169,16 @@
   border-color: var(--color-primary);
 }
 
+.teamBadge {
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--color-text-muted);
+  background: var(--color-surface-2);
+  border-radius: var(--radius-sm);
+  padding: 2px var(--space-2);
+  white-space: nowrap;
+}
+
 .deleteBtn {
   width: 32px;
   height: 32px;

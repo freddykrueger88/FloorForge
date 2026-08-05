@@ -6,6 +6,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRoster } from '../hooks/useRoster.js';
+import { useTeams } from '../hooks/useTeams.js';
 import styles from './RosterPage.module.css';
 
 const ROLES = ['TW', 'V', 'C', 'S'];
@@ -16,16 +17,23 @@ export default function RosterPage() {
     rosterPlayers, loading, error,
     fetchRoster, addRosterPlayer, updateRosterPlayer, deleteRosterPlayer, canAddRosterPlayer,
   } = useRoster();
+  // ROADMAP Phase 2: eigene Teams laden, um Kader-Einträge optional
+  // team-geteilt statt rein persönlich anzulegen.
+  const { teams, fetchTeams } = useTeams();
 
   const [name,   setName  ] = useState('');
   const [number, setNumber] = useState('');
   const [role,   setRole  ] = useState('');
+  const [teamId, setTeamId] = useState('');
 
   const load = useCallback(async () => {
     try { await fetchRoster(); } catch { /* error via hook */ }
   }, [fetchRoster]);
 
   useEffect(() => { load(); }, [load]);
+  useEffect(() => { fetchTeams().catch(() => {}); }, [fetchTeams]);
+
+  const teamsICanShareWith = teams.filter((tm) => tm.role === 'owner' || tm.role === 'coach');
 
   const handleAdd = async (e) => {
     e.preventDefault();
@@ -36,6 +44,7 @@ export default function RosterPage() {
         name: trimmed,
         jerseyNumber: number === '' ? null : Number(number),
         role: role === '' ? null : role,
+        teamId: teamId === '' ? null : teamId,
       });
       setName(''); setNumber(''); setRole('');
     } catch { /* error via hook */ }
@@ -82,6 +91,19 @@ export default function RosterPage() {
           <option value="">{t('roster.roleNone')}</option>
           {ROLES.map((r) => <option key={r} value={r}>{r}</option>)}
         </select>
+        {teamsICanShareWith.length > 0 && (
+          <select
+            className={styles.roleSelect}
+            value={teamId}
+            onChange={(e) => setTeamId(e.target.value)}
+            aria-label={t('roster.teamAriaLabel')}
+          >
+            <option value="">{t('roster.personalOption')}</option>
+            {teamsICanShareWith.map((tm) => (
+              <option key={tm._id} value={tm._id}>{tm.name}</option>
+            ))}
+          </select>
+        )}
         <button type="submit" className={styles.addBtn} disabled={loading || !name.trim() || !canAddRosterPlayer}>
           {t('roster.add')}
         </button>
@@ -133,6 +155,11 @@ export default function RosterPage() {
                 <option value="">{t('roster.roleNone')}</option>
                 {ROLES.map((r) => <option key={r} value={r}>{r}</option>)}
               </select>
+              {player.teamId && (
+                <span className={styles.teamBadge}>
+                  {teams.find((tm) => tm._id === player.teamId)?.name ?? t('roster.teamBadgeFallback')}
+                </span>
+              )}
               <button
                 className={styles.deleteBtn}
                 onClick={() => deleteRosterPlayer(player._id)}

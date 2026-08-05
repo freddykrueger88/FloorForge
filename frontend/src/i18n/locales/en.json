@@ -68,6 +68,7 @@
       "fieldStandards": "Field Defaults",
       "accessibility": "Accessibility",
       "account": "Account",
+      "teams": "Teams",
       "data": "Data",
       "admin": "Admin"
     },
@@ -131,7 +132,27 @@
     "scheduleDaily": "Daily",
     "scheduleWeekly": "Weekly",
     "retention": "Retention (number of runs)",
-    "loadingPage": "Loading…"
+    "loadingPage": "Loading…",
+    "teams": {
+      "intro": "A team shares roster, playbooks, training sessions, and formation templates between multiple coaches.",
+      "createTitle": "New Team",
+      "namePlaceholder": "Team name",
+      "createBtn": "Create team",
+      "noTeams": "No team yet – create one to share content with assistant coaches.",
+      "inviteTitle": "Invite member",
+      "inviteEmailPlaceholder": "Email address",
+      "inviteRoleAriaLabel": "Role of the member to invite",
+      "inviteBtn": "Invite",
+      "rowRoleAriaLabel": "Change {{email}}'s role",
+      "removeMemberAriaLabel": "Remove {{email}} from the team",
+      "deleteBtn": "Delete team",
+      "leaveBtn": "Leave team",
+      "role": {
+        "owner": "Head Coach",
+        "coach": "Assistant Coach",
+        "member": "Player"
+      }
+    }
   },
   "accessibility": {
     "skipToContent": "Skip to content",
@@ -610,6 +631,8 @@
     "emptyStateDesc": "Create your first training session and plan a sequence of drills.",
     "namePlaceholder": "Training session name",
     "nameAriaLabel": "Name for new training session",
+    "teamAriaLabel": "Team this training session is shared with",
+    "personalOption": "Personal (not shared)",
     "confirmCreate": "Create",
     "cancelCreate": "Cancel",
     "newSession": "New training session",
@@ -666,6 +689,9 @@
     "numberAriaLabel": "Jersey number of the new roster player",
     "roleAriaLabel": "Position of the new roster player",
     "roleNone": "–",
+    "teamAriaLabel": "Team this roster entry is shared with",
+    "personalOption": "Personal (not shared)",
+    "teamBadgeFallback": "Team",
     "add": "Add",
     "limitHint": "Maximum 40 roster players",
     "rowNameAriaLabel": "Name of {{name}}",

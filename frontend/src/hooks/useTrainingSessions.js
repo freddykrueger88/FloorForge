@@ -29,9 +29,9 @@ export function useTrainingSessions() {
   const fetchSessions = useCallback(() =>
     request(async () => setSessions(await apiFetch(BASE))), [request]);
 
-  const createSession = useCallback((name) =>
+  const createSession = useCallback((name, teamId = null) =>
     request(async () => {
-      const newSession = await apiFetch(BASE, { method: 'POST', body: JSON.stringify({ name }) });
+      const newSession = await apiFetch(BASE, { method: 'POST', body: JSON.stringify({ name, teamId }) });
       setSessions((prev) => [newSession, ...prev]);
       return newSession;
     }), [request]);
