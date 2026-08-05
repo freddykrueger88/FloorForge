@@ -200,7 +200,9 @@
     "createFirstBoard": "Erstes Spielfeld anlegen",
     "opponentSearchPlaceholder": "🔍 Nach Gegner suchen…",
     "opponentSearchAriaLabel": "Spielfelder nach Gegner durchsuchen",
-    "noBoardsMatchFilter": "Keine Spielfelder für diesen Filter"
+    "noBoardsMatchFilter": "Keine Spielfelder für diesen Filter",
+    "categoryFilterAll": "Alle Kategorien",
+    "categoryFilterAriaLabel": "Nach Übungskategorie filtern"
   },
   "notFound": {
     "title": "404",
@@ -480,6 +482,14 @@
     "ariaLabel": "Board: {{name}}",
     "noNotes": "Keine Notizen"
   },
+  "exerciseCategory": {
+    "none": "Keine Kategorie",
+    "technik": "Technik",
+    "taktik": "Taktik",
+    "kondition": "Kondition",
+    "spielverstaendnis": "Spielverständnis",
+    "nachwuchs": "Nachwuchs"
+  },
   "dialogs": {
     "newBoard": {
       "title": "Neues Spielfeld",
@@ -488,6 +498,14 @@
       "namePlaceholder": "z.B. Spiel vs. Hamburg, Training 04.08.",
       "opponentLabel": "Gegner (optional)",
       "opponentPlaceholder": "z.B. HC Hamburg",
+      "categoryLabel": "Kategorie (optional)",
+      "ageGroupLabel": "Altersklasse",
+      "ageGroupPlaceholder": "z.B. U15",
+      "goalLabel": "Ziel",
+      "goalPlaceholder": "z.B. Passgenauigkeit verbessern",
+      "materialLabel": "Material",
+      "materialPlaceholder": "z.B. 4 Hütchen",
+      "exerciseDetailsLegend": "Übungs-Details (optional)",
       "fieldTypeLegend": "Spielfeld-Typ",
       "fieldDescLarge": "40 × 20 m – Offizielles IFF Spielfeld",
       "fieldDescSmall": "20 × 14 m",

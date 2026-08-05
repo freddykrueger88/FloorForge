@@ -177,6 +177,78 @@ describe('Board opponent (ROADMAP-Backlog: Gegner-Tagging)', () => {
   });
 });
 
+describe('Board-Übungsmetadaten (ROADMAP-Backlog: Übungsbibliothek)', () => {
+  it('legt ein Board mit Kategorie/Altersgruppe/Ziel/Material an', async () => {
+    const res = await request(app)
+      .post('/api/boards')
+      .set('Cookie', userA.cookie)
+      .send({
+        name: 'Passübung', fieldType: 'large',
+        category: 'technik', ageGroup: 'U15', goal: 'Passgenauigkeit verbessern', material: '4 Hütchen',
+      });
+    expect(res.status).toBe(201);
+    expect(res.body.data.category).toBe('technik');
+    expect(res.body.data.ageGroup).toBe('U15');
+    expect(res.body.data.goal).toBe('Passgenauigkeit verbessern');
+    expect(res.body.data.material).toBe('4 Hütchen');
+
+    const listRes = await request(app).get('/api/boards').set('Cookie', userA.cookie);
+    const found = listRes.body.data.find((b) => b._id === res.body.data._id);
+    expect(found.category).toBe('technik');
+
+    await request(app).delete(`/api/boards/${res.body.data._id}`).set('Cookie', userA.cookie);
+  });
+
+  it('defaultet auf leere Strings ohne Angabe', async () => {
+    const res = await request(app)
+      .post('/api/boards')
+      .set('Cookie', userA.cookie)
+      .send({ name: 'Ohne Metadaten', fieldType: 'large' });
+    expect(res.status).toBe(201);
+    expect(res.body.data.category).toBe('');
+    expect(res.body.data.ageGroup).toBe('');
+    expect(res.body.data.goal).toBe('');
+    expect(res.body.data.material).toBe('');
+    await request(app).delete(`/api/boards/${res.body.data._id}`).set('Cookie', userA.cookie);
+  });
+
+  it('aktualisiert die Übungsmetadaten per PUT', async () => {
+    const createRes = await request(app)
+      .post('/api/boards')
+      .set('Cookie', userA.cookie)
+      .send({ name: 'Metadaten-Update-Test', fieldType: 'large' });
+    const id = createRes.body.data._id;
+
+    const res = await request(app)
+      .put(`/api/boards/${id}`)
+      .set('Cookie', userA.cookie)
+      .send({ category: 'kondition', ageGroup: 'U19', goal: 'Ausdauer', material: 'Leibchen' });
+    expect(res.status).toBe(200);
+    expect(res.body.data.category).toBe('kondition');
+    expect(res.body.data.ageGroup).toBe('U19');
+    expect(res.body.data.goal).toBe('Ausdauer');
+    expect(res.body.data.material).toBe('Leibchen');
+
+    await request(app).delete(`/api/boards/${id}`).set('Cookie', userA.cookie);
+  });
+
+  it('lehnt eine ungültige Kategorie mit 422 ab', async () => {
+    const res = await request(app)
+      .post('/api/boards')
+      .set('Cookie', userA.cookie)
+      .send({ name: 'Ungültige Kategorie', fieldType: 'large', category: 'ausdauer' });
+    expect(res.status).toBe(422);
+  });
+
+  it('lehnt zu lange Altersgruppe/Ziel/Material mit 422 ab', async () => {
+    const res = await request(app)
+      .post('/api/boards')
+      .set('Cookie', userA.cookie)
+      .send({ name: 'Zu lang', fieldType: 'large', ageGroup: 'X'.repeat(41) });
+    expect(res.status).toBe(422);
+  });
+});
+
 describe('Board playbookId (Issue #52)', () => {
   let playbookId;
   let foreignPlaybookId;

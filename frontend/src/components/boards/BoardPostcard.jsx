@@ -61,6 +61,9 @@ export default function BoardPostcard({ board, onClick, playbooks, onChangePlayb
           {board.opponent && (
             <span className={styles.badge}>{t('boardCard.vsOpponent', { opponent: board.opponent })}</span>
           )}
+          {board.category && (
+            <span className={styles.badge}>{t(`exerciseCategory.${board.category}`)}</span>
+          )}
           {!isOwner && (
             <span className={styles.badge}>
               {board.accessLevel === 'write' ? `✏️ ${t('boardShare.writeBadge')}` : `👁 ${t('boardShare.readonlyBadge')}`}

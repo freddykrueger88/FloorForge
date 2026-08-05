@@ -121,6 +121,16 @@ export async function runMigrations() {
     // Tabelle – reicht für Filterung/Wiederfinden, kein Bedarf an
     // strukturierten Gegner-Datensätzen.
     await client.query(`ALTER TABLE boards ADD COLUMN IF NOT EXISTS opponent TEXT NOT NULL DEFAULT '';`);
+    // ROADMAP-Backlog "Übungsbibliothek": Boards lassen sich zusätzlich als
+    // Trainings-Übung einordnen – additive Metadaten, ein Board bleibt
+    // gleichzeitig als taktisches Spielzug-Board nutzbar (kein separater
+    // "Exercise"-Typ, um das Datenmodell nicht zu verdoppeln).
+    await client.query(`ALTER TABLE boards ADD COLUMN IF NOT EXISTS category TEXT NOT NULL DEFAULT ''
+      CHECK (category IN ('', 'technik', 'taktik', 'kondition', 'spielverstaendnis', 'nachwuchs'));`);
+    await client.query(`ALTER TABLE boards ADD COLUMN IF NOT EXISTS age_group TEXT NOT NULL DEFAULT '';`);
+    await client.query(`ALTER TABLE boards ADD COLUMN IF NOT EXISTS goal TEXT NOT NULL DEFAULT '';`);
+    await client.query(`ALTER TABLE boards ADD COLUMN IF NOT EXISTS material TEXT NOT NULL DEFAULT '';`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_boards_category ON boards(category) WHERE category != '';`);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_boards_deleted_at ON boards(deleted_at) WHERE deleted_at IS NOT NULL;`);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_boards_playbook_id ON boards(playbook_id) WHERE playbook_id IS NOT NULL;`);
 

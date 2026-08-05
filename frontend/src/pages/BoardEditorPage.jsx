@@ -87,6 +87,27 @@ export default function BoardEditorPage() {
     updateBoard(boardId, { opponent }).catch(() => {});
   }, [boardId, updateBoard]);
 
+  // ROADMAP-Backlog "Übungsbibliothek"
+  const handleChangeCategory = useCallback((category) => {
+    setBoard((prev) => (prev ? { ...prev, category } : prev));
+    updateBoard(boardId, { category }).catch(() => {});
+  }, [boardId, updateBoard]);
+
+  const handleChangeAgeGroup = useCallback((ageGroup) => {
+    setBoard((prev) => (prev ? { ...prev, ageGroup } : prev));
+    updateBoard(boardId, { ageGroup }).catch(() => {});
+  }, [boardId, updateBoard]);
+
+  const handleChangeGoal = useCallback((goal) => {
+    setBoard((prev) => (prev ? { ...prev, goal } : prev));
+    updateBoard(boardId, { goal }).catch(() => {});
+  }, [boardId, updateBoard]);
+
+  const handleChangeMaterial = useCallback((material) => {
+    setBoard((prev) => (prev ? { ...prev, material } : prev));
+    updateBoard(boardId, { material }).catch(() => {});
+  }, [boardId, updateBoard]);
+
   const field = useField('large');
   const {
     frames, activeFrame, activeIndex, loading: framesLoading,
@@ -577,6 +598,14 @@ export default function BoardEditorPage() {
                   showShareButton={board?.accessLevel === 'owner'}
                   opponent={board?.opponent}
                   onChangeOpponent={canEdit ? handleChangeOpponent : undefined}
+                  category={board?.category}
+                  onChangeCategory={canEdit ? handleChangeCategory : undefined}
+                  ageGroup={board?.ageGroup}
+                  onChangeAgeGroup={canEdit ? handleChangeAgeGroup : undefined}
+                  goal={board?.goal}
+                  onChangeGoal={canEdit ? handleChangeGoal : undefined}
+                  material={board?.material}
+                  onChangeMaterial={canEdit ? handleChangeMaterial : undefined}
                 />
               ),
             },

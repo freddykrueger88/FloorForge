@@ -200,7 +200,9 @@
     "createFirstBoard": "Create your first board",
     "opponentSearchPlaceholder": "🔍 Search by opponent…",
     "opponentSearchAriaLabel": "Search boards by opponent",
-    "noBoardsMatchFilter": "No boards match this filter"
+    "noBoardsMatchFilter": "No boards match this filter",
+    "categoryFilterAll": "All categories",
+    "categoryFilterAriaLabel": "Filter by exercise category"
   },
   "notFound": {
     "title": "404",
@@ -480,6 +482,14 @@
     "ariaLabel": "Board: {{name}}",
     "noNotes": "No notes"
   },
+  "exerciseCategory": {
+    "none": "No category",
+    "technik": "Technique",
+    "taktik": "Tactics",
+    "kondition": "Conditioning",
+    "spielverstaendnis": "Game sense",
+    "nachwuchs": "Youth"
+  },
   "dialogs": {
     "newBoard": {
       "title": "New Field",
@@ -488,6 +498,14 @@
       "namePlaceholder": "e.g. Game vs. Hamburg, Training 08/04",
       "opponentLabel": "Opponent (optional)",
       "opponentPlaceholder": "e.g. HC Hamburg",
+      "categoryLabel": "Category (optional)",
+      "ageGroupLabel": "Age group",
+      "ageGroupPlaceholder": "e.g. U15",
+      "goalLabel": "Goal",
+      "goalPlaceholder": "e.g. Improve passing accuracy",
+      "materialLabel": "Equipment",
+      "materialPlaceholder": "e.g. 4 cones",
+      "exerciseDetailsLegend": "Exercise details (optional)",
       "fieldTypeLegend": "Field type",
       "fieldDescLarge": "40 × 20 m – Official IFF field",
       "fieldDescSmall": "20 × 14 m",

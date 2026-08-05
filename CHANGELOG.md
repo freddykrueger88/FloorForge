@@ -30,6 +30,15 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   ohne Login teilen (z. B. für WhatsApp), unabhängig vom vollen
   Board-Share-Link. Nutzt die in der `exports`-Tabelle bereits
   vorgesehene, aber nie implementierte `format='png'`-Option.
+- Übungsbibliothek-Metadaten (OpenFloorball-Roadmap Phase 3): Boards
+  lassen sich optional als Trainings-Übung einordnen – Kategorie
+  (Technik/Taktik/Kondition/Spielverständnis/Nachwuchs), Altersklasse,
+  Ziel und Material, editierbar im Editor-"Einstellungen"-Tab, in der
+  Board-Übersicht nach Kategorie filterbar. Additive Spalten auf der
+  bestehenden `boards`-Tabelle statt eines separaten Exercise-Modells.
+- Erstes Vitest-Setup für das Frontend (bisher kein Test-Tooling
+  vorhanden): Stores, `useShare`-Hook und i18n-Schlüsselparität
+  zwischen `de.json`/`en.json` sind jetzt automatisiert getestet.
 
 ### Changed
 - Board-Editor: rechtes Menü (Zeichnen-Koordinaten, Lines, Formationen,

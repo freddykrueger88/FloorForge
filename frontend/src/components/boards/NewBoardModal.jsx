@@ -17,8 +17,15 @@ export default function NewBoardModal({ onConfirm, onClose, loading, defaultFiel
     { value: '3v3',    label: t('field.3v3'),    desc: t('dialogs.newBoard.fieldDesc3v3') },
   ];
 
+  // ROADMAP-Backlog "Übungsbibliothek": nur die Kategorie schon bei der
+  // Anlage abfragen (ein Klick, macht das Board sofort filterbar) –
+  // Altersgruppe/Ziel/Material sind Freitext-Details, die im Editor unter
+  // "Einstellungen" ergänzt werden, um den Anlage-Dialog nicht zu überladen.
+  const CATEGORIES = ['', 'technik', 'taktik', 'kondition', 'spielverstaendnis', 'nachwuchs'];
+
   const [name,      setName     ] = useState('');
   const [opponent,  setOpponent ] = useState('');
+  const [category,  setCategory ] = useState('');
   const [fieldType, setFieldType] = useState(defaultFieldType);
   const nameRef = useRef(null);
   const containerRef = useRef(null);
@@ -29,7 +36,7 @@ export default function NewBoardModal({ onConfirm, onClose, loading, defaultFiel
     e.preventDefault();
     const trimmed = name.trim();
     if (!trimmed) { nameRef.current?.focus(); return; }
-    onConfirm({ name: trimmed, fieldType, opponent: opponent.trim() });
+    onConfirm({ name: trimmed, fieldType, opponent: opponent.trim(), category });
   };
 
   return (
@@ -76,6 +83,20 @@ export default function NewBoardModal({ onConfirm, onClose, loading, defaultFiel
             placeholder={t('dialogs.newBoard.opponentPlaceholder')}
             maxLength={80}
           />
+
+          <label className={styles.label} htmlFor="board-category">
+            {t('dialogs.newBoard.categoryLabel')}
+          </label>
+          <select
+            id="board-category"
+            className={styles.input}
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+          >
+            {CATEGORIES.map((c) => (
+              <option key={c} value={c}>{t(`exerciseCategory.${c || 'none'}`)}</option>
+            ))}
+          </select>
 
           <fieldset className={styles.fieldset}>
             <legend className={styles.legend}>{t('dialogs.newBoard.fieldTypeLegend')}</legend>

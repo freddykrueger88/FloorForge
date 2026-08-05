@@ -30,6 +30,10 @@ function toApiBoard(row) {
     elements:     row.elements_json,
     playbookId:   row.playbook_id,
     opponent:     row.opponent,
+    category:     row.category,
+    ageGroup:     row.age_group,
+    goal:         row.goal,
+    material:     row.material,
     // Issue #51 MVP – 'owner' | 'write' | 'read', fehlt die Spalte (z.B.
     // direkt nach createBoard/updateBoard) ist der Requester immer Owner.
     accessLevel:  row.access_level ?? 'owner',
@@ -54,13 +58,15 @@ export async function getBoards(req, res) {
     const result = await pool.query(
       `SELECT * FROM (
          SELECT id, name, notes, field_type, theme, home_color, away_color, ball_color,
-                show_grid, show_names, name_position, playbook_id, opponent, created_at, updated_at,
+                show_grid, show_names, name_position, playbook_id, opponent,
+                category, age_group, goal, material, created_at, updated_at,
                 'owner'::text AS access_level
          FROM boards
          WHERE user_id = $1 AND deleted_at IS NULL
          UNION ALL
          SELECT b.id, b.name, b.notes, b.field_type, b.theme, b.home_color, b.away_color, b.ball_color,
-                b.show_grid, b.show_names, b.name_position, b.playbook_id, b.opponent, b.created_at, b.updated_at,
+                b.show_grid, b.show_names, b.name_position, b.playbook_id, b.opponent,
+                b.category, b.age_group, b.goal, b.material, b.created_at, b.updated_at,
                 bc.permission AS access_level
          FROM boards b
          JOIN board_collaborators bc ON bc.board_id = b.id
@@ -107,6 +113,7 @@ export async function createBoard(req, res) {
     name, fieldType = 'large', theme = 'dark',
     homeColor = '#1d4ed8', awayColor = '#dc2626', ballColor = '#ffffff',
     playbookId = null, opponent = '',
+    category = '', ageGroup = '', goal = '', material = '',
   } = req.body;
 
   try {
@@ -123,10 +130,12 @@ export async function createBoard(req, res) {
     await client.query('BEGIN');
 
     const result = await client.query(
-      `INSERT INTO boards (user_id, name, field_type, theme, home_color, away_color, ball_color, playbook_id, opponent)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      `INSERT INTO boards (user_id, name, field_type, theme, home_color, away_color, ball_color, playbook_id, opponent,
+                            category, age_group, goal, material)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
        RETURNING *`,
-      [req.user.id, name, fieldType, theme, homeColor, awayColor, ballColor, playbookId, opponent]
+      [req.user.id, name, fieldType, theme, homeColor, awayColor, ballColor, playbookId, opponent,
+       category, ageGroup, goal, material]
     );
     const board = result.rows[0];
 
@@ -164,6 +173,10 @@ const UPDATABLE_COLUMNS = {
   elements:     'elements_json',
   playbookId:   'playbook_id',
   opponent:     'opponent',
+  category:     'category',
+  ageGroup:     'age_group',
+  goal:         'goal',
+  material:     'material',
 };
 
 export async function updateBoard(req, res) {

@@ -34,6 +34,10 @@ export default function BoardsPage() {
   // Gegner-Suche (ROADMAP-Backlog): freie Textsuche statt fester Liste,
   // da Gegner ein Freitextfeld ohne feste Werte ist
   const [opponentQuery, setOpponentQuery] = useState('');
+  // Übungskategorie-Filter (ROADMAP-Backlog: Übungsbibliothek): 'all' oder
+  // einer der festen category-Werte aus dem Datenmodell
+  const [categoryFilter, setCategoryFilter] = useState('all');
+  const CATEGORIES = ['technik', 'taktik', 'kondition', 'spielverstaendnis', 'nachwuchs'];
   // Ansicht: Postkarten-Galerie ↔ Kompakt-Kachel (Issue #30)
   const [view, setView] = useState(() => localStorage.getItem(VIEW_STORAGE_KEY) || 'postcard');
 
@@ -57,8 +61,10 @@ export default function BoardsPage() {
     const query = opponentQuery.trim().toLowerCase();
     if (query) result = result.filter((b) => b.opponent?.toLowerCase().includes(query));
 
+    if (categoryFilter !== 'all') result = result.filter((b) => b.category === categoryFilter);
+
     return result;
-  }, [boards, playbookFilter, opponentQuery]);
+  }, [boards, playbookFilter, opponentQuery, categoryFilter]);
 
   const handleChangeBoardPlaybook = async (boardId, playbookId) => {
     try {
@@ -133,6 +139,20 @@ export default function BoardsPage() {
             placeholder={t('boardsPage.opponentSearchPlaceholder')}
             aria-label={t('boardsPage.opponentSearchAriaLabel')}
           />
+        )}
+
+        {boards.length > 0 && (
+          <select
+            className={styles.opponentSearch}
+            value={categoryFilter}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+            aria-label={t('boardsPage.categoryFilterAriaLabel')}
+          >
+            <option value="all">{t('boardsPage.categoryFilterAll')}</option>
+            {CATEGORIES.map((c) => (
+              <option key={c} value={c}>{t(`exerciseCategory.${c}`)}</option>
+            ))}
+          </select>
         )}
 
         {/* Postkarten-Galerie ↔ Kompakt-Kachel Toggle (Issue #30) */}

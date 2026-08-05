@@ -29,6 +29,13 @@ const validateBoard = [
     .isIn(['dark', 'light', 'vikings', 'iff']),
   body('notes').optional().isLength({ max: 500 }).withMessage('Notizen max. 500 Zeichen'),
   body('opponent').optional().trim().isLength({ max: 80 }).withMessage('Gegner max. 80 Zeichen'),
+  body('category')
+    .optional()
+    .isIn(['', 'technik', 'taktik', 'kondition', 'spielverstaendnis', 'nachwuchs'])
+    .withMessage('Ungültige Kategorie'),
+  body('ageGroup').optional().trim().isLength({ max: 40 }).withMessage('Altersklasse max. 40 Zeichen'),
+  body('goal').optional().trim().isLength({ max: 160 }).withMessage('Ziel max. 160 Zeichen'),
+  body('material').optional().trim().isLength({ max: 160 }).withMessage('Material max. 160 Zeichen'),
   body('homeColor').optional().matches(/^#[0-9a-fA-F]{6}$/).withMessage('Heimfarbe muss ein Hex-Code sein'),
   body('awayColor').optional().matches(/^#[0-9a-fA-F]{6}$/).withMessage('Auswärtsfarbe muss ein Hex-Code sein'),
   body('ballColor').optional().matches(/^#[0-9a-fA-F]{6}$/).withMessage('Ballfarbe muss ein Hex-Code sein'),
