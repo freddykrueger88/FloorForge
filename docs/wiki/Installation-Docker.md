@@ -58,3 +58,10 @@ docker compose up -d --build
 | `COOKIE_SECURE` | Session-Cookie nur über HTTPS senden. `false` setzen, wenn kein TLS-Reverse-Proxy davorsteht (sonst wird das Login-Cookie verworfen) | `true` |
 
 > ⚠️ **Sicherheit:** Ändere `JWT_SECRET` und `DB_PASSWORD` unbedingt vor dem ersten Start!
+
+## Weiterführend
+
+- [Alle Umgebungsvariablen](./Umgebungsvariablen.md)
+- [Erste Schritte in der App](./Erste-Schritte.md)
+- [E-Mail-Versand einrichten](./E-Mail-Versand.md) (optional)
+- [Sicherheitshinweise](./Sicherheit.md), inkl. TLS via Caddy

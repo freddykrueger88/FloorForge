@@ -13,6 +13,7 @@
 | jsonwebtoken | 9.x | JWT Auth |
 | FFmpeg | – | GIF-/MP4-Export (im Docker-Image gebündelt) |
 | pdfkit | 0.19.x | PDF-Taktikblatt-Export |
+| nodemailer | 9.x | Optionaler SMTP-Mailversand (Kollaborator-Benachrichtigung), siehe [E-Mail-Versand](./E-Mail-Versand.md) |
 
 ### Frontend
 | Technologie | Version | Zweck |
@@ -114,3 +115,9 @@ fehlschlagen, landen in einer IndexedDB-Queue
 (`frontend/src/utils/offlineQueue.js`) und werden beim `online`-Event
 automatisch erneut gesendet (Last-Write-Wins pro Ressource). Neuanlage
 (POST) wird bewusst nicht offline gepuffert.
+
+## Weiterführend
+
+- [Frontend-Struktur](./Frontend.md) – Seiten, Komponenten, Hooks, Stores
+- [API-Dokumentation](./API.md) – vollständige Endpunkt-Referenz
+- [Umgebungsvariablen](./Umgebungsvariablen.md)

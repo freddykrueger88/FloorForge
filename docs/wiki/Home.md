@@ -1,6 +1,25 @@
 # 🏒 FloorForge Wiki
 
-Willkommen im FloorForge Wiki! Hier findest du alle Informationen zur Installation, Nutzung und Entwicklung.
+Willkommen im FloorForge Wiki! Hier findest du alle Informationen zur
+Installation, Nutzung und Entwicklung.
+
+**FloorForge** ist ein self-hosted Taktik-Tool für Floorball-Coaches:
+virtuelles 2D-Spielfeld, animierte Spielzüge (Frame-by-Frame), Export
+als GIF/MP4/PDF/Link, Docker-basiert und IFF-konform.
+
+> 📌 Aktuelle Version: **v0.9.0** – siehe [Changelog](./Changelog.md)
+> für alle Änderungen und [Roadmap](./Roadmap.md) für Geplantes.
+
+## Hauptfunktionen
+
+- Virtuelles IFF-konformes Spielfeld (Großfeld/Kleinfeld/Street/3vs3)
+- Frame-by-Frame-Animation mit flüssiger Interpolation
+- Zeichenwerkzeuge (Bewegungs-/Pass-/Schuss-Pfeile, Freihand)
+- Lines (Sturm-/Defensivreihen), Formationen-Vorlagen, Playbooks
+- Zentraler Team-Kader, Trainingsplaner
+- Export als GIF, MP4, PDF oder öffentlicher Link; Board-Sharing
+  zwischen Nutzern
+- PWA/Offline-Modus, zweisprachig (DE/EN), barrierefrei nutzbar
 
 ---
 
@@ -17,7 +36,11 @@ Willkommen im FloorForge Wiki! Hier findest du alle Informationen zur Installati
 - [Spielzüge zeichnen](./Spielzuege-Zeichnen.md)
 - [Frame-by-Frame Animation](./Animation.md)
 - [Lines & Sturmreihen](./Lines.md)
-- [Export (GIF, Link, MP4, PDF)](./Export.md)
+- [Playbooks](./Playbooks.md)
+- [Formationen-Vorlagen](./Formationen.md)
+- [Trainingsplaner](./Trainingsplaner.md)
+- [Kader](./Kader.md)
+- [Export & Teilen (GIF, MP4, PDF, Link, Kollaboratoren)](./Export.md)
 - [Einstellungen](./Einstellungen.md)
 
 ## 🏒 IFF-Regelwerk
@@ -36,8 +59,15 @@ Willkommen im FloorForge Wiki! Hier findest du alle Informationen zur Installati
 ## 🛡️ Sicherheit & Datenschutz
 
 - [DSGVO & Datenschutz](./Datenschutz.md)
-- [Backup & Export](./Backup.md)
+- [Backup & Export (Admin)](./Backup.md)
 - [Sicherheitshinweise](./Sicherheit.md)
+
+## 🆘 Hilfe
+
+- [FAQ](./FAQ.md)
+- [Troubleshooting](./Troubleshooting.md)
+- [Changelog](./Changelog.md)
+- [Roadmap](./Roadmap.md)
 
 ---
 
