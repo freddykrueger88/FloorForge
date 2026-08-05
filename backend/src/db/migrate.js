@@ -342,6 +342,43 @@ export async function runMigrations() {
     `);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_board_versions_board_id ON board_versions(board_id, created_at DESC);`);
 
+    // ── organizations + organization_members (ROADMAP Phase 2 – Verein-
+    // Ebene). Reine Verwaltungsebene über mehreren Teams: ein Verein kann
+    // Teams organisatorisch bündeln, teilt aber selbst KEINE Inhalte –
+    // Kader/Playbooks/Trainingspläne/Formationen bleiben team_id-gebunden.
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS organizations (
+        id         UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        name       TEXT NOT NULL,
+        created_by UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      );
+    `);
+    await client.query(`
+      DROP TRIGGER IF EXISTS trg_organizations_updated_at ON organizations;
+      CREATE TRIGGER trg_organizations_updated_at
+        BEFORE UPDATE ON organizations
+        FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+    `);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_organizations_created_by ON organizations(created_by);`);
+
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS organization_members (
+        id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+        user_id         UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        role            TEXT NOT NULL DEFAULT 'member' CHECK (role IN ('admin', 'member')),
+        created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        UNIQUE (organization_id, user_id)
+      );
+    `);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_organization_members_org_id ON organization_members(organization_id);`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_organization_members_user_id ON organization_members(user_id);`);
+
+    await client.query(`ALTER TABLE teams ADD COLUMN IF NOT EXISTS organization_id UUID REFERENCES organizations(id) ON DELETE SET NULL;`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_teams_organization_id ON teams(organization_id) WHERE organization_id IS NOT NULL;`);
+
     // ── exports ───────────────────────────────────────────────────────────
     // format: 'gif' | 'mp4' | 'pdf' | 'link' | 'png'
     await client.query(`

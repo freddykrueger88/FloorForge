@@ -18,15 +18,21 @@ import pool from '../db/pool.js';
 import logger from '../utils/logger.js';
 import { sendMail } from '../utils/mailer.js';
 import { getTeamRole } from '../utils/teamAccess.js';
+import { assertOrgAccess } from '../utils/organizationAccess.js';
 import { success, created, error } from '../utils/apiResponse.js';
 
 function toApiTeam(row) {
   return {
-    _id:       row.id,
-    name:      row.name,
-    role:      row.role, // Rolle des anfragenden Nutzers in diesem Team
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
+    _id:            row.id,
+    name:           row.name,
+    // Rolle des anfragenden Nutzers in diesem Team – 'org_admin' bedeutet
+    // "sieht das Team nur als Vereinsadmin, ist selbst kein Mitglied"
+    // (ROADMAP Phase 2: Verein-Ebene, reine Verwaltungssicht ohne
+    // Content-Zugriff auf Kader/Playbooks/etc.)
+    role:           row.role,
+    organizationId: row.organization_id,
+    createdAt:      row.created_at,
+    updatedAt:      row.updated_at,
   };
 }
 
@@ -48,14 +54,28 @@ async function ownerCount(teamId) {
   return result.rows[0].count;
 }
 
-// GET /api/teams – eigene Mitgliedschaften
+// GET /api/teams – eigene Mitgliedschaften PLUS Teams, bei denen der
+// Nutzer Vereinsadmin ist (auch ohne eigene Team-Mitgliedschaft) – rein
+// zur Verwaltungssicht, kein Content-Zugriff (siehe assertResourceWrite
+// in roster/playbooks/etc., die weiterhin ausschließlich team_members
+// prüfen, nicht organization_members).
 export async function getTeams(req, res) {
   try {
     const result = await pool.query(
-      `SELECT t.*, tm.role FROM teams t
+      `SELECT t.id, t.name, t.created_by, t.created_at, t.updated_at, t.organization_id, tm.role
+       FROM teams t
        JOIN team_members tm ON tm.team_id = t.id
        WHERE tm.user_id = $1
-       ORDER BY t.created_at ASC`,
+
+       UNION
+
+       SELECT t.id, t.name, t.created_by, t.created_at, t.updated_at, t.organization_id, 'org_admin'::text AS role
+       FROM teams t
+       JOIN organization_members om ON om.organization_id = t.organization_id
+       WHERE om.user_id = $1 AND om.role = 'admin'
+         AND t.id NOT IN (SELECT team_id FROM team_members WHERE user_id = $1)
+
+       ORDER BY created_at ASC`,
       [req.user.id]
     );
     res.json(success(result.rows.map(toApiTeam)));
@@ -80,15 +100,19 @@ export async function getTeam(req, res) {
   }
 }
 
-// POST /api/teams – Ersteller wird atomar als 'owner' Mitglied angelegt
+// POST /api/teams – Ersteller wird atomar als 'owner' Mitglied angelegt.
+// Optionales organizationId erfordert Admin-Rolle im jeweiligen Verein.
 export async function createTeam(req, res) {
-  const { name } = req.body;
+  const { name, organizationId = null } = req.body;
+  if (organizationId && !(await assertOrgAccess(organizationId, req.user.id, 'admin'))) {
+    return res.status(404).json(error('Verein nicht gefunden'));
+  }
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
     const teamResult = await client.query(
-      'INSERT INTO teams (name, created_by) VALUES ($1, $2) RETURNING *',
-      [name, req.user.id]
+      'INSERT INTO teams (name, created_by, organization_id) VALUES ($1, $2, $3) RETURNING *',
+      [name, req.user.id, organizationId]
     );
     const team = teamResult.rows[0];
     await client.query(

@@ -21,7 +21,11 @@ const validateRole     = body('role').isIn(['owner', 'coach', 'member']).withMes
 const validateName     = body('name').trim().notEmpty().withMessage('Name ist erforderlich').isLength({ max: 80 }).withMessage('Name max. 80 Zeichen');
 
 router.get   ('/',      getTeams);
-router.post  ('/',      [validateName, validate], createTeam);
+router.post  ('/',      [
+  validateName,
+  body('organizationId').optional({ nullable: true }).isUUID().withMessage('Ungültige Vereins-ID'),
+  validate,
+], createTeam);
 router.get   ('/:id',    [validateTeamId, validate], getTeam);
 router.put   ('/:id',    [validateTeamId, validateName, validate], updateTeam);
 router.delete('/:id',    [validateTeamId, validate], deleteTeam);

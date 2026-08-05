@@ -19,6 +19,7 @@ import playbookRoutes from './playbooks.js';
 import trainingRoutes from './trainings.js';
 import rosterRoutes from './roster.js';
 import teamRoutes from './teams.js';
+import organizationRoutes from './organizations.js';
 import { createCommentRoutes } from './comments.js';
 import { assertBoardAccess } from '../utils/boardAccess.js';
 import { assertSessionRead, assertSessionWrite } from '../controllers/trainingSessionsController.js';
@@ -55,6 +56,7 @@ router.use('/playbooks', playbookRoutes);
 router.use('/trainings', trainingRoutes);
 router.use('/roster', rosterRoutes);
 router.use('/teams', teamRoutes);
+router.use('/organizations', organizationRoutes);
 // router.use('/tactics', tacticsRoutes);
 
 export default router;
