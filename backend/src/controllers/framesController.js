@@ -10,6 +10,7 @@ import pool from '../db/pool.js';
 import logger from '../utils/logger.js';
 import { success, created, error } from '../utils/apiResponse.js';
 import { assertBoardAccess } from '../utils/boardAccess.js';
+import { snapshotBoardVersion } from './boardVersionsController.js';
 
 const MAX_FRAMES = 50;
 
@@ -114,6 +115,11 @@ export async function updateFrame(req, res) {
        WHERE id = $3 RETURNING *`,
       [JSON.stringify(nextData), duration, req.params.frameId]
     );
+
+    // ROADMAP Phase 2: automatische Versionierung bei jedem Speichern
+    // (mit Aufbewahrungsgrenze, siehe boardVersionsController.js)
+    await snapshotBoardVersion(req.params.id, req.user.id);
+
     res.json(success(toApiFrame(result.rows[0])));
   } catch (err) {
     logger.error('[updateFrame]', err);

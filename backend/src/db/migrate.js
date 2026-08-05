@@ -327,6 +327,21 @@ export async function runMigrations() {
     `);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_comments_resource ON comments(resource_type, resource_id);`);
 
+    // ── board_versions (ROADMAP Phase 2 – automatische Versionierung) ────
+    // Snapshot ALLER Frames eines Boards, entsteht automatisch bei jedem
+    // Speichern (siehe framesController.updateFrame). Aufbewahrungsgrenze
+    // von 50 Versionen pro Board (siehe dort) statt unbegrenztem Wachstum.
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS board_versions (
+        id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        board_id        UUID NOT NULL REFERENCES boards(id) ON DELETE CASCADE,
+        frames_snapshot JSONB NOT NULL,
+        created_by      UUID REFERENCES users(id) ON DELETE SET NULL,
+        created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      );
+    `);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_board_versions_board_id ON board_versions(board_id, created_at DESC);`);
+
     // ── exports ───────────────────────────────────────────────────────────
     // format: 'gif' | 'mp4' | 'pdf' | 'link' | 'png'
     await client.query(`
