@@ -228,3 +228,7 @@
 }
 .addBtn:hover:not(:disabled) { border-color: var(--color-primary); }
 .addBtn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.commentsSection {
+  margin-top: var(--space-8);
+}

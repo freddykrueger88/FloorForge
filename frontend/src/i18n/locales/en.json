@@ -69,6 +69,7 @@
       "accessibility": "Accessibility",
       "account": "Account",
       "teams": "Teams",
+      "organizations": "Organizations",
       "data": "Data",
       "admin": "Admin"
     },
@@ -150,7 +151,29 @@
       "role": {
         "owner": "Head Coach",
         "coach": "Assistant Coach",
-        "member": "Player"
+        "member": "Player",
+        "org_admin": "Org Admin"
+      },
+      "organizationAriaLabel": "Assign to organization",
+      "noOrganization": "No organization"
+    },
+    "organizations": {
+      "intro": "An organization groups multiple teams purely for administration – it does not itself share rosters, playbooks, or training sessions.",
+      "createTitle": "New organization",
+      "namePlaceholder": "Organization name",
+      "createBtn": "Create organization",
+      "noOrganizations": "No organization yet.",
+      "inviteTitle": "Invite member",
+      "inviteEmailPlaceholder": "Email address",
+      "inviteRoleAriaLabel": "Role of the member to invite",
+      "inviteBtn": "Invite",
+      "rowRoleAriaLabel": "Change {{email}}'s role",
+      "removeMemberAriaLabel": "Remove {{email}} from the organization",
+      "deleteBtn": "Delete organization",
+      "leaveBtn": "Leave organization",
+      "role": {
+        "admin": "Admin",
+        "member": "Member"
       }
     }
   },
@@ -204,10 +227,36 @@
       "formations": "Formations",
       "export": "Export",
       "notes": "Notes",
+      "comments": "Comments",
+      "history": "History",
       "settings": "Settings"
     },
     "collapsePanel": "Collapse panel",
     "expandPanel": "Expand panel"
+  },
+  "comments": {
+    "title": "Comments",
+    "ariaLabel": "Comments",
+    "loading": "Loading comments…",
+    "empty": "No comments yet.",
+    "placeholder": "Write a comment…",
+    "addBtn": "Comment",
+    "editBtn": "Edit",
+    "editAriaLabel": "Edit comment",
+    "saveBtn": "Save",
+    "cancelBtn": "Cancel",
+    "deleteBtn": "Delete",
+    "deleteAriaLabel": "Delete comment"
+  },
+  "versions": {
+    "title": "History",
+    "ariaLabel": "Version history",
+    "intro": "A version is created automatically on every save (max. 50 per board).",
+    "loading": "Loading versions…",
+    "empty": "No saved versions yet.",
+    "restoreBtn": "Restore",
+    "restoreAriaLabel": "Restore this version",
+    "restoring": "Restoring…"
   },
   "boardsPage": {
     "count_one": "{{count}} board",

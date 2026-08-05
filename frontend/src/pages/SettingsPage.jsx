@@ -11,6 +11,7 @@ import { useSettings } from '../hooks/useSettings.js';
 import { useAutoSave } from '../hooks/useAutoSave.js';
 import { useBackup } from '../hooks/useBackup.js';
 import { useTeams } from '../hooks/useTeams.js';
+import { useOrganizations } from '../hooks/useOrganizations.js';
 import { apiFetch } from '../utils/apiFetch.js';
 import { applyGlobalPreferences } from '../utils/applyPreferences.js';
 import { formatDate } from '../utils/formatDate.js';
@@ -203,8 +204,9 @@ export default function SettingsPage() {
     const trimmed = newTeamName.trim();
     if (!trimmed) return;
     try {
-      await createTeam(trimmed);
+      await createTeam(trimmed, newTeamOrgId || undefined);
       setNewTeamName('');
+      setNewTeamOrgId('');
     } catch { /* error via hook */ }
   };
 
@@ -267,6 +269,92 @@ export default function SettingsPage() {
     } catch { /* error via hook */ }
   };
 
+  // ── Vereine (ROADMAP Phase 2 – reine Verwaltungsebene über Teams) ──
+  const {
+    organizations, error: orgsError,
+    fetchOrganizations, createOrganization, deleteOrganization,
+    fetchMembers: fetchOrgMembers, inviteMember: inviteOrgMember,
+    updateMemberRole: updateOrgMemberRole, removeMember: removeOrgMember,
+  } = useOrganizations();
+  useEffect(() => { fetchOrganizations().catch(() => {}); }, [fetchOrganizations]);
+
+  const [newOrgName,        setNewOrgName]        = useState('');
+  const [expandedOrgId,     setExpandedOrgId]      = useState(null);
+  const [membersByOrg,      setMembersByOrg]       = useState({});
+  const [orgInviteForm,     setOrgInviteForm]      = useState({ email: '', role: 'member' });
+  const [newTeamOrgId,      setNewTeamOrgId]       = useState('');
+
+  const adminOrgs = organizations.filter((o) => o.role === 'admin');
+
+  const handleCreateOrg = async (e) => {
+    e.preventDefault();
+    const trimmed = newOrgName.trim();
+    if (!trimmed) return;
+    try {
+      await createOrganization(trimmed);
+      setNewOrgName('');
+    } catch { /* error via hook */ }
+  };
+
+  const handleToggleOrg = async (orgId) => {
+    if (expandedOrgId === orgId) { setExpandedOrgId(null); return; }
+    setExpandedOrgId(orgId);
+    if (!membersByOrg[orgId]) {
+      try {
+        const members = await fetchOrgMembers(orgId);
+        setMembersByOrg((prev) => ({ ...prev, [orgId]: members }));
+      } catch { /* error via hook */ }
+    }
+  };
+
+  const handleOrgInvite = async (e, orgId) => {
+    e.preventDefault();
+    const trimmed = orgInviteForm.email.trim();
+    if (!trimmed) return;
+    try {
+      const member = await inviteOrgMember(orgId, { email: trimmed, role: orgInviteForm.role });
+      setMembersByOrg((prev) => ({ ...prev, [orgId]: [...(prev[orgId] ?? []), member] }));
+      setOrgInviteForm({ email: '', role: 'member' });
+    } catch { /* error via hook */ }
+  };
+
+  const handleOrgRoleChange = async (orgId, memberId, role) => {
+    try {
+      const updated = await updateOrgMemberRole(orgId, memberId, role);
+      setMembersByOrg((prev) => ({
+        ...prev,
+        [orgId]: (prev[orgId] ?? []).map((m) => m._id === memberId ? updated : m),
+      }));
+    } catch { /* error via hook */ }
+  };
+
+  const handleRemoveOrgMember = async (orgId, memberId) => {
+    try {
+      await removeOrgMember(orgId, memberId);
+      setMembersByOrg((prev) => ({
+        ...prev,
+        [orgId]: (prev[orgId] ?? []).filter((m) => m._id !== memberId),
+      }));
+    } catch { /* error via hook */ }
+  };
+
+  const handleDeleteOrg = async (orgId) => {
+    try {
+      await deleteOrganization(orgId);
+      setExpandedOrgId((prev) => prev === orgId ? null : prev);
+    } catch { /* error via hook */ }
+  };
+
+  const handleLeaveOrg = async (orgId) => {
+    const myMembership = (membersByOrg[orgId] ?? []).find((m) => m.userId === user.id);
+    if (!myMembership) return;
+    try {
+      await removeOrgMember(orgId, myMembership._id);
+      await fetchOrganizations();
+      setExpandedOrgId((prev) => prev === orgId ? null : prev);
+    } catch { /* error via hook */ }
+  };
+
   // ── Darstellung/Barrierefreiheit/Spielfeld-Standards: sofort speichern ──
   const patch = async (fields) => {
     const updated = await updateSettings(fields);
@@ -294,6 +382,7 @@ export default function SettingsPage() {
           <a href="#barrierefreiheit">{t('settings.nav.accessibility')}</a>
           <a href="#konto">{t('settings.nav.account')}</a>
           <a href="#teams">{t('settings.nav.teams')}</a>
+          <a href="#vereine">{t('settings.nav.organizations')}</a>
           <a href="#daten">{t('settings.nav.data')}</a>
           {isAdmin && <a href="#admin">{t('settings.nav.admin')}</a>}
         </nav>
@@ -557,6 +646,19 @@ export default function SettingsPage() {
                 maxLength={80}
                 aria-label={t('settings.teams.namePlaceholder')}
               />
+              {adminOrgs.length > 0 && (
+                <select
+                  className={styles.select}
+                  value={newTeamOrgId}
+                  onChange={(e) => setNewTeamOrgId(e.target.value)}
+                  aria-label={t('settings.teams.organizationAriaLabel')}
+                >
+                  <option value="">{t('settings.teams.noOrganization')}</option>
+                  {adminOrgs.map((o) => (
+                    <option key={o._id} value={o._id}>{o.name}</option>
+                  ))}
+                </select>
+              )}
               <button type="submit" className={styles.submitBtn} disabled={!newTeamName.trim()}>
                 {t('settings.teams.createBtn')}
               </button>
@@ -645,6 +747,121 @@ export default function SettingsPage() {
                           ) : (
                             <button className={styles.smallBtnDanger} onClick={() => handleLeaveTeam(team._id)}>
                               {t('settings.teams.leaveBtn')}
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+
+          {/* ── Vereine (ROADMAP Phase 2 – reine Verwaltungsebene) ── */}
+          <section id="vereine" className={styles.section}>
+            <h2>{t('settings.nav.organizations')}</h2>
+            <p className={styles.hint}>{t('settings.organizations.intro')}</p>
+
+            {orgsError && <p className={styles.msgError}>⚠️ {orgsError}</p>}
+
+            <form className={styles.subForm} onSubmit={handleCreateOrg}>
+              <h3 className={styles.subTitle}>{t('settings.organizations.createTitle')}</h3>
+              <input
+                className={styles.textInput}
+                value={newOrgName}
+                onChange={(e) => setNewOrgName(e.target.value)}
+                placeholder={t('settings.organizations.namePlaceholder')}
+                maxLength={80}
+                aria-label={t('settings.organizations.namePlaceholder')}
+              />
+              <button type="submit" className={styles.submitBtn} disabled={!newOrgName.trim()}>
+                {t('settings.organizations.createBtn')}
+              </button>
+            </form>
+
+            {organizations.length === 0 ? (
+              <p className={styles.hint}>{t('settings.organizations.noOrganizations')}</p>
+            ) : (
+              <ul className={styles.teamList} role="list">
+                {organizations.map((org) => (
+                  <li key={org._id} className={styles.teamRow}>
+                    <button
+                      type="button"
+                      className={styles.teamHeader}
+                      onClick={() => handleToggleOrg(org._id)}
+                      aria-expanded={expandedOrgId === org._id}
+                    >
+                      <span>{org.name}</span>
+                      <span className={styles.roleBadge}>{t(`settings.organizations.role.${org.role}`)}</span>
+                    </button>
+
+                    {expandedOrgId === org._id && (
+                      <div className={styles.teamDetail}>
+                        {org.role === 'admin' && (
+                          <form className={styles.subForm} onSubmit={(e) => handleOrgInvite(e, org._id)}>
+                            <h3 className={styles.subTitle}>{t('settings.organizations.inviteTitle')}</h3>
+                            <input
+                              type="email"
+                              className={styles.textInput}
+                              value={orgInviteForm.email}
+                              onChange={(e) => setOrgInviteForm((f) => ({ ...f, email: e.target.value }))}
+                              placeholder={t('settings.organizations.inviteEmailPlaceholder')}
+                              aria-label={t('settings.organizations.inviteEmailPlaceholder')}
+                            />
+                            <select
+                              className={styles.select}
+                              value={orgInviteForm.role}
+                              onChange={(e) => setOrgInviteForm((f) => ({ ...f, role: e.target.value }))}
+                              aria-label={t('settings.organizations.inviteRoleAriaLabel')}
+                            >
+                              <option value="admin">{t('settings.organizations.role.admin')}</option>
+                              <option value="member">{t('settings.organizations.role.member')}</option>
+                            </select>
+                            <button type="submit" className={styles.submitBtn} disabled={!orgInviteForm.email.trim()}>
+                              {t('settings.organizations.inviteBtn')}
+                            </button>
+                          </form>
+                        )}
+
+                        <ul className={styles.memberList} role="list">
+                          {(membersByOrg[org._id] ?? []).map((m) => (
+                            <li key={m._id} className={styles.memberRow}>
+                              <span className={styles.memberEmail}>{m.email}</span>
+                              {org.role === 'admin' ? (
+                                <>
+                                  <select
+                                    className={styles.select}
+                                    value={m.role}
+                                    onChange={(e) => handleOrgRoleChange(org._id, m._id, e.target.value)}
+                                    aria-label={t('settings.organizations.rowRoleAriaLabel', { email: m.email })}
+                                  >
+                                    <option value="admin">{t('settings.organizations.role.admin')}</option>
+                                    <option value="member">{t('settings.organizations.role.member')}</option>
+                                  </select>
+                                  <button
+                                    className={styles.smallBtnDanger}
+                                    onClick={() => handleRemoveOrgMember(org._id, m._id)}
+                                    aria-label={t('settings.organizations.removeMemberAriaLabel', { email: m.email })}
+                                  >
+                                    🗑
+                                  </button>
+                                </>
+                              ) : (
+                                <span className={styles.roleBadge}>{t(`settings.organizations.role.${m.role}`)}</span>
+                              )}
+                            </li>
+                          ))}
+                        </ul>
+
+                        <div className={styles.teamActions}>
+                          {org.role === 'admin' ? (
+                            <button className={styles.smallBtnDanger} onClick={() => handleDeleteOrg(org._id)}>
+                              {t('settings.organizations.deleteBtn')}
+                            </button>
+                          ) : (
+                            <button className={styles.smallBtnDanger} onClick={() => handleLeaveOrg(org._id)}>
+                              {t('settings.organizations.leaveBtn')}
                             </button>
                           )}
                         </div>

@@ -4,3 +4,4 @@ export { default as ExportPanel } from './ExportPanel.jsx';
 export { default as PdfExportPanel } from './PdfExportPanel.jsx';
 export { default as ShortcutsOverlay } from './ShortcutsOverlay.jsx';
 export { default as ShareBoardModal } from './ShareBoardModal.jsx';
+export { default as VersionsPanel } from './VersionsPanel.jsx';

@@ -69,6 +69,7 @@
       "accessibility": "Barrierefreiheit",
       "account": "Konto",
       "teams": "Teams",
+      "organizations": "Vereine",
       "data": "Daten",
       "admin": "Admin"
     },
@@ -150,7 +151,29 @@
       "role": {
         "owner": "Cheftrainer",
         "coach": "Co-Trainer",
-        "member": "Spieler"
+        "member": "Spieler",
+        "org_admin": "Vereinsadmin"
+      },
+      "organizationAriaLabel": "Verein zuordnen",
+      "noOrganization": "Kein Verein"
+    },
+    "organizations": {
+      "intro": "Ein Verein bündelt mehrere Teams rein organisatorisch – er teilt selbst keine Kader, Playbooks oder Trainingspläne.",
+      "createTitle": "Neuer Verein",
+      "namePlaceholder": "Name des Vereins",
+      "createBtn": "Verein anlegen",
+      "noOrganizations": "Noch kein Verein angelegt.",
+      "inviteTitle": "Mitglied einladen",
+      "inviteEmailPlaceholder": "E-Mail-Adresse",
+      "inviteRoleAriaLabel": "Rolle des einzuladenden Mitglieds",
+      "inviteBtn": "Einladen",
+      "rowRoleAriaLabel": "Rolle von {{email}} ändern",
+      "removeMemberAriaLabel": "{{email}} aus dem Verein entfernen",
+      "deleteBtn": "Verein löschen",
+      "leaveBtn": "Verein verlassen",
+      "role": {
+        "admin": "Admin",
+        "member": "Mitglied"
       }
     }
   },
@@ -204,10 +227,36 @@
       "formations": "Formationen",
       "export": "Export",
       "notes": "Notizen",
+      "comments": "Kommentare",
+      "history": "Verlauf",
       "settings": "Einstellungen"
     },
     "collapsePanel": "Menü einklappen",
     "expandPanel": "Menü ausklappen"
+  },
+  "comments": {
+    "title": "Kommentare",
+    "ariaLabel": "Kommentare",
+    "loading": "Lädt Kommentare…",
+    "empty": "Noch keine Kommentare.",
+    "placeholder": "Kommentar schreiben…",
+    "addBtn": "Kommentieren",
+    "editBtn": "Bearbeiten",
+    "editAriaLabel": "Kommentar bearbeiten",
+    "saveBtn": "Speichern",
+    "cancelBtn": "Abbrechen",
+    "deleteBtn": "Löschen",
+    "deleteAriaLabel": "Kommentar löschen"
+  },
+  "versions": {
+    "title": "Verlauf",
+    "ariaLabel": "Versionsverlauf",
+    "intro": "Bei jedem Speichern entsteht automatisch eine Version (max. 50 pro Board).",
+    "loading": "Lädt Versionen…",
+    "empty": "Noch keine gespeicherten Versionen.",
+    "restoreBtn": "Wiederherstellen",
+    "restoreAriaLabel": "Diese Version wiederherstellen",
+    "restoring": "Stellt wieder her…"
   },
   "boardsPage": {
     "count_one": "{{count}} Spielfeld",

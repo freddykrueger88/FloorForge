@@ -29,9 +29,10 @@ import PlayerAccessibleList from '../components/field/PlayerAccessibleList.jsx';
 import { DrawingToolbar, DrawingCoordinatesForm } from '../components/drawing/index.js';
 import { FrameTimeline } from '../components/frames/index.js';
 import { PlaybackControls } from '../components/playback/index.js';
-import { NotesPanel, ExportPanel, PdfExportPanel, ShortcutsOverlay, ShareBoardModal, BoardSidePanelTabs } from '../components/board/index.js';
+import { NotesPanel, ExportPanel, PdfExportPanel, ShortcutsOverlay, ShareBoardModal, BoardSidePanelTabs, VersionsPanel } from '../components/board/index.js';
 import { LinesPanel } from '../components/lines/index.js';
 import { FormationsPanel } from '../components/formations/index.js';
+import CommentsPanel from '../components/comments/CommentsPanel.jsx';
 
 import { useBoardsApi } from '../hooks/useBoardsApi.js';
 import { useFrames } from '../hooks/useFrames.js';
@@ -591,6 +592,18 @@ export default function BoardEditorPage() {
               label: t('boardEditor.tabs.notes'),
               icon: '📝',
               content: <NotesPanel value={notes} onChange={setNotes} readonly={!canEdit} />,
+            },
+            {
+              id: 'comments',
+              label: t('boardEditor.tabs.comments'),
+              icon: '💬',
+              content: <CommentsPanel resourceKind="boards" resourceId={boardId} />,
+            },
+            {
+              id: 'history',
+              label: t('boardEditor.tabs.history'),
+              icon: '🕓',
+              content: <VersionsPanel boardId={boardId} canRestore={canEdit} onRestored={loadFrames} />,
             },
             {
               id: 'settings',

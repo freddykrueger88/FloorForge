@@ -13,6 +13,7 @@ import { DEFAULT_TEAM_COLORS } from '../constants/fieldConfig.js';
 import { teamColorToFillStroke } from '../utils/color.js';
 import FieldMiniature from '../components/field/FieldMiniature.jsx';
 import BoardPickerModal from '../components/trainings/BoardPickerModal.jsx';
+import CommentsPanel from '../components/comments/CommentsPanel.jsx';
 import styles from './TrainingSessionPage.module.css';
 
 const EXPORT_W = 1280;
@@ -260,6 +261,10 @@ export default function TrainingSessionPage() {
           adding={adding}
         />
       )}
+
+      <div className={styles.commentsSection}>
+        <CommentsPanel resourceKind="trainings" resourceId={id} />
+      </div>
     </main>
   );
 }
