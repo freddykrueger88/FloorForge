@@ -21,6 +21,7 @@ const itemIdParam = param('itemId').isUUID().withMessage('Ungültige Übungs-ID'
 router.get   ('/',     getSessions);
 router.post  ('/',     [
   body('name').trim().notEmpty().withMessage('Name ist erforderlich').isLength({ max: 80 }),
+  body('teamId').optional({ nullable: true }).isUUID().withMessage('Ungültige Team-ID'),
   validate,
 ], createSession);
 router.get   ('/:id',  [idParam, validate], getSession);

@@ -4,10 +4,14 @@
  *
  * Anders als frames/lines nutzer-gebunden statt board-gebunden – eine
  * Vorlage ist über alle eigenen Boards hinweg wiederverwendbar.
+ *
+ * ROADMAP Phase 2: eine Vorlage kann zusätzlich einem Team zugeordnet
+ * sein (team_id) und ist dann für alle Team-Mitglieder wiederverwendbar.
  */
 import pool from '../db/pool.js';
 import logger from '../utils/logger.js';
 import { success, created, error } from '../utils/apiResponse.js';
+import { getUserTeamIds, assertTeamAccess } from '../utils/teamAccess.js';
 
 const MAX_FORMATIONS = 20;
 
@@ -17,16 +21,27 @@ function toApiFormation(row) {
     name:      row.name,
     fieldType: row.field_type,
     players:   row.players_json ?? [],
+    teamId:    row.team_id,
     createdAt: row.created_at,
   };
+}
+
+async function assertResourceWrite(row, userId) {
+  if (!row) return false;
+  if (row.user_id === userId) return true;
+  if (!row.team_id) return false;
+  return assertTeamAccess(row.team_id, userId, 'coach');
 }
 
 // GET /api/formations
 export async function getFormations(req, res) {
   try {
+    const teamIds = await getUserTeamIds(req.user.id);
     const result = await pool.query(
-      'SELECT * FROM formation_templates WHERE user_id = $1 ORDER BY created_at DESC',
-      [req.user.id]
+      `SELECT * FROM formation_templates
+       WHERE user_id = $1 OR team_id = ANY($2::uuid[])
+       ORDER BY created_at DESC`,
+      [req.user.id, teamIds]
     );
     res.json(success(result.rows.map(toApiFormation)));
   } catch (err) {
@@ -38,6 +53,12 @@ export async function getFormations(req, res) {
 // POST /api/formations
 export async function createFormation(req, res) {
   try {
+    const { name, fieldType = 'large', players = [], teamId = null } = req.body;
+
+    if (teamId && !(await assertTeamAccess(teamId, req.user.id, 'coach'))) {
+      return res.status(404).json(error('Team nicht gefunden'));
+    }
+
     const countResult = await pool.query(
       'SELECT COUNT(*)::int AS count FROM formation_templates WHERE user_id = $1',
       [req.user.id]
@@ -46,12 +67,11 @@ export async function createFormation(req, res) {
       return res.status(400).json(error(`Maximal ${MAX_FORMATIONS} Formations-Vorlagen`));
     }
 
-    const { name, fieldType = 'large', players = [] } = req.body;
     const result = await pool.query(
-      `INSERT INTO formation_templates (user_id, name, field_type, players_json)
-       VALUES ($1, $2, $3, $4::jsonb)
+      `INSERT INTO formation_templates (user_id, name, field_type, players_json, team_id)
+       VALUES ($1, $2, $3, $4::jsonb, $5)
        RETURNING *`,
-      [req.user.id, name, fieldType, JSON.stringify(players)]
+      [req.user.id, name, fieldType, JSON.stringify(players), teamId]
     );
     res.status(201).json(created(toApiFormation(result.rows[0])));
   } catch (err) {
@@ -63,13 +83,12 @@ export async function createFormation(req, res) {
 // DELETE /api/formations/:id
 export async function deleteFormation(req, res) {
   try {
-    const result = await pool.query(
-      'DELETE FROM formation_templates WHERE id = $1 AND user_id = $2 RETURNING id',
-      [req.params.id, req.user.id]
-    );
-    if (result.rows.length === 0) {
+    const existing = await pool.query('SELECT * FROM formation_templates WHERE id = $1', [req.params.id]);
+    if (existing.rows.length === 0 || !(await assertResourceWrite(existing.rows[0], req.user.id))) {
       return res.status(404).json(error('Vorlage nicht gefunden'));
     }
+
+    await pool.query('DELETE FROM formation_templates WHERE id = $1', [req.params.id]);
     res.json(success({ message: 'Vorlage gelöscht' }));
   } catch (err) {
     logger.error('[deleteFormation]', err);

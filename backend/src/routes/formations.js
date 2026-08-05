@@ -17,6 +17,7 @@ router.post  ('/', [
   body('name').trim().notEmpty().withMessage('Name ist erforderlich').isLength({ max: 40 }),
   body('fieldType').optional().isIn(['large', 'small', 'street', '3v3']),
   body('players').optional().isArray(),
+  body('teamId').optional({ nullable: true }).isUUID().withMessage('Ungültige Team-ID'),
   validate,
 ], createFormation);
 router.delete('/:id', [param('id').isUUID().withMessage('Ungültige Vorlagen-ID'), validate], deleteFormation);

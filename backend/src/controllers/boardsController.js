@@ -10,6 +10,7 @@ import logger from '../utils/logger.js';
 import { success, created, error } from '../utils/apiResponse.js';
 import { buildDefaultPlayers } from '../constants/defaultPositions.js';
 import { getBoardAccessLevel } from '../utils/boardAccess.js';
+import { assertTeamAccess } from '../utils/teamAccess.js';
 
 // snake_case (DB) → camelCase (API/Frontend)
 function toApiBoard(row) {
@@ -42,13 +43,20 @@ function toApiBoard(row) {
   };
 }
 
-// Issue #52: verhindert Zuordnung eines Boards zu einem fremden Playbook
+// Issue #52: verhindert Zuordnung eines Boards zu einem fremden Playbook.
+// ROADMAP Phase 2: auch team-geteilte Playbooks erlaubt – Zuordnen eines
+// eigenen Boards ändert das Playbook selbst nicht, daher reicht bloße
+// Team-Mitgliedschaft (keine coach/owner-Rolle nötig wie beim Anlegen).
 async function assertPlaybookOwnership(playbookId, userId) {
   const result = await pool.query(
-    'SELECT id FROM playbooks WHERE id = $1 AND user_id = $2',
-    [playbookId, userId]
+    'SELECT id, user_id, team_id FROM playbooks WHERE id = $1',
+    [playbookId]
   );
-  return result.rows.length > 0;
+  const playbook = result.rows[0];
+  if (!playbook) return false;
+  if (playbook.user_id === userId) return true;
+  if (!playbook.team_id) return false;
+  return assertTeamAccess(playbook.team_id, userId, 'member');
 }
 
 // GET /api/boards – nur Metadaten, kein players/elements (Kachel-/Galerie-Übersicht)

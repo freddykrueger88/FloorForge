@@ -6,10 +6,16 @@
  * Items referenzieren Boards per FK (kein Snapshot) – Änderungen am
  * Board spiegeln sich live im Plan. Reihenfolge/CRUD auf Item-Ebene
  * folgt exakt dem Muster von framesController.js.
+ *
+ * ROADMAP Phase 2: eine Session kann zusätzlich einem Team zugeordnet
+ * sein (team_id) – lesen dürfen alle Team-Mitglieder, ändern nur
+ * owner/coach (siehe assertSessionRead/-Write unten).
  */
 import pool from '../db/pool.js';
 import logger from '../utils/logger.js';
 import { success, created, error } from '../utils/apiResponse.js';
+import { getUserTeamIds, assertTeamAccess } from '../utils/teamAccess.js';
+import { assertBoardAccess } from '../utils/boardAccess.js';
 
 const MAX_SESSIONS = 20;
 const MAX_ITEMS_PER_SESSION = 30;
@@ -19,6 +25,7 @@ function toApiSession(row) {
     _id:          row.id,
     name:         row.name,
     notes:        row.notes,
+    teamId:       row.team_id,
     itemCount:    Number(row.item_count ?? 0),
     totalMinutes: Number(row.total_minutes ?? 0),
     createdAt:    row.created_at,
@@ -43,20 +50,25 @@ function toApiItem(row) {
   };
 }
 
-async function assertSessionOwnership(sessionId, userId) {
-  const result = await pool.query(
-    'SELECT id FROM training_sessions WHERE id = $1 AND user_id = $2',
-    [sessionId, userId]
-  );
-  return result.rows.length > 0;
+async function getSessionRow(sessionId) {
+  const result = await pool.query('SELECT user_id, team_id FROM training_sessions WHERE id = $1', [sessionId]);
+  return result.rows[0] ?? null;
 }
 
-async function assertBoardOwnership(boardId, userId) {
-  const result = await pool.query(
-    'SELECT id FROM boards WHERE id = $1 AND user_id = $2 AND deleted_at IS NULL',
-    [boardId, userId]
-  );
-  return result.rows.length > 0;
+async function assertSessionRead(sessionId, userId) {
+  const session = await getSessionRow(sessionId);
+  if (!session) return false;
+  if (session.user_id === userId) return true;
+  if (!session.team_id) return false;
+  return assertTeamAccess(session.team_id, userId, 'member');
+}
+
+async function assertSessionWrite(sessionId, userId) {
+  const session = await getSessionRow(sessionId);
+  if (!session) return false;
+  if (session.user_id === userId) return true;
+  if (!session.team_id) return false;
+  return assertTeamAccess(session.team_id, userId, 'coach');
 }
 
 async function fetchItems(sessionId) {
@@ -75,16 +87,17 @@ async function fetchItems(sessionId) {
 // GET /api/trainings
 export async function getSessions(req, res) {
   try {
+    const teamIds = await getUserTeamIds(req.user.id);
     const result = await pool.query(
       `SELECT s.*,
               COUNT(i.id)::int AS item_count,
               COALESCE(SUM(i.duration_minutes), 0)::int AS total_minutes
        FROM training_sessions s
        LEFT JOIN training_session_items i ON i.session_id = s.id
-       WHERE s.user_id = $1
+       WHERE s.user_id = $1 OR s.team_id = ANY($2::uuid[])
        GROUP BY s.id
        ORDER BY s.updated_at DESC`,
-      [req.user.id]
+      [req.user.id, teamIds]
     );
     res.json(success(result.rows.map(toApiSession)));
   } catch (err) {
@@ -96,6 +109,12 @@ export async function getSessions(req, res) {
 // POST /api/trainings
 export async function createSession(req, res) {
   try {
+    const { name, teamId = null } = req.body;
+
+    if (teamId && !(await assertTeamAccess(teamId, req.user.id, 'coach'))) {
+      return res.status(404).json(error('Team nicht gefunden'));
+    }
+
     const countResult = await pool.query(
       'SELECT COUNT(*)::int AS count FROM training_sessions WHERE user_id = $1',
       [req.user.id]
@@ -104,10 +123,9 @@ export async function createSession(req, res) {
       return res.status(400).json(error(`Maximal ${MAX_SESSIONS} Trainingseinheiten`));
     }
 
-    const { name } = req.body;
     const result = await pool.query(
-      'INSERT INTO training_sessions (user_id, name) VALUES ($1, $2) RETURNING *',
-      [req.user.id, name]
+      'INSERT INTO training_sessions (user_id, name, team_id) VALUES ($1, $2, $3) RETURNING *',
+      [req.user.id, name, teamId]
     );
     res.status(201).json(created(toApiSession({ ...result.rows[0], item_count: 0, total_minutes: 0 })));
   } catch (err) {
@@ -119,13 +137,10 @@ export async function createSession(req, res) {
 // GET /api/trainings/:id
 export async function getSession(req, res) {
   try {
-    const result = await pool.query(
-      'SELECT * FROM training_sessions WHERE id = $1 AND user_id = $2',
-      [req.params.id, req.user.id]
-    );
-    if (result.rows.length === 0) {
+    if (!(await assertSessionRead(req.params.id, req.user.id))) {
       return res.status(404).json(error('Trainingseinheit nicht gefunden'));
     }
+    const result = await pool.query('SELECT * FROM training_sessions WHERE id = $1', [req.params.id]);
 
     const items = await fetchItems(req.params.id);
     const session = toApiSession({
@@ -143,6 +158,10 @@ export async function getSession(req, res) {
 // PUT /api/trainings/:id
 export async function updateSession(req, res) {
   try {
+    if (!(await assertSessionWrite(req.params.id, req.user.id))) {
+      return res.status(404).json(error('Trainingseinheit nicht gefunden'));
+    }
+
     const sets = [];
     const values = [];
     let i = 1;
@@ -154,16 +173,13 @@ export async function updateSession(req, res) {
       return res.status(400).json(error('Keine gültigen Felder zum Aktualisieren'));
     }
 
-    values.push(req.params.id, req.user.id);
+    values.push(req.params.id);
     const result = await pool.query(
       `UPDATE training_sessions SET ${sets.join(', ')}
-       WHERE id = $${i} AND user_id = $${i + 1}
+       WHERE id = $${i}
        RETURNING *`,
       values
     );
-    if (result.rows.length === 0) {
-      return res.status(404).json(error('Trainingseinheit nicht gefunden'));
-    }
     res.json(success(toApiSession(result.rows[0])));
   } catch (err) {
     logger.error('[updateSession]', err);
@@ -174,13 +190,10 @@ export async function updateSession(req, res) {
 // DELETE /api/trainings/:id
 export async function deleteSession(req, res) {
   try {
-    const result = await pool.query(
-      'DELETE FROM training_sessions WHERE id = $1 AND user_id = $2 RETURNING id',
-      [req.params.id, req.user.id]
-    );
-    if (result.rows.length === 0) {
+    if (!(await assertSessionWrite(req.params.id, req.user.id))) {
       return res.status(404).json(error('Trainingseinheit nicht gefunden'));
     }
+    await pool.query('DELETE FROM training_sessions WHERE id = $1', [req.params.id]);
     res.json(success({ message: 'Trainingseinheit gelöscht' }));
   } catch (err) {
     logger.error('[deleteSession]', err);
@@ -193,10 +206,13 @@ export async function addItem(req, res) {
   const { boardId, durationMinutes = 15, note = '' } = req.body;
 
   try {
-    if (!(await assertSessionOwnership(req.params.id, req.user.id))) {
+    if (!(await assertSessionWrite(req.params.id, req.user.id))) {
       return res.status(404).json(error('Trainingseinheit nicht gefunden'));
     }
-    if (!(await assertBoardOwnership(boardId, req.user.id))) {
+    // Bugfix: vorher eine strikte Eigentümer-Prüfung, die auch write-
+    // Kollaboratoren eines geteilten Boards ausgeschlossen hat – jetzt
+    // konsistent mit dem Rest der App über boardAccess.js geprüft.
+    if (!(await assertBoardAccess(boardId, req.user.id, 'write'))) {
       return res.status(404).json(error('Board nicht gefunden'));
     }
   } catch (err) {
@@ -248,7 +264,7 @@ export async function addItem(req, res) {
 // PUT /api/trainings/:id/items/:itemId
 export async function updateItem(req, res) {
   try {
-    if (!(await assertSessionOwnership(req.params.id, req.user.id))) {
+    if (!(await assertSessionWrite(req.params.id, req.user.id))) {
       return res.status(404).json(error('Trainingseinheit nicht gefunden'));
     }
 
@@ -292,7 +308,7 @@ export async function updateItem(req, res) {
 // DELETE /api/trainings/:id/items/:itemId
 export async function deleteItem(req, res) {
   try {
-    if (!(await assertSessionOwnership(req.params.id, req.user.id))) {
+    if (!(await assertSessionWrite(req.params.id, req.user.id))) {
       return res.status(404).json(error('Trainingseinheit nicht gefunden'));
     }
   } catch (err) {
@@ -342,7 +358,7 @@ export async function reorderItems(req, res) {
   }
 
   try {
-    if (!(await assertSessionOwnership(req.params.id, req.user.id))) {
+    if (!(await assertSessionWrite(req.params.id, req.user.id))) {
       return res.status(404).json(error('Trainingseinheit nicht gefunden'));
     }
   } catch (err) {

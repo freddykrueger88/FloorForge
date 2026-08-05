@@ -24,6 +24,7 @@ router.get   ('/',     getRosterPlayers);
 router.post  ('/',     [
   body('name').trim().notEmpty().withMessage('Name ist erforderlich').isLength({ max: 40 }),
   ...rosterFields.slice(1),
+  body('teamId').optional({ nullable: true }).isUUID().withMessage('Ungültige Team-ID'),
   validate,
 ], createRosterPlayer);
 router.put   ('/:id',  [param('id').isUUID().withMessage('Ungültige Kader-ID'), ...rosterFields, validate], updateRosterPlayer);

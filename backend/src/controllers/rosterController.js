@@ -4,10 +4,16 @@
  * Nutzer-gebunden statt board-gebunden (analog playbooksController.js).
  * Rein additiv: Board-Spielerdaten bleiben frei editierbar, ein
  * Kader-Eintrag dient nur als optionale Zuweisungsvorlage.
+ *
+ * ROADMAP Phase 2 (Team und Organisation): ein Kader-Eintrag kann
+ * zusätzlich einem Team zugeordnet sein (team_id, additiv neben
+ * user_id) – dann sehen alle Team-Mitglieder ihn, aber nur owner/coach
+ * dürfen ihn anlegen/bearbeiten/löschen (siehe assertResourceWrite unten).
  */
 import pool from '../db/pool.js';
 import logger from '../utils/logger.js';
 import { success, created, error } from '../utils/apiResponse.js';
+import { getUserTeamIds, assertTeamAccess } from '../utils/teamAccess.js';
 
 const MAX_ROSTER_PLAYERS = 40;
 
@@ -17,16 +23,29 @@ function toApiRosterPlayer(row) {
     name:          row.name,
     jerseyNumber:  row.jersey_number,
     role:          row.role,
+    teamId:        row.team_id,
     createdAt:     row.created_at,
   };
+}
+
+// Darf der Nutzer diesen Datensatz anlegen/bearbeiten/löschen? Eigene
+// (team_id NULL) Datensätze: immer. Team-geteilte: nur owner/coach.
+async function assertResourceWrite(row, userId) {
+  if (!row) return false;
+  if (row.user_id === userId) return true;
+  if (!row.team_id) return false;
+  return assertTeamAccess(row.team_id, userId, 'coach');
 }
 
 // GET /api/roster
 export async function getRosterPlayers(req, res) {
   try {
+    const teamIds = await getUserTeamIds(req.user.id);
     const result = await pool.query(
-      'SELECT * FROM roster_players WHERE user_id = $1 ORDER BY jersey_number ASC NULLS LAST, name ASC',
-      [req.user.id]
+      `SELECT * FROM roster_players
+       WHERE user_id = $1 OR team_id = ANY($2::uuid[])
+       ORDER BY jersey_number ASC NULLS LAST, name ASC`,
+      [req.user.id, teamIds]
     );
     res.json(success(result.rows.map(toApiRosterPlayer)));
   } catch (err) {
@@ -38,6 +57,12 @@ export async function getRosterPlayers(req, res) {
 // POST /api/roster
 export async function createRosterPlayer(req, res) {
   try {
+    const { name, jerseyNumber = null, role = null, teamId = null } = req.body;
+
+    if (teamId && !(await assertTeamAccess(teamId, req.user.id, 'coach'))) {
+      return res.status(404).json(error('Team nicht gefunden'));
+    }
+
     const countResult = await pool.query(
       'SELECT COUNT(*)::int AS count FROM roster_players WHERE user_id = $1',
       [req.user.id]
@@ -46,10 +71,9 @@ export async function createRosterPlayer(req, res) {
       return res.status(400).json(error(`Maximal ${MAX_ROSTER_PLAYERS} Kader-Spieler`));
     }
 
-    const { name, jerseyNumber = null, role = null } = req.body;
     const result = await pool.query(
-      'INSERT INTO roster_players (user_id, name, jersey_number, role) VALUES ($1, $2, $3, $4) RETURNING *',
-      [req.user.id, name, jerseyNumber, role]
+      'INSERT INTO roster_players (user_id, name, jersey_number, role, team_id) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+      [req.user.id, name, jerseyNumber, role, teamId]
     );
     res.status(201).json(created(toApiRosterPlayer(result.rows[0])));
   } catch (err) {
@@ -61,6 +85,11 @@ export async function createRosterPlayer(req, res) {
 // PUT /api/roster/:id
 export async function updateRosterPlayer(req, res) {
   try {
+    const existing = await pool.query('SELECT * FROM roster_players WHERE id = $1', [req.params.id]);
+    if (existing.rows.length === 0 || !(await assertResourceWrite(existing.rows[0], req.user.id))) {
+      return res.status(404).json(error('Kader-Spieler nicht gefunden'));
+    }
+
     const sets = [];
     const values = [];
     let i = 1;
@@ -73,16 +102,13 @@ export async function updateRosterPlayer(req, res) {
       return res.status(400).json(error('Keine gültigen Felder zum Aktualisieren'));
     }
 
-    values.push(req.params.id, req.user.id);
+    values.push(req.params.id);
     const result = await pool.query(
       `UPDATE roster_players SET ${sets.join(', ')}
-       WHERE id = $${i} AND user_id = $${i + 1}
+       WHERE id = $${i}
        RETURNING *`,
       values
     );
-    if (result.rows.length === 0) {
-      return res.status(404).json(error('Kader-Spieler nicht gefunden'));
-    }
     res.json(success(toApiRosterPlayer(result.rows[0])));
   } catch (err) {
     logger.error('[updateRosterPlayer]', err);
@@ -93,13 +119,12 @@ export async function updateRosterPlayer(req, res) {
 // DELETE /api/roster/:id
 export async function deleteRosterPlayer(req, res) {
   try {
-    const result = await pool.query(
-      'DELETE FROM roster_players WHERE id = $1 AND user_id = $2 RETURNING id',
-      [req.params.id, req.user.id]
-    );
-    if (result.rows.length === 0) {
+    const existing = await pool.query('SELECT * FROM roster_players WHERE id = $1', [req.params.id]);
+    if (existing.rows.length === 0 || !(await assertResourceWrite(existing.rows[0], req.user.id))) {
       return res.status(404).json(error('Kader-Spieler nicht gefunden'));
     }
+
+    await pool.query('DELETE FROM roster_players WHERE id = $1', [req.params.id]);
     res.json(success({ message: 'Kader-Spieler gelöscht' }));
   } catch (err) {
     logger.error('[deleteRosterPlayer]', err);
