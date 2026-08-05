@@ -61,7 +61,7 @@ describe('POST /api/export/mp4', () => {
         response.on('end', () => callback(null, Buffer.concat(chunks)));
       });
     expect(downloadRes.status).toBe(200);
-    expect(downloadRes.headers['content-disposition']).toMatch(/floorforge-export\.mp4/);
+    expect(downloadRes.headers['content-disposition']).toMatch(/openfloorball-export\.mp4/);
     // Ein echtes FFmpeg-H.264-MP4 enthält den 'ftyp'-Box-Marker nahe dem
     // Dateianfang (üblicherweise ab Byte 4) – belegt, dass tatsächlich ein
     // valides MP4 erzeugt wurde, kein leerer/kaputter Output
@@ -113,7 +113,7 @@ describe('POST /api/export/gif (Regression nach outputPath-Refactor)', () => {
         response.on('end', () => callback(null, Buffer.concat(chunks)));
       });
     expect(downloadRes.status).toBe(200);
-    expect(downloadRes.headers['content-disposition']).toMatch(/floorforge-export\.gif/);
+    expect(downloadRes.headers['content-disposition']).toMatch(/openfloorball-export\.gif/);
     expect(downloadRes.body.slice(0, 3).toString()).toBe('GIF');
   }, 30000);
 });

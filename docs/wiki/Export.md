@@ -32,17 +32,17 @@ Läuft synchron (kein Job-Status nötig), direkter Download.
 ## Link teilen (öffentlich, ohne Login)
 
 Erzeugt einen öffentlichen Link zu einer schreibgeschützten Ansicht des
-Boards – z. B. um Spielern einen Spielzug ohne eigenen FloorForge-Account
+Boards – z. B. um Spielern einen Spielzug ohne eigenen OpenFloorball-Account
 zu zeigen. Der Link läuft automatisch nach `SHARE_LINK_EXPIRES_HOURS`
 (Standard 72h) ab und ist danach nicht mehr aufrufbar.
 
 ## Board teilen (Kollaboratoren)
 
 Anders als der öffentliche Link: ein **anderer registrierter
-FloorForge-Nutzer** bekommt dauerhaften Zugriff auf das Board.
+OpenFloorball-Nutzer** bekommt dauerhaften Zugriff auf das Board.
 
 - **Voraussetzung**: die eingeladene Person hat bereits einen
-  FloorForge-Account (kein Einladungslink für neue Nutzer, siehe
+  OpenFloorball-Account (kein Einladungslink für neue Nutzer, siehe
   [FAQ](./FAQ.md))
 - **Berechtigungsstufen**: Lesen oder Bearbeiten
 - Maximal 10 Kollaboratoren pro Board

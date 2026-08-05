@@ -10,7 +10,7 @@
  * nicht synchronisierten Schreibzugriff auf dieselbe Ressource (keine
  * mehrfache Wiedergabe veralteter Zwischenstände beim Sync).
  */
-const DB_NAME    = 'floorforge-offline';
+const DB_NAME    = 'openfloorball-offline';
 const DB_VERSION = 1;
 const STORE_NAME = 'writeQueue';
 

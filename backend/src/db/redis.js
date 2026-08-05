@@ -1,5 +1,5 @@
 /**
- * FloorForge – Redis Client
+ * OpenFloorball – Redis Client
  * Für Token-Blacklist (Logout) und späteres Rate-Limiting
  */
 import { createClient } from 'redis';

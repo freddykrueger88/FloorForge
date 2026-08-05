@@ -13,7 +13,7 @@ import App from './App.jsx';
 Konva.legacyTextRendering = true;
 
 // Theme aus localStorage wiederherstellen
-const savedTheme = localStorage.getItem('floorforge-theme') || 'dark';
+const savedTheme = localStorage.getItem('openfloorball-theme') || 'dark';
 document.documentElement.setAttribute('data-theme', savedTheme);
 
 createRoot(document.getElementById('root')).render(

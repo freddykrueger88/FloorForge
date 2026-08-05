@@ -1,5 +1,5 @@
 /**
- * FloorForge – Request Validation Middleware
+ * OpenFloorball – Request Validation Middleware
  * Verwendet express-validator
  */
 import { validationResult } from 'express-validator';

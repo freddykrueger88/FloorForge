@@ -10,8 +10,8 @@
 
 ```bash
 # 1. Repository klonen
-git clone https://github.com/freddykrueger88/FloorForge.git
-cd FloorForge
+git clone https://github.com/freddykrueger88/OpenFloorball.git
+cd OpenFloorball
 
 # 2. Umgebungsvariablen konfigurieren
 cp .env.example .env

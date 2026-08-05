@@ -15,7 +15,7 @@ import DeleteConfirmDialog from '../components/boards/DeleteConfirmDialog.jsx';
 import PlaybookFilterBar from '../components/boards/PlaybookFilterBar.jsx';
 import styles from './BoardsPage.module.css';
 
-const VIEW_STORAGE_KEY = 'floorforge:boardsView';
+const VIEW_STORAGE_KEY = 'openfloorball:boardsView';
 
 export default function BoardsPage() {
   const { t } = useTranslation();

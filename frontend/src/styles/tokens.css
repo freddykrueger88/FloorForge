@@ -1,5 +1,5 @@
 /* ================================================
-   FloorForge – Design Tokens (alle 4 Themes)
+   OpenFloorball – Design Tokens (alle 4 Themes)
    ================================================ */
 
 /* ── DARK (Default) ────────────────────────────────────────────── */
@@ -132,10 +132,10 @@ body {
 
 /* ── Farbblind-Modus (Issue #18 – Barrierefreiheit) ───────────── */
 /* Filter-Defs: siehe components/a11y/ColorBlindFilters.jsx */
-[data-colorblind-mode="protanopie"]   body { filter: url(#floorforge-cb-protanopie); }
-[data-colorblind-mode="deuteranopie"] body { filter: url(#floorforge-cb-deuteranopie); }
-[data-colorblind-mode="tritanopie"]   body { filter: url(#floorforge-cb-tritanopie); }
-[data-colorblind-mode="monochromie"]  body { filter: url(#floorforge-cb-monochromie); }
+[data-colorblind-mode="protanopie"]   body { filter: url(#openfloorball-cb-protanopie); }
+[data-colorblind-mode="deuteranopie"] body { filter: url(#openfloorball-cb-deuteranopie); }
+[data-colorblind-mode="tritanopie"]   body { filter: url(#openfloorball-cb-tritanopie); }
+[data-colorblind-mode="monochromie"]  body { filter: url(#openfloorball-cb-monochromie); }
 
 /* ── Hoher Kontrast (Issue #18 – Barrierefreiheit) ────────────── */
 [data-high-contrast="true"] {

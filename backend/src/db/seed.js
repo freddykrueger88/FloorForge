@@ -1,5 +1,5 @@
 /**
- * FloorForge – Development Seed
+ * OpenFloorball – Development Seed
  * Legt Demo-Daten für Entwicklung an.
  * Nur im development-Modus ausführen!
  */
@@ -26,7 +26,7 @@ async function seed() {
     await client.query('BEGIN');
 
     // Demo-Admin anlegen (falls noch nicht vorhanden)
-    const existing = await client.query(`SELECT id FROM users WHERE email = $1`, ['admin@floorforge.local']);
+    const existing = await client.query(`SELECT id FROM users WHERE email = $1`, ['admin@openfloorball.local']);
     let adminId;
 
     if (existing.rows.length === 0) {
@@ -35,9 +35,9 @@ async function seed() {
         INSERT INTO users (email, password_hash, role, display_name)
         VALUES ($1, $2, 'admin', 'Demo Admin')
         RETURNING id
-      `, ['admin@floorforge.local', hash]);
+      `, ['admin@openfloorball.local', hash]);
       adminId = result.rows[0].id;
-      logger.info(`Admin angelegt: admin@floorforge.local / Admin1234!`);
+      logger.info(`Admin angelegt: admin@openfloorball.local / Admin1234!`);
     } else {
       adminId = existing.rows[0].id;
       logger.info('Admin existiert bereits, überspringe.');

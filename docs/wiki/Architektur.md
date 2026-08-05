@@ -43,7 +43,7 @@
 
 ```
 ┌──────────────────────────────────────────────────────────────────┐
-│                  Docker Network (floorforge_internal)            │
+│                  Docker Network (openfloorball_internal)            │
 │                                                                    │
 │  ┌────────────┐      ┌────────────┐      ┌────────────┐          │
 │  │  Frontend  │ ───▶ │  Backend   │ ───▶ │ PostgreSQL │          │

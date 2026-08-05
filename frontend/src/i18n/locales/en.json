@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "FloorForge",
+    "name": "OpenFloorball",
     "tagline": "Tactics Tool for Floorball Coaches"
   },
   "nav": {
@@ -216,7 +216,7 @@
     "title": "Privacy Policy",
     "operator": {
       "title": "Operator",
-      "body": "FloorForge is self-hosted software. The operator of this instance is the administrator who set up this server — not the developers of the software. All data remains exclusively on this server; no data is transferred to third parties."
+      "body": "OpenFloorball is self-hosted software. The operator of this instance is the administrator who set up this server — not the developers of the software. All data remains exclusively on this server; no data is transferred to third parties."
     },
     "dataCategories": {
       "title": "What data is stored?",
@@ -246,7 +246,7 @@
     },
     "noThirdParty": {
       "title": "No third parties, no tracking",
-      "body": "FloorForge does not integrate any external analytics or tracking services. No data is shared with third parties. The only cookie used is a technically necessary, httpOnly-secured session cookie for login."
+      "body": "OpenFloorball does not integrate any external analytics or tracking services. No data is shared with third parties. The only cookie used is a technically necessary, httpOnly-secured session cookie for login."
     },
     "security": {
       "title": "Security",
@@ -263,7 +263,7 @@
     "resolution": "Resolution",
     "standard": "Standard",
     "loop": "Loop",
-    "watermark": "Watermark \"FloorForge\"",
+    "watermark": "Watermark \"OpenFloorball\"",
     "createMp4": "🎬 Create MP4",
     "downloadMp4": "⬇️ Download MP4",
     "rendering": "🎨 Rendering frames… {{progress}}%",
@@ -520,7 +520,7 @@
   },
   "rules": {
     "title": "Rules",
-    "intro": "This page summarizes the key IFF game rules and field specifications that FloorForge is based on.",
+    "intro": "This page summarizes the key IFF game rules and field specifications that OpenFloorball is based on.",
     "sourceLink": "Official source: IFF Rules of the Game",
     "fieldTypes": {
       "title": "Field Types",
@@ -538,7 +538,7 @@
     },
     "teamColors": {
       "title": "Team Colors",
-      "body": "Home and away teams must wear distinguishable colors. Configurable in FloorForge's settings."
+      "body": "Home and away teams must wear distinguishable colors. Configurable in OpenFloorball's settings."
     },
     "positions": {
       "title": "Positions (2-1-2 System)",

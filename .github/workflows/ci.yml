@@ -18,12 +18,12 @@ jobs:
       postgres:
         image: postgres:18-alpine
         env:
-          POSTGRES_DB: floorforge_test
-          POSTGRES_USER: floorforge
+          POSTGRES_DB: openfloorball_test
+          POSTGRES_USER: openfloorball
           POSTGRES_PASSWORD: test
         ports: ['5432:5432']
         options: >-
-          --health-cmd "pg_isready -U floorforge -d floorforge_test"
+          --health-cmd "pg_isready -U openfloorball -d openfloorball_test"
           --health-interval 10s --health-timeout 5s --health-retries 5
       redis:
         image: redis:8-alpine
@@ -34,13 +34,13 @@ jobs:
     env:
       DB_HOST: localhost
       DB_PORT: 5432
-      DB_NAME: floorforge_test
-      DB_USER: floorforge
+      DB_NAME: openfloorball_test
+      DB_USER: openfloorball
       DB_PASSWORD: test
       REDIS_HOST: localhost
       REDIS_PORT: 6379
       REDIS_PASSWORD: ''
-      EXPORTS_DIR: /tmp/floorforge-exports-ci
+      EXPORTS_DIR: /tmp/openfloorball-exports-ci
     steps:
       - uses: actions/checkout@v7
 
@@ -118,7 +118,7 @@ jobs:
         with:
           context: ./backend
           push: false
-          tags: floorforge-backend:ci
+          tags: openfloorball-backend:ci
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -127,6 +127,6 @@ jobs:
         with:
           context: ./frontend
           push: false
-          tags: floorforge-frontend:ci
+          tags: openfloorball-frontend:ci
           cache-from: type=gha
           cache-to: type=gha,mode=max

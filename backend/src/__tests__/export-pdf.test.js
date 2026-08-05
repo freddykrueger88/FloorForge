@@ -61,7 +61,7 @@ describe('POST /api/export/pdf', () => {
     });
     expect(res.status).toBe(200);
     expect(res.headers['content-type']).toBe('application/pdf');
-    expect(res.headers['content-disposition']).toMatch(/floorforge-taktikblatt\.pdf/);
+    expect(res.headers['content-disposition']).toMatch(/openfloorball-taktikblatt\.pdf/);
     expect(res.body.slice(0, 5).toString()).toBe('%PDF-');
     expect(pageCount(res.body)).toBe(1);
   });

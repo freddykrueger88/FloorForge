@@ -1,5 +1,5 @@
 /**
- * FloorForge – Auth Routes
+ * OpenFloorball – Auth Routes
  * POST /api/auth/register
  * POST /api/auth/login
  * POST /api/auth/logout

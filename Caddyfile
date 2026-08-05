@@ -1,4 +1,4 @@
-# FloorForge – Caddy Reverse-Proxy mit automatischem HTTPS (Let's Encrypt)
+# OpenFloorball – Caddy Reverse-Proxy mit automatischem HTTPS (Let's Encrypt)
 # Nutzung: siehe README.md "HTTPS via Caddy (optional)"
 {$DOMAIN} {
 	reverse_proxy frontend:80

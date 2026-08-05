@@ -1,5 +1,5 @@
 /**
- * FloorForge – Zentrale Fehlerbehandlung
+ * OpenFloorball – Zentrale Fehlerbehandlung
  */
 
 /**

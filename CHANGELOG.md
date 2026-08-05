@@ -1,6 +1,6 @@
 # Changelog
 
-Alle wichtigen Änderungen an FloorForge werden in dieser Datei dokumentiert.
+Alle wichtigen Änderungen an OpenFloorball werden in dieser Datei dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/).
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
@@ -49,7 +49,7 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   teilweise unsichtbar abgeschnitten statt sich anzupassen. Beide
   scrollen jetzt intern, wenn der verfügbare Platz nicht mehr reicht.
 - CI: `EXPORTS_DIR` im Backend-Testjob (`.github/workflows/ci.yml`) auf
-  `/tmp/floorforge-exports-ci` gesetzt statt des Produktions-Defaults
+  `/tmp/openfloorball-exports-ci` gesetzt statt des Produktions-Defaults
   `/app/exports`, der nur innerhalb des Docker-Containers beschreibbar
   ist – auf dem bare GitHub-Actions-Runner (non-root) führte das seit
   dem MP4-Export-Feature (Commit `b6a5a2e`) durchgehend zu `EACCES` in

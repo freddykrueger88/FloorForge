@@ -1,6 +1,6 @@
 # 📚 IFF Regelwerke & Spielfeld-Spezifikationen
 
-Dieses Dokument fasst die relevanten IFF-Regeln für FloorForge zusammen.
+Dieses Dokument fasst die relevanten IFF-Regeln für OpenFloorball zusammen.
 Offizielle Quelle: [IFF Offizielle Regeln](https://floorball.sport/game/rules/)
 
 ---
@@ -45,7 +45,7 @@ Offizielle Quelle: [IFF Offizielle Regeln](https://floorball.sport/game/rules/)
 ## 👕 Team-Farben
 
 - Heimteam und Auswärtsteam müssen unterscheidbare Farben tragen
-- In FloorForge konfigurierbar in den Einstellungen
+- In OpenFloorball konfigurierbar in den Einstellungen
 
 ---
 

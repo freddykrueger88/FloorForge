@@ -1,6 +1,6 @@
 # ❓ FAQ
 
-**Läuft FloorForge auch ohne Docker?**
+**Läuft OpenFloorball auch ohne Docker?**
 Nicht offiziell unterstützt – das Projekt ist bewusst Docker-first
 aufgebaut (Backend, Frontend/Nginx, Postgres, Redis als eigene
 Container). Für lokale Entwicklung siehe
@@ -21,26 +21,26 @@ Live-Cursor ist bewusst (noch) nicht Teil des Funktionsumfangs, siehe
 **Warum kommt beim "Board teilen" ein Fehler "Kein Nutzer mit dieser
 E-Mail-Adresse gefunden"?**
 Board-Sharing setzt zwingend einen bereits **registrierten**
-FloorForge-Account voraus – es gibt (noch) keinen Einladungslink für
+OpenFloorball-Account voraus – es gibt (noch) keinen Einladungslink für
 neue, unregistrierte E-Mail-Adressen. Die eingeladene Person muss sich
 zuerst selbst unter `/register` registrieren.
 
-**Verschickt FloorForge E-Mails?**
+**Verschickt OpenFloorball E-Mails?**
 Nur optional, und nur eine kurze Benachrichtigung beim Hinzufügen als
 Kollaborator – siehe [E-Mail-Versand einrichten](./E-Mail-Versand.md).
 Ohne konfigurierten SMTP-Server passiert einfach nichts, die App bleibt
 voll funktionsfähig.
 
-**Ist FloorForge für Tablets/Smartphones optimiert?**
+**Ist OpenFloorball für Tablets/Smartphones optimiert?**
 Nicht dediziert – Desktop/Laptop ist der primäre Anwendungsfall, das
 Layout ist nicht speziell für Touch-Gesten getestet.
 
-**Ist FloorForge barrierefrei?**
+**Ist OpenFloorball barrierefrei?**
 Die App orientiert sich durchgehend an WCAG 2.1 AA / BITV 2.0 /
 EN 301 549 (Tastaturbedienbarkeit, ARIA-Labels, Screenreader-
 Ankündigungen), wurde aber bislang nicht extern zertifiziert.
 
-**Funktioniert FloorForge offline?**
+**Funktioniert OpenFloorball offline?**
 Teilweise – die App-Shell und zuletzt geladene Board-Daten werden per
 Service Worker gecacht (PWA). Schreibzugriffe während einer
 Offline-Phase werden gepuffert und automatisch synchronisiert, sobald

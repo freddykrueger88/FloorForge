@@ -7,7 +7,7 @@ import pool from '../db/pool.js';
 import { toApiFrame } from '../controllers/framesController.js';
 import { toApiLine } from '../controllers/linesController.js';
 
-export const BACKUP_FORMAT = 'floorforge-backup-v1';
+export const BACKUP_FORMAT = 'openfloorball-backup-v1';
 
 export async function buildUserExport(userId) {
   const userResult = await pool.query(

@@ -1,5 +1,5 @@
 /**
- * FloorForge – Winston Logger
+ * OpenFloorball – Winston Logger
  */
 import winston from 'winston';
 

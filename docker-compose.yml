@@ -1,4 +1,4 @@
-name: floorforge
+name: openfloorball
 
 services:
   # ────────────────────────────────────────
@@ -6,12 +6,12 @@ services:
   # ────────────────────────────────────────
   db:
     image: postgres:18-alpine
-    container_name: floorforge_db
+    container_name: openfloorball_db
     restart: unless-stopped
     user: postgres
     environment:
-      POSTGRES_DB: ${DB_NAME:-floorforge}
-      POSTGRES_USER: ${DB_USER:-floorforge}
+      POSTGRES_DB: ${DB_NAME:-openfloorball}
+      POSTGRES_USER: ${DB_USER:-openfloorball}
       POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
     volumes:
       # Neues Volume statt db_data (Issue Modernisierung Phase 5): das
@@ -27,7 +27,7 @@ services:
     networks:
       - internal
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-floorforge} -d ${DB_NAME:-floorforge}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-openfloorball} -d ${DB_NAME:-openfloorball}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -38,7 +38,7 @@ services:
   # ────────────────────────────────────────
   redis:
     image: redis:8-alpine
-    container_name: floorforge_redis
+    container_name: openfloorball_redis
     restart: unless-stopped
     command: redis-server --requirepass ${REDIS_PASSWORD:?REDIS_PASSWORD is required} --maxmemory 256mb --maxmemory-policy allkeys-lru
     volumes:
@@ -60,15 +60,15 @@ services:
       context: ./backend
       dockerfile: Dockerfile
       target: ${NODE_ENV:-production}
-    container_name: floorforge_backend
+    container_name: openfloorball_backend
     restart: unless-stopped
     environment:
       NODE_ENV: ${NODE_ENV:-production}
       PORT: 3001
       DB_HOST: db
       DB_PORT: 5432
-      DB_NAME: ${DB_NAME:-floorforge}
-      DB_USER: ${DB_USER:-floorforge}
+      DB_NAME: ${DB_NAME:-openfloorball}
+      DB_USER: ${DB_USER:-openfloorball}
       DB_PASSWORD: ${DB_PASSWORD}
       REDIS_HOST: redis
       REDIS_PORT: 6379
@@ -111,7 +111,7 @@ services:
       dockerfile: Dockerfile
       args:
         VITE_API_URL: ${VITE_API_URL:-/api}
-    container_name: floorforge_frontend
+    container_name: openfloorball_frontend
     restart: unless-stopped
     ports:
       - "${APP_PORT:-3000}:80"
@@ -132,18 +132,18 @@ volumes:
   # Umstieg auf Postgres 18 manuell bestätigt ist), wird aber von keinem
   # Service mehr referenziert.
   db_data:
-    name: floorforge_db_data
+    name: openfloorball_db_data
   db_data_pg18:
-    name: floorforge_db_data_pg18
+    name: openfloorball_db_data_pg18
   redis_data:
-    name: floorforge_redis_data
+    name: openfloorball_redis_data
   exports_data:
-    name: floorforge_exports_data
+    name: openfloorball_exports_data
   backups_data:
-    name: floorforge_backups_data
+    name: openfloorball_backups_data
 
 networks:
   internal:
-    name: floorforge_internal
+    name: openfloorball_internal
     driver: bridge
     internal: false  # Frontend braucht Port-Zugang von außen

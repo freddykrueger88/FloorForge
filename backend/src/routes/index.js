@@ -1,5 +1,5 @@
 /**
- * FloorForge – Route Index
+ * OpenFloorball – Route Index
  */
 import { Router } from 'express';
 import express from 'express';

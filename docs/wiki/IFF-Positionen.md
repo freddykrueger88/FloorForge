@@ -1,6 +1,6 @@
 # 🎯 Positionen & Aufgaben
 
-FloorForge nutzt das Großfeld-Standardsystem **2-1-2** (2 Verteidiger,
+OpenFloorball nutzt das Großfeld-Standardsystem **2-1-2** (2 Verteidiger,
 1 Center, 2 Stürmer) – anders als im Fußball gibt es keine
 "Mittelfeld"-Linie, die mittlere Feldspieler-Position heißt in
 Floorball/Unihockey **Center**.

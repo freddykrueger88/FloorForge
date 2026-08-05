@@ -1,7 +1,7 @@
 # 🛡️ DSGVO & Datenschutz
 
-FloorForge ist self-hosted – der Betreiber der jeweiligen Instanz ist
-datenschutzrechtlich verantwortlich, nicht die FloorForge-Entwickler.
+OpenFloorball ist self-hosted – der Betreiber der jeweiligen Instanz ist
+datenschutzrechtlich verantwortlich, nicht die OpenFloorball-Entwickler.
 Die App selbst folgt beim Datenmodell dem Grundsatz der
 **Datensparsamkeit** (DSGVO Art. 5 Abs. 1c).
 

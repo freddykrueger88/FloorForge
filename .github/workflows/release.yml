@@ -46,7 +46,7 @@ jobs:
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ steps.version.outputs.tag }}
-          name: "FloorForge ${{ steps.version.outputs.tag }}"
+          name: "OpenFloorball ${{ steps.version.outputs.tag }}"
           body: ${{ steps.changelog.outputs.notes }}
           draft: false
           prerelease: ${{ contains(steps.version.outputs.tag, '-') }}

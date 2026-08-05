@@ -62,7 +62,7 @@ Produktivdaten verwenden!). Zwei Docker-Wegwerfcontainer sind der
 einfachste Weg:
 
 ```bash
-docker run -d --name ff_test_pg -e POSTGRES_DB=floorforge_test \
+docker run -d --name ff_test_pg -e POSTGRES_DB=openfloorball_test \
   -e POSTGRES_USER=ff -e POSTGRES_PASSWORD=test -p 5432:5432 postgres:18-alpine
 docker run -d --name ff_test_redis -p 6379:6379 redis:8-alpine \
   redis-server --requirepass test

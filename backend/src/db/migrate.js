@@ -1,5 +1,5 @@
 /**
- * FloorForge – Datenbankmigrationen
+ * OpenFloorball – Datenbankmigrationen
  * Vollständiges Schema: users, boards, frames, lines, exports, settings
  */
 import 'dotenv/config';

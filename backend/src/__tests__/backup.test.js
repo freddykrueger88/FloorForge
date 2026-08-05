@@ -97,7 +97,7 @@ describe('GET /api/user/export', () => {
 
     expect(res.status).toBe(200);
     expect(res.headers['content-type']).toBe('application/zip');
-    expect(res.headers['content-disposition']).toMatch(/attachment; filename="floorforge-backup-.*\.zip"/);
+    expect(res.headers['content-disposition']).toMatch(/attachment; filename="openfloorball-backup-.*\.zip"/);
 
     const zip = new AdmZip(res.body);
     const entry = zip.getEntry('backup.json');

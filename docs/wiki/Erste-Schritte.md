@@ -1,6 +1,6 @@
 # 🚀 Erste Schritte
 
-Kurzer Rundgang durch FloorForge nach der [Installation](./Installation-Docker.md).
+Kurzer Rundgang durch OpenFloorball nach der [Installation](./Installation-Docker.md).
 
 ## 1. Registrieren
 
@@ -21,7 +21,7 @@ Auf der Board-Übersicht (`/boards`, Startseite nach dem Login) auf
 - **Design/Theme**: Dark, Light, Vikings, IFF
 - Optional: einem [Playbook](./Playbooks.md) zuordnen
 
-FloorForge legt automatisch eine IFF-konforme Standardaufstellung
+OpenFloorball legt automatisch eine IFF-konforme Standardaufstellung
 (2‑1‑2-System, alle Feldspieler in der eigenen Hälfte) als ersten
 [Frame](./Animation.md) an.
 
@@ -47,7 +47,7 @@ Im unteren Tab-Menü ("⚙️ Einstellungen"-Tab ausklappen für Details):
 - **PDF**: Taktikblatt zum Ausdrucken
 - **Link teilen**: öffentlich einsehbarer Link ohne Login (läuft nach
   `SHARE_LINK_EXPIRES_HOURS` automatisch ab)
-- **Board teilen**: einen anderen FloorForge-Nutzer als Kollaborator
+- **Board teilen**: einen anderen OpenFloorball-Nutzer als Kollaborator
   hinzufügen (siehe [Export & Teilen](./Export.md))
 
 ## 5. Team & Training

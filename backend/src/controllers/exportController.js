@@ -91,7 +91,7 @@ function buildMp4FFmpegArgs({ jobId, fps, width, watermark }) {
   const outPath = outputPath(jobId, 'mp4');
   const scale   = `scale=${width}:-2:flags=lanczos`;
   const watermarkFilter = watermark
-    ? `,drawtext=fontfile=${WATERMARK_FONT}:text='FloorForge':fontcolor=white@0.8:fontsize=${Math.max(12, Math.round(width / 24))}:x=w-tw-12:y=h-th-12:box=1:boxcolor=black@0.4:boxborderw=6`
+    ? `,drawtext=fontfile=${WATERMARK_FONT}:text='OpenFloorball':fontcolor=white@0.8:fontsize=${Math.max(12, Math.round(width / 24))}:x=w-tw-12:y=h-th-12:box=1:boxcolor=black@0.4:boxborderw=6`
     : '';
   return [
     '-y',
@@ -219,7 +219,7 @@ export function downloadExport(req, res) {
   if (!fsSync.existsSync(filePath)) {
     return res.status(404).json({ success: false, message: 'Datei nicht gefunden.' });
   }
-  const filename = job.format === 'mp4' ? 'floorforge-export.mp4' : 'floorforge-export.gif';
+  const filename = job.format === 'mp4' ? 'openfloorball-export.mp4' : 'openfloorball-export.gif';
   res.download(filePath, filename, (err) => {
     if (err) logger.warn(`Download error (${jobId}):`, err);
   });

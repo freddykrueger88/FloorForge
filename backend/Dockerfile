@@ -1,5 +1,5 @@
 # ================================================
-# FloorForge Backend – Multi-Stage Dockerfile
+# OpenFloorball Backend – Multi-Stage Dockerfile
 # ================================================
 
 # ── Base ─────────────────────────────────────────

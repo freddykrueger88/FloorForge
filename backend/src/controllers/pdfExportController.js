@@ -64,7 +64,7 @@ export async function exportPdf(req, res) {
   try {
     const doc = new PDFDocument({ size, margin: 40, bufferPages: true });
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', 'attachment; filename="floorforge-taktikblatt.pdf"');
+    res.setHeader('Content-Disposition', 'attachment; filename="openfloorball-taktikblatt.pdf"');
     doc.pipe(res);
 
     const contentWidth = doc.page.width - doc.page.margins.left - doc.page.margins.right;
@@ -74,7 +74,7 @@ export async function exportPdf(req, res) {
 
     function drawHeader() {
       doc.font('Helvetica-Bold').fontSize(16).fillColor('#111827')
-        .text('FloorForge', doc.page.margins.left, doc.page.margins.top);
+        .text('OpenFloorball', doc.page.margins.left, doc.page.margins.top);
       doc.font('Helvetica').fontSize(11).fillColor('#374151')
         .text(safeBoardName, doc.page.margins.left, doc.page.margins.top + 20);
       doc.font('Helvetica').fontSize(9).fillColor('#6b7280')

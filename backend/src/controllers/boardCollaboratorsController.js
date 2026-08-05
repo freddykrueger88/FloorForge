@@ -106,8 +106,8 @@ export async function addCollaborator(req, res) {
     const appUrl = (process.env.CORS_ORIGIN || '').replace(/\/$/, '');
     sendMail({
       to: targetUser.email,
-      subject: `FloorForge: Zugriff auf Board "${board.name}"`,
-      text: `Du wurdest als Kollaborator (${permission === 'write' ? 'Bearbeiten' : 'Lesen'}) zum Board "${board.name}" hinzugefügt.\n\n${appUrl ? `${appUrl}/boards` : 'Öffne die FloorForge-App'}, um es zu sehen.`,
+      subject: `OpenFloorball: Zugriff auf Board "${board.name}"`,
+      text: `Du wurdest als Kollaborator (${permission === 'write' ? 'Bearbeiten' : 'Lesen'}) zum Board "${board.name}" hinzugefügt.\n\n${appUrl ? `${appUrl}/boards` : 'Öffne die OpenFloorball-App'}, um es zu sehen.`,
     });
 
     res.status(201).json(created(toApiCollaborator({ ...result.rows[0], email: targetUser.email })));

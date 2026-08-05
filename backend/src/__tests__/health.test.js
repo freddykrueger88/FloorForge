@@ -8,13 +8,13 @@ describe('Health Check', () => {
     const { default: express } = await import('express');
     const app = express();
     app.get('/health', (_req, res) => {
-      res.json({ status: 'ok', timestamp: new Date().toISOString(), service: 'floorforge-backend' });
+      res.json({ status: 'ok', timestamp: new Date().toISOString(), service: 'openfloorball-backend' });
     });
 
     const res = await request(app).get('/health');
     expect(res.status).toBe(200);
     expect(res.body.status).toBe('ok');
-    expect(res.body.service).toBe('floorforge-backend');
+    expect(res.body.service).toBe('openfloorball-backend');
   });
 
   it('Unbekannte Route gibt 404 zurück', async () => {

@@ -1,5 +1,5 @@
 # ================================================
-# FloorForge Frontend – Multi-Stage Dockerfile
+# OpenFloorball Frontend – Multi-Stage Dockerfile
 # ================================================
 
 # ── Build Stage ──────────────────────────────────

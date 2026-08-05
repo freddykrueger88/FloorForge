@@ -30,7 +30,7 @@ export function usePdfExport() {
         throw new Error(body.message ?? `HTTP ${res.status}`);
       }
       const blob = await res.blob();
-      const filename = filenameFromDisposition(res.headers.get('Content-Disposition'), 'floorforge-taktikblatt.pdf');
+      const filename = filenameFromDisposition(res.headers.get('Content-Disposition'), 'openfloorball-taktikblatt.pdf');
 
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');

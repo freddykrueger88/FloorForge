@@ -13,8 +13,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['src/assets/favicon.svg'],
       manifest: {
-        name: 'FloorForge',
-        short_name: 'FloorForge',
+        name: 'OpenFloorball',
+        short_name: 'OpenFloorball',
         description: 'Taktik-Tool für Floorball Coaches',
         theme_color: '#01696f',
         background_color: '#161614',
@@ -39,7 +39,7 @@ export default defineConfig({
               && url.pathname !== '/api/user/export',
             handler: 'NetworkFirst',
             options: {
-              cacheName: 'floorforge-api-cache',
+              cacheName: 'openfloorball-api-cache',
               networkTimeoutSeconds: 4,
               cacheableResponse: { statuses: [0, 200] },
               expiration: { maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 },

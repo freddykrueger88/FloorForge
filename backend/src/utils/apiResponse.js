@@ -1,5 +1,5 @@
 /**
- * FloorForge – Einheitliche API Response Helfer
+ * OpenFloorball – Einheitliche API Response Helfer
  *
  * Diese Helfer geben reine Payload-Objekte zurück (kein `res`!) – der
  * Aufrufer entscheidet selbst über den HTTP-Statuscode via `res.status(...)`:

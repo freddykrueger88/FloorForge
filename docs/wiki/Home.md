@@ -1,9 +1,9 @@
-# 🏒 FloorForge Wiki
+# 🏒 OpenFloorball Wiki
 
-Willkommen im FloorForge Wiki! Hier findest du alle Informationen zur
+Willkommen im OpenFloorball Wiki! Hier findest du alle Informationen zur
 Installation, Nutzung und Entwicklung.
 
-**FloorForge** ist ein self-hosted Taktik-Tool für Floorball-Coaches:
+**OpenFloorball** ist ein self-hosted Taktik-Tool für Floorball-Coaches:
 virtuelles 2D-Spielfeld, animierte Spielzüge (Frame-by-Frame), Export
 als GIF/MP4/PDF/Link, Docker-basiert und IFF-konform.
 
@@ -71,4 +71,4 @@ als GIF/MP4/PDF/Link, Docker-basiert und IFF-konform.
 
 ---
 
-> *FloorForge wurde mit KI-Unterstützung entwickelt (AI-Slop). Ideengeber: freddykrueger88*
+> *OpenFloorball wurde mit KI-Unterstützung entwickelt (AI-Slop). Ideengeber: freddykrueger88*

@@ -1,5 +1,5 @@
 /**
- * FloorForge – Express Server
+ * OpenFloorball – Express Server
  */
 import 'dotenv/config';
 import express from 'express';
@@ -87,7 +87,7 @@ if (process.env.NODE_ENV !== 'test') {
 
 // ── Health Check ─────────────────────────────
 app.get('/health', (_req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString(), service: 'floorforge-backend' });
+  res.json({ status: 'ok', timestamp: new Date().toISOString(), service: 'openfloorball-backend' });
 });
 
 // ── API Routes ────────────────────────────────
@@ -116,7 +116,7 @@ async function bootstrap() {
     await runMigrations();
     await rescheduleBackupCron();
     app.listen(PORT, '0.0.0.0', () => {
-      logger.info(`FloorForge Backend läuft auf Port ${PORT} (${process.env.NODE_ENV || 'development'})`);
+      logger.info(`OpenFloorball Backend läuft auf Port ${PORT} (${process.env.NODE_ENV || 'development'})`);
     });
   } catch (err) {
     logger.error('Bootstrap failed:', err);

@@ -60,4 +60,4 @@ docker compose logs -f frontend
 
 - [FAQ](./FAQ.md)
 - [Umgebungsvariablen](./Umgebungsvariablen.md)
-- Bug melden: [Issue-Templates](https://github.com/freddykrueger88/FloorForge/issues/new/choose)
+- Bug melden: [Issue-Templates](https://github.com/freddykrueger88/OpenFloorball/issues/new/choose)

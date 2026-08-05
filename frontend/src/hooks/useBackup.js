@@ -27,7 +27,7 @@ export function useBackup() {
         throw new Error(body.message ?? `HTTP ${res.status}`);
       }
       const blob = await res.blob();
-      const filename = filenameFromDisposition(res.headers.get('Content-Disposition'), 'floorforge-backup.zip');
+      const filename = filenameFromDisposition(res.headers.get('Content-Disposition'), 'openfloorball-backup.zip');
 
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');

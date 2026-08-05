@@ -30,9 +30,9 @@ nicht das vollständige relationale Postgres-Schema. Für ein komplettes
 Datenbank-Backup (z. B. vor einem Major-Upgrade):
 
 ```bash
-docker exec floorforge_db pg_dump -U floorforge -d floorforge \
+docker exec openfloorball_db pg_dump -U openfloorball -d openfloorball \
   -F custom -f /tmp/backup.dump
-docker cp floorforge_db:/tmp/backup.dump ./floorforge-backup.dump
+docker cp openfloorball_db:/tmp/backup.dump ./openfloorball-backup.dump
 ```
 
 Wiederherstellen mit `pg_restore` in eine frische Datenbank – siehe

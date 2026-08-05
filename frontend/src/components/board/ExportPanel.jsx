@@ -173,7 +173,7 @@ export default function ExportPanel({ boardId, frames, renderFrame }) {
           <>
             <a
               href={fileUrl}
-              download={format === 'mp4' ? 'floorforge.mp4' : 'floorforge.gif'}
+              download={format === 'mp4' ? 'openfloorball.mp4' : 'openfloorball.gif'}
               className={styles.downloadBtn}
             >
               {format === 'mp4' ? t('export.downloadMp4') : t('export.download')}

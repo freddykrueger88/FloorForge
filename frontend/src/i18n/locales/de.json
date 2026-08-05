@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "FloorForge",
+    "name": "OpenFloorball",
     "tagline": "Taktik-Tool für Floorball Coaches"
   },
   "nav": {
@@ -216,7 +216,7 @@
     "title": "Datenschutzerklärung",
     "operator": {
       "title": "Betreiber",
-      "body": "FloorForge ist selbst gehostete Software. Betreiber dieser Instanz ist der Administrator, der diesen Server eingerichtet hat – nicht die Entwickler der Software. Alle Daten verbleiben ausschließlich auf diesem Server; es findet keine Übertragung an Dritte statt."
+      "body": "OpenFloorball ist selbst gehostete Software. Betreiber dieser Instanz ist der Administrator, der diesen Server eingerichtet hat – nicht die Entwickler der Software. Alle Daten verbleiben ausschließlich auf diesem Server; es findet keine Übertragung an Dritte statt."
     },
     "dataCategories": {
       "title": "Welche Daten werden gespeichert?",
@@ -246,7 +246,7 @@
     },
     "noThirdParty": {
       "title": "Keine Drittanbieter, kein Tracking",
-      "body": "FloorForge bindet keine externen Analyse- oder Tracking-Dienste ein. Es werden keine Daten an Dritte weitergegeben. Das einzige Cookie ist ein technisch notwendiges, httpOnly-gesichertes Sitzungs-Cookie zur Anmeldung."
+      "body": "OpenFloorball bindet keine externen Analyse- oder Tracking-Dienste ein. Es werden keine Daten an Dritte weitergegeben. Das einzige Cookie ist ein technisch notwendiges, httpOnly-gesichertes Sitzungs-Cookie zur Anmeldung."
     },
     "security": {
       "title": "Sicherheit",
@@ -263,7 +263,7 @@
     "resolution": "Auflösung",
     "standard": "Standard",
     "loop": "Loop",
-    "watermark": "Wasserzeichen „FloorForge\"",
+    "watermark": "Wasserzeichen „OpenFloorball\"",
     "createMp4": "🎬 MP4 erstellen",
     "downloadMp4": "⬇️ MP4 herunterladen",
     "rendering": "🎨 Rendere Frames… {{progress}}%",
@@ -520,7 +520,7 @@
   },
   "rules": {
     "title": "Regelwerk",
-    "intro": "Diese Seite fasst die wichtigsten IFF-Spielregeln und Spielfeld-Spezifikationen zusammen, die FloorForge zugrunde liegen.",
+    "intro": "Diese Seite fasst die wichtigsten IFF-Spielregeln und Spielfeld-Spezifikationen zusammen, die OpenFloorball zugrunde liegen.",
     "sourceLink": "Offizielle Quelle: IFF Rules of the Game",
     "fieldTypes": {
       "title": "Spielfeld-Typen",
@@ -538,7 +538,7 @@
     },
     "teamColors": {
       "title": "Team-Farben",
-      "body": "Heim- und Auswärtsteam müssen unterscheidbare Farben tragen. In FloorForge in den Einstellungen konfigurierbar."
+      "body": "Heim- und Auswärtsteam müssen unterscheidbare Farben tragen. In OpenFloorball in den Einstellungen konfigurierbar."
     },
     "positions": {
       "title": "Positionen (2-1-2-System)",

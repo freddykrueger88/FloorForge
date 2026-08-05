@@ -20,8 +20,8 @@ nano .env
 
 | Variable | Beschreibung | Standard |
 |---|---|---|
-| `DB_NAME` | Datenbankname | `floorforge` |
-| `DB_USER` | Datenbank-Benutzer | `floorforge` |
+| `DB_NAME` | Datenbankname | `openfloorball` |
+| `DB_USER` | Datenbank-Benutzer | `openfloorball` |
 | `DB_PASSWORD` | **Ändern!** Min. 20 Zeichen empfohlen (`openssl rand -base64 32`) | – |
 
 ## Redis
@@ -41,7 +41,7 @@ nano .env
 
 | Variable | Beschreibung | Standard |
 |---|---|---|
-| `CORS_ORIGIN` | Erlaubte Frontend-Origin. Produktiv die tatsächliche Domain, z. B. `https://floorforge.example.com` | `http://localhost:3000` |
+| `CORS_ORIGIN` | Erlaubte Frontend-Origin. Produktiv die tatsächliche Domain, z. B. `https://openfloorball.example.com` | `http://localhost:3000` |
 
 ## bcrypt
 

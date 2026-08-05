@@ -1,5 +1,5 @@
 /**
- * FloorForge – Auth Middleware
+ * OpenFloorball – Auth Middleware
  */
 import jwt from 'jsonwebtoken';
 import redisClient from '../db/redis.js';

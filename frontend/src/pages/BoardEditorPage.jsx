@@ -100,12 +100,12 @@ export default function BoardEditorPage() {
 
   // Positions-Hinweise bei Hover (Issue #27)
   const [showHints, setShowHints] = useState(
-    () => localStorage.getItem('floorforge:showHints') !== 'false'
+    () => localStorage.getItem('openfloorball:showHints') !== 'false'
   );
   const toggleShowHints = useCallback(() => {
     setShowHints((v) => {
       const next = !v;
-      localStorage.setItem('floorforge:showHints', String(next));
+      localStorage.setItem('openfloorball:showHints', String(next));
       return next;
     });
   }, []);

@@ -21,7 +21,7 @@ Kurzfassung der wichtigsten Design-Entscheidungen:
 
 **Nicht** als öffentliches GitHub-Issue. Über den Security-Tab des
 Repositories:
-[github.com/freddykrueger88/FloorForge/security/advisories/new](https://github.com/freddykrueger88/FloorForge/security/advisories/new).
+[github.com/freddykrueger88/OpenFloorball/security/advisories/new](https://github.com/freddykrueger88/OpenFloorball/security/advisories/new).
 
 ## TLS/HTTPS für den eigenen Betrieb
 
@@ -30,7 +30,7 @@ Für Instanzen mit eigener Domain steht ein optionales Caddy-Overlay
 Let's-Encrypt-Zertifikat bezieht:
 
 ```bash
-DOMAIN=floorforge.example.com docker compose \
+DOMAIN=openfloorball.example.com docker compose \
   -f docker-compose.yml -f docker-compose.tls.yml up -d
 ```
 

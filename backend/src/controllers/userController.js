@@ -76,7 +76,7 @@ export async function exportAccount(req, res) {
     const dateStr = new Date().toISOString().slice(0, 10);
 
     res.setHeader('Content-Type', 'application/zip');
-    res.setHeader('Content-Disposition', `attachment; filename="floorforge-backup-${dateStr}.zip"`);
+    res.setHeader('Content-Disposition', `attachment; filename="openfloorball-backup-${dateStr}.zip"`);
 
     const archive = new ZipArchive({ zlib: { level: 9 } });
     archive.on('error', (err) => { throw err; });
