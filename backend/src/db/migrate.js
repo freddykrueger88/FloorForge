@@ -248,6 +248,58 @@ export async function runMigrations() {
     await client.query(`CREATE INDEX IF NOT EXISTS idx_board_collaborators_board_id ON board_collaborators(board_id);`);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_board_collaborators_user_id ON board_collaborators(user_id);`);
 
+    // ── teams + team_members (ROADMAP Phase 2 – Team und Organisation) ────
+    // Additiv zum bestehenden user_id-Besitzmodell: ein Team teilt Kader/
+    // Playbooks/Trainingspläne/Formationen zwischen mehreren Trainern (siehe
+    // team_id-Spalten weiter unten), OHNE Boards selbst anzufassen – die
+    // bestehende board_collaborators-Einzel-Freigabe bleibt granularer und
+    // unverändert. created_by ist rein informativ (wer hat das Team
+    // angelegt) – die eigentliche Berechtigung läuft über team_members.role.
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS teams (
+        id         UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        name       TEXT NOT NULL,
+        created_by UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      );
+    `);
+    await client.query(`
+      DROP TRIGGER IF EXISTS trg_teams_updated_at ON teams;
+      CREATE TRIGGER trg_teams_updated_at
+        BEFORE UPDATE ON teams
+        FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+    `);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_teams_created_by ON teams(created_by);`);
+
+    // role: owner (Ersteller/Cheftrainer, verwaltet Mitglieder+Rollen),
+    // coach (Co-Trainer, darf team-geteilte Inhalte anlegen/bearbeiten),
+    // member (Spieler, nur lesend) – bewusst 3 Stufen statt der vollen
+    // Rollen-Hierarchie aus den Vision-Dokumenten.
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS team_members (
+        id         UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        team_id    UUID NOT NULL REFERENCES teams(id) ON DELETE CASCADE,
+        user_id    UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        role       TEXT NOT NULL DEFAULT 'member' CHECK (role IN ('owner', 'coach', 'member')),
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        UNIQUE (team_id, user_id)
+      );
+    `);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_team_members_team_id ON team_members(team_id);`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_team_members_user_id ON team_members(user_id);`);
+
+    // ── Team-Fähigkeit der vier teilbaren Ressourcen (additiv, nullable) ───
+    // team_id IS NULL → weiterhin rein persönlich (unverändertes Verhalten).
+    await client.query(`ALTER TABLE roster_players ADD COLUMN IF NOT EXISTS team_id UUID REFERENCES teams(id) ON DELETE SET NULL;`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_roster_players_team_id ON roster_players(team_id) WHERE team_id IS NOT NULL;`);
+    await client.query(`ALTER TABLE playbooks ADD COLUMN IF NOT EXISTS team_id UUID REFERENCES teams(id) ON DELETE SET NULL;`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_playbooks_team_id ON playbooks(team_id) WHERE team_id IS NOT NULL;`);
+    await client.query(`ALTER TABLE training_sessions ADD COLUMN IF NOT EXISTS team_id UUID REFERENCES teams(id) ON DELETE SET NULL;`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_training_sessions_team_id ON training_sessions(team_id) WHERE team_id IS NOT NULL;`);
+    await client.query(`ALTER TABLE formation_templates ADD COLUMN IF NOT EXISTS team_id UUID REFERENCES teams(id) ON DELETE SET NULL;`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_formation_templates_team_id ON formation_templates(team_id) WHERE team_id IS NOT NULL;`);
+
     // ── exports ───────────────────────────────────────────────────────────
     // format: 'gif' | 'mp4' | 'pdf' | 'link' | 'png'
     await client.query(`
