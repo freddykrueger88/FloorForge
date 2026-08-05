@@ -62,13 +62,33 @@ if (process.env.NODE_ENV !== 'test') {
     message: { success: false, message: 'Zu viele Anfragen, bitte warten.' },
   }));
 
-  app.use('/api/auth/', rateLimit({
+  // Getrennt statt ein gemeinsamer Limiter für den ganzen /api/auth/-Pfad:
+  // vorher teilten sich Login, Registrierung und die bereits
+  // authentifizierten Routen (/me, /name, /email, /password, /logout) ein
+  // einziges 10-Anfragen-Budget pro 15 Minuten UND IP – mit einer Meldung,
+  // die immer "Login-Versuche" sagte, auch wenn z.B. eine Registrierung
+  // (nach mehreren Validierungsfehlern) oder normale /me-Aufrufe die
+  // eigentliche Ursache waren. Bei einer gemeinsam genutzten IP (Verein/
+  // Büro hinter einem NAT) reichte das oft schon durch einen einzigen
+  // Kollegen aus, um alle anderen mit auszusperren.
+  app.use('/api/auth/login', rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 10,
     standardHeaders: true,
     legacyHeaders: false,
     message: { success: false, message: 'Zu viele Login-Versuche, bitte warten.' },
   }));
+
+  app.use('/api/auth/register', rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 20,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { success: false, message: 'Zu viele Registrierungsversuche, bitte warten.' },
+  }));
+  // /me, /name, /email, /password, /logout bleiben unter dem allgemeinen
+  // /api/-Limit (100/15min) – die erfordern bereits eine gültige Session,
+  // Brute-Force ist dort kein Thema wie bei Login/Registrierung.
 }
 
 // ── Parser ────────────────────────────────────
