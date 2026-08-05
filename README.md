@@ -260,7 +260,7 @@ OpenFloorball/
 Die vollständige Projektdokumentation befindet sich unter:
 
 ```text
-/docs
+/docs/planning
 ```
 
 Dort enthalten:
