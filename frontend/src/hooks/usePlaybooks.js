@@ -25,11 +25,11 @@ export function usePlaybooks() {
     }
   }, []);
 
-  const createPlaybook = useCallback(async (name) => {
+  const createPlaybook = useCallback(async (name, teamId = null) => {
     try {
       const newPlaybook = await apiFetch(BASE, {
         method: 'POST',
-        body: JSON.stringify({ name }),
+        body: JSON.stringify({ name, teamId }),
       });
       setPlaybooks((prev) => [...prev, newPlaybook]);
       return newPlaybook;

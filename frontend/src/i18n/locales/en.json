@@ -402,7 +402,10 @@
     "newNameAriaLabel": "Name for new formation template",
     "saveAriaLabel": "Save current formation as template",
     "saveTitle": "Save current formation",
-    "limitHint": "Maximum 20 templates"
+    "limitHint": "Maximum 20 templates",
+    "teamAriaLabel": "Team to share this template with",
+    "personalOption": "Personal (not shared)",
+    "teamBadgeFallback": "Team"
   },
   "lines": {
     "typeOffense": "Offense",
@@ -673,7 +676,10 @@
     "limitHint": "Maximum 15 playbooks",
     "assignLabel": "Assign playbook",
     "noPlaybook": "No playbook",
-    "noBoardsInFilter": "No boards in this playbook"
+    "noBoardsInFilter": "No boards in this playbook",
+    "teamAriaLabel": "Team to share this playbook with",
+    "personalOption": "Personal (not shared)",
+    "teamBadgeFallback": "Team"
   },
   "trainings": {
     "count_one": "{{count}} training session",

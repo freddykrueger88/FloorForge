@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { useBoardsApi } from '../hooks/useBoardsApi.js';
 import { useSettings } from '../hooks/useSettings.js';
 import { usePlaybooks } from '../hooks/usePlaybooks.js';
+import { useTeams } from '../hooks/useTeams.js';
 import BoardCard from '../components/boards/BoardCard.jsx';
 import BoardPostcard from '../components/boards/BoardPostcard.jsx';
 import NewBoardModal from '../components/boards/NewBoardModal.jsx';
@@ -25,6 +26,10 @@ export default function BoardsPage() {
   const {
     playbooks, fetchPlaybooks, createPlaybook, deletePlaybook, canAddPlaybook,
   } = usePlaybooks();
+  // ROADMAP Phase 2: eigene Teams laden, um Playbooks optional
+  // team-geteilt statt rein persönlich anzulegen (analog Roster/Trainings).
+  const { teams, fetchTeams } = useTeams();
+  const teamsICanShareWith = teams.filter((tm) => tm.role === 'owner' || tm.role === 'coach');
 
   const [boards,        setBoards       ] = useState([]);
   const [showNewModal,  setShowNewModal  ] = useState(false);
@@ -52,6 +57,7 @@ export default function BoardsPage() {
 
   useEffect(() => { load(); }, [load]);
   useEffect(() => { fetchPlaybooks(); }, [fetchPlaybooks]);
+  useEffect(() => { fetchTeams().catch(() => {}); }, [fetchTeams]);
 
   const filteredBoards = useMemo(() => {
     let result = boards;
@@ -187,6 +193,7 @@ export default function BoardsPage() {
           onCreatePlaybook={createPlaybook}
           onDeletePlaybook={handleDeletePlaybook}
           canAddPlaybook={canAddPlaybook}
+          teams={teamsICanShareWith}
         />
       )}
 

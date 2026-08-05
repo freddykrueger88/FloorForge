@@ -39,6 +39,7 @@ import { useFrames } from '../hooks/useFrames.js';
 import { useLines } from '../hooks/useLines.js';
 import { useFormations } from '../hooks/useFormations.js';
 import { useRoster } from '../hooks/useRoster.js';
+import { useTeams } from '../hooks/useTeams.js';
 import { useField } from '../hooks/useField.js';
 import { useDrawing } from '../hooks/useDrawing.js';
 import { useAutoSave } from '../hooks/useAutoSave.js';
@@ -119,6 +120,10 @@ export default function BoardEditorPage() {
   const lines = useLines(boardId);
   const formations = useFormations();
   const roster = useRoster();
+  // ROADMAP Phase 2: eigene Teams laden, um Formations-Vorlagen optional
+  // team-geteilt statt rein persönlich anzulegen (analog Roster/Trainings).
+  const { teams, fetchTeams } = useTeams();
+  const teamsICanShareWith = teams.filter((tm) => tm.role === 'owner' || tm.role === 'coach');
 
   const [livePlayers, setLivePlayers] = useState([]);
   const [selectedPlayerId, setSelectedPlayerId] = useState(null);
@@ -166,6 +171,7 @@ export default function BoardEditorPage() {
     loadFrames();
     formations.fetchFormations();
     roster.fetchRoster().catch(() => {});
+    fetchTeams().catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [boardId]);
 
@@ -338,11 +344,11 @@ export default function BoardEditorPage() {
   // eine gespeicherte Vorlage laden. Beim Laden übernimmt setLivePlayers
   // direkt – die Persistenz läuft wie bei Drag&Drop automatisch über den
   // bestehenden useAutoSave-Hook, kein eigener Save-Call nötig.
-  const handleSaveFormation = useCallback((name) => {
+  const handleSaveFormation = useCallback((name, teamId) => {
     // Formationen sind wiederverwendbare Spieler-Aufstellungen (Issue #46),
     // keine vollständigen Szenen-Schnappschüsse – der Ball gehört nicht dazu.
     const playersOnly = livePlayers.filter((p) => p.team !== 'ball');
-    formations.saveFormation({ name, fieldType: field.fieldType, players: playersOnly });
+    formations.saveFormation({ name, fieldType: field.fieldType, players: playersOnly, teamId });
   }, [formations, field.fieldType, livePlayers]);
 
   const handleLoadFormation = useCallback((template) => {
@@ -573,6 +579,7 @@ export default function BoardEditorPage() {
                   onLoad={handleLoadFormation}
                   onDelete={formations.deleteFormation}
                   canAddFormation={formations.canAddFormation}
+                  teams={teamsICanShareWith}
                 />
               ),
             },

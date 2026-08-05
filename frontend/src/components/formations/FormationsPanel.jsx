@@ -16,16 +16,19 @@ export default function FormationsPanel({
   onLoad,
   onDelete,
   canAddFormation = true,
+  teams = [],
 }) {
   const { t } = useTranslation();
   const [collapsed, setCollapsed] = useState(false);
   const [newName,   setNewName  ] = useState('');
+  const [teamId,    setTeamId   ] = useState('');
 
   const handleSave = () => {
     const name = newName.trim();
     if (!name || !canAddFormation) return;
-    onSave?.(name);
+    onSave?.(name, teamId === '' ? null : teamId);
     setNewName('');
+    setTeamId('');
   };
 
   return (
@@ -57,6 +60,11 @@ export default function FormationsPanel({
                   title={t('formations.loadTitle')}
                 >
                   <span className={styles.name}>{formation.name}</span>
+                  {formation.teamId && (
+                    <span className={styles.teamBadge} title={teams.find((tm) => tm._id === formation.teamId)?.name ?? t('formations.teamBadgeFallback')}>
+                      👥
+                    </span>
+                  )}
                   <span className={styles.fieldBadge}>{FIELD_TYPE_LABELS[formation.fieldType] ?? formation.fieldType}</span>
                 </button>
                 <button
@@ -82,6 +90,20 @@ export default function FormationsPanel({
               disabled={!canAddFormation}
               aria-label={t('formations.newNameAriaLabel')}
             />
+            {teams.length > 0 && (
+              <select
+                className={styles.newTeamSelect}
+                value={teamId}
+                onChange={(e) => setTeamId(e.target.value)}
+                disabled={!canAddFormation}
+                aria-label={t('formations.teamAriaLabel')}
+              >
+                <option value="">{t('formations.personalOption')}</option>
+                {teams.map((tm) => (
+                  <option key={tm._id} value={tm._id}>{tm.name}</option>
+                ))}
+              </select>
+            )}
             <button
               className={styles.saveBtn}
               onClick={handleSave}

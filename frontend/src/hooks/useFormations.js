@@ -25,11 +25,11 @@ export function useFormations() {
     }
   }, []);
 
-  const saveFormation = useCallback(async ({ name, fieldType, players }) => {
+  const saveFormation = useCallback(async ({ name, fieldType, players, teamId = null }) => {
     try {
       const newFormation = await apiFetch(BASE, {
         method: 'POST',
-        body: JSON.stringify({ name, fieldType, players }),
+        body: JSON.stringify({ name, fieldType, players, teamId }),
       });
       setFormations((prev) => [newFormation, ...prev]);
       return newFormation;

@@ -402,7 +402,10 @@
     "newNameAriaLabel": "Name für neue Formations-Vorlage",
     "saveAriaLabel": "Aktuelle Aufstellung als Vorlage speichern",
     "saveTitle": "Aktuelle Aufstellung speichern",
-    "limitHint": "Maximal 20 Vorlagen"
+    "limitHint": "Maximal 20 Vorlagen",
+    "teamAriaLabel": "Team, mit dem diese Vorlage geteilt wird",
+    "personalOption": "Persönlich (nicht geteilt)",
+    "teamBadgeFallback": "Team"
   },
   "lines": {
     "typeOffense": "Sturm",
@@ -673,7 +676,10 @@
     "limitHint": "Maximal 15 Playbooks",
     "assignLabel": "Playbook zuordnen",
     "noPlaybook": "Kein Playbook",
-    "noBoardsInFilter": "Keine Spielfelder in diesem Playbook"
+    "noBoardsInFilter": "Keine Spielfelder in diesem Playbook",
+    "teamAriaLabel": "Team, mit dem dieses Playbook geteilt wird",
+    "personalOption": "Persönlich (nicht geteilt)",
+    "teamBadgeFallback": "Team"
   },
   "trainings": {
     "count_one": "{{count}} Trainingseinheit",

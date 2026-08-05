@@ -9,10 +9,12 @@ import styles from './PlaybookFilterBar.module.css';
 export default function PlaybookFilterBar({
   playbooks, boards, activeFilter, onFilterChange,
   onCreatePlaybook, onDeletePlaybook, canAddPlaybook,
+  teams = [],
 }) {
   const { t } = useTranslation();
   const [creating, setCreating] = useState(false);
   const [name,     setName    ] = useState('');
+  const [teamId,   setTeamId  ] = useState('');
   const inputRef = useRef(null);
 
   useEffect(() => { if (creating) inputRef.current?.focus(); }, [creating]);
@@ -23,11 +25,12 @@ export default function PlaybookFilterBar({
     const trimmed = name.trim();
     if (trimmed) {
       try {
-        const newPlaybook = await onCreatePlaybook(trimmed);
+        const newPlaybook = await onCreatePlaybook(trimmed, teamId === '' ? null : teamId);
         onFilterChange(newPlaybook._id);
       } catch { /* Fehler bereits im Hook gesetzt */ }
     }
     setName('');
+    setTeamId('');
     setCreating(false);
   };
 
@@ -60,6 +63,11 @@ export default function PlaybookFilterBar({
             aria-pressed={activeFilter === pb._id}
           >
             {pb.name} · {boards.filter((b) => b.playbookId === pb._id).length}
+            {pb.teamId && (
+              <span className={styles.teamBadge} title={teams.find((tm) => tm._id === pb.teamId)?.name ?? t('playbooks.teamBadgeFallback')}>
+                👥
+              </span>
+            )}
           </button>
           <button
             className={styles.chipDelete}
@@ -73,20 +81,39 @@ export default function PlaybookFilterBar({
       ))}
 
       {creating ? (
-        <input
-          ref={inputRef}
-          className={styles.newInput}
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          onBlur={commitCreate}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter')  commitCreate();
-            if (e.key === 'Escape') { setName(''); setCreating(false); }
+        <div
+          className={styles.newGroup}
+          onBlur={(e) => {
+            if (!e.currentTarget.contains(e.relatedTarget)) commitCreate();
           }}
-          maxLength={40}
-          placeholder={t('playbooks.newNamePlaceholder')}
-          aria-label={t('playbooks.newNameAriaLabel')}
-        />
+        >
+          <input
+            ref={inputRef}
+            className={styles.newInput}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter')  commitCreate();
+              if (e.key === 'Escape') { setName(''); setCreating(false); }
+            }}
+            maxLength={40}
+            placeholder={t('playbooks.newNamePlaceholder')}
+            aria-label={t('playbooks.newNameAriaLabel')}
+          />
+          {teams.length > 0 && (
+            <select
+              className={styles.newTeamSelect}
+              value={teamId}
+              onChange={(e) => setTeamId(e.target.value)}
+              aria-label={t('playbooks.teamAriaLabel')}
+            >
+              <option value="">{t('playbooks.personalOption')}</option>
+              {teams.map((tm) => (
+                <option key={tm._id} value={tm._id}>{tm.name}</option>
+              ))}
+            </select>
+          )}
+        </div>
       ) : canAddPlaybook ? (
         <button className={styles.newChip} onClick={() => setCreating(true)}>
           + {t('playbooks.newChip')}
