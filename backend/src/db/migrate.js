@@ -300,6 +300,33 @@ export async function runMigrations() {
     await client.query(`ALTER TABLE formation_templates ADD COLUMN IF NOT EXISTS team_id UUID REFERENCES teams(id) ON DELETE SET NULL;`);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_formation_templates_team_id ON formation_templates(team_id) WHERE team_id IS NOT NULL;`);
 
+    // ── comments (ROADMAP Phase 2 – Kommentare auf Boards und
+    // Trainingseinheiten) ────────────────────────────────────────────────
+    // Eine gemeinsame Tabelle mit resource_type als Diskriminator statt
+    // zweier getrennter Tabellen – kein DB-seitiges FK über zwei
+    // Zieltabellen hinweg möglich, daher wird beim Löschen eines Boards/
+    // einer Trainingseinheit explizit in den jeweiligen Controllern
+    // aufgeräumt (siehe boardsController.deleteBoard,
+    // trainingSessionsController.deleteSession).
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS comments (
+        id            UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        resource_type TEXT NOT NULL CHECK (resource_type IN ('board', 'training_session')),
+        resource_id   UUID NOT NULL,
+        user_id       UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        text          TEXT NOT NULL,
+        created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        updated_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      );
+    `);
+    await client.query(`
+      DROP TRIGGER IF EXISTS trg_comments_updated_at ON comments;
+      CREATE TRIGGER trg_comments_updated_at
+        BEFORE UPDATE ON comments
+        FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+    `);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_comments_resource ON comments(resource_type, resource_id);`);
+
     // ── exports ───────────────────────────────────────────────────────────
     // format: 'gif' | 'mp4' | 'pdf' | 'link' | 'png'
     await client.query(`

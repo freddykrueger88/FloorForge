@@ -16,6 +16,7 @@ import logger from '../utils/logger.js';
 import { success, created, error } from '../utils/apiResponse.js';
 import { getUserTeamIds, assertTeamAccess } from '../utils/teamAccess.js';
 import { assertBoardAccess } from '../utils/boardAccess.js';
+import { deleteCommentsForResource } from './commentsController.js';
 
 const MAX_SESSIONS = 20;
 const MAX_ITEMS_PER_SESSION = 30;
@@ -55,7 +56,9 @@ async function getSessionRow(sessionId) {
   return result.rows[0] ?? null;
 }
 
-async function assertSessionRead(sessionId, userId) {
+// exportiert, da auch von commentsController.js genutzt (Kommentare
+// auf Trainingseinheiten, ROADMAP Phase 2)
+export async function assertSessionRead(sessionId, userId) {
   const session = await getSessionRow(sessionId);
   if (!session) return false;
   if (session.user_id === userId) return true;
@@ -63,7 +66,7 @@ async function assertSessionRead(sessionId, userId) {
   return assertTeamAccess(session.team_id, userId, 'member');
 }
 
-async function assertSessionWrite(sessionId, userId) {
+export async function assertSessionWrite(sessionId, userId) {
   const session = await getSessionRow(sessionId);
   if (!session) return false;
   if (session.user_id === userId) return true;
@@ -194,6 +197,11 @@ export async function deleteSession(req, res) {
       return res.status(404).json(error('Trainingseinheit nicht gefunden'));
     }
     await pool.query('DELETE FROM training_sessions WHERE id = $1', [req.params.id]);
+    // Boards werden nur soft-deleted (deleted_at) – Kommentare dort werden
+    // dadurch bereits automatisch unerreichbar (assertBoardAccess filtert
+    // deleted_at). training_sessions werden hart gelöscht, daher hier
+    // explizit aufräumen, sonst blieben verwaiste Kommentare zurück.
+    await deleteCommentsForResource('training_session', req.params.id);
     res.json(success({ message: 'Trainingseinheit gelöscht' }));
   } catch (err) {
     logger.error('[deleteSession]', err);
