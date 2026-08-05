@@ -137,6 +137,30 @@ Deutlich über die ursprüngliche Roadmap hinaus gewachsen:
 - □ Altes Postgres-16-Datenvolume (`floorforge_db_data`) nach Bestätigung
   der Postgres-18-Stabilität entfernen
 
+### Feature-Ideen (Coaching-Funktionalität)
+
+- □ Echter E-Mail-Einladungs-Flow für Board-Sharing: aktuell kein
+  SMTP/Mailserver hinterlegt (kein `nodemailer` o.ä. im Backend) –
+  `addCollaborator` (Issue #51) setzt zwingend einen bereits
+  existierenden Nutzer-Account mit dieser E-Mail voraus, es wird keine
+  Einladungs-Mail verschickt. Für echtes "Einladen" bräuchte es
+  entweder eine SMTP-Konfiguration + Token-basierten Einladungslink für
+  noch nicht registrierte E-Mails, oder das aktuelle Verhalten in der UI
+  klarer als "Kollaborator hinzufügen (nur bestehende Accounts)"
+  kommunizieren, um Verwirrung zu vermeiden.
+- □ Video-/Spielfilm-Integration: Zeichnungen über echtes Spielmaterial
+  legen (ähnlich Hudl) – deutlich größerer Umfang (Speicherung,
+  Wiedergabe-Synchronisation)
+- □ Gegner-Tagging: Boards/Playbooks mit "vs. Team X" markieren, um vor
+  einem Spiel gezielt Scouting-Boards wiederzufinden
+- □ Echtzeit-Co-Editing über das MVP (#51) hinaus: mehrere Coaches
+  gleichzeitig mit Live-Cursor am selben Board (siehe auch
+  "Echtzeit-Kollaboration (volle Version)" oben)
+- □ Schneller Einzel-Frame-Share: ein Frame als fertiges Bild (z. B. für
+  WhatsApp) exportieren, ohne Login/App auf Empfängerseite – kleinerer
+  Aufwand, da die GIF/MP4/PDF-Export-Pipeline (Issue #15/#23/#24) schon
+  existiert und wiederverwendet werden kann
+
 ---
 
 *Roadmap wird kontinuierlich aktualisiert. Letztes Update: 04.08.2026*
