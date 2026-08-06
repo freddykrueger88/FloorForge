@@ -60,6 +60,19 @@ if (process.env.NODE_ENV !== 'test') {
     standardHeaders: true,
     legacyHeaders: false,
     message: { success: false, message: 'Zu viele Anfragen, bitte warten.' },
+    // Bugfix: /api/auth/login und /api/auth/register haben unten eigene,
+    // bewusst großzügigere/knappere Budgets – ohne dieses skip liefen
+    // BEIDE Limiter parallel für dieselben Requests (Express beendet die
+    // Middleware-Kette bei einem `use()`-Treffer nicht, nur weil später
+    // noch ein spezifischerer `use()` für denselben Pfad existiert), d.h.
+    // jeder Login-/Registrierungs-Request zählte zusätzlich gegen dieses
+    // geteilte 100-Anfragen-Budget. Bei mehreren gleichzeitig aktiven
+    // Nutzern hinter derselben IP (Verein/Haushalt) war das geteilte
+    // Budget oft schon durch normale App-Nutzung (Boards, Kader, …)
+    // aufgebraucht, bevor überhaupt registriert/eingeloggt wurde – die
+    // Fehlermeldung sagte dann wieder fälschlich "Zu viele Anfragen"
+    // statt der eigentlich zutreffenden, spezifischeren Meldung.
+    skip: (req) => req.path === '/auth/login' || req.path === '/auth/register',
   }));
 
   // Getrennt statt ein gemeinsamer Limiter für den ganzen /api/auth/-Pfad:
