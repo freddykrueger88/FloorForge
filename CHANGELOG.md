@@ -108,6 +108,16 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   gemeinsamen, kanonischen Stand gebracht.
 
 ### Fixed
+- Registrierung wurde weiterhin vom allgemeinen `/api/`-Limit (100/15min)
+  blockiert, obwohl sie längst ein eigenes, dediziertes Budget hatte –
+  Express beendet die Middleware-Kette nicht, nur weil später im Code
+  noch ein spezifischerer `app.use()` für denselben Pfad folgt. War das
+  geteilte 100er-Budget durch normale App-Nutzung mehrerer Nutzer
+  hinter derselben IP aufgebraucht, kam wieder die falsche "Zu viele
+  Anfragen"-Meldung statt der eigentlich zutreffenden – exakt das
+  Symptom des ursprünglichen Fixes darunter, nur über einen anderen
+  Pfad. `/api/auth/login` und `/api/auth/register` sind jetzt vom
+  allgemeinen Limiter ausgenommen.
 - Getrennte Rate-Limiter für `/api/auth/login` und
   `/api/auth/register` statt eines gemeinsamen Budgets für den ganzen
   `/api/auth/`-Pfad: eine Registrierung (nach mehreren
