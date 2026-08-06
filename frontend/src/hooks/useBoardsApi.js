@@ -34,11 +34,19 @@ export function useBoardsApi() {
   const createBoard  = useCallback((data) =>
     request(() => apiFetch(BASE, { method: 'POST', body: JSON.stringify(data) })), [request]);
 
-  const updateBoard  = useCallback((id, data) =>
-    request(() => apiFetch(`${BASE}/${id}`, { method: 'PUT', body: JSON.stringify(data) })), [request]);
+  // ROADMAP Phase 4: optionales drittes Argument { baselineUpdatedAt, label }
+  // für die Offline-Konflikterkennung (siehe offlineSync.js) – der Aufrufer
+  // kennt das aktuell geladene board.updatedAt/board.name, dieser Hook
+  // selbst hält keinen Board-State.
+  const updateBoard  = useCallback((id, data, { baselineUpdatedAt = null, label = null } = {}) =>
+    request(() => apiFetch(`${BASE}/${id}`, { method: 'PUT', body: JSON.stringify(data) }, {
+      baselineUpdatedAt, conflictCheckUrl: `${BASE}/${id}`, label,
+    })), [request]);
 
-  const deleteBoard  = useCallback((id) =>
-    request(() => apiFetch(`${BASE}/${id}`, { method: 'DELETE' })), [request]);
+  const deleteBoard  = useCallback((id, { baselineUpdatedAt = null, label = null } = {}) =>
+    request(() => apiFetch(`${BASE}/${id}`, { method: 'DELETE' }, {
+      baselineUpdatedAt, conflictCheckUrl: `${BASE}/${id}`, label,
+    })), [request]);
 
   return { loading, error, fetchBoards, fetchBoard, createBoard, updateBoard, deleteBoard };
 }

@@ -74,7 +74,11 @@ export default function BoardsPage() {
 
   const handleChangeBoardPlaybook = async (boardId, playbookId) => {
     try {
-      const updated = await updateBoard(boardId, { playbookId });
+      const current = boards.find((b) => b._id === boardId);
+      const updated = await updateBoard(boardId, { playbookId }, {
+        baselineUpdatedAt: current?.updatedAt ?? null,
+        label: current?.name ?? null,
+      });
       setBoards((prev) => prev.map((b) => b._id === boardId ? updated : b));
     } catch { /* error via hook */ }
   };
@@ -100,7 +104,11 @@ export default function BoardsPage() {
 
   const handleRename = async (id, name) => {
     try {
-      const updated = await updateBoard(id, { name });
+      const current = boards.find((b) => b._id === id);
+      const updated = await updateBoard(id, { name }, {
+        baselineUpdatedAt: current?.updatedAt ?? null,
+        label: current?.name ?? null,
+      });
       setBoards((prev) => prev.map((b) => b._id === id ? updated : b));
     } catch { /* error via hook */ }
   };
@@ -108,7 +116,11 @@ export default function BoardsPage() {
   const handleDeleteConfirm = async () => {
     if (!deleteTarget) return;
     try {
-      await deleteBoard(deleteTarget.id);
+      const current = boards.find((b) => b._id === deleteTarget.id);
+      await deleteBoard(deleteTarget.id, {
+        baselineUpdatedAt: current?.updatedAt ?? null,
+        label: current?.name ?? deleteTarget.name ?? null,
+      });
       setBoards((prev) => prev.filter((b) => b._id !== deleteTarget.id));
       setDeleteTarget(null);
     } catch { /* error via hook */ }

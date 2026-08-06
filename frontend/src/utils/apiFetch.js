@@ -12,14 +12,19 @@
  * verloren zu gehen. Der geworfene Error trägt `offlineQueued: true`,
  * damit aufrufender Code (z.B. useAutoSave.js) das von einem echten
  * Fehler unterscheiden kann.
+ *
+ * ROADMAP Phase 4: optionaler dritter Parameter `offlineMeta` (nur von
+ * Frames/Boards genutzt, siehe useFrames.js/useBoardsApi.js) wird nur
+ * durchgereicht, ermöglicht offlineSync.js später eine Konfliktprüfung
+ * vor dem erneuten Abschicken.
  */
-import { enqueueWrite, getQueuedWrites } from './offlineQueue.js';
+import { enqueueWrite, getQueueCounts } from './offlineQueue.js';
 import useOfflineStore from '../store/offlineStore.js';
 
 const AUTH_ENDPOINTS = ['/auth/login', '/auth/register'];
 const QUEUEABLE_METHODS = ['PUT', 'DELETE'];
 
-export async function apiFetch(url, options = {}) {
+export async function apiFetch(url, options = {}, offlineMeta = {}) {
   const method = (options.method ?? 'GET').toUpperCase();
 
   let res;
@@ -32,8 +37,10 @@ export async function apiFetch(url, options = {}) {
   } catch (networkErr) {
     if (!QUEUEABLE_METHODS.includes(method)) throw networkErr;
 
-    await enqueueWrite({ url, method, body: options.body });
-    useOfflineStore.getState().setQueueLength((await getQueuedWrites()).length);
+    await enqueueWrite({ url, method, body: options.body, ...offlineMeta });
+    const counts = await getQueueCounts();
+    useOfflineStore.getState().setQueueLength(counts.pending);
+    useOfflineStore.getState().setConflictCount(counts.conflict);
     useOfflineStore.getState().setOnline(false);
 
     const err = new Error('Offline – Änderung wird synchronisiert, sobald wieder online');

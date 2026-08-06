@@ -9,7 +9,7 @@
  *  - TeamColorPanel (Issue #14 – v0.4.0)
  *  - ExportPanel (Issue #15 – v0.5.0)
  */
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams, Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
 
@@ -62,6 +62,28 @@ export default function BoardEditorPage() {
   const [board, setBoard] = useState(null);
   const [notes, setNotes] = useState('');
 
+  // ROADMAP Phase 4: aktuellen Board-Stand für die Konflikt-Baseline lesen,
+  // ohne dass die patchBoard-Aufrufer bei jeder Board-Änderung neu erzeugt
+  // werden müssen (analog framesRef in useFrames.js).
+  const boardRef = useRef(board);
+  useEffect(() => { boardRef.current = board; }, [board]);
+
+  // Gemeinsamer Pfad für alle "Hintergrund speichern"-Board-Updates unten:
+  // reicht baselineUpdatedAt/label für die Offline-Konflikterkennung durch
+  // (siehe offlineSync.js) und hält board.updatedAt nach jedem
+  // erfolgreichen Schreiben aktuell, damit die NÄCHSTE Baseline stimmt.
+  // Fehler/Offline-Queueing wird hier bewusst geschluckt (kein Fehler-UI
+  // pro Einzelfeld) – wie schon vor dieser Umstellung.
+  const patchBoard = useCallback(async (fields) => {
+    try {
+      const updated = await updateBoard(boardId, fields, {
+        baselineUpdatedAt: boardRef.current?.updatedAt ?? null,
+        label: boardRef.current?.name ?? null,
+      });
+      setBoard(updated);
+    } catch { /* Hintergrund-Speichern, siehe Kommentar oben */ }
+  }, [boardId, updateBoard]);
+
   // Issue #14 – Teamfarben & Ball (als einzelner Hex-String persistiert,
   // {fill,stroke} wird erst beim Rendern abgeleitet – Issue #33)
   const [homeColor, setHomeColor] = useState(DEFAULT_TEAM_COLORS.home.fill);
@@ -70,51 +92,51 @@ export default function BoardEditorPage() {
 
   const handleChangeHomeColor = useCallback((hex) => {
     setHomeColor(hex);
-    updateBoard(boardId, { homeColor: hex }).catch(() => {});
-  }, [boardId, updateBoard]);
+    patchBoard({ homeColor: hex });
+  }, [patchBoard]);
 
   const handleChangeAwayColor = useCallback((hex) => {
     setAwayColor(hex);
-    updateBoard(boardId, { awayColor: hex }).catch(() => {});
-  }, [boardId, updateBoard]);
+    patchBoard({ awayColor: hex });
+  }, [patchBoard]);
 
   const handleChangeBallColor = useCallback((hex) => {
     setBallColor(hex);
-    updateBoard(boardId, { ballColor: hex }).catch(() => {});
-  }, [boardId, updateBoard]);
+    patchBoard({ ballColor: hex });
+  }, [patchBoard]);
 
   // ROADMAP-Backlog "Gegner-Tagging"
   const handleChangeOpponent = useCallback((opponent) => {
     setBoard((prev) => (prev ? { ...prev, opponent } : prev));
-    updateBoard(boardId, { opponent }).catch(() => {});
-  }, [boardId, updateBoard]);
+    patchBoard({ opponent });
+  }, [patchBoard]);
 
   // ROADMAP-Backlog "Übungsbibliothek"
   const handleChangeCategory = useCallback((category) => {
     setBoard((prev) => (prev ? { ...prev, category } : prev));
-    updateBoard(boardId, { category }).catch(() => {});
-  }, [boardId, updateBoard]);
+    patchBoard({ category });
+  }, [patchBoard]);
 
   const handleChangeAgeGroup = useCallback((ageGroup) => {
     setBoard((prev) => (prev ? { ...prev, ageGroup } : prev));
-    updateBoard(boardId, { ageGroup }).catch(() => {});
-  }, [boardId, updateBoard]);
+    patchBoard({ ageGroup });
+  }, [patchBoard]);
 
   const handleChangeGoal = useCallback((goal) => {
     setBoard((prev) => (prev ? { ...prev, goal } : prev));
-    updateBoard(boardId, { goal }).catch(() => {});
-  }, [boardId, updateBoard]);
+    patchBoard({ goal });
+  }, [patchBoard]);
 
   const handleChangeMaterial = useCallback((material) => {
     setBoard((prev) => (prev ? { ...prev, material } : prev));
-    updateBoard(boardId, { material }).catch(() => {});
-  }, [boardId, updateBoard]);
+    patchBoard({ material });
+  }, [patchBoard]);
 
   const field = useField('large');
   const {
     frames, activeFrame, activeIndex, loading: framesLoading,
     loadFrames, addFrame, updateFrame, deleteFrame, reorderFrames, goToFrame,
-  } = useFrames(boardId, field.fieldType);
+  } = useFrames(boardId, field.fieldType, board?.name);
 
   const drawing = useDrawing();
   const lines = useLines(boardId);
@@ -177,7 +199,11 @@ export default function BoardEditorPage() {
 
   const saveNotes = useCallback(async (nextNotes) => {
     if (!boardId) return;
-    await updateBoard(boardId, { notes: nextNotes });
+    const updated = await updateBoard(boardId, { notes: nextNotes }, {
+      baselineUpdatedAt: boardRef.current?.updatedAt ?? null,
+      label: boardRef.current?.name ?? null,
+    });
+    setBoard(updated);
   }, [boardId, updateBoard]);
 
   // Issue #51 MVP: read-Kollaboratoren dürfen nicht schreiben – Autosave
@@ -313,7 +339,11 @@ export default function BoardEditorPage() {
 
     setChangingField(true);
     try {
-      await updateBoard(boardId, { fieldType: pendingFieldType });
+      const updatedBoard = await updateBoard(boardId, { fieldType: pendingFieldType }, {
+        baselineUpdatedAt: boardRef.current?.updatedAt ?? null,
+        label: boardRef.current?.name ?? null,
+      });
+      setBoard(updatedBoard);
 
       const rescaledLive = rescalePlayers(livePlayers, scaleX, scaleY);
       const rescaledElements = rescaleElements(drawing.elements, scaleX, scaleY);
@@ -333,7 +363,6 @@ export default function BoardEditorPage() {
       );
 
       field.setFieldType(pendingFieldType);
-      setBoard((b) => ({ ...b, fieldType: pendingFieldType }));
     } finally {
       setChangingField(false);
       setPendingFieldType(null);

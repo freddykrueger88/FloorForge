@@ -9,6 +9,13 @@
  * dieselbe `method`+`url` ersetzt einen bereits gepufferten, noch
  * nicht synchronisierten Schreibzugriff auf dieselbe Ressource (keine
  * mehrfache Wiedergabe veralteter Zwischenstände beim Sync).
+ *
+ * ROADMAP Phase 4 – Konflikterkennung (nur Frames + Boards, siehe
+ * offlineSync.js): Aufrufer können optional baselineUpdatedAt/
+ * conflictCheckUrl/resourceId/label mitgeben, damit offlineSync.js vor
+ * dem erneuten Abschicken prüfen kann, ob die Ressource zwischenzeitlich
+ * anderswo geändert wurde. Ressourcen ohne diese Felder verhalten sich
+ * unverändert wie bisher (blindes Last-Write-Wins beim Sync).
  */
 const DB_NAME    = 'openfloorball-offline';
 const DB_VERSION = 1;
@@ -44,7 +51,10 @@ async function withStore(mode, fn) {
   });
 }
 
-export async function enqueueWrite({ url, method, body }) {
+export async function enqueueWrite({
+  url, method, body,
+  baselineUpdatedAt = null, conflictCheckUrl = null, resourceId = null, label = null,
+}) {
   const resourceKey = `${method} ${url}`;
   try {
     // Zwei getrennte, nacheinander abgewartete Transaktionen statt einer
@@ -62,11 +72,34 @@ export async function enqueueWrite({ url, method, body }) {
       req.onerror = () => reject(req.error);
     }));
     await withStore('readwrite', (store) =>
-      store.add({ resourceKey, url, method, body, queuedAt: Date.now() }));
+      store.add({
+        resourceKey, url, method, body, queuedAt: Date.now(),
+        status: 'pending', baselineUpdatedAt, conflictCheckUrl, resourceId, label,
+      }));
   } catch {
     // IndexedDB nicht verfügbar (z.B. privater Modus) – Schreibzugriff
     // geht verloren, aber die App bleibt nutzbar (best effort)
   }
+}
+
+// ROADMAP Phase 4: markiert einen Eintrag als Konflikt statt ihn zu
+// löschen oder erneut zu versuchen – bleibt bis zur manuellen Prüfung
+// durch den Nutzer (ConflictReviewDialog) in der Queue liegen.
+export async function markQueuedWriteConflict(id) {
+  try {
+    await withStore('readwrite', (store) => new Promise((resolve, reject) => {
+      const getReq = store.get(id);
+      getReq.onsuccess = () => {
+        const entry = getReq.result;
+        if (!entry) { resolve(); return; }
+        entry.status = 'conflict';
+        const putReq = store.put(entry);
+        putReq.onsuccess = () => resolve();
+        putReq.onerror = () => reject(putReq.error);
+      };
+      getReq.onerror = () => reject(getReq.error);
+    }));
+  } catch { /* best effort */ }
 }
 
 export async function getQueuedWrites() {
@@ -79,6 +112,18 @@ export async function getQueuedWrites() {
   } catch {
     return [];
   }
+}
+
+// ROADMAP Phase 4: getrennte Zählung – `pending` sind Einträge, die beim
+// nächsten Sync-Lauf noch abgeschickt werden, `conflict`-Einträge werden
+// dabei übersprungen und warten auf eine manuelle Entscheidung
+// (ConflictReviewDialog).
+export async function getQueueCounts() {
+  const all = await getQueuedWrites();
+  return {
+    pending:  all.filter((e) => e.status !== 'conflict').length,
+    conflict: all.filter((e) => e.status === 'conflict').length,
+  };
 }
 
 export async function removeQueuedWrite(id) {

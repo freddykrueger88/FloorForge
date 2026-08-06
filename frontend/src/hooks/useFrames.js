@@ -7,7 +7,7 @@
  *   - Drag & Drop Reihenfolge ändern
  *   - Neuen Frame aus aktuellem Zustand kopieren
  */
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { apiFetch } from '../utils/apiFetch.js';
 import { ensureBall } from '../constants/fieldConfig.js';
 
@@ -21,13 +21,27 @@ function withBall(frame, fieldType) {
   return { ...frame, players: ensureBall(frame.players ?? [], fieldType) };
 }
 
-export function useFrames(boardId, fieldType = 'large') {
+// ROADMAP Phase 4 (boardName optional): dient nur der Anzeige im
+// ConflictReviewDialog, keine funktionale Abhängigkeit.
+export function useFrames(boardId, fieldType = 'large', boardName = '') {
   const [frames,       setFrames      ] = useState([]);
   const [activeIndex,  setActiveIndex ] = useState(0);
   const [loading,      setLoading     ] = useState(false);
   const [error,        setError       ] = useState(null);
 
   const activeFrame = frames[activeIndex] ?? null;
+
+  // ROADMAP Phase 4: aktuellen Frame-Stand für die Konflikt-Baseline
+  // lesen, ohne dass updateFrame/deleteFrame bei jeder Frame-Änderung
+  // neu erzeugt werden müssen (kein `frames` in deren Dependency-Array).
+  const framesRef = useRef(frames);
+  useEffect(() => { framesRef.current = frames; }, [frames]);
+
+  const frameLabel = useCallback((frameId) => {
+    const frame = framesRef.current.find((f) => f._id === frameId);
+    const position = `Frame ${(frame?.order ?? 0) + 1}`;
+    return boardName ? `${boardName} – ${position}` : position;
+  }, [boardName]);
 
   // ── Laden ──
   const loadFrames = useCallback(async () => {
@@ -64,20 +78,32 @@ export function useFrames(boardId, fieldType = 'large') {
   // ── Frame aktualisieren (Spieler/Elemente speichern) ──
   const updateFrame = useCallback(async (frameId, patch) => {
     try {
+      const baseline = framesRef.current.find((f) => f._id === frameId);
       const updated = await apiFetch(`${BASE(boardId)}/${frameId}`, {
         method: 'PUT',
         body: JSON.stringify(patch),
+      }, {
+        baselineUpdatedAt: baseline?.updatedAt ?? null,
+        conflictCheckUrl:  BASE(boardId),
+        resourceId:        frameId,
+        label:             frameLabel(frameId),
       });
       setFrames((prev) => prev.map((f) => f._id === frameId ? withBall(updated, fieldType) : f));
     } catch (err) {
       setError(err.message);
     }
-  }, [boardId, fieldType]);
+  }, [boardId, fieldType, frameLabel]);
 
   // ── Frame löschen ──
   const deleteFrame = useCallback(async (frameId) => {
     try {
-      await apiFetch(`${BASE(boardId)}/${frameId}`, { method: 'DELETE' });
+      const baseline = framesRef.current.find((f) => f._id === frameId);
+      await apiFetch(`${BASE(boardId)}/${frameId}`, { method: 'DELETE' }, {
+        baselineUpdatedAt: baseline?.updatedAt ?? null,
+        conflictCheckUrl:  BASE(boardId),
+        resourceId:        frameId,
+        label:             frameLabel(frameId),
+      });
       setFrames((prev) => {
         const next = prev.filter((f) => f._id !== frameId);
         setActiveIndex((i) => Math.min(i, Math.max(0, next.length - 1)));
@@ -86,7 +112,7 @@ export function useFrames(boardId, fieldType = 'large') {
     } catch (err) {
       setError(err.message);
     }
-  }, [boardId]);
+  }, [boardId, frameLabel]);
 
   // ── Drag & Drop Reihenfolge ──
   const reorderFrames = useCallback(async (newOrder) => {
