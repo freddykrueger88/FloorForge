@@ -157,4 +157,29 @@ describe('GET /api/share/frame/:token (öffentlich)', () => {
     const res = await request(app).get('/api/share/frame/00000000-0000-0000-0000-000000000000');
     expect(res.status).toBe(404);
   });
+
+  it('wird nach dem Löschen des zugehörigen Boards ungültig (kein weiterhin öffentlich abrufbares Bild)', async () => {
+    const boardRes = await request(app)
+      .post('/api/boards')
+      .set('Cookie', owner.cookie)
+      .send({ name: 'Zu löschendes Board', fieldType: 'large' });
+    const deletableBoardId = boardRes.body.data._id;
+
+    const shareRes = await request(app)
+      .post('/api/export/frame-share')
+      .set('Cookie', owner.cookie)
+      .send({ boardId: deletableBoardId, image: TINY_PNG_DATA_URL });
+    const deletableToken = shareRes.body.data.token;
+
+    const beforeRes = await request(app).get(`/api/share/frame/${deletableToken}`);
+    expect(beforeRes.status).toBe(200);
+
+    const deleteRes = await request(app)
+      .delete(`/api/boards/${deletableBoardId}`)
+      .set('Cookie', owner.cookie);
+    expect(deleteRes.status).toBe(200);
+
+    const afterRes = await request(app).get(`/api/share/frame/${deletableToken}`);
+    expect(afterRes.status).toBe(404);
+  });
 });

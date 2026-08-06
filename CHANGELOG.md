@@ -139,6 +139,22 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   gemeinsamen, kanonischen Stand gebracht.
 
 ### Fixed
+- Gelöschte Boards gaben zuvor erzeugte Einzel-Frame-Share-Links
+  (`/api/share/frame/:token`) weiterhin öffentlich frei – anders als der
+  volle Board-Share-Link, der `deleted_at` bei jedem Aufruf korrekt prüft,
+  fehlte dieser Check bei `getSharedFrame` komplett. Bild blieb bis zum
+  natürlichen Ablauf (Standard 72h) abrufbar, obwohl das Board längst
+  gelöscht war. Query prüft jetzt zusätzlich `boards.deleted_at IS NULL`.
+- Export-Status-Polling (`useExport.js`, GIF/MP4) prüfte die Antwort des
+  Status-Endpunkts nicht auf HTTP-Fehler – ging der Job serverseitig
+  verloren (z.B. durch einen Backend-Neustart während eines laufenden
+  Exports, da der Job-Store nur In-Memory existiert), lieferte
+  `GET /api/export/status/:id` 404, `data.status` war `undefined`, traf
+  weder den "done"- noch den "error"-Zweig, und die UI blieb ohne jede
+  Fehlermeldung dauerhaft im "processing"-Zustand hängen. Zusätzlich
+  wurde das Polling-Intervall beim Schließen des Export-Panels nie
+  aufgeräumt und lief unbegrenzt im Hintergrund weiter, auch nach dem
+  Unmounten der Komponente.
 - Boards ließen sich in der Postkarten-Galerie-Ansicht nicht löschen –
   `BoardPostcard.jsx` hatte (anders als die Kachel-Ansicht `BoardCard.jsx`)
   gar keinen Lösch-Button/`onDelete`-Prop verdrahtet. Nachgerüstet nach

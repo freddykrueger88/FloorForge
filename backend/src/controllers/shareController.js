@@ -159,8 +159,11 @@ export async function createFrameShare(req, res) {
 export async function getSharedFrame(req, res) {
   try {
     const result = await pool.query(
-      `SELECT share_token FROM exports
-       WHERE share_token = $1 AND format = 'png' AND (expires_at IS NULL OR expires_at > NOW())`,
+      `SELECT e.share_token FROM exports e
+       JOIN boards b ON b.id = e.board_id
+       WHERE e.share_token = $1 AND e.format = 'png'
+         AND (e.expires_at IS NULL OR e.expires_at > NOW())
+         AND b.deleted_at IS NULL`,
       [req.params.token]
     );
     if (result.rows.length === 0) {

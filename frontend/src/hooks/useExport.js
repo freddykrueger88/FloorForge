@@ -5,7 +5,7 @@
  * Rendert alle Board-Frames als PNG via Konva Stage.toDataURL(),
  * schickt sie ans Backend und pollt den Job-Status.
  */
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 
 const API = import.meta.env.VITE_API_URL ?? '';
 const POLL_INTERVAL_MS = 1200;
@@ -24,6 +24,11 @@ export function useExport() {
     setFileUrl(null);
     setError(null);
   }, []);
+
+  // Polling darf nicht über das Unmounten der Komponente hinaus weiterlaufen
+  // (z.B. Export-Panel geschlossen, während ein Job noch verarbeitet wird) –
+  // sonst feuert der Poll-Request alle 1.2s unbegrenzt im Hintergrund weiter.
+  useEffect(() => () => clearInterval(pollRef.current), []);
 
   /**
    * stageRef: React ref zu einer Konva Stage-Instanz (per board frame)
@@ -80,7 +85,8 @@ export function useExport() {
       pollRef.current = setInterval(async () => {
         try {
           const pr = await fetch(`${API}/api/export/status/${jobId}`, { credentials: 'include' });
-          const data = await pr.json();
+          const data = await pr.json().catch(() => ({}));
+          if (!pr.ok) throw new Error(data.message ?? `HTTP ${pr.status}`);
           setProgress(50 + Math.round((data.progress ?? 0) * 0.5)); // 50-100%
           if (data.status === 'done') {
             clearInterval(pollRef.current);
