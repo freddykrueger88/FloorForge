@@ -80,9 +80,11 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   auf Login-/Registrierungsseite. Verlustbehaftet komprimiert
   (pngquant) ohne sichtbaren Qualitätsverlust, relevant für den
   PWA/Offline-Modus in Hallen mit schlechtem WLAN (#49).
-- Dasselbe Logo + Slogan auch in der globalen Kopfzeile (bisher dort
-  ebenfalls nur "FF"), damit auf jeder eingeloggten Seite sichtbar statt
-  nur auf Login/Register.
+- Dasselbe Logo auch in der globalen Kopfzeile (bisher dort ebenfalls
+  nur "FF"), damit auf jeder eingeloggten Seite sichtbar statt nur auf
+  Login/Register. Der Slogan sitzt dafür im globalen Footer statt in
+  der Kopfzeile – unter dem kleinen Logo in der schmalen, sticky
+  Kopfzeile wirkte er gequetscht statt gut lesbar.
 
 ### Changed
 - Board-Editor: rechtes Menü (Zeichnen-Koordinaten, Lines, Formationen,
