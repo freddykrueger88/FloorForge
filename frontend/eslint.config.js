@@ -28,7 +28,7 @@ export default [
         requestAnimationFrame: 'readonly', cancelAnimationFrame: 'readonly',
         ResizeObserver: 'readonly',
         fetch: 'readonly', URL: 'readonly', FormData: 'readonly',
-        navigator: 'readonly',
+        navigator: 'readonly', Blob: 'readonly', File: 'readonly',
         indexedDB: 'readonly', IDBKeyRange: 'readonly',
       },
       parserOptions: { ecmaFeatures: { jsx: true } },

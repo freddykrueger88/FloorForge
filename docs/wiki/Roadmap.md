@@ -8,11 +8,11 @@ dort kontinuierlich aktualisiert:
 ## Backlog-Highlights (Auszug)
 
 **Feature-Ideen:**
-- Echter E-Mail-Einladungs-Flow für noch nicht registrierte Nutzer
-  (aktuell: [Board-Sharing](./Export.md) setzt einen bestehenden
-  Account voraus)
 - Video-/Spielfilm-Integration (Zeichnungen über echtes Spielmaterial)
 - Echtzeit-Co-Editing (Live-Cursor, über das aktuelle Sharing-MVP hinaus)
+- Werkzeug-Symbole in der Board-Ansicht (Passen, Schuss, Radieren, ...)
+  überarbeiten – aktuell nicht eindeutig unterscheidbar
+- Redo-Button für die Board-Ansicht (bisher nur Undo)
 
 **Technisch:**
 - Vite 7→8 (zurückgestellt, Peer-Dependency-Konflikt im

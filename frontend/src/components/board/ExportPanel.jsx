@@ -9,6 +9,16 @@ import { useExport } from '../../hooks/useExport.js';
 import { useShare } from '../../hooks/useShare.js';
 import styles from './ExportPanel.module.css';
 
+// Web-Share-API: nur Feature-Detection auf Funktionsebene – ob Dateien
+// tatsächlich teilbar sind, entscheidet erst navigator.canShare({ files })
+// zur Klick-Zeit (browserabhängig, v.a. mobile Chrome/Safari; Desktop-
+// Firefox z.B. unterstützt Datei-Sharing i.d.R. nicht). Fällt der Check
+// negativ aus oder ist die API gar nicht vorhanden, bleibt der normale
+// Download-Link als Fallback ohnehin immer sichtbar.
+const CAN_USE_SHARE_API = typeof navigator !== 'undefined'
+  && typeof navigator.share === 'function'
+  && typeof navigator.canShare === 'function';
+
 const FPS_OPTIONS    = [1, 2, 3, 4, 5, 8, 10];
 const WIDTH_OPTIONS  = [
   { value: 480,  label: '480p',  standard: false },
@@ -30,6 +40,8 @@ export default function ExportPanel({ boardId, frames, activeFrame, renderFrame 
   const [watermark, setWatermark] = useState(true);
 
   const { status, progress, fileUrl, error, startExport, reset } = useExport();
+  const [sharing,      setSharing     ] = useState(false);
+  const [shareFileErr, setShareFileErr] = useState(null);
 
   // Issue #16 – Share-Link
   const share = useShare(boardId);
@@ -87,6 +99,33 @@ export default function ExportPanel({ boardId, frames, activeFrame, renderFrame 
 
   const handleExport = () => {
     startExport({ frames, renderFrame, fps, width, loop, format, watermark });
+  };
+
+  // Teilt die fertige Export-Datei direkt über das native Teilen-Menü des
+  // Geräts (u.a. WhatsApp), statt nur einen Download-Link anzubieten.
+  const handleShareFile = async () => {
+    if (!fileUrl) return;
+    setShareFileErr(null);
+    setSharing(true);
+    try {
+      const res = await fetch(fileUrl, { credentials: 'include' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const blob = await res.blob();
+      const filename = format === 'mp4' ? 'openfloorball.mp4' : 'openfloorball.gif';
+      const mimeType = format === 'mp4' ? 'video/mp4' : 'image/gif';
+      const file = new File([blob], filename, { type: mimeType });
+
+      if (!navigator.canShare({ files: [file] })) {
+        throw new Error(t('export.shareFileNotSupported'));
+      }
+      await navigator.share({ files: [file], title: 'OpenFloorball' });
+    } catch (err) {
+      if (err.name !== 'AbortError') { // Nutzer hat den Teilen-Dialog selbst abgebrochen – kein Fehler
+        setShareFileErr(err.message);
+      }
+    } finally {
+      setSharing(false);
+    }
   };
 
   const statusLabel = {
@@ -193,6 +232,10 @@ export default function ExportPanel({ boardId, frames, activeFrame, renderFrame 
         </p>
       )}
 
+      {status === 'done' && shareFileErr && (
+        <p className={`${styles.statusMsg} ${styles.statusError}`}>{t('export.error', { error: shareFileErr })}</p>
+      )}
+
       <div className={styles.actions}>
         {status === 'done' ? (
           <>
@@ -203,7 +246,12 @@ export default function ExportPanel({ boardId, frames, activeFrame, renderFrame 
             >
               {format === 'mp4' ? t('export.downloadMp4') : t('export.download')}
             </a>
-            <button className={styles.resetBtn} onClick={reset}>{t('export.exportAgain')}</button>
+            {CAN_USE_SHARE_API && (
+              <button className={styles.copyBtn} onClick={handleShareFile} disabled={sharing}>
+                {sharing ? t('export.sharingFile') : t('export.shareFile')}
+              </button>
+            )}
+            <button className={styles.resetBtn} onClick={() => { reset(); setShareFileErr(null); }}>{t('export.exportAgain')}</button>
           </>
         ) : (
           <button

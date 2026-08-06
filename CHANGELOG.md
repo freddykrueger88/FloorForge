@@ -14,6 +14,11 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ## [Unreleased]
 
 ### Added
+- Fertige GIF-/MP4-Exporte lassen sich jetzt direkt über das native
+  Teilen-Menü des Geräts verschicken (u.a. WhatsApp), über die
+  Web-Share-API (`navigator.share`). Button erscheint nur, wenn der
+  Browser die API unterstützt (v.a. mobil) – der normale Download-Link
+  bleibt als Fallback immer bestehen (z.B. Desktop-Firefox).
 - E-Mail-Einladungsflow für Board-Sharing: eine noch nicht registrierte
   Adresse bekommt jetzt statt eines 404-Fehlers eine Einladungsmail mit
   Link (`/invite/:token`, neue `board_invites`-Tabelle). Registriert sich
