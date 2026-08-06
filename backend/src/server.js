@@ -56,7 +56,17 @@ app.use(cors({
 if (process.env.NODE_ENV !== 'test') {
   app.use('/api/', rateLimit({
     windowMs: 15 * 60 * 1000,
-    max: 100,
+    // Bugfix: 100 war für echte interaktive Nutzung deutlich zu knapp –
+    // useAutoSave.js debounced Speichern schon 300ms nach jeder Änderung
+    // (nicht nur alle 30s), aktives Verschieben von Spielern beim
+    // Taktik-Zeichnen feuert dadurch allein schon viele Requests pro
+    // Minute; dazu kommen mehrere API-Aufrufe pro Seitenwechsel
+    // (Boards/Playbooks/Teams/Settings) und ggf. mehrere gleichzeitig
+    // aktive Nutzer hinter derselben IP. Ein frisch registrierter Nutzer
+    // konnte dadurch schon beim ersten Ausprobieren (Board anlegen) von
+    // "Zu viele Anfragen" blockiert werden – wirkte wie eine fehlende
+    // Berechtigung, war aber ein zu enges Limit.
+    max: 500,
     standardHeaders: true,
     legacyHeaders: false,
     message: { success: false, message: 'Zu viele Anfragen, bitte warten.' },
