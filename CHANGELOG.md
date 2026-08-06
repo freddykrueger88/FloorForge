@@ -144,6 +144,21 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   gemeinsamen, kanonischen Stand gebracht.
 
 ### Fixed
+- GIF-/MP4-Export funktionierte über das echte Frontend nie (413
+  "Payload Too Large"), obwohl die Live-Verifikation per curl zuvor
+  erfolgreich aussah – lag an zwei unabhängigen Bugs, die sich mit
+  winzigen Test-Bildern gegenseitig verdeckt hatten:
+  1. `useExport.js` hängte `/api/export/...` an eine bereits `/api`
+     enthaltende Basis-URL (`VITE_API_URL`) – Requests gingen an das
+     nicht existierende `/api/api/export/...`.
+  2. Selbst mit korrigierter URL: ein globaler `express.json({ limit:
+     '10kb' })` in `server.js` konsumierte den Request-Body, bevor der
+     `/export`-Sub-Router mit seinem eigentlich vorgesehenen 50mb-Limit
+     überhaupt zum Zug kam – der Body kann nur einmal geparst werden.
+     `/api/export/*` ist jetzt vom globalen Parser ausgenommen.
+  3. Zusätzlich fehlte in der Nginx-Konfiguration `client_max_body_size`
+     (Standard 1MB) – auch das hätte realistische Export-Anfragen
+     unabhängig von 1./2. weiterhin blockiert, jetzt auf 50mb gesetzt.
 - Helmet sendete unconditional einen `Strict-Transport-Security`-Header
   (HSTS, 1 Jahr, `includeSubDomains`). Läuft die Instanz hinter einem
   Reverse-Proxy/Tunnel, der HTTPS nicht zuverlässig terminiert (z.B.

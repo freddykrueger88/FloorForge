@@ -7,7 +7,10 @@
  */
 import { useState, useCallback, useRef, useEffect } from 'react';
 
-const API = import.meta.env.VITE_API_URL ?? '';
+// VITE_API_URL enthält bereits das /api-Präfix (Default '/api', siehe
+// utils/api.js) – hier NICHT nochmal /api/ voranstellen, sonst landen die
+// Requests unter /api/api/export/... (413/404, Backend sieht die Route nie).
+const API = import.meta.env.VITE_API_URL ?? '/api';
 const POLL_INTERVAL_MS = 1200;
 
 export function useExport() {
@@ -65,7 +68,7 @@ export function useExport() {
       const body = format === 'mp4'
         ? { frames: pngs, fps, width, watermark }
         : { frames: pngs, fps, width, loop };
-      const res = await fetch(`${API}/api/export/${format}`, {
+      const res = await fetch(`${API}/export/${format}`, {
         method:      'POST',
         credentials: 'include',
         headers:     { 'Content-Type': 'application/json' },
@@ -84,13 +87,13 @@ export function useExport() {
       // 3. Status pollen
       pollRef.current = setInterval(async () => {
         try {
-          const pr = await fetch(`${API}/api/export/status/${jobId}`, { credentials: 'include' });
+          const pr = await fetch(`${API}/export/status/${jobId}`, { credentials: 'include' });
           const data = await pr.json().catch(() => ({}));
           if (!pr.ok) throw new Error(data.message ?? `HTTP ${pr.status}`);
           setProgress(50 + Math.round((data.progress ?? 0) * 0.5)); // 50-100%
           if (data.status === 'done') {
             clearInterval(pollRef.current);
-            setFileUrl(`${API}/api/export/download/${jobId}`);
+            setFileUrl(`${API}/export/download/${jobId}`);
             setStatus('done');
             setProgress(100);
           } else if (data.status === 'error') {

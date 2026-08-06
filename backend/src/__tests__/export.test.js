@@ -93,6 +93,22 @@ describe('POST /api/export/mp4', () => {
   });
 });
 
+describe('POST /api/export/gif – Body-Größen-Limit (Regression)', () => {
+  it('lehnt einen Body über 10kb nicht mit 413 ab (globaler JSON-Parser darf /api/export nicht mehr treffen)', async () => {
+    // Realistische Frame-PNGs liegen deutlich über dem allgemeinen 10kb-
+    // Limit (server.js, express.json) – nur der /export-Sub-Router erlaubt
+    // bis zu 50mb. Muss NICHT gültiges PNG sein, hier geht es rein um den
+    // Body-Parser vor dem eigentlichen Handler.
+    const bigFrame = `data:image/png;base64,${'A'.repeat(60_000)}`;
+    const res = await request(app)
+      .post('/api/export/gif')
+      .set('Cookie', owner.cookie)
+      .send({ frames: [bigFrame, bigFrame], fps: 4, width: 480, loop: true });
+    expect(res.status).not.toBe(413);
+    expect(res.status).toBe(202);
+  }, 15000);
+});
+
 describe('POST /api/export/gif (Regression nach outputPath-Refactor)', () => {
   it('erstellt weiterhin ein gültiges GIF', async () => {
     const startRes = await request(app)

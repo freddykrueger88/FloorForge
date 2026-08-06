@@ -125,7 +125,16 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 // ── Parser ────────────────────────────────────
-app.use(express.json({ limit: '10kb' }));
+// /api/export/* (GIF-/MP4-/PDF-Export, Frame-Share) braucht ein deutlich
+// größeres JSON-Limit für Base64-PNG-Frames – routes/index.js setzt dafür
+// bereits einen eigenen express.json({ limit: '50mb' }) auf diesem
+// Sub-Router. Ohne diese Ausnahme hier wäre das wirkungslos: der Body wird
+// nur einmal geparst, und dieser globale 10kb-Parser läuft zuerst (413,
+// bevor der Sub-Router überhaupt zum Zug kommt).
+app.use((req, res, next) => {
+  if (req.path.startsWith('/api/export')) return next();
+  express.json({ limit: '10kb' })(req, res, next);
+});
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
