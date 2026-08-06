@@ -206,3 +206,57 @@ describe('Team umbenennen und löschen', () => {
     expect(res.status).toBe(404);
   });
 });
+
+describe('Bugfix: Ersteller-Account-Löschung darf das Team nicht mitreißen', () => {
+  // teams.created_by ist reine Provenienz, nicht die eigentliche
+  // Berechtigung (die läuft über team_members.role='owner'). Wenn der
+  // ursprüngliche Ersteller das Team längst verlassen hat und danach
+  // seinen Account löscht, muss das Team für die verbleibenden
+  // Mitglieder erhalten bleiben statt per CASCADE über created_by mit
+  // gelöscht zu werden.
+  it('Team bleibt erhalten, wenn der ursprüngliche Ersteller die Gruppe verlässt und danach seinen Account löscht', async () => {
+    const creatorEmail = uniqueEmail('creator');
+    const creatorRes = await request(app).post('/api/auth/register').send({ email: creatorEmail, password: 'Testpass123' });
+    const creatorCookie = creatorRes.headers['set-cookie'][0];
+
+    const successorEmail = uniqueEmail('successor');
+    const successorRes = await request(app).post('/api/auth/register').send({ email: successorEmail, password: 'Testpass123' });
+    const successorCookie = successorRes.headers['set-cookie'][0];
+
+    const teamRes = await request(app)
+      .post('/api/teams')
+      .set('Cookie', creatorCookie)
+      .send({ name: 'Team mit Nachfolger' });
+    const bugTeamId = teamRes.body.data._id;
+
+    await request(app)
+      .post(`/api/teams/${bugTeamId}/members`)
+      .set('Cookie', creatorCookie)
+      .send({ email: successorEmail, role: 'owner' });
+
+    // Ersteller verlässt das Team (jetzt gibt es noch einen zweiten
+    // Owner, das ist also erlaubt) – ab hier ist er kein Mitglied mehr.
+    const membersRes = await request(app).get(`/api/teams/${bugTeamId}/members`).set('Cookie', creatorCookie);
+    const creatorMember = membersRes.body.data.find((m) => m.email === creatorEmail);
+    const leaveRes = await request(app)
+      .delete(`/api/teams/${bugTeamId}/members/${creatorMember._id}`)
+      .set('Cookie', creatorCookie);
+    expect(leaveRes.status).toBe(200);
+
+    // Ersteller löscht seinen Account – teams.created_by zeigt noch
+    // immer auf ihn, obwohl er kein Mitglied mehr ist.
+    const deleteRes = await request(app)
+      .delete('/api/user/account')
+      .set('Cookie', creatorCookie)
+      .send({ email: creatorEmail });
+    expect(deleteRes.status).toBe(200);
+
+    // Das Team muss für den Nachfolger unverändert erreichbar bleiben.
+    const teamCheck = await request(app).get(`/api/teams/${bugTeamId}`).set('Cookie', successorCookie);
+    expect(teamCheck.status).toBe(200);
+    expect(teamCheck.body.data.name).toBe('Team mit Nachfolger');
+
+    const dbCheck = await pool.query('SELECT created_by FROM teams WHERE id = $1', [bugTeamId]);
+    expect(dbCheck.rows[0].created_by).toBeNull();
+  });
+});

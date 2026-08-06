@@ -387,6 +387,23 @@ export async function runMigrations() {
     await client.query(`ALTER TABLE training_sessions ADD COLUMN IF NOT EXISTS goal TEXT NOT NULL DEFAULT '';`);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_training_sessions_scheduled_date ON training_sessions(scheduled_date) WHERE scheduled_date IS NOT NULL;`);
 
+    // ── Bugfix: teams.created_by / organizations.created_by hatten
+    // ON DELETE CASCADE statt SET NULL. created_by ist reine Provenienz
+    // (wird nie an die API exponiert) – die eigentliche Berechtigung läuft
+    // über team_members.role='owner' bzw. organization_members.role='admin',
+    // die unabhängig davon geändert werden kann. Der ursprüngliche
+    // Ersteller kann das Team/den Verein längst verlassen haben und Monate
+    // später seinen persönlichen Account löschen – mit CASCADE riss das
+    // ganze Team/den Verein für alle verbleibenden Mitglieder mit, obwohl
+    // die ursprünglich erstellende Person damit gar nichts mehr zu tun
+    // hatte. Analog zu board_versions.created_by (dort schon korrekt).
+    await client.query(`ALTER TABLE teams ALTER COLUMN created_by DROP NOT NULL;`);
+    await client.query(`ALTER TABLE teams DROP CONSTRAINT IF EXISTS teams_created_by_fkey;`);
+    await client.query(`ALTER TABLE teams ADD CONSTRAINT teams_created_by_fkey FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL;`);
+    await client.query(`ALTER TABLE organizations ALTER COLUMN created_by DROP NOT NULL;`);
+    await client.query(`ALTER TABLE organizations DROP CONSTRAINT IF EXISTS organizations_created_by_fkey;`);
+    await client.query(`ALTER TABLE organizations ADD CONSTRAINT organizations_created_by_fkey FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL;`);
+
     // ── exports ───────────────────────────────────────────────────────────
     // format: 'gif' | 'mp4' | 'pdf' | 'link' | 'png'
     await client.query(`
