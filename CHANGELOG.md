@@ -127,6 +127,17 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   gelöschten Ressourcen blieben dadurch als verwaiste Zeilen zurück, da
   `comments` bewusst kein DB-seitiges FK hat (polymorph über zwei
   Zieltabellen).
+- Ersteller-Account-Löschung riss Team/Verein für alle mit:
+  `teams.created_by`/`organizations.created_by` hatten `ON DELETE
+  CASCADE`, obwohl beide Spalten reine Provenienz sind (nie an die API
+  exponiert) – die eigentliche Berechtigung läuft über
+  `team_members.role='owner'`/`organization_members.role='admin'`, die
+  unabhängig davon geändert werden kann. Ein Nutzer konnte die
+  Owner-/Admin-Rolle übertragen, die Gruppe komplett verlassen und
+  Monate später seinen damit gar nicht mehr verbundenen persönlichen
+  Account löschen – das komplette Team/den Verein riss es dann für alle
+  verbleibenden Mitglieder mit. Jetzt wie `board_versions.created_by`
+  korrekt `ON DELETE SET NULL`.
 - Board-Editor: bei aufgeklapptem unterem Tab-Menü schrumpft der
   Feldbereich – die Zeichen-Werkzeugleiste (u.a. Linienstärke-Auswahl)
   und das Spieler-Info-Fenster (Namen eintragen) hatten kein eigenes
