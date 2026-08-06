@@ -85,6 +85,11 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   Login/Register. Der Slogan sitzt dafür im globalen Footer statt in
   der Kopfzeile – unter dem kleinen Logo in der schmalen, sticky
   Kopfzeile wirkte er gequetscht statt gut lesbar.
+- Admin-Benachrichtigungsmail bei jeder Neuregistrierung (nur bei
+  konfiguriertem SMTP), Text variiert zufällig zwischen mehreren
+  augenzwinkernden Formulierungen statt immer derselben trockenen
+  Meldung. Der erste Nutzer (wird automatisch Admin) bekommt keine Mail
+  über die eigene Registrierung.
 
 ### Changed
 - Board-Editor: rechtes Menü (Zeichnen-Koordinaten, Lines, Formationen,
@@ -110,6 +115,16 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   gemeinsamen, kanonischen Stand gebracht.
 
 ### Fixed
+- Allgemeines `/api/`-Limit (100 Anfragen/15min) war für echte
+  interaktive Nutzung zu knapp bemessen – `useAutoSave.js` debounced
+  Speichern schon 300ms nach jeder Änderung (nicht nur alle 30s),
+  aktives Verschieben von Spielern beim Taktik-Zeichnen feuert dadurch
+  viele Requests pro Minute, dazu kommen mehrere API-Aufrufe pro
+  Seitenwechsel und ggf. mehrere gleichzeitig aktive Nutzer hinter
+  derselben IP. Ein frisch registrierter Nutzer konnte dadurch schon
+  beim ersten Ausprobieren (Spielfeld anlegen) blockiert werden – wirkte
+  wie eine fehlende Berechtigung, war aber ein zu enges Limit (keine
+  Rollen-Beschränkung existiert im Code). Limit auf 500 angehoben.
 - Registrierung wurde weiterhin vom allgemeinen `/api/`-Limit (100/15min)
   blockiert, obwohl sie längst ein eigenes, dediziertes Budget hatte –
   Express beendet die Middleware-Kette nicht, nur weil später im Code
