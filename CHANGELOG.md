@@ -144,6 +144,21 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   gemeinsamen, kanonischen Stand gebracht.
 
 ### Fixed
+- Helmet sendete unconditional einen `Strict-Transport-Security`-Header
+  (HSTS, 1 Jahr, `includeSubDomains`). Läuft die Instanz hinter einem
+  Reverse-Proxy/Tunnel, der HTTPS nicht zuverlässig terminiert (z.B.
+  Dynamic-DNS-Tunnel-Dienste wie home64.de), zwingt der Browser die Seite
+  nach dem ersten Aufruf dauerhaft auf HTTPS – führte zu endlosen
+  Reload-/Redirect-Schleifen und Logins, die nach jedem Reload verloren
+  gingen (Cookie unter dem erzwungenen Schema nicht wiedergefunden). HSTS
+  ist jetzt an dieselbe `COOKIE_SECURE`-Weiche gekoppelt wie die
+  Cookie-Optionen (`utils/cookies.js`) – wer `COOKIE_SECURE=false` setzt
+  (Homelab ohne verlässliches TLS davor), bekommt bewusst kein HSTS.
+  **Bereits im Browser gespeicherte HSTS-Regeln für die eigene Domain
+  müssen einmalig manuell gelöscht werden** (Chrome:
+  `chrome://net-internals/#hsts` → Domain löschen; Firefox: Website-Daten
+  für die Domain löschen), da eine bereits akzeptierte Regel nicht allein
+  durch das Fehlen des Headers zurückgesetzt wird.
 - Gelöschte Boards gaben zuvor erzeugte Einzel-Frame-Share-Links
   (`/api/share/frame/:token`) weiterhin öffentlich frei – anders als der
   volle Board-Share-Link, der `deleted_at` bei jedem Aufruf korrekt prüft,

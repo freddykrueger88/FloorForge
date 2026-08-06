@@ -27,8 +27,18 @@ const PORT = process.env.PORT || 3001;
 app.set('trust proxy', 1);
 
 // ── Security ──────────────────────────────────
+// HSTS an dieselbe COOKIE_SECURE-Weiche gekoppelt wie utils/cookies.js:
+// wer explizit COOKIE_SECURE=false setzt (Homelab-Deployment ohne
+// verlässliches TLS davor, z.B. hinter einem HTTP-Tunnel/Reverse-Proxy),
+// bekommt bewusst KEIN HSTS – sonst zwingt der Browser die Seite nach dem
+// ersten Aufruf dauerhaft auf HTTPS, auch wenn der Tunnel/Proxy das gar
+// nicht zuverlässig unterstützt (führt zu Redirect-/Reload-Schleifen und
+// Cookies, die zwischen HTTP/HTTPS nicht mehr wiedergefunden werden).
+const HSTS_ENABLED = process.env.COOKIE_SECURE !== 'false';
+
 app.use(helmet({
   crossOriginEmbedderPolicy: false, // Konva.js
+  hsts: HSTS_ENABLED,
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
