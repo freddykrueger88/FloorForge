@@ -90,6 +90,15 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   augenzwinkernden Formulierungen statt immer derselben trockenen
   Meldung. Der erste Nutzer (wird automatisch Admin) bekommt keine Mail
   über die eigene Registrierung.
+- Konfliktlösung für Offline-Sync bei mehreren Geräten (ROADMAP Phase 4):
+  Frames (Taktik-Inhalt) haben jetzt wie Boards ein `updatedAt`. Gepufferte
+  Offline-Änderungen an Frames/Boards werden vor dem erneuten Abschicken
+  gegengeprüft – wurde die Ressource zwischenzeitlich auf einem anderen
+  Gerät geändert, wird NICHT automatisch überschrieben, sondern als
+  Konflikt markiert. Neuer Hinweis im Offline-Banner öffnet einen Dialog
+  mit allen betroffenen Änderungen zur manuellen Prüfung/zum Verwerfen.
+  Alle anderen puffer-fähigen Ressourcen (Teams, Kader, Kommentare, …)
+  bleiben bewusst beim bisherigen Last-Write-Wins.
 
 ### Changed
 - Board-Editor: rechtes Menü (Zeichnen-Koordinaten, Lines, Formationen,
