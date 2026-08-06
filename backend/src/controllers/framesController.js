@@ -17,12 +17,13 @@ const MAX_FRAMES = 50;
 export function toApiFrame(row) {
   const data = row.data_json || {};
   return {
-    _id:      row.id,
-    order:    row.order_index,
-    label:    data.label ?? '',
-    players:  data.players ?? [],
-    elements: data.elements ?? [],
-    duration: row.duration_ms,
+    _id:       row.id,
+    order:     row.order_index,
+    label:     data.label ?? '',
+    players:   data.players ?? [],
+    elements:  data.elements ?? [],
+    duration:  row.duration_ms,
+    updatedAt: row.updated_at,
   };
 }
 

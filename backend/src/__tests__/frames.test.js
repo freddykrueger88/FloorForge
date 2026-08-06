@@ -145,6 +145,27 @@ describe('PUT /api/boards/:id/frames/:frameId', () => {
     expect(res.body.data.players[0].id).toBe('a1');
   });
 
+  it('liefert updatedAt und aktualisiert es bei jedem Speichern (ROADMAP Phase 4 – Voraussetzung für Offline-Konflikterkennung)', async () => {
+    const first = await request(app)
+      .put(`/api/boards/${boardId}/frames/${frameId}`)
+      .set('Cookie', owner.cookie)
+      .send({ players: [] });
+    expect(first.body.data.updatedAt).toBeDefined();
+
+    await new Promise((resolve) => setTimeout(resolve, 50));
+
+    const second = await request(app)
+      .put(`/api/boards/${boardId}/frames/${frameId}`)
+      .set('Cookie', owner.cookie)
+      .send({ players: [] });
+    expect(new Date(second.body.data.updatedAt).getTime())
+      .toBeGreaterThan(new Date(first.body.data.updatedAt).getTime());
+
+    const list = await request(app).get(`/api/boards/${boardId}/frames`).set('Cookie', owner.cookie);
+    const listed = list.body.data.find((f) => f._id === frameId);
+    expect(listed.updatedAt).toBe(second.body.data.updatedAt);
+  });
+
   it('lehnt eine ungültige Frame-ID mit 422 ab', async () => {
     const res = await request(app)
       .put(`/api/boards/${boardId}/frames/not-a-uuid`)

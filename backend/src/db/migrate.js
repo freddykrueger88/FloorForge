@@ -404,6 +404,18 @@ export async function runMigrations() {
     await client.query(`ALTER TABLE organizations DROP CONSTRAINT IF EXISTS organizations_created_by_fkey;`);
     await client.query(`ALTER TABLE organizations ADD CONSTRAINT organizations_created_by_fkey FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL;`);
 
+    // ── ROADMAP Phase 4 (Offline First/Sync): updated_at für Frames –
+    // fehlte bisher (anders als boards, das updated_at + Trigger schon
+    // hat), war aber Voraussetzung für eine Konflikterkennung beim
+    // Offline-Sync über mehrere Geräte (siehe offlineSync.js).
+    await client.query(`ALTER TABLE frames ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW();`);
+    await client.query(`
+      DROP TRIGGER IF EXISTS trg_frames_updated_at ON frames;
+      CREATE TRIGGER trg_frames_updated_at
+        BEFORE UPDATE ON frames
+        FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+    `);
+
     // ── exports ───────────────────────────────────────────────────────────
     // format: 'gif' | 'mp4' | 'pdf' | 'link' | 'png'
     await client.query(`
