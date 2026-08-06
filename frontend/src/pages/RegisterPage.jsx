@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import api from '../utils/api.js';
 import useAuthStore from '../store/authStore.js';
+import logo from '../assets/openfloorball_logo_cropped.png';
 
 export default function RegisterPage() {
   const { t } = useTranslation();
@@ -34,14 +35,7 @@ export default function RegisterPage() {
     <main className="auth-page" role="main">
 
       <div className="auth-card" id="main-content">
-        <div className="auth-logo" aria-label="OpenFloorball">
-          <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
-            <rect width="48" height="48" rx="10" fill="var(--color-primary)"/>
-            <text x="24" y="33" textAnchor="middle" fill="white"
-              fontFamily="var(--font-display)" fontSize="22" fontWeight="700">FF</text>
-          </svg>
-          <span className="auth-app-name">OpenFloorball</span>
-        </div>
+        <img src={logo} alt="OpenFloorball" className="auth-logo" />
         <p className="auth-slogan">{t('auth.slogan')}</p>
 
         <h1 className="auth-title">{t('auth.registerTitle')}</h1>

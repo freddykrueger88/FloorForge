@@ -11,7 +11,14 @@ export default defineConfig({
     // werden separat über frontend/src/utils/offlineQueue.js gepuffert.
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['src/assets/favicon.svg'],
+      // Liegt bewusst in public/ statt src/assets/: vite-plugin-pwa schreibt
+      // die manifest.icons[].src-Pfade als reine Strings ins generierte
+      // manifest.webmanifest, OHNE sie wie z.B. <link>-Tags in index.html
+      // durch Vites Modul-/Hashing-Pipeline zu schicken – ein Pfad unter
+      // /src/assets/ existiert im fertigen Build gar nicht mehr (nur der
+      // gehashte /assets/…-Pfad), public/-Dateien landen dagegen unverändert
+      // unter einem stabilen Pfad im Build-Root.
+      includeAssets: ['pwa-icon.png'],
       manifest: {
         name: 'OpenFloorball',
         short_name: 'OpenFloorball',
@@ -21,7 +28,9 @@ export default defineConfig({
         display: 'standalone',
         start_url: '/boards',
         icons: [
-          { src: '/src/assets/favicon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' },
+          { src: '/pwa-icon.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+          { src: '/pwa-icon.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+          { src: '/pwa-icon.png', sizes: '1024x1024', type: 'image/png', purpose: 'any' },
         ],
       },
       workbox: {
