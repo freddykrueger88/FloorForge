@@ -75,6 +75,11 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   dem Logo auf Login-/Registrierungsseite, plus eine zentrierte
   "Mit ❤️ für die Floorball-Community entwickelt"-Zeile im globalen
   Footer.
+- Echtes OpenFloorball-Logo (Ball + Taktik-Klemmbrett) ersetzt den
+  bisherigen "FF"-Platzhalter – als Browser-Tab-Favicon/PWA-Icon sowie
+  auf Login-/Registrierungsseite. Verlustbehaftet komprimiert
+  (pngquant) ohne sichtbaren Qualitätsverlust, relevant für den
+  PWA/Offline-Modus in Hallen mit schlechtem WLAN (#49).
 
 ### Changed
 - Board-Editor: rechtes Menü (Zeichnen-Koordinaten, Lines, Formationen,
