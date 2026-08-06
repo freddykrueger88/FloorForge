@@ -3,9 +3,14 @@
  * (Issue #30 – Board-Postkarte)
  *
  * Bewusst KEIN Konva/Canvas – reines SVG, da hier nur eine statische
- * Übersichts-Miniatur benötigt wird (readonly, keine Spieler, keine Pfeile).
+ * Übersichts-Miniatur benötigt wird (readonly, keine Pfeile/Zeichnungen).
  * Das Spielfeld wird um 90° gedreht dargestellt (Querformat → Hochformat),
  * damit es ins Postkarten-Layout passt.
+ *
+ * Optional: `players` (aus board.players, Meter-Koordinaten wie im
+ * Haupt-Spielfeld – siehe PlayerLayer.jsx) werden als kleine Punkte in
+ * derselben 90°-Drehung eingezeichnet, damit die Postkarten-Galerie schon
+ * die hinterlegte Taktik statt nur eines leeren Feldes zeigt.
  */
 import { useTranslation } from 'react-i18next';
 import { IFF_FIELDS } from '../../constants/fieldConfig.js';
@@ -16,6 +21,10 @@ export default function FieldMiniature({
   theme     = 'dark',
   width     = 140,
   height    = 200,
+  players   = null,
+  homeColor = '#1d4ed8',
+  awayColor = '#dc2626',
+  ballColor = '#f97316',
 }) {
   const { t } = useTranslation();
   const field  = IFF_FIELDS[fieldType] ?? IFF_FIELDS.large;
@@ -72,6 +81,31 @@ export default function FieldMiniature({
           Punkte statt Kreis, anders als Fußball) */}
       <line x1={ox} y1={cy} x2={ox + fieldW} y2={cy} stroke={colors.line} strokeWidth={lw} />
       <circle cx={cx} cy={cy} r={lw * 1.5} fill={colors.line} />
+
+      {/* Taktik-Vorschau: Spielerpositionen, in derselben 90°-Drehung wie
+          das Feld (Meter-x → Canvas-y, Meter-y → Canvas-x, siehe Kommentar
+          oben) – dieselbe Zuordnung, die scale/fieldW/fieldH bereits nutzen. */}
+      {players?.length > 0 && (() => {
+        const dotR = Math.max(2, Math.min(4.5, scale * 0.8));
+        return players.map((p) => {
+          if (typeof p.x !== 'number' || typeof p.y !== 'number') return null;
+          const px = ox + p.y * scale;
+          const py = oy + p.x * scale;
+          if (p.team === 'ball') {
+            return <circle key={p.id} cx={px} cy={py} r={dotR * 0.7} fill={ballColor} />;
+          }
+          const fill = p.team === 'home' ? homeColor : awayColor;
+          return (
+            <circle
+              key={p.id}
+              cx={px} cy={py} r={dotR}
+              fill={fill}
+              stroke={colors.surface}
+              strokeWidth={Math.max(0.5, lw * 0.6)}
+            />
+          );
+        });
+      })()}
     </svg>
   );
 }

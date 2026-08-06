@@ -14,7 +14,7 @@ import { FIELD_TYPE_LABELS } from '../../constants/fieldConfig.js';
 import { formatDate } from '../../utils/formatDate.js';
 import styles from './BoardPostcard.module.css';
 
-export default function BoardPostcard({ board, onClick, playbooks, onChangePlaybook }) {
+export default function BoardPostcard({ board, onClick, onDelete, playbooks, onChangePlaybook }) {
   const { t } = useTranslation();
   const hasNotes = board.notes && board.notes.trim().length > 0;
   const isOwner = (board.accessLevel ?? 'owner') === 'owner';
@@ -42,12 +42,28 @@ export default function BoardPostcard({ board, onClick, playbooks, onChangePlayb
           theme={board.theme}
           width={140}
           height={200}
+          players={board.players}
+          homeColor={board.homeColor ?? '#1d4ed8'}
+          awayColor={board.awayColor ?? '#dc2626'}
+          ballColor={board.ballColor ?? '#f97316'}
         />
       </div>
 
       {/* Rechts: Infos */}
       <div className={styles.info}>
-        <h3 className={styles.name}>{board.name}</h3>
+        <div className={styles.nameRow}>
+          <h3 className={styles.name}>{board.name}</h3>
+          {isOwner && onDelete && (
+            <button
+              className={styles.deleteBtn}
+              onClick={(e) => { e.stopPropagation(); onDelete(); }}
+              aria-label={t('boardCard.deleteAriaLabel')}
+              title={t('boardCard.deleteTitle')}
+            >
+              🗑
+            </button>
+          )}
+        </div>
 
         <p className={hasNotes ? styles.notes : styles.notesEmpty}>
           {hasNotes ? board.notes : t('boardPostcard.noNotes')}

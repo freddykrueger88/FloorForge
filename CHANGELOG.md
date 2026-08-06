@@ -14,6 +14,12 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ## [Unreleased]
 
 ### Added
+- Postkarten-Galerie-Miniatur zeigt jetzt die hinterlegte Taktik statt
+  nur eines leeren Feldes: `GET /api/boards` liefert zusätzlich
+  `players_json` (bewusst ohne `elements_json` – Freihand-Zeichnungen
+  können groß werden, für die reine Übersicht nicht nötig),
+  `FieldMiniature` zeichnet die Spielerpositionen als kleine Punkte in
+  derselben 90°-Drehung wie das Feld.
 - Optionaler SMTP-Mailversand (`backend/src/utils/mailer.js`,
   `nodemailer`): wird beim Hinzufügen eines Kollaborators (Issue #51)
   genutzt, um eine kurze Benachrichtigungsmail zu verschicken. Ohne
@@ -124,6 +130,10 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   gemeinsamen, kanonischen Stand gebracht.
 
 ### Fixed
+- Boards ließen sich in der Postkarten-Galerie-Ansicht nicht löschen –
+  `BoardPostcard.jsx` hatte (anders als die Kachel-Ansicht `BoardCard.jsx`)
+  gar keinen Lösch-Button/`onDelete`-Prop verdrahtet. Nachgerüstet nach
+  demselben Muster (Eigentümer-Check, Klick öffnet `DeleteConfirmDialog`).
 - Allgemeines `/api/`-Limit (100 Anfragen/15min) war für echte
   interaktive Nutzung zu knapp bemessen – `useAutoSave.js` debounced
   Speichern schon 300ms nach jeder Änderung (nicht nur alle 30s),

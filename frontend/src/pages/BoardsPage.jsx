@@ -250,6 +250,7 @@ export default function BoardsPage() {
                 <BoardPostcard
                   board={board}
                   onClick={() => navigate(`/board/${board._id}`)}
+                  onDelete={() => setDeleteTarget({ id: board._id, name: board.name })}
                   playbooks={playbooks}
                   onChangePlaybook={(playbookId) => handleChangeBoardPlaybook(board._id, playbookId)}
                 />
