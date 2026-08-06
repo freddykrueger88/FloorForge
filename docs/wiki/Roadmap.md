@@ -13,6 +13,10 @@ dort kontinuierlich aktualisiert:
 - Werkzeug-Symbole in der Board-Ansicht (Passen, Schuss, Radieren, ...)
   überarbeiten – aktuell nicht eindeutig unterscheidbar
 - Redo-Button für die Board-Ansicht (bisher nur Undo)
+- Native App-Store-Präsenz (Google Play + Apple App Store) – App ist
+  schon eine installierbare PWA (vite-plugin-pwa), naheliegender Weg
+  wäre ein Wrapper wie Capacitor/Trusted Web Activity statt einer
+  komplett separaten Codebasis
 
 **Technisch:**
 - Vite 7→8 (zurückgestellt, Peer-Dependency-Konflikt im
