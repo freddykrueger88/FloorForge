@@ -14,6 +14,7 @@ import redisClient from '../db/redis.js';
 import { authenticate } from '../middleware/auth.js';
 import { success, created, error } from '../utils/apiResponse.js';
 import { COOKIE_OPTS } from '../utils/cookies.js';
+import { notifyAdminsOfNewUser } from '../utils/mailer.js';
 import logger from '../utils/logger.js';
 
 const router = Router();
@@ -90,6 +91,7 @@ router.post('/register', registerValidation, async (req, res) => {
     res.cookie('token', token, COOKIE_OPTS);
 
     logger.info(`User registered: ${user.id} (role: ${role})`);
+    notifyAdminsOfNewUser({ email: user.email, name: user.display_name }, { isFirstUser });
     return res.status(201).json(created({ user: { id: user.id, email: user.email, role: user.role, name: user.display_name } }));
   } catch (err) {
     logger.error('Register error:', err);

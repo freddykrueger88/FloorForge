@@ -59,6 +59,22 @@ describe('POST /api/auth/register', () => {
 
     expect(res.status).toBe(422);
   });
+
+  it('registriert erfolgreich, auch wenn bereits ein Admin existiert (Admin-Benachrichtigungsmail)', async () => {
+    // Stellt sicher, dass notifyAdminsOfNewUser() (Betreiber-Wunsch:
+    // Mail an alle Admins bei jeder Neuregistrierung) die Registrierung
+    // selbst nicht beeinträchtigt, unabhängig von der Testreihenfolge.
+    const adminEmail = uniqueEmail('existing-admin');
+    const adminRes = await request(app).post('/api/auth/register').send({ email: adminEmail, password: 'Testpass123' });
+    await pool.query("UPDATE users SET role = 'admin' WHERE id = $1", [adminRes.body.data.user.id]);
+
+    const res = await request(app)
+      .post('/api/auth/register')
+      .send({ email: uniqueEmail('second'), name: 'Zweiter Nutzer', password: 'Testpass123' });
+
+    expect(res.status).toBe(201);
+    expect(res.body.success).toBe(true);
+  });
 });
 
 describe('POST /api/auth/login', () => {
