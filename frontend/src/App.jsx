@@ -11,7 +11,7 @@ import Footer from './components/layout/Footer.jsx';
 import OfflineBanner from './components/layout/OfflineBanner.jsx';
 import useOfflineStore from './store/offlineStore.js';
 import { syncOfflineQueue } from './utils/offlineSync.js';
-import { getQueuedWrites } from './utils/offlineQueue.js';
+import { getQueueCounts } from './utils/offlineQueue.js';
 import './styles/tokens.css';
 import './styles/base.css';
 import './styles/auth.css';
@@ -85,7 +85,10 @@ export default function App() {
 
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
-    getQueuedWrites().then((queued) => useOfflineStore.getState().setQueueLength(queued.length));
+    getQueueCounts().then(({ pending, conflict }) => {
+      useOfflineStore.getState().setQueueLength(pending);
+      useOfflineStore.getState().setConflictCount(conflict);
+    });
     if (navigator.onLine) syncOfflineQueue();
 
     return () => {

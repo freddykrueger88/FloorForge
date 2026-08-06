@@ -599,6 +599,15 @@
       "cancel": "Abbrechen",
       "deleting": "Lösche…"
     },
+    "conflictReview": {
+      "title": "Konflikte beim Synchronisieren",
+      "close": "Schließen",
+      "hint": "Diese Offline-Änderungen wurden nicht übernommen, weil die jeweilige Ressource zwischenzeitlich auf einem anderen Gerät bearbeitet wurde. Schau dir das Spielfeld an und trage die Änderung bei Bedarf manuell erneut ein.",
+      "emptyState": "Keine offenen Konflikte mehr.",
+      "unknownLabel": "Unbekannte Änderung",
+      "queuedAt": "Offline gespeichert am {{date}}",
+      "discardBtn": "Verwerfen"
+    },
     "fieldTypeChange": {
       "title": "Spielfeld-Typ ändern?",
       "message": "Das Spielfeld wird auf „{{targetLabel}}“ umgestellt. Bestehende Spielerpositionen und Zeichnungen in allen Frames werden proportional an das neue Feld angepasst.",
@@ -771,7 +780,11 @@
     "syncingBanner_one": "Synchronisiere {{count}} Änderung...",
     "syncingBanner_other": "Synchronisiere {{count}} Änderungen...",
     "synced": "Alle Änderungen synchronisiert",
-    "syncedWithErrors": "Synchronisiert – einzelne Änderungen konnten nicht übernommen werden"
+    "syncedWithErrors": "Synchronisiert – einzelne Änderungen konnten nicht übernommen werden",
+    "syncedWithConflicts_one": "Synchronisiert – 1 Änderung wurde zwischenzeitlich anderswo bearbeitet, bitte prüfen",
+    "syncedWithConflicts_other": "Synchronisiert – {{count}} Änderungen wurden zwischenzeitlich anderswo bearbeitet, bitte prüfen",
+    "conflictBannerBtn_one": "1 Konflikt ansehen",
+    "conflictBannerBtn_other": "{{count}} Konflikte ansehen"
   },
   "boardShare": {
     "title": "Board teilen",

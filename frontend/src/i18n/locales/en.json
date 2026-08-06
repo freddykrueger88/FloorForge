@@ -599,6 +599,15 @@
       "cancel": "Cancel",
       "deleting": "Deleting…"
     },
+    "conflictReview": {
+      "title": "Sync conflicts",
+      "close": "Close",
+      "hint": "These offline changes weren't applied because the resource was edited on another device in the meantime. Take a look at the board and re-enter the change manually if you still want it.",
+      "emptyState": "No open conflicts left.",
+      "unknownLabel": "Unknown change",
+      "queuedAt": "Saved offline on {{date}}",
+      "discardBtn": "Discard"
+    },
     "fieldTypeChange": {
       "title": "Change field type?",
       "message": "The field will be changed to \"{{targetLabel}}\". Existing player positions and drawings in all frames will be scaled proportionally to fit the new field.",
@@ -771,7 +780,11 @@
     "syncingBanner_one": "Syncing {{count}} change...",
     "syncingBanner_other": "Syncing {{count}} changes...",
     "synced": "All changes synced",
-    "syncedWithErrors": "Synced – some changes could not be applied"
+    "syncedWithErrors": "Synced – some changes could not be applied",
+    "syncedWithConflicts_one": "Synced – 1 change was edited elsewhere in the meantime, please review",
+    "syncedWithConflicts_other": "Synced – {{count}} changes were edited elsewhere in the meantime, please review",
+    "conflictBannerBtn_one": "1 conflict to review",
+    "conflictBannerBtn_other": "{{count}} conflicts to review"
   },
   "boardShare": {
     "title": "Share board",

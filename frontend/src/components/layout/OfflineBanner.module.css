@@ -5,7 +5,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-2);
+  flex-wrap: wrap;
+  gap: var(--space-3);
   padding: var(--space-2) var(--space-4);
   background: var(--color-warning, #b45309);
   color: #fff;
@@ -13,3 +14,17 @@
   font-weight: 600;
   text-align: center;
 }
+
+.conflictBtn {
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--transition-interactive);
+}
+.conflictBtn:hover { background: rgba(255, 255, 255, 0.3); }
