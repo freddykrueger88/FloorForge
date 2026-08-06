@@ -57,12 +57,24 @@ describe('Kollaboratoren-Verwaltung (Owner-only)', () => {
     expect(res.status).toBe(404);
   });
 
-  it('lehnt das Hinzufügen eines nicht existierenden Nutzers mit 404 ab', async () => {
+  it('legt bei unbekannter E-Mail-Adresse eine Einladung an (201, status "invited")', async () => {
     const res = await request(app)
       .post(`/api/boards/${boardId}/collaborators`)
       .set('Cookie', owner.cookie)
       .send({ email: 'nichtexistent-xyz@example.com', permission: 'read' });
-    expect(res.status).toBe(404);
+    expect(res.status).toBe(201);
+    expect(res.body.data.status).toBe('invited');
+    expect(res.body.data.email).toBe('nichtexistent-xyz@example.com');
+  });
+
+  it('aktualisiert bei erneutem Einladen derselben unbekannten Adresse Token/Berechtigung statt Fehler', async () => {
+    const res = await request(app)
+      .post(`/api/boards/${boardId}/collaborators`)
+      .set('Cookie', owner.cookie)
+      .send({ email: 'nichtexistent-xyz@example.com', permission: 'write' });
+    expect(res.status).toBe(201);
+    expect(res.body.data.status).toBe('invited');
+    expect(res.body.data.permission).toBe('write');
   });
 
   it('lehnt das Hinzufügen sich selbst als Kollaborator mit 400 ab', async () => {
@@ -92,11 +104,16 @@ describe('Kollaboratoren-Verwaltung (Owner-only)', () => {
     expect(res.status).toBe(400);
   });
 
-  it('listet die Kollaboratoren (Owner-only)', async () => {
+  it('listet Kollaboratoren und offene Einladungen zusammen (Owner-only)', async () => {
     const res = await request(app).get(`/api/boards/${boardId}/collaborators`).set('Cookie', owner.cookie);
     expect(res.status).toBe(200);
-    expect(res.body.data).toHaveLength(1);
-    expect(res.body.data[0].permission).toBe('write');
+    expect(res.body.data).toHaveLength(2);
+    const active = res.body.data.find((c) => c.status === 'active');
+    const invited = res.body.data.find((c) => c.status === 'invited');
+    expect(active.email).toBe(collaborator.email);
+    expect(active.permission).toBe('write');
+    expect(invited.email).toBe('nichtexistent-xyz@example.com');
+    expect(invited.permission).toBe('write');
   });
 
   it('lehnt das Auflisten durch einen Kollaboraten (kein Owner) mit 404 ab', async () => {
@@ -194,5 +211,43 @@ describe('Kollaboratoren-Verwaltung (Owner-only)', () => {
     const res = await request(app).get('/api/boards').set('Cookie', collaborator.cookie);
     expect(res.status).toBe(200);
     expect(res.body.data.some((b) => b._id === boardId)).toBe(false);
+  });
+
+  it('zieht eine offene Einladung über die bestehende DELETE-Route zurück', async () => {
+    const listRes = await request(app).get(`/api/boards/${boardId}/collaborators`).set('Cookie', owner.cookie);
+    const invited = listRes.body.data.find((c) => c.status === 'invited');
+    expect(invited).toBeDefined();
+
+    const res = await request(app)
+      .delete(`/api/boards/${boardId}/collaborators/${invited._id}`)
+      .set('Cookie', owner.cookie);
+    expect(res.status).toBe(200);
+
+    const afterRes = await request(app).get(`/api/boards/${boardId}/collaborators`).set('Cookie', owner.cookie);
+    expect(afterRes.body.data.some((c) => c._id === invited._id)).toBe(false);
+  });
+});
+
+describe('Kollaboratoren-Limit zählt offene Einladungen mit', () => {
+  it('lehnt eine weitere Einladung ab, wenn Kollaboratoren + offene Einladungen das Limit erreichen', async () => {
+    const capBoardRes = await request(app)
+      .post('/api/boards')
+      .set('Cookie', owner.cookie)
+      .send({ name: 'Limit-Test-Board', fieldType: 'large' });
+    const capBoardId = capBoardRes.body.data._id;
+
+    for (let i = 0; i < 10; i++) {
+      const res = await request(app)
+        .post(`/api/boards/${capBoardId}/collaborators`)
+        .set('Cookie', owner.cookie)
+        .send({ email: `limit-invite-${i}-${Math.floor(Math.random() * 1e9)}@example.com`, permission: 'read' });
+      expect(res.status).toBe(201);
+    }
+
+    const res = await request(app)
+      .post(`/api/boards/${capBoardId}/collaborators`)
+      .set('Cookie', owner.cookie)
+      .send({ email: `limit-invite-overflow-${Math.floor(Math.random() * 1e9)}@example.com`, permission: 'read' });
+    expect(res.status).toBe(400);
   });
 });

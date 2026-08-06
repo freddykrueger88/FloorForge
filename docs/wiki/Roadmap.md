@@ -12,9 +12,7 @@ dort kontinuierlich aktualisiert:
   (aktuell: [Board-Sharing](./Export.md) setzt einen bestehenden
   Account voraus)
 - Video-/Spielfilm-Integration (Zeichnungen über echtes Spielmaterial)
-- Gegner-Tagging für Boards/Playbooks
 - Echtzeit-Co-Editing (Live-Cursor, über das aktuelle Sharing-MVP hinaus)
-- Schneller Einzel-Frame-Share ohne Login
 
 **Technisch:**
 - Vite 7→8 (zurückgestellt, Peer-Dependency-Konflikt im

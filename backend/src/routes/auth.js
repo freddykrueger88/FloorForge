@@ -86,6 +86,29 @@ router.post('/register', registerValidation, async (req, res) => {
     );
     const user = result.rows[0];
 
+    // Offene Einladungen (board_invites, siehe boardCollaboratorsController.js)
+    // für genau diese Adresse automatisch einlösen – awaited (nicht fire-
+    // and-forget), damit das Board schon im ersten GET /api/boards nach dem
+    // Redirect sichtbar ist. Fehler hier dürfen die Registrierung selbst
+    // nie zum Scheitern bringen.
+    try {
+      const invites = await pool.query(
+        `SELECT id, board_id, permission FROM board_invites
+         WHERE email = $1 AND accepted_at IS NULL AND expires_at > NOW()`,
+        [user.email]
+      );
+      for (const inv of invites.rows) {
+        await pool.query(
+          `INSERT INTO board_collaborators (board_id, user_id, permission)
+           VALUES ($1, $2, $3) ON CONFLICT (board_id, user_id) DO NOTHING`,
+          [inv.board_id, user.id, inv.permission]
+        );
+        await pool.query('UPDATE board_invites SET accepted_at = NOW() WHERE id = $1', [inv.id]);
+      }
+    } catch (inviteErr) {
+      logger.error('[register] Einladungen konnten nicht übernommen werden:', inviteErr);
+    }
+
     // JWT
     const token = signToken(user.id, user.role);
     res.cookie('token', token, COOKIE_OPTS);

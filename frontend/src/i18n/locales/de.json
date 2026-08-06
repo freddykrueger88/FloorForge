@@ -803,6 +803,19 @@
     "removeTitle": "Entfernen",
     "openLabel": "Board teilen",
     "readonlyBadge": "Nur Lesezugriff",
-    "writeBadge": "Mitbearbeiter"
+    "writeBadge": "Mitbearbeiter",
+    "pendingBadge": "⏳ Eingeladen",
+    "inviteHint": "Hat die Adresse noch keinen Account, wird eine Einladung per E-Mail verschickt."
+  },
+  "invite": {
+    "title": "Einladung",
+    "loading": "Lädt Einladung...",
+    "notFoundOrExpired": "Diese Einladung ist nicht mehr gültig (evtl. bereits angenommen oder abgelaufen).",
+    "invitedAs": "{{inviterName}} hat dich eingeladen, am Board „{{boardName}}“ mitzuarbeiten ({{permission}}).",
+    "someone": "Jemand",
+    "registerCta": "Registrieren & Zugriff erhalten",
+    "loggedInAsOther": "Du bist eingeloggt als {{currentEmail}}. Diese Einladung ist für {{invitedEmail}}.",
+    "logoutAndRegister": "Ausloggen & registrieren",
+    "backToLogin": "Zum Login"
   }
 }

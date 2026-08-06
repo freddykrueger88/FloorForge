@@ -803,6 +803,19 @@
     "removeTitle": "Remove",
     "openLabel": "Share board",
     "readonlyBadge": "Read only",
-    "writeBadge": "Collaborator"
+    "writeBadge": "Collaborator",
+    "pendingBadge": "⏳ Invited",
+    "inviteHint": "If the address doesn't have an account yet, an invitation will be sent by email."
+  },
+  "invite": {
+    "title": "Invitation",
+    "loading": "Loading invitation...",
+    "notFoundOrExpired": "This invitation is no longer valid (it may already have been accepted or expired).",
+    "invitedAs": "{{inviterName}} invited you to collaborate on the board \"{{boardName}}\" ({{permission}}).",
+    "someone": "Someone",
+    "registerCta": "Register & get access",
+    "loggedInAsOther": "You're logged in as {{currentEmail}}. This invitation is for {{invitedEmail}}.",
+    "logoutAndRegister": "Log out & register",
+    "backToLogin": "Back to login"
   }
 }

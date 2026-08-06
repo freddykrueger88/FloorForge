@@ -26,6 +26,7 @@ const TrainingsPage       = lazy(() => import('./pages/TrainingsPage.jsx'));
 const TrainingSessionPage = lazy(() => import('./pages/TrainingSessionPage.jsx'));
 const RosterPage          = lazy(() => import('./pages/RosterPage.jsx'));
 const SharePage       = lazy(() => import('./pages/SharePage.jsx'));
+const InvitePage      = lazy(() => import('./pages/InvitePage.jsx'));
 const SettingsPage    = lazy(() => import('./pages/SettingsPage.jsx'));
 const PrivacyPage     = lazy(() => import('./pages/PrivacyPage.jsx'));
 const RulesPage       = lazy(() => import('./pages/RulesPage.jsx'));
@@ -117,6 +118,7 @@ export default function App() {
           <Route path="/roster" element={<PrivateRoute><RosterPage /></PrivateRoute>} />
           <Route path="/settings" element={<PrivateRoute><SettingsPage /></PrivateRoute>} />
           <Route path="/share/:token" element={<SharePage />} />
+          <Route path="/invite/:token" element={<InvitePage />} />
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/rules" element={<RulesPage />} />
           <Route path="*" element={<NotFound />} />

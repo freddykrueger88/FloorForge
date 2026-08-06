@@ -11,6 +11,7 @@ import boardCollaboratorRoutes from './boardCollaborators.js';
 import boardVersionRoutes from './boardVersions.js';
 import exportRoutes from './exports.js';
 import shareViewRoutes from './shareView.js';
+import inviteRoutes from './invite.js';
 import settingsRoutes from './settings.js';
 import userRoutes from './user.js';
 import adminRoutes from './admin.js';
@@ -48,6 +49,8 @@ router.use('/trainings/:id/comments', sessionCommentRoutes);
 router.use('/export', express.json({ limit: '50mb' }), exportRoutes);
 // Öffentliche Share-Link-Ansicht – bewusst NICHT hinter authenticate (Issue #16)
 router.use('/share', shareViewRoutes);
+// Öffentliche Einladungs-Vorschau – bewusst NICHT hinter authenticate
+router.use('/invite', inviteRoutes);
 router.use('/settings', settingsRoutes);
 router.use('/user', userRoutes);
 router.use('/admin', adminRoutes);

@@ -248,6 +248,29 @@ export async function runMigrations() {
     await client.query(`CREATE INDEX IF NOT EXISTS idx_board_collaborators_board_id ON board_collaborators(board_id);`);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_board_collaborators_user_id ON board_collaborators(user_id);`);
 
+    // ── board_invites (E-Mail-Einladungsflow für noch nicht registrierte
+    // Adressen) ──────────────────────────────────────────────────────────
+    // board_collaborators setzt einen bestehenden Account voraus – für
+    // unbekannte E-Mail-Adressen landet die Einladung hier, bis sie sich
+    // mit genau dieser Adresse registrieren (siehe routes/auth.js), dann
+    // wird automatisch eine board_collaborators-Zeile daraus.
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS board_invites (
+        id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        board_id    UUID NOT NULL REFERENCES boards(id) ON DELETE CASCADE,
+        email       TEXT NOT NULL,
+        permission  TEXT NOT NULL DEFAULT 'read' CHECK (permission IN ('read', 'write')),
+        invited_by  UUID REFERENCES users(id) ON DELETE SET NULL,
+        token       UUID NOT NULL UNIQUE DEFAULT uuid_generate_v4(),
+        expires_at  TIMESTAMPTZ NOT NULL,
+        accepted_at TIMESTAMPTZ,
+        created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        UNIQUE (board_id, email)
+      );
+    `);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_board_invites_board_id ON board_invites(board_id);`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_board_invites_email ON board_invites(email) WHERE accepted_at IS NULL;`);
+
     // ── teams + team_members (ROADMAP Phase 2 – Team und Organisation) ────
     // Additiv zum bestehenden user_id-Besitzmodell: ein Team teilt Kader/
     // Playbooks/Trainingspläne/Formationen zwischen mehreren Trainern (siehe

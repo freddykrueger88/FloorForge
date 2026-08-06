@@ -1,16 +1,21 @@
 /**
- * boardCollaboratorsController – Board-Sharing (Issue #51 MVP)
+ * boardCollaboratorsController – Board-Sharing (Issue #51 MVP) + E-Mail-
+ * Einladungsflow für noch nicht registrierte Adressen (ROADMAP-Backlog)
  *
  * Alle Routen sind strikt Owner-only (nicht über assertBoardAccess, das
  * würde auch write-Kollaboratoren durchlassen – Kollaborator-Verwaltung
- * ist bewusst strenger als normales "write"). Ein Kollaborator wird per
- * bereits existierender E-Mail-Adresse hinzugefügt (kein Einladungs-/
- * Token-Flow für noch nicht registrierte Adressen – passt zum
- * Self-Hosted-Team-Kontext dieser App). Ist SMTP konfiguriert (siehe
- * utils/mailer.js), bekommt der hinzugefügte Nutzer eine kurze
- * Benachrichtigungs-Mail; ohne SMTP-Konfiguration passiert einfach
- * nichts, die Kollaborator-Verwaltung selbst funktioniert unabhängig
- * davon immer.
+ * ist bewusst strenger als normales "write"). Ein Kollaborator mit
+ * bereits existierendem Account wird direkt hinzugefügt; eine noch nicht
+ * registrierte E-Mail-Adresse bekommt stattdessen eine board_invites-
+ * Zeile + Einladungsmail mit Link (siehe inviteController.js) – wird
+ * automatisch zu einem echten Kollaborator, sobald sich diese Adresse
+ * registriert (siehe routes/auth.js). GET/PUT/DELETE geben/ändern/
+ * entfernen daher transparent sowohl echte Kollaboratoren als auch
+ * offene Einladungen (unterschieden über `status` in der API-Antwort).
+ * Ist SMTP konfiguriert (siehe utils/mailer.js), bekommt der
+ * hinzugefügte Nutzer bzw. die eingeladene Adresse eine Mail; ohne
+ * SMTP-Konfiguration passiert einfach nichts, die Verwaltung selbst
+ * funktioniert unabhängig davon immer.
  */
 import pool from '../db/pool.js';
 import logger from '../utils/logger.js';
@@ -18,6 +23,8 @@ import { sendMail } from '../utils/mailer.js';
 import { success, created, error } from '../utils/apiResponse.js';
 
 const MAX_COLLABORATORS_PER_BOARD = 10;
+const INVITE_EXPIRES_HOURS = parseInt(process.env.INVITE_EXPIRES_HOURS || '168', 10); // 7 Tage
+const CLEANUP_INTERVAL_MS = 60 * 60 * 1000; // 1h
 
 function toApiCollaborator(row) {
   return {
@@ -25,9 +32,40 @@ function toApiCollaborator(row) {
     userId:     row.user_id,
     email:      row.email,
     permission: row.permission,
+    status:     'active',
     createdAt:  row.created_at,
   };
 }
+
+function toApiInvite(row) {
+  return {
+    _id:        row.id,
+    userId:     null,
+    email:      row.email,
+    permission: row.permission,
+    status:     'invited',
+    expiresAt:  row.expires_at,
+    createdAt:  row.created_at,
+  };
+}
+
+// Abgelaufene/bereits akzeptierte Einladungen regelmäßig aufräumen –
+// reine Tabellenhygiene, alle Queries filtern ohnehin schon auf
+// accepted_at IS NULL AND expires_at > NOW() (analog cleanupExpiredShareLinks
+// in shareController.js).
+async function cleanupExpiredInvites() {
+  try {
+    const result = await pool.query(
+      `DELETE FROM board_invites WHERE accepted_at IS NOT NULL OR expires_at < NOW()`
+    );
+    if (result.rowCount > 0) {
+      logger.info(`Invite cleanup: ${result.rowCount} abgelaufene/akzeptierte Einladungen gelöscht`);
+    }
+  } catch (err) {
+    logger.warn('Invite cleanup error:', err.message);
+  }
+}
+setInterval(cleanupExpiredInvites, CLEANUP_INTERVAL_MS);
 
 // Gibt das Board (mit Name, für die Einladungs-Mail) statt nur eines
 // Booleans zurück – bleibt an allen bisherigen `if (!(await
@@ -46,14 +84,24 @@ export async function getCollaborators(req, res) {
     if (!(await assertBoardOwner(req.params.id, req.user.id))) {
       return res.status(404).json(error('Board nicht gefunden'));
     }
-    const result = await pool.query(
-      `SELECT bc.*, u.email FROM board_collaborators bc
-       JOIN users u ON u.id = bc.user_id
-       WHERE bc.board_id = $1
-       ORDER BY bc.created_at ASC`,
-      [req.params.id]
-    );
-    res.json(success(result.rows.map(toApiCollaborator)));
+    const [collabResult, inviteResult] = await Promise.all([
+      pool.query(
+        `SELECT bc.*, u.email FROM board_collaborators bc
+         JOIN users u ON u.id = bc.user_id
+         WHERE bc.board_id = $1`,
+        [req.params.id]
+      ),
+      pool.query(
+        `SELECT * FROM board_invites
+         WHERE board_id = $1 AND accepted_at IS NULL AND expires_at > NOW()`,
+        [req.params.id]
+      ),
+    ]);
+    const rows = [
+      ...collabResult.rows.map(toApiCollaborator),
+      ...inviteResult.rows.map(toApiInvite),
+    ].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+    res.json(success(rows));
   } catch (err) {
     logger.error('[getCollaborators]', err);
     res.status(500).json(error('Interner Serverfehler'));
@@ -69,20 +117,45 @@ export async function addCollaborator(req, res) {
     }
 
     const countResult = await pool.query(
-      'SELECT COUNT(*)::int AS count FROM board_collaborators WHERE board_id = $1',
+      `SELECT
+         (SELECT COUNT(*)::int FROM board_collaborators WHERE board_id = $1) +
+         (SELECT COUNT(*)::int FROM board_invites WHERE board_id = $1 AND accepted_at IS NULL AND expires_at > NOW())
+         AS count`,
       [req.params.id]
     );
     if (countResult.rows[0].count >= MAX_COLLABORATORS_PER_BOARD) {
       return res.status(400).json(error(`Maximal ${MAX_COLLABORATORS_PER_BOARD} Kollaboratoren pro Board`));
     }
 
-    const { email, permission = 'read' } = req.body;
+    const email = req.body.email.trim().toLowerCase();
+    const { permission = 'read' } = req.body;
     const userResult = await pool.query(
       'SELECT id, email FROM users WHERE email = $1',
-      [email.trim().toLowerCase()]
+      [email]
     );
     if (userResult.rows.length === 0) {
-      return res.status(404).json(error('Kein Nutzer mit dieser E-Mail-Adresse gefunden'));
+      const inviteResult = await pool.query(
+        `INSERT INTO board_invites (board_id, email, permission, invited_by, expires_at)
+         VALUES ($1, $2, $3, $4, NOW() + ($5 || ' hours')::interval)
+         ON CONFLICT (board_id, email) DO UPDATE SET
+           permission  = EXCLUDED.permission,
+           token       = uuid_generate_v4(),
+           expires_at  = EXCLUDED.expires_at,
+           accepted_at = NULL,
+           invited_by  = EXCLUDED.invited_by
+         RETURNING *`,
+        [req.params.id, email, permission, req.user.id, INVITE_EXPIRES_HOURS]
+      );
+      const invite = inviteResult.rows[0];
+
+      const appUrl = (process.env.CORS_ORIGIN || '').replace(/\/$/, '');
+      sendMail({
+        to: email,
+        subject: `OpenFloorball: Einladung zum Board "${board.name}"`,
+        text: `Du wurdest eingeladen, am Board "${board.name}" mitzuarbeiten (${permission === 'write' ? 'Bearbeiten' : 'Lesen'}).\n\nDu hast noch keinen OpenFloorball-Account. Registriere dich mit dieser E-Mail-Adresse (${email}), um automatisch Zugriff zu erhalten:\n\n${appUrl}/invite/${invite.token}`,
+      });
+
+      return res.status(201).json(created(toApiInvite(invite)));
     }
     const targetUser = userResult.rows[0];
 
@@ -131,12 +204,22 @@ export async function updateCollaborator(req, res) {
        RETURNING *`,
       [permission, req.params.collaboratorId, req.params.id]
     );
-    if (result.rows.length === 0) {
-      return res.status(404).json(error('Kollaborator nicht gefunden'));
+    if (result.rows.length > 0) {
+      const userResult = await pool.query('SELECT email FROM users WHERE id = $1', [result.rows[0].user_id]);
+      return res.json(success(toApiCollaborator({ ...result.rows[0], email: userResult.rows[0]?.email })));
     }
 
-    const userResult = await pool.query('SELECT email FROM users WHERE id = $1', [result.rows[0].user_id]);
-    res.json(success(toApiCollaborator({ ...result.rows[0], email: userResult.rows[0]?.email })));
+    // Keine aktive Kollaboration mit dieser ID – evtl. eine offene Einladung
+    const inviteResult = await pool.query(
+      `UPDATE board_invites SET permission = $1
+       WHERE id = $2 AND board_id = $3 AND accepted_at IS NULL
+       RETURNING *`,
+      [permission, req.params.collaboratorId, req.params.id]
+    );
+    if (inviteResult.rows.length === 0) {
+      return res.status(404).json(error('Kollaborator nicht gefunden'));
+    }
+    res.json(success(toApiInvite(inviteResult.rows[0])));
   } catch (err) {
     logger.error('[updateCollaborator]', err);
     res.status(500).json(error('Interner Serverfehler'));
@@ -154,10 +237,18 @@ export async function removeCollaborator(req, res) {
       'DELETE FROM board_collaborators WHERE id = $1 AND board_id = $2 RETURNING id',
       [req.params.collaboratorId, req.params.id]
     );
-    if (result.rows.length === 0) {
+    if (result.rows.length > 0) {
+      return res.json(success({ message: 'Kollaborator entfernt' }));
+    }
+
+    const inviteResult = await pool.query(
+      'DELETE FROM board_invites WHERE id = $1 AND board_id = $2 AND accepted_at IS NULL RETURNING id',
+      [req.params.collaboratorId, req.params.id]
+    );
+    if (inviteResult.rows.length === 0) {
       return res.status(404).json(error('Kollaborator nicht gefunden'));
     }
-    res.json(success({ message: 'Kollaborator entfernt' }));
+    res.json(success({ message: 'Einladung zurückgezogen' }));
   } catch (err) {
     logger.error('[removeCollaborator]', err);
     res.status(500).json(error('Interner Serverfehler'));

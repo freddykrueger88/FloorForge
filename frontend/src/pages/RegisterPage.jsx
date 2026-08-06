@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router';
+import { Link, useNavigate, useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import api from '../utils/api.js';
 import useAuthStore from '../store/authStore.js';
@@ -9,8 +9,12 @@ export default function RegisterPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const setUser = useAuthStore((s) => s.setUser);
+  const [searchParams] = useSearchParams();
 
-  const [form, setForm] = useState({ email: '', password: '', name: '' });
+  // Vorbefüllung, wenn über einen Einladungs-Link gekommen (siehe
+  // InvitePage.jsx) – die eigentliche Zuordnung passiert serverseitig
+  // rein über den E-Mail-Abgleich bei der Registrierung.
+  const [form, setForm] = useState({ email: searchParams.get('email') ?? '', password: '', name: '' });
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState(null);
 

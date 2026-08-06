@@ -78,6 +78,7 @@ export default function ShareBoardModal({ boardId, onClose }) {
             {adding ? t('boardShare.adding') : t('boardShare.add')}
           </button>
         </form>
+        <p className={styles.hint}>{t('boardShare.inviteHint')}</p>
 
         {error && <p className={styles.errorMsg} role="alert">⚠️ {error}</p>}
 
@@ -89,7 +90,12 @@ export default function ShareBoardModal({ boardId, onClose }) {
           <ul className={styles.list} role="list">
             {collaborators.map((c) => (
               <li key={c._id} className={styles.row}>
-                <span className={styles.rowEmail}>{c.email}</span>
+                <span className={styles.rowEmail}>
+                  {c.email}
+                  {c.status === 'invited' && (
+                    <span className={styles.pendingBadge}>{t('boardShare.pendingBadge')}</span>
+                  )}
+                </span>
                 <select
                   className={styles.rowPermissionSelect}
                   value={c.permission}

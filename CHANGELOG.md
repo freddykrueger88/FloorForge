@@ -14,6 +14,15 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ## [Unreleased]
 
 ### Added
+- E-Mail-Einladungsflow für Board-Sharing: eine noch nicht registrierte
+  Adresse bekommt jetzt statt eines 404-Fehlers eine Einladungsmail mit
+  Link (`/invite/:token`, neue `board_invites`-Tabelle). Registriert sich
+  die Adresse später (unabhängig davon, ob über den Link oder direkt),
+  wird sie automatisch als Kollaborator zum Board hinzugefügt – kein
+  Sonderfall im Registrierungsformular nötig. Bestehende
+  Kollaborator-Verwaltung (`ShareBoardModal`) zeigt offene Einladungen
+  mit "⏳ Eingeladen"-Badge, Berechtigung ändern/zurückziehen funktioniert
+  identisch zu echten Kollaboratoren.
 - Postkarten-Galerie-Miniatur zeigt jetzt die hinterlegte Taktik statt
   nur eines leeren Feldes: `GET /api/boards` liefert zusätzlich
   `players_json` (bewusst ohne `elements_json` – Freihand-Zeichnungen
