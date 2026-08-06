@@ -6,6 +6,7 @@ import pool from '../db/pool.js';
 import logger from '../utils/logger.js';
 import { success, error } from '../utils/apiResponse.js';
 import { rescheduleBackupCron } from '../services/backupCron.js';
+import { deleteCommentsForUser } from './commentsController.js';
 
 async function adminCount() {
   const result = await pool.query("SELECT COUNT(*) FROM users WHERE role = 'admin'");
@@ -40,6 +41,11 @@ export async function deleteUser(req, res) {
       return res.status(400).json(error('Letzter Admin kann nicht gelöscht werden'));
     }
 
+    // Siehe userController.deleteAccount: Boards/Trainingseinheiten werden
+    // per CASCADE hart gelöscht, ohne die dortige Kommentar-Aufräumung zu
+    // durchlaufen – vorher explizit anstoßen, sonst blieben Kommentare
+    // anderer Nutzer als verwaiste Zeilen zurück.
+    await deleteCommentsForUser(req.params.id);
     await pool.query('DELETE FROM users WHERE id = $1', [req.params.id]);
     logger.info(`Admin ${req.user.id} deleted user ${req.params.id}`);
     res.json(success({ message: 'Benutzer gelöscht' }));

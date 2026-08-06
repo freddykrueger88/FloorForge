@@ -138,3 +138,23 @@ export function makeCommentHandlers(resourceType, { assertRead, assertWrite }) {
 export async function deleteCommentsForResource(resourceType, resourceId) {
   await pool.query('DELETE FROM comments WHERE resource_type = $1 AND resource_id = $2', [resourceType, resourceId]);
 }
+
+// Aufräumen VOR dem Löschen eines Nutzer-Accounts (userController.deleteAccount,
+// adminController.deleteUser): boards.user_id/training_sessions.user_id haben
+// ON DELETE CASCADE auf users, löschen also beim Account-Löschen alle Boards/
+// Trainingseinheiten dieses Nutzers hart – ohne über deleteBoard/deleteSession
+// zu laufen, wo die Kommentar-Aufräumung normalerweise sitzt. Ohne diesen
+// Aufruf blieben Kommentare ANDERER Nutzer auf den gelöschten Ressourcen als
+// verwaiste Zeilen zurück (comments hat bewusst kein DB-FK, siehe oben).
+export async function deleteCommentsForUser(userId) {
+  await pool.query(
+    `DELETE FROM comments WHERE resource_type = 'board'
+     AND resource_id IN (SELECT id FROM boards WHERE user_id = $1)`,
+    [userId]
+  );
+  await pool.query(
+    `DELETE FROM comments WHERE resource_type = 'training_session'
+     AND resource_id IN (SELECT id FROM training_sessions WHERE user_id = $1)`,
+    [userId]
+  );
+}

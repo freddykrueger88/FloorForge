@@ -13,6 +13,7 @@ import logger from '../utils/logger.js';
 import { success, error } from '../utils/apiResponse.js';
 import { COOKIE_OPTS } from '../utils/cookies.js';
 import { buildUserExport, BACKUP_FORMAT } from '../services/exportUserData.js';
+import { deleteCommentsForUser } from './commentsController.js';
 
 const MAX_FRAMES_PER_BOARD = 50;
 const MAX_LINES_PER_BOARD = 10;
@@ -46,6 +47,11 @@ export async function deleteAccount(req, res) {
       }
     }
 
+    // Boards/Trainingseinheiten dieses Nutzers werden gleich per CASCADE
+    // hart gelöscht, ohne über deleteBoard/deleteSession zu laufen – dort
+    // sitzt die Kommentar-Aufräumung sonst. Vorher explizit anstoßen, sonst
+    // blieben Kommentare anderer Nutzer als verwaiste Zeilen zurück.
+    await deleteCommentsForUser(req.user.id);
     await pool.query('DELETE FROM users WHERE id = $1', [req.user.id]);
     res.clearCookie('token', { ...COOKIE_OPTS, maxAge: 0 });
 

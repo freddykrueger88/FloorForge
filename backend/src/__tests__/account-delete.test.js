@@ -44,6 +44,24 @@ describe('DELETE /api/user/account', () => {
       .send({ name: 'Board vor Löschung', fieldType: 'large' });
     const boardId = boardRes.body.data._id;
 
+    // Bug-Regression: boards.user_id hat ON DELETE CASCADE auf users, löscht
+    // das Board beim Account-Löschen also hart, ohne über
+    // boardsController.deleteBoard zu laufen – dort sitzt die Kommentar-
+    // Aufräumung sonst. Ein Kommentar eines DRITTEN Nutzers (Kollaborator)
+    // blieb ohne den Fix als verwaiste Zeile zurück.
+    const collaboratorEmail = uniqueEmail('collaborator');
+    const collaboratorRes = await request(app).post('/api/auth/register').send({ email: collaboratorEmail, password: 'Testpass123' });
+    const collaboratorCookie = collaboratorRes.headers['set-cookie'][0];
+    await request(app)
+      .post(`/api/boards/${boardId}/collaborators`)
+      .set('Cookie', cookie)
+      .send({ email: collaboratorEmail, permission: 'read' });
+    const commentRes = await request(app)
+      .post(`/api/boards/${boardId}/comments`)
+      .set('Cookie', collaboratorCookie)
+      .send({ text: 'Kommentar von einem Dritten' });
+    expect(commentRes.status).toBe(201);
+
     const delRes = await request(app)
       .delete('/api/user/account')
       .set('Cookie', cookie)
@@ -54,6 +72,11 @@ describe('DELETE /api/user/account', () => {
     expect(userCheck.rows).toHaveLength(0);
     const boardCheck = await pool.query('SELECT id FROM boards WHERE id = $1', [boardId]);
     expect(boardCheck.rows).toHaveLength(0);
+    const orphanedComments = await pool.query(
+      "SELECT id FROM comments WHERE resource_type = 'board' AND resource_id = $1",
+      [boardId]
+    );
+    expect(orphanedComments.rows).toHaveLength(0);
 
     const meRes = await request(app).get('/api/auth/me').set('Cookie', cookie);
     expect(meRes.status).toBe(401);

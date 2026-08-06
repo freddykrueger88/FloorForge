@@ -59,12 +59,40 @@ describe('DELETE /api/admin/users/:id', () => {
     expect(res.status).toBe(400);
   });
 
-  it('löscht einen anderen User', async () => {
+  it('löscht einen anderen User und räumt Kommentare Dritter auf dessen Boards auf', async () => {
+    // Bug-Regression: boards.user_id hat ON DELETE CASCADE auf users, löscht
+    // beim Account-Löschen also victims Board hart – ohne über
+    // boardsController.deleteBoard zu laufen, wo Kommentare sonst aufgeräumt
+    // werden. Kommentare eines DRITTEN Nutzers (regular) blieben ohne den
+    // Fix als verwaiste Zeilen zurück, obwohl das Board längst weg ist.
+    const boardRes = await request(app)
+      .post('/api/boards')
+      .set('Cookie', victim.cookie)
+      .send({ name: 'Victims Board', fieldType: 'large' });
+    const boardId = boardRes.body.data._id;
+
+    await request(app)
+      .post(`/api/boards/${boardId}/collaborators`)
+      .set('Cookie', victim.cookie)
+      .send({ email: regular.email, permission: 'read' });
+
+    const commentRes = await request(app)
+      .post(`/api/boards/${boardId}/comments`)
+      .set('Cookie', regular.cookie)
+      .send({ text: 'Kommentar von einem Dritten' });
+    expect(commentRes.status).toBe(201);
+
     const res = await request(app).delete(`/api/admin/users/${victim.id}`).set('Cookie', admin.cookie);
     expect(res.status).toBe(200);
 
     const check = await pool.query('SELECT id FROM users WHERE id = $1', [victim.id]);
     expect(check.rows).toHaveLength(0);
+
+    const orphaned = await pool.query(
+      "SELECT id FROM comments WHERE resource_type = 'board' AND resource_id = $1",
+      [boardId]
+    );
+    expect(orphaned.rows).toHaveLength(0);
   });
 });
 
