@@ -39,7 +39,6 @@ export default function Header() {
 
       <Link to={user ? '/boards' : '/'} className={styles.brand} aria-label={t('nav.brandHome')}>
         <img src={logo} alt="OpenFloorball" className={styles.brandLogo} />
-        <span className={styles.brandSlogan}>{t('auth.slogan')}</span>
       </Link>
 
       {user && (

@@ -13,32 +13,16 @@
 
 .brand {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  gap: 2px;
+  align-items: center;
   text-decoration: none;
   color: var(--color-text);
   flex-shrink: 0;
-  min-width: 0;
 }
 
 .brandLogo {
   display: block;
-  height: 28px;
+  height: 34px;
   width: auto;
-  flex-shrink: 0;
-}
-
-.brandSlogan {
-  font-size: 10px;
-  font-style: italic;
-  color: var(--color-text-muted);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 220px;
-  line-height: 1;
 }
 
 .nav {
@@ -123,10 +107,7 @@
     padding: 0 var(--space-3);
   }
   .brandLogo {
-    height: 22px;
-  }
-  .brandSlogan {
-    max-width: 110px;
+    height: 24px;
   }
   .nav {
     gap: 0;

@@ -9,6 +9,7 @@ export default function Footer() {
   const { t } = useTranslation();
   return (
     <footer className={styles.footer}>
+      <p className={styles.slogan}>{t('auth.slogan')}</p>
       <div className={styles.links}>
         <Link to="/privacy">{t('footer.privacyLink')}</Link>
         <Link to="/rules">{t('footer.rulesLink')}</Link>
