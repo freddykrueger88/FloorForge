@@ -13,32 +13,30 @@
 
 .brand {
   display: flex;
-  align-items: center;
-  gap: var(--space-2);
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
   text-decoration: none;
   color: var(--color-text);
   flex-shrink: 0;
+  min-width: 0;
 }
 
-.brandMark {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 2rem;
-  height: 2rem;
-  border-radius: var(--radius-md);
-  background: var(--color-primary);
-  color: var(--color-text-inverse);
-  font-weight: 800;
-  font-size: var(--text-xs);
-  letter-spacing: 0.02em;
+.brandLogo {
+  display: block;
+  height: 28px;
+  width: auto;
 }
 
-.brandName {
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: var(--text-base);
-  letter-spacing: -0.01em;
+.brandSlogan {
+  font-size: 10px;
+  font-style: italic;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
+  line-height: 1;
 }
 
 .nav {
@@ -122,8 +120,11 @@
     gap: var(--space-3);
     padding: 0 var(--space-3);
   }
-  .brandName {
-    display: none;
+  .brandLogo {
+    height: 22px;
+  }
+  .brandSlogan {
+    max-width: 110px;
   }
   .nav {
     gap: 0;

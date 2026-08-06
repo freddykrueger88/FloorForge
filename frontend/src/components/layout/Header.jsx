@@ -8,6 +8,7 @@ import { Link, useLocation } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import useAuthStore from '../../store/authStore.js';
 import { apiFetch } from '../../utils/apiFetch.js';
+import logo from '../../assets/openfloorball_logo_cropped.png';
 import styles from './Header.module.css';
 
 const LANGUAGES = ['de', 'en'];
@@ -37,8 +38,8 @@ export default function Header() {
       <a href="#main-content" className="sr-only sr-only-focusable">{t('accessibility.skipToContent')}</a>
 
       <Link to={user ? '/boards' : '/'} className={styles.brand} aria-label={t('nav.brandHome')}>
-        <span className={styles.brandMark} aria-hidden="true">FF</span>
-        <span className={styles.brandName}>{t('app.name')}</span>
+        <img src={logo} alt="OpenFloorball" className={styles.brandLogo} />
+        <span className={styles.brandSlogan}>{t('auth.slogan')}</span>
       </Link>
 
       {user && (

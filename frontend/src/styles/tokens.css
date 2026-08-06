@@ -47,7 +47,7 @@
   --space-10: 2.5rem; --space-12: 3rem;   --space-16: 4rem;
   --space-20: 5rem;
   --content-wide: 76rem;
-  --header-height: var(--space-16);
+  --header-height: var(--space-20);
   --text-xs:   clamp(0.75rem,  0.7rem  + 0.25vw, 0.875rem);
   --text-sm:   clamp(0.875rem, 0.8rem  + 0.35vw, 1rem);
   --text-base: clamp(1rem,     0.95rem + 0.25vw, 1.125rem);
