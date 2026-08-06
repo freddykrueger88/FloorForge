@@ -39,6 +39,42 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 - Erstes Vitest-Setup für das Frontend (bisher kein Test-Tooling
   vorhanden): Stores, `useShare`-Hook und i18n-Schlüsselparität
   zwischen `de.json`/`en.json` sind jetzt automatisiert getestet.
+- **Team-Konzept** (ROADMAP Phase 2 – Team und Organisation): Teams mit
+  drei Rollen (owner/coach/member), Mitgliederverwaltung per Einladung
+  über eine bereits registrierte E-Mail-Adresse. Kader, Playbooks,
+  Trainingspläne und Formations-Vorlagen lassen sich optional einem
+  Team statt nur der eigenen Person zuordnen und sind dann für alle
+  Team-Mitglieder sichtbar/nutzbar – Boards bleiben bewusst außen vor,
+  die granularere Einzel-Freigabe (`board_collaborators`) deckt das
+  bereits ab. Neue "Teams"-Sektion in den Einstellungen.
+- **Kommentare** (ROADMAP Phase 2): auf Boards und Trainingseinheiten,
+  jeweils als eigener Tab bzw. Abschnitt. Lesen/Schreiben braucht nur
+  Lesezugriff auf die Ressource, Löschen darf der Autor selbst oder wer
+  Schreibzugriff auf die Ressource hat (Moderation).
+- **Automatische Board-Versionierung** (ROADMAP Phase 2): bei jedem
+  Speichern entsteht automatisch ein Snapshot aller Frames, mit einer
+  Obergrenze von 50 Versionen pro Board (Datensparsamkeit). Neuer
+  "Verlauf"-Tab im Board-Editor: Zeitstempel-Liste + Wiederherstellen
+  (sichert vorher selbst den aktuellen Stand, damit nichts verloren
+  geht).
+- **Vereins-Ebene** (ROADMAP Phase 2): ein Verein bündelt mehrere Teams
+  rein organisatorisch (2 Rollen: admin/member) – teilt aber selbst
+  keine Inhalte, Kader/Playbooks/Trainingspläne/Formationen bleiben wie
+  gehabt team-gebunden. Vereins-Admins sehen zugeordnete Teams auch
+  ohne eigene Team-Mitgliedschaft. Neue "Vereine"-Sektion in den
+  Einstellungen.
+- Team-Auswahl beim Anlegen von Playbooks und Formations-Vorlagen –
+  Backend unterstützte `teamId` bereits, dem kompakten Chip-UI fehlte
+  die Auswahlmöglichkeit (analog Kader/Trainingseinheiten).
+- Datum und Ziel für Trainingseinheiten (ROADMAP Phase 3): die Roadmap
+  nennt "Datum, Dauer, Ziel, Übungen" als Kernfelder – Dauer/Übungen
+  waren über die Einheiten-Items bereits abgedeckt, Datum und Ziel
+  fehlten im Datenmodell. Beide jetzt in der Detailseite editierbar,
+  das Datum zusätzlich als Badge auf der Übersichts-Kachel.
+- Slogan ("Weil Taktik mehr als nur Kreide an der Tafel ist.") unter
+  dem Logo auf Login-/Registrierungsseite, plus eine zentrierte
+  "Mit ❤️ für die Floorball-Community entwickelt"-Zeile im globalen
+  Footer.
 
 ### Changed
 - Board-Editor: rechtes Menü (Zeichnen-Koordinaten, Lines, Formationen,
@@ -57,8 +93,40 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   Tastaturkürzel bleiben bewusst im Header, da sie ohne Menü-Klick
   schnell erreichbar sein sollen. Die nun ungenutzte `FieldToolbar`
   wurde entfernt.
+- Neun Dokument-Dopplungen in `docs/planning/` konsolidiert, dabei u.a.
+  einen echten Inhaltsfehler behoben (`PRIVACY.md` enthielt
+  Security-Konzept-Inhalte statt Datenschutz-Inhalten) und drei
+  widersprüchliche Repository-Struktur-Vorschläge auf einen
+  gemeinsamen, kanonischen Stand gebracht.
 
 ### Fixed
+- Getrennte Rate-Limiter für `/api/auth/login` und
+  `/api/auth/register` statt eines gemeinsamen Budgets für den ganzen
+  `/api/auth/`-Pfad: eine Registrierung (nach mehreren
+  Validierungsfehlern) oder normale, bereits authentifizierte Aufrufe
+  wie `/me` konnten das 10-Anfragen-Limit für Login mit ausschöpfen –
+  die Fehlermeldung sagte dann fälschlich "Zu viele Login-Versuche",
+  obwohl gar keine Login-Versuche stattgefunden hatten. Bei einer
+  gemeinsam genutzten IP (Verein/Büro hinter einem NAT) reichte das oft
+  schon durch einen einzigen Kollegen, um alle anderen mit
+  auszusperren.
+- Neues-Spielfeld-Dialog: fehlendes `max-height` ließ den Dialog bei
+  viel Inhalt (Name, Gegner, Kategorie, 4 Feldtyp-Karten) höher werden
+  als der Viewport – durch die vertikale Zentrierung rutschte der
+  Header dabei über den sichtbaren Bereich hinaus. Jetzt wie bei den
+  übrigen Dialogen auf 80vh begrenzt mit intern scrollendem
+  Formularbereich, Header und Aktions-Buttons bleiben fix sichtbar.
+  Abbrechen/Anlegen-Buttons füllen außerdem die volle Breite statt
+  rechtsbündig zusammengedrängt zu wirken.
+- Verwaiste Kommentare beim Account-Löschen: `boards.user_id` und
+  `training_sessions.user_id` haben `ON DELETE CASCADE` auf `users` –
+  beim Löschen eines Accounts (Selbstlöschung oder durch einen Admin)
+  wurden dessen Boards/Trainingseinheiten dadurch hart gelöscht, ohne
+  über `deleteBoard`/`deleteSession` zu laufen, wo die
+  Kommentar-Aufräumung sitzt. Kommentare anderer Nutzer auf den
+  gelöschten Ressourcen blieben dadurch als verwaiste Zeilen zurück, da
+  `comments` bewusst kein DB-seitiges FK hat (polymorph über zwei
+  Zieltabellen).
 - Board-Editor: bei aufgeklapptem unterem Tab-Menü schrumpft der
   Feldbereich – die Zeichen-Werkzeugleiste (u.a. Linienstärke-Auswahl)
   und das Spieler-Info-Fenster (Namen eintragen) hatten kein eigenes
