@@ -93,6 +93,29 @@ function editorReducer(state, action) {
     // anderen Frame "zurückspringen").
     case 'LOAD_SCENE':
       return { players: action.players ?? [], elements: action.elements ?? [], undoStack: [], redoStack: [] };
+    // Echtzeit-Co-Editing (ROADMAP-Backlog): wendet eine von einer anderen
+    // Person empfangene Operation an – bewusst OHNE undoStack/redoStack
+    // anzufassen, damit Strg+Z auf diesem Client niemals eine fremde
+    // Aktion rückgängig macht.
+    case 'REMOTE_OP': {
+      const { op } = action;
+      switch (op.kind) {
+        case 'movePlayer':
+          return { ...state, players: state.players.map((p) => (p.id === op.id ? { ...p, x: op.x, y: op.y } : p)) };
+        case 'addElement':
+          return { ...state, elements: [...state.elements, op.element] };
+        case 'updateElement':
+          return { ...state, elements: state.elements.map((el) => (el.id === op.id ? { ...el, ...op.patch } : el)) };
+        case 'deleteElement':
+          return { ...state, elements: state.elements.filter((el) => el.id !== op.id) };
+        case 'clearAll':
+          return { ...state, elements: [] };
+        case 'applyFormation':
+          return { ...state, players: op.players };
+        default:
+          return state;
+      }
+    }
     case 'UNDO': {
       if (state.undoStack.length === 0) return state;
       const entry = state.undoStack[state.undoStack.length - 1];
@@ -120,12 +143,28 @@ function editorReducer(state, action) {
   }
 }
 
-export function useDrawing() {
+// onLocalChange (ROADMAP-Backlog "Echtzeit-Co-Editing"): optionaler
+// Callback, der bei jeder broadcast-fähigen lokalen Mutation mit einem
+// serialisierbaren Op-Objekt aufgerufen wird (siehe REMOTE_OP oben) –
+// BoardEditorPage.jsx nutzt das, um die Operation über die Presence-
+// WebSocket an andere Nutzer zu verteilen. Bewusst NICHT für
+// SET_ELEMENTS_RAW (Zwischenpunkte einer laufenden Geste), LOAD_SCENE
+// (Frame-Wechsel bleibt lokal) und SET_PLAYERS_RAW (Name/Roster-Edits,
+// wie beim Undo keine Taktik-Aktion).
+export function useDrawing(onLocalChange) {
   const { t, i18n } = useTranslation();
   const isEn = i18n.language === 'en';
 
   const [state, dispatch] = useReducer(editorReducer, initialState);
   const { players, elements, undoStack, redoStack } = state;
+  // Für handlePointerUp: liest den Stand des GERADE fertiggestellten
+  // Elements, ohne dass sich handlePointerUps eigene Callback-Identität
+  // bei jedem Zwischenpunkt einer laufenden Geste ändern müsste (das
+  // würde den mouseup/touchend-Fenster-Listener-Effekt weiter unten bei
+  // jedem Punkt neu an-/abmelden) – gleiches Ref-Muster wie dataRef in
+  // useAutoSave.js.
+  const elementsRef = useRef(elements);
+  elementsRef.current = elements;
 
   const [activeTool,  setActiveToolState]  = useState('move');
   const changeTool = useCallback((tool) => {
@@ -164,17 +203,21 @@ export function useDrawing() {
 
   // ── Element CRUD ───────────────────────────────────────────────────────
   const addElement = useCallback((el) => {
-    dispatch({ type: 'ADD_ELEMENT', element: { ...el, id: uid() }, label: 'add' });
-  }, []);
+    const element = { ...el, id: uid() };
+    dispatch({ type: 'ADD_ELEMENT', element, label: 'add' });
+    onLocalChange?.({ kind: 'addElement', element });
+  }, [onLocalChange]);
 
   const updateElement = useCallback((id, patch) => {
     dispatch({ type: 'UPDATE_ELEMENT', id, patch });
-  }, []);
+    onLocalChange?.({ kind: 'updateElement', id, patch });
+  }, [onLocalChange]);
 
   const deleteElement = useCallback((id) => {
     dispatch({ type: 'DELETE_ELEMENT', id });
     setSelectedId((s) => (s === id ? null : s));
-  }, []);
+    onLocalChange?.({ kind: 'deleteElement', id });
+  }, [onLocalChange]);
 
   // Spieler+Elemente eines Frames übernehmen (Frame-Wechsel, Feldtyp-
   // Rescale) – setzt Undo/Redo zurück.
@@ -186,16 +229,25 @@ export function useDrawing() {
   const clearAll = useCallback(() => {
     dispatch({ type: 'CLEAR_ALL' });
     setSelectedId(null);
-  }, []);
+    onLocalChange?.({ kind: 'clearAll' });
+  }, [onLocalChange]);
 
   // Spieler verschieben (Drag oder Pfeiltasten-Nudge, siehe BoardEditorPage.jsx)
   const movePlayer = useCallback((id, x, y) => {
     dispatch({ type: 'MOVE_PLAYER', id, x, y });
-  }, []);
+    onLocalChange?.({ kind: 'movePlayer', id, x, y });
+  }, [onLocalChange]);
 
   // Formations-Vorlage laden (Issue #46) – undo-bar
   const applyFormation = useCallback((newPlayers, label = 'formation') => {
     dispatch({ type: 'APPLY_FORMATION', players: newPlayers, label });
+    onLocalChange?.({ kind: 'applyFormation', players: newPlayers });
+  }, [onLocalChange]);
+
+  // Echtzeit-Co-Editing: wendet eine von einer anderen Person empfangene
+  // Operation an (siehe REMOTE_OP-Reducer-Case oben).
+  const applyRemote = useCallback((op) => {
+    dispatch({ type: 'REMOTE_OP', op });
   }, []);
 
   // Metadaten-Edits ohne Undo-Anbindung (Name, Roster-Zuweisung)
@@ -256,10 +308,19 @@ export function useDrawing() {
     });
   }, [isDrawing]);
 
+  // Broadcastet das FERTIGE Element erst hier (nicht schon bei
+  // handlePointerDown, wo nur der Startpunkt existiert) – Peers sehen ein
+  // gezeichnetes Element also erst fertig, kein Punkt-für-Punkt-Streaming
+  // während der Geste (siehe Hook-Kommentar oben).
   const handlePointerUp = useCallback(() => {
+    const finishedId = currentElRef.current;
+    if (finishedId && onLocalChange) {
+      const finished = elementsRef.current.find((el) => el.id === finishedId);
+      if (finished) onLocalChange({ kind: 'addElement', element: finished });
+    }
     setIsDrawing(false);
     currentElRef.current = null;
-  }, []);
+  }, [onLocalChange]);
 
   // Fallback fürs Loslassen: das gerade gezeichnete Element (Pfeilspitze am
   // Cursor) liegt über dem unsichtbaren Hit-Rect und kann dessen
@@ -292,8 +353,9 @@ export function useDrawing() {
       arrowHead: toolDef.arrowHead ?? true,
     };
     dispatch({ type: 'ADD_ELEMENT', element: el, label: tool });
+    onLocalChange?.({ kind: 'addElement', element: el });
     useAnnounceStore.getState().announce(t('drawing.announceElementAdded'));
-  }, [activeColor, strokeWidth, t]);
+  }, [activeColor, strokeWidth, t, onLocalChange]);
 
   const addFreehandElement = useCallback((points) => {
     const el = {
@@ -306,8 +368,9 @@ export function useDrawing() {
       arrowHead: false,
     };
     dispatch({ type: 'ADD_ELEMENT', element: el, label: 'freehand' });
+    onLocalChange?.({ kind: 'addElement', element: el });
     useAnnounceStore.getState().announce(t('drawing.announceElementAdded'));
-  }, [activeColor, strokeWidth, t]);
+  }, [activeColor, strokeWidth, t, onLocalChange]);
 
   // Eraser: Element per Klick löschen
   const handleElementClick = useCallback((id) => {
@@ -361,6 +424,7 @@ export function useDrawing() {
     // Aktionen
     addElement, updateElement, deleteElement, clearAll, loadScene,
     movePlayer, applyFormation, setPlayersRaw,
+    applyRemote,
     handlePointerDown, handlePointerMove, handlePointerUp,
     handleElementClick,
     addArrowElement, addFreehandElement,

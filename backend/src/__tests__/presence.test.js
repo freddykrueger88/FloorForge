@@ -17,6 +17,7 @@ async function registerAndLogin(tag) {
 
 let owner;
 let stranger;
+let viewer;
 let boardId;
 let port;
 
@@ -54,12 +55,20 @@ function nextPresenceMessage(ws) {
   if (ws.messageQueue.length > 0) return Promise.resolve(ws.messageQueue.shift());
   return new Promise((resolve) => ws.messageWaiters.push(resolve));
 }
+// Alias für Lesbarkeit in Tests, die keine reinen Präsenz-Nachrichten
+// erwarten (Cursor/Op) – dieselbe generische Warteschlangen-Logik.
+const nextMessage = nextPresenceMessage;
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 beforeAll(async () => {
   await connectRedis();
   await runMigrations();
   owner = await registerAndLogin('owner');
   stranger = await registerAndLogin('stranger');
+  viewer = await registerAndLogin('viewer');
 
   const boardRes = await request(app)
     .post('/api/boards')
@@ -144,5 +153,108 @@ describe('WS /api/ws/presence', () => {
     expect(afterLeave.users).toHaveLength(1);
 
     wsA.close();
+  });
+});
+
+describe('WS /api/ws/presence – Cursor + Live-Merge Relay', () => {
+  let sharedBoardId;
+
+  beforeAll(async () => {
+    const res = await request(app)
+      .post('/api/boards')
+      .set('Cookie', owner.cookie)
+      .send({ name: 'Presence Relay Test Board', fieldType: 'large' });
+    sharedBoardId = res.body.data._id;
+    await request(app).post(`/api/boards/${sharedBoardId}/collaborators`).set('Cookie', owner.cookie)
+      .send({ email: stranger.email, permission: 'write' });
+    await request(app).post(`/api/boards/${sharedBoardId}/collaborators`).set('Cookie', owner.cookie)
+      .send({ email: viewer.email, permission: 'read' });
+  });
+
+  it('relayt eine Cursor-Position an einen anderen Nutzer, aber nicht an den Sender selbst', async () => {
+    const wsOwner = connect(owner.cookie, `?boardId=${sharedBoardId}`);
+    await waitForOpen(wsOwner);
+    await nextMessage(wsOwner); // initiale presence
+
+    const strangerJoined = nextMessage(wsOwner);
+    const wsStranger = connect(stranger.cookie, `?boardId=${sharedBoardId}`);
+    await waitForOpen(wsStranger);
+    await nextMessage(wsStranger); // initiale presence
+    await strangerJoined; // presence-Update bei owner wegen stranger
+
+    const received = nextMessage(wsStranger);
+    wsOwner.send(JSON.stringify({ type: 'cursor', x: 12.5, y: 3.2 }));
+    const cursorMsg = await received;
+    expect(cursorMsg).toMatchObject({ type: 'cursor', x: 12.5, y: 3.2 });
+    expect(cursorMsg.displayName).toBeDefined();
+
+    // Sender selbst bekommt die eigene Cursor-Nachricht nicht zurück
+    wsOwner.send(JSON.stringify({ type: 'cursor', x: 1, y: 1 }));
+    await sleep(100);
+    expect(wsOwner.messageQueue).toHaveLength(0);
+
+    wsOwner.close();
+    wsStranger.close();
+  });
+
+  it('relayt cursorLeave an andere Nutzer', async () => {
+    const wsOwner = connect(owner.cookie, `?boardId=${sharedBoardId}`);
+    await waitForOpen(wsOwner);
+    await nextMessage(wsOwner);
+
+    const strangerJoined = nextMessage(wsOwner);
+    const wsStranger = connect(stranger.cookie, `?boardId=${sharedBoardId}`);
+    await waitForOpen(wsStranger);
+    await nextMessage(wsStranger);
+    await strangerJoined;
+
+    const received = nextMessage(wsStranger);
+    wsOwner.send(JSON.stringify({ type: 'cursorLeave' }));
+    const msg = await received;
+    expect(msg.type).toBe('cursorLeave');
+    expect(msg.userId).toBeDefined();
+
+    wsOwner.close();
+    wsStranger.close();
+  });
+
+  it('relayt eine Op-Nachricht von einem write-Kollaborator an andere Nutzer', async () => {
+    const wsStranger = connect(stranger.cookie, `?boardId=${sharedBoardId}`);
+    await waitForOpen(wsStranger);
+    await nextMessage(wsStranger);
+
+    const viewerJoined = nextMessage(wsStranger);
+    const wsViewer = connect(viewer.cookie, `?boardId=${sharedBoardId}`);
+    await waitForOpen(wsViewer);
+    await nextMessage(wsViewer);
+    await viewerJoined;
+
+    const received = nextMessage(wsViewer);
+    wsStranger.send(JSON.stringify({ type: 'op', frameId: 'frame-1', op: { kind: 'movePlayer', id: 'p1', x: 5, y: 6 } }));
+    const opMsg = await received;
+    expect(opMsg).toMatchObject({ type: 'op', frameId: 'frame-1', op: { kind: 'movePlayer', id: 'p1', x: 5, y: 6 } });
+    expect(opMsg.userId).toBeDefined();
+
+    wsStranger.close();
+    wsViewer.close();
+  });
+
+  it('verwirft eine Op-Nachricht von einem read-only-Kollaborator (kein Relay)', async () => {
+    const wsOwner = connect(owner.cookie, `?boardId=${sharedBoardId}`);
+    await waitForOpen(wsOwner);
+    await nextMessage(wsOwner);
+
+    const viewerJoined = nextMessage(wsOwner);
+    const wsViewer = connect(viewer.cookie, `?boardId=${sharedBoardId}`);
+    await waitForOpen(wsViewer);
+    await nextMessage(wsViewer);
+    await viewerJoined;
+
+    wsViewer.send(JSON.stringify({ type: 'op', frameId: 'frame-1', op: { kind: 'movePlayer', id: 'p1', x: 9, y: 9 } }));
+    await sleep(100);
+    expect(wsOwner.messageQueue).toHaveLength(0);
+
+    wsOwner.close();
+    wsViewer.close();
   });
 });

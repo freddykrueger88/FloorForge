@@ -40,3 +40,17 @@ export function teamColorToFillStroke(raw, fallback) {
   const fill = normalizeStoredColor(raw) ?? fallback;
   return { fill, stroke: darkenHex(fill) };
 }
+
+// Echtzeit-Co-Editing (ROADMAP-Backlog): deterministische, aber "zufällig"
+// wirkende Farbe pro Nutzer-ID für Live-Cursor-Anzeigen – ohne Server-
+// Zustand dafür zu brauchen, jeder Client leitet dieselbe Farbe für
+// dieselbe userId unabhängig ab.
+export function hashUserColor(userId) {
+  let hash = 0;
+  const str = String(userId ?? '');
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash * 31 + str.charCodeAt(i)) | 0;
+  }
+  const hue = Math.abs(hash) % 360;
+  return `hsl(${hue}, 70%, 55%)`;
+}

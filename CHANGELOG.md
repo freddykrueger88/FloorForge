@@ -31,6 +31,23 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   durch. Bewusst NICHT enthalten: Live-Cursor-Positionen, Konflikt-
   Auflösung bei simultanem Bearbeiten – beides bräuchte ein eigenes
   UX-Konzept, siehe `presenceServer.js`-Kommentar.
+- Echtzeit-Co-Editing ausgebaut: die beiden zurückgestellten Teile der
+  Präsenz-MVP sind jetzt da. Live-Cursor – die Mausposition anderer
+  Personen erscheint sofort als farbiger Punkt mit Namen auf dem eigenen
+  Spielfeld (gedrosselt über dieselbe Presence-WebSocket, keine neue
+  Verbindung nötig). Echtes Live-Merging statt bloßem Konflikt-Hinweis –
+  Spielerzüge und fertig gezeichnete Pfeile/Freihand-Elemente werden
+  sofort an alle verteilt, die GERADE dasselbe Frame offen haben, nicht
+  erst nach dem nächsten Autosave. `useDrawing.js` wendet empfangene
+  Operationen über einen neuen `REMOTE_OP`-Reducer-Zweig an, bewusst OHNE
+  die eigene Undo/Redo-Historie zu berühren – Strg+Z macht auf jedem
+  Client immer nur die eigenen Aktionen rückgängig, nie eine fremde.
+  Bewusst NICHT enthalten: Frame-Wechsel bleibt rein lokal (kein
+  "Entführen" der Ansicht anderer), Punkt-für-Punkt-Streaming während
+  einer laufenden Zeichen-Geste (Peers sehen ein Element erst fertig),
+  Zustands-Snapshot für neu dazustoßende Mitbearbeiter (Basis ist der
+  zuletzt autogespeicherte Stand, max. 30s alt), siehe
+  `presenceServer.js`-Kommentar.
 - Video-Integration MVP (ROADMAP-Backlog): bis zu 5 kurze Videoclips pro
   Board hochladen (MP4/WebM/MOV, je max. 200MB), nativer Player mit
   Scrubbing (Range-Requests). Neuer Tab "🎥 Video" im Board-Editor.

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { darkenHex, normalizeStoredColor, teamColorToFillStroke } from './color.js';
+import { darkenHex, normalizeStoredColor, teamColorToFillStroke, hashUserColor } from './color.js';
 
 describe('darkenHex', () => {
   it('verdunkelt eine Hex-Farbe um den angegebenen Anteil', () => {
@@ -49,5 +49,19 @@ describe('teamColorToFillStroke', () => {
       fill: '#ffffff',
       stroke: '#bfbfbf',
     });
+  });
+});
+
+describe('hashUserColor', () => {
+  it('liefert für dieselbe userId immer dieselbe Farbe', () => {
+    expect(hashUserColor('user-123')).toBe(hashUserColor('user-123'));
+  });
+
+  it('liefert für unterschiedliche userIds typischerweise unterschiedliche Farben', () => {
+    expect(hashUserColor('user-123')).not.toBe(hashUserColor('user-456'));
+  });
+
+  it('gibt einen gültigen HSL-String zurück', () => {
+    expect(hashUserColor('anna')).toMatch(/^hsl\(\d+, 70%, 55%\)$/);
   });
 });

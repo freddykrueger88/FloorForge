@@ -38,6 +38,10 @@ export default function FieldContainer({
   onPointerMove,
   onPointerUp,
   onElementClick,
+  // Echtzeit-Co-Editing (ROADMAP-Backlog)
+  cursors,
+  onFieldPointerMove,
+  onFieldPointerLeave,
 }) {
   const { t } = useTranslation();
   const containerRef = useRef(null);
@@ -96,6 +100,9 @@ export default function FieldContainer({
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         onElementClick={onElementClick}
+        cursors={cursors}
+        onFieldPointerMove={onFieldPointerMove}
+        onFieldPointerLeave={onFieldPointerLeave}
       />
     </div>
   );

@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import '../i18n/i18n.js';
 import { useDrawing } from './useDrawing.js';
@@ -106,5 +106,116 @@ describe('useDrawing – vereinter Undo/Redo-Verlauf (Spieler + Elemente)', () =
 
     act(() => { result.current.undo(); });
     expect(result.current.players).toEqual([player('h1', 0, 0)]);
+  });
+});
+
+describe('useDrawing – Echtzeit-Co-Editing (onLocalChange + applyRemote)', () => {
+  it('applyRemote(movePlayer) wendet die Position an, OHNE undoStack/redoStack zu verändern', () => {
+    const { result } = renderHook(() => useDrawing());
+
+    act(() => { result.current.loadScene([player('h1', 0, 0)], []); });
+    act(() => { result.current.movePlayer('h1', 1, 1); });
+    const stackBefore = result.current.undoStack;
+    expect(result.current.canUndo).toBe(true);
+
+    act(() => { result.current.applyRemote({ kind: 'movePlayer', id: 'h1', x: 9, y: 9 }); });
+
+    expect(result.current.players.find((p) => p.id === 'h1')).toMatchObject({ x: 9, y: 9 });
+    expect(result.current.undoStack).toBe(stackBefore);
+    expect(result.current.redoStack).toEqual([]);
+
+    // Strg+Z darf die fremde Bewegung nicht rückgängig machen, sondern die
+    // eigene vorherige movePlayer-Aktion
+    act(() => { result.current.undo(); });
+    expect(result.current.players.find((p) => p.id === 'h1')).toMatchObject({ x: 0, y: 0 });
+  });
+
+  it('applyRemote(addElement/updateElement/deleteElement/clearAll/applyFormation) wendet den State an, ohne die Undo-Historie zu berühren', () => {
+    const { result } = renderHook(() => useDrawing());
+    act(() => { result.current.loadScene([], []); });
+    const stackBefore = result.current.undoStack;
+
+    act(() => { result.current.applyRemote({ kind: 'addElement', element: { id: 'e1', type: 'pass', x1: 0, y1: 0, x2: 1, y2: 1 } }); });
+    expect(result.current.elements).toHaveLength(1);
+    expect(result.current.undoStack).toBe(stackBefore);
+
+    act(() => { result.current.applyRemote({ kind: 'updateElement', id: 'e1', patch: { color: '#fff' } }); });
+    expect(result.current.elements[0]).toMatchObject({ color: '#fff' });
+    expect(result.current.undoStack).toBe(stackBefore);
+
+    act(() => { result.current.applyRemote({ kind: 'applyFormation', players: [player('h1', 3, 3)] }); });
+    expect(result.current.players).toEqual([player('h1', 3, 3)]);
+    expect(result.current.undoStack).toBe(stackBefore);
+
+    act(() => { result.current.applyRemote({ kind: 'deleteElement', id: 'e1' }); });
+    expect(result.current.elements).toHaveLength(0);
+    expect(result.current.undoStack).toBe(stackBefore);
+
+    act(() => { result.current.applyRemote({ kind: 'addElement', element: { id: 'e2', type: 'shot' } }); });
+    act(() => { result.current.applyRemote({ kind: 'clearAll' }); });
+    expect(result.current.elements).toHaveLength(0);
+    expect(result.current.undoStack).toBe(stackBefore);
+    expect(result.current.canUndo).toBe(false);
+  });
+
+  it('onLocalChange wird bei movePlayer/deleteElement/clearAll/applyFormation/updateElement mit dem erwarteten Op aufgerufen', () => {
+    const onLocalChange = vi.fn();
+    const { result } = renderHook(() => useDrawing(onLocalChange));
+
+    act(() => { result.current.loadScene([player('h1', 0, 0)], []); });
+    onLocalChange.mockClear(); // loadScene selbst soll NICHT broadcastet werden
+
+    act(() => { result.current.movePlayer('h1', 2, 2); });
+    expect(onLocalChange).toHaveBeenLastCalledWith({ kind: 'movePlayer', id: 'h1', x: 2, y: 2 });
+
+    act(() => { result.current.applyFormation([player('h1', 5, 5)]); });
+    expect(onLocalChange).toHaveBeenLastCalledWith({ kind: 'applyFormation', players: [player('h1', 5, 5)] });
+
+    act(() => { result.current.addElement({ type: 'pass', x1: 0, y1: 0, x2: 1, y2: 1 }); });
+    const addedId = result.current.elements[0].id;
+    expect(onLocalChange).toHaveBeenLastCalledWith({ kind: 'addElement', element: expect.objectContaining({ id: addedId, type: 'pass' }) });
+
+    act(() => { result.current.updateElement(addedId, { color: '#000' }); });
+    expect(onLocalChange).toHaveBeenLastCalledWith({ kind: 'updateElement', id: addedId, patch: { color: '#000' } });
+
+    act(() => { result.current.deleteElement(addedId); });
+    expect(onLocalChange).toHaveBeenLastCalledWith({ kind: 'deleteElement', id: addedId });
+
+    act(() => { result.current.clearAll(); });
+    expect(onLocalChange).toHaveBeenLastCalledWith({ kind: 'clearAll' });
+  });
+
+  it('onLocalChange wird NICHT bei loadScene oder setPlayersRaw aufgerufen', () => {
+    const onLocalChange = vi.fn();
+    const { result } = renderHook(() => useDrawing(onLocalChange));
+
+    act(() => { result.current.loadScene([player('h1', 0, 0)], []); });
+    act(() => {
+      result.current.setPlayersRaw((prev) => prev.map((p) => (p.id === 'h1' ? { ...p, name: 'Max' } : p)));
+    });
+
+    expect(onLocalChange).not.toHaveBeenCalled();
+  });
+
+  it('handlePointerUp broadcastet erst das FERTIGE Element, nicht die Zwischenpunkte während der Geste', () => {
+    const onLocalChange = vi.fn();
+    const { result } = renderHook(() => useDrawing(onLocalChange));
+
+    act(() => { result.current.setActiveTool('pass'); });
+    act(() => { result.current.handlePointerDown(0, 0); });
+    // Startpunkt-Erzeugung broadcastet noch nicht
+    expect(onLocalChange).not.toHaveBeenCalled();
+
+    act(() => { result.current.handlePointerMove(1, 1); });
+    act(() => { result.current.handlePointerMove(2, 2); });
+    // Zwischenpunkte (SET_ELEMENTS_RAW) broadcasten nicht
+    expect(onLocalChange).not.toHaveBeenCalled();
+
+    act(() => { result.current.handlePointerUp(); });
+    expect(onLocalChange).toHaveBeenCalledTimes(1);
+    expect(onLocalChange).toHaveBeenCalledWith({
+      kind: 'addElement',
+      element: expect.objectContaining({ type: 'pass', x1: 0, y1: 0, x2: 2, y2: 2 }),
+    });
   });
 });

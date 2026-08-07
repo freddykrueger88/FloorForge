@@ -8,6 +8,7 @@ import { Stage, Layer, Rect, Line, Circle, Text } from 'react-konva';
 import { IFF_FIELDS } from '../../constants/fieldConfig.js';
 import { FIELD_COLORS } from '../../constants/fieldTheme.js';
 import PlayerLayer from './PlayerLayer.jsx';
+import CursorLayer from './CursorLayer.jsx';
 import { DrawingLayer } from '../drawing/index.js';
 
 export { FIELD_COLORS };
@@ -53,6 +54,13 @@ export default function FloorballField({
   onPointerMove,
   onPointerUp,
   onElementClick,
+  // Echtzeit-Co-Editing (ROADMAP-Backlog): Live-Cursor anderer Nutzer +
+  // eigene Pointer-Position melden. Läuft UNABHÄNGIG vom aktiven Zeichen-
+  // Tool/isDrawing (anders als onPointerMove oben, das nur während einer
+  // laufenden Zeichen-Geste feuert) – Cursor-Tracking soll immer laufen.
+  cursors = {},
+  onFieldPointerMove,
+  onFieldPointerLeave,
 }) {
   const { t } = useTranslation();
   const field  = IFF_FIELDS[fieldType] ?? IFF_FIELDS.large;
@@ -107,12 +115,23 @@ export default function FloorballField({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showGrid, gridSize, field, scale, offsetX, offsetY]);
 
+  const handleFieldPointerMove = (e) => {
+    if (!onFieldPointerMove) return;
+    const stage = e.target.getStage();
+    const pos = stage?.getPointerPosition();
+    if (!pos) return;
+    onFieldPointerMove((pos.x - ox) / scale, (pos.y - oy) / scale);
+  };
+
   return (
     <Stage
       width={width}
       height={height}
       role="img"
       aria-label={t('field.canvasAriaLabel', { label: field.label, count: players.length })}
+      onMouseMove={handleFieldPointerMove}
+      onTouchMove={handleFieldPointerMove}
+      onMouseLeave={onFieldPointerLeave}
     >
       {/* Layer 1: Spielfeld */}
       <Layer listening={false}>
@@ -169,6 +188,9 @@ export default function FloorballField({
         activeLineColor={activeLineColor}
         showHints={showHints}
       />
+
+      {/* Layer 4: Live-Cursor anderer Nutzer (immer ganz oben) */}
+      <CursorLayer cursors={cursors} scale={scale} offsetX={ox} offsetY={oy} />
     </Stage>
   );
 }

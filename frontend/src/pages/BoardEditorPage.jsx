@@ -140,10 +140,38 @@ export default function BoardEditorPage() {
     loadFrames, addFrame, updateFrame, deleteFrame, reorderFrames, goToFrame,
   } = useFrames(boardId, field.fieldType, board?.name);
 
-  const drawing = useDrawing();
+  // Echtzeit-Co-Editing (ROADMAP-Backlog): useDrawing (broadcastet lokale
+  // Aktionen) und usePresence (relayt + empfängt) hängen wechselseitig
+  // voneinander ab. Statt einer Initialisierungsreihenfolge-Abhängigkeit
+  // zwischen den beiden Hooks: Refs, die immer den aktuellen Stand halten
+  // (analog boardRef oben), die stabilen Callbacks unten lesen daraus.
+  const activeFrameRef = useRef(activeFrame);
+  useEffect(() => { activeFrameRef.current = activeFrame; }, [activeFrame]);
+  const presenceRef = useRef(null);
+
+  const handleLocalDrawingOp = useCallback((op) => {
+    const frameId = activeFrameRef.current?._id;
+    if (!frameId) return;
+    presenceRef.current?.sendOp(frameId, op);
+  }, []);
+
+  const drawing = useDrawing(handleLocalDrawingOp);
   const currentUserId = useAuthStore((s) => s.user?.id);
-  const presenceUsers = usePresence(boardId);
-  const otherPresentUsers = presenceUsers.filter((u) => u.userId !== currentUserId);
+
+  // Nur das gerade gemeinsam betrachtete Frame wird live gemerged – ein
+  // Frame-Wechsel bei einer anderen Person "entführt" nicht die eigene
+  // Ansicht (siehe Plan "Nicht im Umfang").
+  // Kein Problem, dass sich diese Callback-Identität bei jedem Render
+  // ändert (drawing ist ein frisches Objektliteral pro Render) – usePresence
+  // liest onOp intern über eine Ref, nicht über die Effekt-Dependency-Liste.
+  const handleRemoteOp = useCallback(({ frameId, op }) => {
+    if (frameId !== activeFrameRef.current?._id) return;
+    drawing.applyRemote(op);
+  }, [drawing]);
+
+  const presence = usePresence(boardId, { onOp: handleRemoteOp });
+  presenceRef.current = presence;
+  const otherPresentUsers = presence.users.filter((u) => u.userId !== currentUserId);
   const lines = useLines(boardId);
   const formations = useFormations();
   const roster = useRoster();
@@ -561,6 +589,9 @@ export default function BoardEditorPage() {
               showHints={showHints}
               activeLinePlayerIds={lines.activeLine?.playerIds ?? null}
               activeLineColor={lines.activeLine?.color ?? null}
+              cursors={presence.cursors}
+              onFieldPointerMove={presence.sendCursor}
+              onFieldPointerLeave={presence.sendCursorLeave}
             />
 
             {!anim.playing && (

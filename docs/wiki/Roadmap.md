@@ -11,9 +11,9 @@ dort kontinuierlich aktualisiert:
 - Video-/Spielfilm-Integration – Videoclips hochladen/abspielen pro
   Board, Zeichnen-Überlagerung, Player-seitiges Trimmen, Szenen-Marken
   live
-- Echtzeit-Co-Editing – Präsenzanzeige live ("wer ist gerade auch hier").
-  Offen: Live-Cursor-Positionen, Konflikt-Auflösung bei simultanem
-  Bearbeiten (eigenes UX-Konzept nötig – wessen Änderung gewinnt?)
+- Echtzeit-Co-Editing – Präsenzanzeige, Live-Cursor und Live-Merging von
+  Spielerzügen/Zeichnungen (nur fürs gerade gemeinsam betrachtete Frame)
+  live
 - Native App-Store-Präsenz (Google Play + Apple App Store) – App ist
   schon eine installierbare PWA (vite-plugin-pwa), naheliegender Weg
   wäre ein Wrapper wie Capacitor/Trusted Web Activity statt einer
