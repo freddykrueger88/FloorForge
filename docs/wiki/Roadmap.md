@@ -8,11 +8,12 @@ dort kontinuierlich aktualisiert:
 ## Backlog-Highlights (Auszug)
 
 **Feature-Ideen:**
-- Video-/Spielfilm-Integration (Zeichnungen über echtes Spielmaterial)
-- Echtzeit-Co-Editing (Live-Cursor, über das aktuelle Sharing-MVP hinaus)
-- Werkzeug-Symbole in der Board-Ansicht (Passen, Schuss, Radieren, ...)
-  überarbeiten – aktuell nicht eindeutig unterscheidbar
-- Redo-Button für die Board-Ansicht (bisher nur Undo)
+- Video-/Spielfilm-Integration – MVP live (Videoclips hochladen/abspielen
+  pro Board). Offen: Zeichnungen über dem Video, Schnitt/Trimmen,
+  Szenen-Timeline
+- Echtzeit-Co-Editing – Präsenzanzeige live ("wer ist gerade auch hier").
+  Offen: Live-Cursor-Positionen, Konflikt-Auflösung bei simultanem
+  Bearbeiten (eigenes UX-Konzept nötig – wessen Änderung gewinnt?)
 - Native App-Store-Präsenz (Google Play + Apple App Store) – App ist
   schon eine installierbare PWA (vite-plugin-pwa), naheliegender Weg
   wäre ein Wrapper wie Capacitor/Trusted Web Activity statt einer
