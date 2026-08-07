@@ -36,23 +36,8 @@
 }
 
 .newBtn {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-4) var(--space-6);
-  background: var(--color-primary);
-  color: var(--color-text-inverse);
-  border-radius: var(--radius-lg);
-  font-size: var(--text-base);
-  font-weight: 700;
-  border: none;
-  cursor: pointer;
-  transition: background var(--transition-interactive);
   white-space: nowrap;
-  min-height: 48px;
 }
-.newBtn:hover { background: var(--color-primary-hover); }
-.newBtn:active { background: var(--color-primary-active); }
 
 .opponentSearch {
   flex: 1;

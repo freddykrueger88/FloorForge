@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import QRCode from 'qrcode';
 import { useExport } from '../../hooks/useExport.js';
 import { useShare } from '../../hooks/useShare.js';
+import Button from '../common/Button.jsx';
 import styles from './ExportPanel.module.css';
 
 // Web-Share-API: nur Feature-Detection auf Funktionsebene – ob Dateien
@@ -247,21 +248,23 @@ export default function ExportPanel({ boardId, frames, activeFrame, renderFrame 
               {format === 'mp4' ? t('export.downloadMp4') : t('export.download')}
             </a>
             {CAN_USE_SHARE_API && (
-              <button className={styles.copyBtn} onClick={handleShareFile} disabled={sharing}>
+              <Button variant="secondary" size="sm" onClick={handleShareFile} disabled={sharing}>
                 {sharing ? t('export.sharingFile') : t('export.shareFile')}
-              </button>
+              </Button>
             )}
-            <button className={styles.resetBtn} onClick={() => { reset(); setShareFileErr(null); }}>{t('export.exportAgain')}</button>
+            <Button variant="secondary" size="sm" onClick={() => { reset(); setShareFileErr(null); }}>{t('export.exportAgain')}</Button>
           </>
         ) : (
-          <button
+          <Button
+            variant="primary"
+            size="md"
             className={styles.exportBtn}
             onClick={handleExport}
             disabled={!canExport}
             aria-disabled={!canExport}
           >
             {busy ? t('export.exporting') : (format === 'mp4' ? t('export.createMp4') : t('export.create'))}
-          </button>
+          </Button>
         )}
       </div>
 
@@ -289,27 +292,29 @@ export default function ExportPanel({ boardId, frames, activeFrame, renderFrame 
               onFocus={(e) => e.target.select()}
               aria-label={t('export.shareLinkAriaLabel')}
             />
-            <button className={styles.copyBtn} onClick={handleCopy}>
+            <Button variant="secondary" size="sm" onClick={handleCopy}>
               {copied ? t('export.copied') : t('export.copy')}
-            </button>
+            </Button>
           </div>
           {qrDataUrl && (
             <div className={styles.qrWrap}>
               <img src={qrDataUrl} alt={t('export.qrAlt')} />
             </div>
           )}
-          <button className={styles.resetBtn} onClick={() => { share.reset(); setQrDataUrl(null); }}>
+          <Button variant="secondary" size="sm" onClick={() => { share.reset(); setQrDataUrl(null); }}>
             {t('export.newLink')}
-          </button>
+          </Button>
         </>
       ) : (
-        <button
+        <Button
+          variant="primary"
+          size="md"
           className={styles.exportBtn}
           onClick={handleCreateShareLink}
           disabled={share.loading || !frames?.length}
         >
           {share.loading ? t('export.creating') : t('export.createLink')}
-        </button>
+        </Button>
       )}
 
       <hr className={styles.divider} />
@@ -336,22 +341,24 @@ export default function ExportPanel({ boardId, frames, activeFrame, renderFrame 
               onFocus={(e) => e.target.select()}
               aria-label={t('export.frameShareLinkAriaLabel')}
             />
-            <button className={styles.copyBtn} onClick={handleCopyFrameLink}>
+            <Button variant="secondary" size="sm" onClick={handleCopyFrameLink}>
               {frameCopied ? t('export.copied') : t('export.copy')}
-            </button>
+            </Button>
           </div>
-          <button className={styles.resetBtn} onClick={share.resetFrameShare}>
+          <Button variant="secondary" size="sm" onClick={share.resetFrameShare}>
             {t('export.newFrameShare')}
-          </button>
+          </Button>
         </>
       ) : (
-        <button
+        <Button
+          variant="primary"
+          size="md"
           className={styles.exportBtn}
           onClick={handleCreateFrameShare}
           disabled={share.frameLoading || !activeFrame}
         >
           {share.frameLoading ? t('export.creatingFrame') : t('export.createFrameShare')}
-        </button>
+        </Button>
       )}
     </div>
   );

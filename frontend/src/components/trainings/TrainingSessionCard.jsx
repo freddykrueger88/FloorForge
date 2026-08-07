@@ -4,7 +4,9 @@
  */
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Clipboard, Calendar, Trash2 } from 'lucide-react';
 import { formatDateOnly } from '../../utils/formatDate.js';
+import Button from '../common/Button.jsx';
 import styles from './TrainingSessionCard.module.css';
 
 export default function TrainingSessionCard({ session, teamName, onClick, onRename, onDelete }) {
@@ -31,13 +33,13 @@ export default function TrainingSessionCard({ session, teamName, onClick, onRena
         onClick={onClick}
         aria-label={t('trainings.openAriaLabel', { name: session.name })}
       >
-        <span className={styles.icon} aria-hidden="true">📋</span>
+        <span className={styles.icon}><Clipboard size={16} aria-hidden="true" /></span>
         <span className={styles.stats}>
           {t('trainings.itemCount', { count: session.itemCount })}
           {session.itemCount > 0 && ` · ${t('trainings.totalMinutes', { count: session.totalMinutes })}`}
         </span>
         {session.scheduledDate && (
-          <span className={styles.dateBadge}>📅 {formatDateOnly(session.scheduledDate)}</span>
+          <span className={styles.dateBadge}><Calendar size={16} aria-hidden="true" /> {formatDateOnly(session.scheduledDate)}</span>
         )}
         {teamName && <span className={styles.teamBadge}>{teamName}</span>}
       </button>
@@ -69,14 +71,17 @@ export default function TrainingSessionCard({ session, teamName, onClick, onRena
           </button>
         )}
 
-        <button
+        <Button
+          variant="danger"
+          size="sm"
+          iconOnly
           className={styles.deleteBtn}
           onClick={(e) => { e.stopPropagation(); onDelete(); }}
           aria-label={t('trainings.deleteAriaLabel')}
           title={t('trainings.deleteTitle')}
         >
-          🗑
-        </button>
+          <Trash2 size={16} aria-hidden="true" />
+        </Button>
       </div>
     </article>
   );

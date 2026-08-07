@@ -35,15 +35,6 @@
   flex-shrink: 0;
 }
 .modalTitle { font-size: var(--text-lg); font-weight: 800; margin: 0; }
-.closeBtn {
-  width: 32px; height: 32px;
-  border-radius: var(--radius-md);
-  background: none; border: none; cursor: pointer;
-  color: var(--color-text-muted);
-  font-size: 1rem;
-  transition: background var(--transition-interactive);
-}
-.closeBtn:hover { background: var(--color-surface-offset); color: var(--color-text); }
 
 .content {
   padding: var(--space-5) var(--space-6);

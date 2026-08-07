@@ -44,32 +44,6 @@
   gap: var(--space-2);
 }
 
-.smallBtn {
-  padding: var(--space-2) var(--space-3);
-  min-height: 36px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--color-border);
-  background: var(--color-surface-2);
-  color: var(--color-text);
-  font-size: var(--text-xs);
-  cursor: pointer;
-  transition: background var(--transition-interactive);
-}
-.smallBtn:hover { background: var(--color-surface-offset); }
-
-.saveBtn {
-  composes: smallBtn;
-  background: var(--color-primary);
-  color: var(--color-text-inverse);
-  border-color: var(--color-primary);
-  font-weight: 700;
-}
-.saveBtn:hover { background: var(--color-primary-hover); }
-
-.cancelBtn {
-  composes: smallBtn;
-}
-
 .trimRow {
   display: flex;
   align-items: center;
@@ -77,6 +51,11 @@
   flex-wrap: wrap;
   font-size: var(--text-xs);
   color: var(--color-text-muted);
+  /* UI/UX-Audit: dezente Trennlinie statt einer vollen Card-Umrandung –
+     grenzt den Trimm-Bereich sichtbar vom Zeichnen-Bereich darüber ab,
+     ohne die Video-Card in mehrere verschachtelte Kästchen aufzuteilen. */
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--color-divider);
 }
 
 .trimLabel {
@@ -95,6 +74,8 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--color-divider);
 }
 
 .markerList {
@@ -114,35 +95,12 @@
 
 .markerBtn {
   flex: 1;
-  text-align: left;
-  padding: var(--space-1) var(--space-2);
-  border-radius: var(--radius-sm);
-  border: none;
-  background: var(--color-surface-2);
-  color: var(--color-text);
-  font-size: var(--text-xs);
+  justify-content: flex-start;
   font-variant-numeric: tabular-nums;
-  cursor: pointer;
 }
-.markerBtn:hover { background: var(--color-surface-offset); }
 
 .markerDeleteBtn {
-  width: 28px;
-  height: 28px;
   flex-shrink: 0;
-  border-radius: var(--radius-md);
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  font-size: 0.8rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-text-faint);
-}
-.markerDeleteBtn:hover {
-  background: var(--color-error-highlight);
-  color: var(--color-error);
 }
 
 .markerAddRow {

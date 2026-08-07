@@ -6,8 +6,9 @@
  * Standardmäßig eingeklappt (nur die schmale Tab-Leiste sichtbar) – der
  * Fokus soll auf dem Spielfeld bleiben, nicht auf dem Menü darunter.
  */
-import { useState } from 'react';
+import { useState, Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
+import Button from '../common/Button.jsx';
 import styles from './BoardSidePanelTabs.module.css';
 
 export default function BoardSidePanelTabs({ tabs }) {
@@ -31,22 +32,30 @@ export default function BoardSidePanelTabs({ tabs }) {
     <div className={styles.wrap}>
       <div className={styles.tabBar} role="tablist" aria-label={t('boardEditor.tabsAriaLabel')}>
         {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            type="button"
-            role="tab"
-            id={`board-tab-${tab.id}`}
-            aria-selected={expanded && tab.id === active?.id}
-            aria-controls={`board-tabpanel-${tab.id}`}
-            className={`${styles.tabBtn} ${expanded && tab.id === active?.id ? styles.active : ''}`}
-            onClick={() => handleTabClick(tab.id)}
-          >
-            {tab.icon && <span aria-hidden="true">{tab.icon}</span>}
-            <span>{tab.label}</span>
-          </button>
+          <Fragment key={tab.id}>
+            <button
+              type="button"
+              role="tab"
+              id={`board-tab-${tab.id}`}
+              aria-selected={expanded && tab.id === active?.id}
+              aria-controls={`board-tabpanel-${tab.id}`}
+              className={`${styles.tabBtn} ${expanded && tab.id === active?.id ? styles.active : ''}`}
+              onClick={() => handleTabClick(tab.id)}
+            >
+              {tab.icon && <span aria-hidden="true">{tab.icon}</span>}
+              <span>{tab.label}</span>
+            </button>
+            {/* UI/UX-Audit: thematische Gruppierung statt 9 gleichrangiger
+                Tabs – ein dezenter Trenner markiert Gruppengrenzen
+                (Bearbeiten / Info / Sonstiges), von BoardEditorPage.jsx
+                per tab.groupEnd markiert. */}
+            {tab.groupEnd && <span className={styles.groupDivider} aria-hidden="true" />}
+          </Fragment>
         ))}
-        <button
-          type="button"
+        <Button
+          variant="secondary"
+          size="md"
+          iconOnly
           className={styles.collapseBtn}
           onClick={() => setExpanded((v) => !v)}
           aria-expanded={expanded}
@@ -54,7 +63,7 @@ export default function BoardSidePanelTabs({ tabs }) {
           title={expanded ? t('boardEditor.collapsePanel') : t('boardEditor.expandPanel')}
         >
           <span aria-hidden="true">{expanded ? '▾' : '▴'}</span>
-        </button>
+        </Button>
       </div>
       {expanded && (
         <div

@@ -3,7 +3,9 @@
  * Erscheint rechts/unten neben dem Feld
  */
 import { useTranslation } from 'react-i18next';
+import { RefreshCw } from 'lucide-react';
 import { POSITION_HINTS } from '../../constants/positionHints.js';
+import Button from '../common/Button.jsx';
 import styles from './PlayerInfoPanel.module.css';
 
 export default function PlayerInfoPanel({
@@ -26,13 +28,15 @@ export default function PlayerInfoPanel({
       <header className={styles.header}>
         <div className={styles.badge}>{player.role}</div>
         <h3 className={styles.title}>{info.name}</h3>
-        <button
-          className={styles.close}
+        <Button
+          variant="secondary"
+          size="sm"
+          iconOnly
           onClick={onClose}
           aria-label={t('playerInfoPanel.closeLabel')}
         >
           ×
-        </button>
+        </Button>
       </header>
 
       {/* Spielername (Issue #29) */}
@@ -85,13 +89,15 @@ export default function PlayerInfoPanel({
       </ul>
 
       <div className={styles.actions}>
-        <button
+        <Button
+          variant="secondary"
+          size="md"
           className={styles.resetBtn}
           onClick={() => onReset?.(player.id)}
           title={t('field.resetPositionTitle')}
         >
-          🔄 {t('field.resetPosition')}
-        </button>
+          <RefreshCw size={16} aria-hidden="true" /> {t('field.resetPosition')}
+        </Button>
       </div>
     </aside>
   );

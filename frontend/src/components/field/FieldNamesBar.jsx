@@ -4,6 +4,7 @@
  * "Einstellungen"-Tab von BoardSidePanelTabs)
  */
 import { useTranslation } from 'react-i18next';
+import { Eye, EyeOff } from 'lucide-react';
 import styles from './FieldNamesBar.module.css';
 
 export default function FieldNamesBar({
@@ -23,7 +24,7 @@ export default function FieldNamesBar({
         aria-label={t('field.toggleNames')}
         title={t('field.showNames')}
       >
-        <span aria-hidden="true">{showNames ? '👁' : '🚫'}</span>
+        <span aria-hidden="true">{showNames ? <Eye size={16} aria-hidden="true" /> : <EyeOff size={16} aria-hidden="true" />}</span>
         <span>{t('field.namesLabel')}</span>
       </button>
 

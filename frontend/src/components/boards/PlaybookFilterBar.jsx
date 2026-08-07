@@ -4,6 +4,7 @@
  */
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { X, Users } from 'lucide-react';
 import styles from './PlaybookFilterBar.module.css';
 
 export default function PlaybookFilterBar({
@@ -65,7 +66,7 @@ export default function PlaybookFilterBar({
             {pb.name} · {boards.filter((b) => b.playbookId === pb._id).length}
             {pb.teamId && (
               <span className={styles.teamBadge} title={teams.find((tm) => tm._id === pb.teamId)?.name ?? t('playbooks.teamBadgeFallback')}>
-                👥
+                <Users size={14} aria-hidden="true" />
               </span>
             )}
           </button>
@@ -75,7 +76,7 @@ export default function PlaybookFilterBar({
             aria-label={t('playbooks.deleteAriaLabel', { name: pb.name })}
             title={t('playbooks.deleteTitle')}
           >
-            ✕
+            <X size={16} aria-hidden="true" />
           </button>
         </span>
       ))}

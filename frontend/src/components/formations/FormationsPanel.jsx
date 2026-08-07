@@ -7,7 +7,9 @@
  */
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Trash2, Save, Users } from 'lucide-react';
 import { FIELD_TYPE_LABELS } from '../../constants/fieldConfig.js';
+import Button from '../common/Button.jsx';
 import styles from './FormationsPanel.module.css';
 
 export default function FormationsPanel({
@@ -34,14 +36,16 @@ export default function FormationsPanel({
   return (
     <section className={styles.panel} aria-label={t('formations.sectionAriaLabel')}>
       <header className={styles.header}>
-        <button
+        <Button
+          variant="ghost"
+          size="sm"
           className={styles.collapseBtn}
           onClick={() => setCollapsed((v) => !v)}
           aria-expanded={!collapsed}
           aria-label={collapsed ? t('formations.expand') : t('formations.collapse')}
         >
           <span aria-hidden="true">{collapsed ? '▸' : '▾'}</span> {t('formations.title')}
-        </button>
+        </Button>
         {!collapsed && <span className={styles.count}>{formations.length}/20</span>}
       </header>
 
@@ -54,7 +58,9 @@ export default function FormationsPanel({
           <ul className={styles.list} role="list">
             {formations.map((formation) => (
               <li key={formation._id} className={styles.item}>
-                <button
+                <Button
+                  variant="secondary"
+                  size="sm"
                   className={styles.loadBtn}
                   onClick={() => onLoad?.(formation)}
                   title={t('formations.loadTitle')}
@@ -62,19 +68,22 @@ export default function FormationsPanel({
                   <span className={styles.name}>{formation.name}</span>
                   {formation.teamId && (
                     <span className={styles.teamBadge} title={teams.find((tm) => tm._id === formation.teamId)?.name ?? t('formations.teamBadgeFallback')}>
-                      👥
+                      <Users size={14} aria-hidden="true" />
                     </span>
                   )}
                   <span className={styles.fieldBadge}>{FIELD_TYPE_LABELS[formation.fieldType] ?? formation.fieldType}</span>
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="danger"
+                  size="sm"
+                  iconOnly
                   className={styles.deleteBtn}
                   onClick={() => onDelete?.(formation._id)}
                   aria-label={t('formations.deleteAriaLabel', { name: formation.name })}
                   title={t('formations.deleteTitle')}
                 >
-                  🗑
-                </button>
+                  <Trash2 size={16} aria-hidden="true" />
+                </Button>
               </li>
             ))}
           </ul>
@@ -104,15 +113,18 @@ export default function FormationsPanel({
                 ))}
               </select>
             )}
-            <button
+            <Button
+              variant="primary"
+              size="sm"
+              iconOnly
               className={styles.saveBtn}
               onClick={handleSave}
               disabled={!canAddFormation || !newName.trim()}
               aria-label={t('formations.saveAriaLabel')}
               title={t('formations.saveTitle')}
             >
-              💾
-            </button>
+              <Save size={16} aria-hidden="true" />
+            </Button>
           </div>
           {!canAddFormation && <p className={styles.limitHint}>{t('formations.limitHint')}</p>}
         </>

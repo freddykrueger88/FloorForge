@@ -8,10 +8,12 @@
  */
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { X } from 'lucide-react';
 import { useFocusTrap } from '../../hooks/useFocusTrap.js';
 import { getQueuedWrites, removeQueuedWrite, getQueueCounts } from '../../utils/offlineQueue.js';
 import useOfflineStore from '../../store/offlineStore.js';
 import { formatDate } from '../../utils/formatDate.js';
+import Button from '../common/Button.jsx';
 import styles from './ConflictReviewDialog.module.css';
 
 export default function ConflictReviewDialog({ onClose }) {
@@ -48,7 +50,7 @@ export default function ConflictReviewDialog({ onClose }) {
       <div className={styles.dialog}>
         <header className={styles.header}>
           <h2 id="conflict-review-title" className={styles.title}>{t('dialogs.conflictReview.title')}</h2>
-          <button className={styles.closeBtn} onClick={onClose} aria-label={t('dialogs.conflictReview.close')}>✕</button>
+          <Button variant="secondary" size="sm" iconOnly onClick={onClose} aria-label={t('dialogs.conflictReview.close')}><X size={18} aria-hidden="true" /></Button>
         </header>
 
         <p className={styles.hint}>{t('dialogs.conflictReview.hint')}</p>
@@ -65,16 +67,16 @@ export default function ConflictReviewDialog({ onClose }) {
                     {t('dialogs.conflictReview.queuedAt', { date: formatDate(c.queuedAt, { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) })}
                   </span>
                 </div>
-                <button className={styles.discardBtn} onClick={() => handleDiscard(c.id)}>
+                <Button variant="danger" size="sm" className={styles.discardBtn} onClick={() => handleDiscard(c.id)}>
                   {t('dialogs.conflictReview.discardBtn')}
-                </button>
+                </Button>
               </li>
             ))}
           </ul>
         )}
 
         <div className={styles.actions}>
-          <button className={styles.closeFooterBtn} onClick={onClose}>{t('dialogs.conflictReview.close')}</button>
+          <Button variant="secondary" size="md" onClick={onClose}>{t('dialogs.conflictReview.close')}</Button>
         </div>
       </div>
     </div>

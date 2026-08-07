@@ -8,9 +8,11 @@
  */
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { AlertTriangle } from 'lucide-react';
 import useAuthStore from '../../store/authStore.js';
 import { useComments } from '../../hooks/useComments.js';
 import { formatDate } from '../../utils/formatDate.js';
+import Button from '../common/Button.jsx';
 import styles from './CommentsPanel.module.css';
 
 const MAX_LENGTH = 2000;
@@ -54,7 +56,7 @@ export default function CommentsPanel({ resourceKind, resourceId }) {
     <section className={styles.panel} aria-label={t('comments.ariaLabel')}>
       <h3 className={styles.heading}>{t('comments.title')}</h3>
 
-      {error && <p className={styles.msgError}>⚠️ {error}</p>}
+      {error && <p className={styles.msgError}><AlertTriangle size={16} aria-hidden="true" /> {error}</p>}
 
       {loading && comments.length === 0 ? (
         <p className={styles.hint}>{t('comments.loading')}</p>
@@ -80,8 +82,8 @@ export default function CommentsPanel({ resourceKind, resourceId }) {
                     aria-label={t('comments.editAriaLabel')}
                   />
                   <div className={styles.editActions}>
-                    <button className={styles.smallBtn} onClick={() => commitEdit(c._id)}>{t('comments.saveBtn')}</button>
-                    <button className={styles.smallBtn} onClick={() => setEditingId(null)}>{t('comments.cancelBtn')}</button>
+                    <Button variant="secondary" size="sm" className={styles.smallBtn} onClick={() => commitEdit(c._id)}>{t('comments.saveBtn')}</Button>
+                    <Button variant="secondary" size="sm" className={styles.smallBtn} onClick={() => setEditingId(null)}>{t('comments.cancelBtn')}</Button>
                   </div>
                 </div>
               ) : (
@@ -90,12 +92,12 @@ export default function CommentsPanel({ resourceKind, resourceId }) {
 
               {c.userId === user?.id && editingId !== c._id && (
                 <div className={styles.itemActions}>
-                  <button className={styles.smallBtn} onClick={() => startEdit(c)} aria-label={t('comments.editAriaLabel')}>
+                  <Button variant="secondary" size="sm" className={styles.smallBtn} onClick={() => startEdit(c)} aria-label={t('comments.editAriaLabel')}>
                     {t('comments.editBtn')}
-                  </button>
-                  <button className={styles.smallBtnDanger} onClick={() => deleteComment(c._id)} aria-label={t('comments.deleteAriaLabel')}>
+                  </Button>
+                  <Button variant="danger" size="sm" onClick={() => deleteComment(c._id)} aria-label={t('comments.deleteAriaLabel')}>
                     {t('comments.deleteBtn')}
-                  </button>
+                  </Button>
                 </div>
               )}
             </li>
@@ -113,9 +115,9 @@ export default function CommentsPanel({ resourceKind, resourceId }) {
           rows={2}
           aria-label={t('comments.placeholder')}
         />
-        <button type="submit" className={styles.submitBtn} disabled={!draft.trim()}>
+        <Button type="submit" variant="primary" size="md" className={styles.submitBtn} disabled={!draft.trim()}>
           {t('comments.addBtn')}
-        </button>
+        </Button>
       </form>
     </section>
   );

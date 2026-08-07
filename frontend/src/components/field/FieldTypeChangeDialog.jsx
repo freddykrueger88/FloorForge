@@ -5,6 +5,8 @@
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useFocusTrap } from '../../hooks/useFocusTrap.js';
+import { AlertTriangle } from 'lucide-react';
+import Button from '../common/Button.jsx';
 import styles from './FieldTypeChangeDialog.module.css';
 
 export default function FieldTypeChangeDialog({ targetLabel, onConfirm, onCancel, loading }) {
@@ -22,19 +24,19 @@ export default function FieldTypeChangeDialog({ targetLabel, onConfirm, onCancel
       aria-describedby="fieldtype-msg"
     >
       <div className={styles.dialog}>
-        <div className={styles.icon} aria-hidden="true">⚠️</div>
+        <div className={styles.icon} aria-hidden="true"><AlertTriangle size={32} aria-hidden="true" /></div>
         <h2 id="fieldtype-title" className={styles.title}>{t('dialogs.fieldTypeChange.title')}</h2>
         <p id="fieldtype-msg" className={styles.msg}>
           {t('dialogs.fieldTypeChange.message', { targetLabel })}
         </p>
 
         <div className={styles.actions}>
-          <button className={styles.cancelBtn} onClick={onCancel} disabled={loading}>
+          <Button variant="secondary" size="md" className={styles.cancelBtn} onClick={onCancel} disabled={loading}>
             {t('dialogs.fieldTypeChange.cancel')}
-          </button>
-          <button className={styles.confirmBtn} onClick={onConfirm} disabled={loading}>
+          </Button>
+          <Button variant="primary" size="md" className={styles.confirmBtn} onClick={onConfirm} disabled={loading}>
             {loading ? t('dialogs.fieldTypeChange.adjusting') : t('dialogs.fieldTypeChange.confirm')}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

@@ -48,20 +48,8 @@
 .nameInput:focus-visible { box-shadow: 0 0 0 3px var(--color-primary-highlight); }
 
 .exportBtn {
-  padding: var(--space-3) var(--space-5);
-  background: var(--color-primary);
-  color: var(--color-text-inverse);
-  border-radius: var(--radius-md);
-  font-size: var(--text-sm);
-  font-weight: 700;
-  border: none;
-  cursor: pointer;
   white-space: nowrap;
-  min-height: 44px;
-  transition: background var(--transition-interactive);
 }
-.exportBtn:hover:not(:disabled) { background: var(--color-primary-hover); }
-.exportBtn:disabled { opacity: 0.45; cursor: not-allowed; }
 
 .metaRow {
   display: flex;
@@ -231,41 +219,6 @@
   gap: var(--space-1);
   flex-shrink: 0;
 }
-
-.moveBtn, .removeBtn {
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius-md);
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  font-size: 0.8rem;
-  color: var(--color-text-faint);
-  transition: background var(--transition-interactive), color var(--transition-interactive);
-}
-.moveBtn:hover:not(:disabled) { background: var(--color-surface-offset); color: var(--color-text); }
-.moveBtn:disabled { opacity: 0.3; cursor: not-allowed; }
-.removeBtn:hover { background: var(--color-error-highlight); color: var(--color-error); }
-
-.addBtn {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-3) var(--space-5);
-  background: var(--color-surface-offset);
-  color: var(--color-text);
-  border: 1px dashed var(--color-border);
-  border-radius: var(--radius-lg);
-  font-size: var(--text-sm);
-  font-weight: 600;
-  cursor: pointer;
-  transition: border-color var(--transition-interactive);
-}
-.addBtn:hover:not(:disabled) { border-color: var(--color-primary); }
-.addBtn:disabled { opacity: 0.45; cursor: not-allowed; }
 
 .commentsSection {
   margin-top: var(--space-8);

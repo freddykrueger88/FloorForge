@@ -17,9 +17,11 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Stage } from 'react-konva';
+import { Pencil, Eye, EyeOff, Trash2, MapPin } from 'lucide-react';
 import { useDrawing } from '../../hooks/useDrawing.js';
 import DrawingLayer from '../drawing/DrawingLayer.jsx';
 import DrawingToolbar from '../drawing/DrawingToolbar.jsx';
+import Button from '../common/Button.jsx';
 import styles from './VideoAnnotationOverlay.module.css';
 
 function formatTime(seconds) {
@@ -176,23 +178,23 @@ export default function VideoAnnotationOverlay({ video, canEdit, streamUrl, onUp
                 onJumpHistory={drawing.jumpHistory}
               />
               <div className={styles.drawModeActions}>
-                <button className={styles.saveBtn} onClick={handleSaveDrawing} disabled={saving}>
+                <Button variant="primary" size="sm" onClick={handleSaveDrawing} disabled={saving}>
                   {saving ? t('video.saving') : t('video.saveDrawing')}
-                </button>
-                <button className={styles.cancelBtn} onClick={() => setDrawMode(false)} disabled={saving}>
+                </Button>
+                <Button variant="secondary" size="sm" onClick={() => setDrawMode(false)} disabled={saving}>
                   {t('video.cancel')}
-                </button>
+                </Button>
               </div>
             </>
           ) : (
             <div className={styles.toolRow}>
-              <button className={styles.smallBtn} onClick={enterDrawMode}>
-                ✏️ {t('video.draw')}
-              </button>
+              <Button variant="secondary" size="sm" onClick={enterDrawMode}>
+                <Pencil size={16} aria-hidden="true" /> {t('video.draw')}
+              </Button>
               {hasOverlayElements && (
-                <button className={styles.smallBtn} onClick={() => setShowOverlay((v) => !v)}>
-                  {showOverlay ? `👁 ${t('video.hideOverlay')}` : `🙈 ${t('video.showOverlay')}`}
-                </button>
+                <Button variant="secondary" size="sm" onClick={() => setShowOverlay((v) => !v)}>
+                  {showOverlay ? <><Eye size={16} aria-hidden="true" /> {t('video.hideOverlay')}</> : <><EyeOff size={16} aria-hidden="true" /> {t('video.showOverlay')}</>}
+                </Button>
               )}
             </div>
           )}
@@ -202,14 +204,14 @@ export default function VideoAnnotationOverlay({ video, canEdit, streamUrl, onUp
       {canEdit && (
         <div className={styles.trimRow}>
           <span className={styles.trimLabel}>{t('video.trimLabel')}</span>
-          <button className={styles.smallBtn} onClick={setTrimStartHere}>{t('video.setStart')}</button>
-          <button className={styles.smallBtn} onClick={setTrimEndHere}>{t('video.setEnd')}</button>
+          <Button variant="secondary" size="sm" onClick={setTrimStartHere}>{t('video.setStart')}</Button>
+          <Button variant="secondary" size="sm" onClick={setTrimEndHere}>{t('video.setEnd')}</Button>
           {(typeof video.trimStart === 'number' || typeof video.trimEnd === 'number') && (
             <>
               <span className={styles.trimValues}>
                 {formatTime(video.trimStart ?? 0)} – {typeof video.trimEnd === 'number' ? formatTime(video.trimEnd) : '…'}
               </span>
-              <button className={styles.smallBtn} onClick={resetTrim}>{t('video.resetTrim')}</button>
+              <Button variant="secondary" size="sm" onClick={resetTrim}>{t('video.resetTrim')}</Button>
             </>
           )}
         </div>
@@ -220,17 +222,20 @@ export default function VideoAnnotationOverlay({ video, canEdit, streamUrl, onUp
           <ul className={styles.markerList} role="list">
             {video.markers.map((m, i) => (
               <li key={`${m.timestamp}-${i}`} className={styles.markerItem}>
-                <button className={styles.markerBtn} onClick={() => seekTo(m.timestamp)}>
+                <Button variant="secondary" size="sm" className={styles.markerBtn} onClick={() => seekTo(m.timestamp)}>
                   {formatTime(m.timestamp)} – {m.label}
-                </button>
+                </Button>
                 {canEdit && (
-                  <button
+                  <Button
+                    variant="danger"
+                    size="sm"
+                    iconOnly
                     className={styles.markerDeleteBtn}
                     onClick={() => handleDeleteMarker(m.timestamp)}
                     aria-label={t('video.deleteMarkerAriaLabel', { label: m.label })}
                   >
-                    🗑
-                  </button>
+                    <Trash2 size={16} aria-hidden="true" />
+                  </Button>
                 )}
               </li>
             ))}
@@ -247,13 +252,13 @@ export default function VideoAnnotationOverlay({ video, canEdit, streamUrl, onUp
                 placeholder={t('video.markerPlaceholder')}
                 maxLength={60}
               />
-              <button className={styles.smallBtn} onClick={handleAddMarker}>{t('video.addMarkerConfirm')}</button>
-              <button className={styles.smallBtn} onClick={() => { setAddingMarker(false); setMarkerLabel(''); }}>{t('video.cancel')}</button>
+              <Button variant="secondary" size="sm" onClick={handleAddMarker}>{t('video.addMarkerConfirm')}</Button>
+              <Button variant="secondary" size="sm" onClick={() => { setAddingMarker(false); setMarkerLabel(''); }}>{t('video.cancel')}</Button>
             </div>
           ) : (
-            <button className={styles.smallBtn} onClick={() => setAddingMarker(true)}>
-              📍 {t('video.addMarker')}
-            </button>
+            <Button variant="secondary" size="sm" onClick={() => setAddingMarker(true)}>
+              <MapPin size={16} aria-hidden="true" /> {t('video.addMarker')}
+            </Button>
           )
         )}
       </div>

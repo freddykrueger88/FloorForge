@@ -5,9 +5,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
+import { AlertTriangle, Clipboard, Plus } from 'lucide-react';
 import { useTrainingSessions } from '../hooks/useTrainingSessions.js';
 import { useTeams } from '../hooks/useTeams.js';
 import TrainingSessionCard from '../components/trainings/TrainingSessionCard.jsx';
+import Button from '../components/common/Button.jsx';
 import styles from './TrainingsPage.module.css';
 
 export default function TrainingsPage() {
@@ -94,28 +96,30 @@ export default function TrainingsPage() {
                 ))}
               </select>
             )}
-            <button type="submit" className={styles.newBtn} disabled={loading || !newName.trim()}>
+            <Button type="submit" variant="primary" size="md" className={styles.newBtn} disabled={loading || !newName.trim()}>
               {t('trainings.confirmCreate')}
-            </button>
-            <button type="button" className={styles.cancelBtn} onClick={() => { setCreating(false); setNewName(''); }}>
+            </Button>
+            <Button type="button" variant="secondary" size="md" onClick={() => { setCreating(false); setNewName(''); }}>
               {t('trainings.cancelCreate')}
-            </button>
+            </Button>
           </form>
         ) : (
-          <button
+          <Button
+            variant="primary"
+            size="md"
             className={styles.newBtn}
             onClick={() => setCreating(true)}
             disabled={!canAddSession}
             aria-label={t('trainings.newSessionAriaLabel')}
           >
-            <span aria-hidden="true">➕</span> {t('trainings.newSession')}
-          </button>
+            <Plus size={16} aria-hidden="true" /> {t('trainings.newSession')}
+          </Button>
         )}
       </div>
 
       {error && (
         <div className={styles.errorBanner} role="alert">
-          ⚠️ {error}
+          <AlertTriangle size={16} aria-hidden="true" /> {error}
         </div>
       )}
 
@@ -127,7 +131,7 @@ export default function TrainingsPage() {
         </div>
       ) : sessions.length === 0 ? (
         <div className={styles.emptyState} role="status">
-          <div className={styles.emptyIcon} aria-hidden="true">📋</div>
+          <div className={styles.emptyIcon}><Clipboard size={16} aria-hidden="true" /></div>
           <h2>{t('trainings.noSessionsYet')}</h2>
           <p>{t('trainings.emptyStateDesc')}</p>
         </div>

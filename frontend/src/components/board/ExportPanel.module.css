@@ -91,18 +91,7 @@
 
 .exportBtn {
   flex: 1;
-  padding: var(--space-2) var(--space-3);
-  background: var(--color-primary);
-  border: none;
-  border-radius: var(--radius-md);
-  color: var(--color-text-inverse);
-  font-size: var(--text-sm);
-  font-weight: 600;
-  cursor: pointer;
-  transition: var(--transition-interactive);
 }
-.exportBtn:hover:not(:disabled) { background: var(--color-primary-hover); }
-.exportBtn:disabled { opacity: 0.4; cursor: not-allowed; }
 
 .downloadBtn {
   flex: 1;
@@ -117,17 +106,6 @@
   transition: var(--transition-interactive);
 }
 .downloadBtn:hover { filter: brightness(0.9); }
-
-.resetBtn {
-  padding: var(--space-2);
-  background: var(--color-surface-2);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  color: var(--color-text-muted);
-  font-size: var(--text-xs);
-  cursor: pointer;
-}
-.resetBtn:hover { color: var(--color-text); }
 
 .divider {
   height: 1px;
@@ -151,18 +129,6 @@
   padding: var(--space-1) var(--space-2);
   font-size: var(--text-xs);
 }
-
-.copyBtn {
-  padding: var(--space-1) var(--space-2);
-  background: var(--color-surface-2);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  color: var(--color-text);
-  font-size: var(--text-xs);
-  cursor: pointer;
-  white-space: nowrap;
-}
-.copyBtn:hover { background: var(--color-surface-offset); }
 
 .qrWrap {
   display: flex;

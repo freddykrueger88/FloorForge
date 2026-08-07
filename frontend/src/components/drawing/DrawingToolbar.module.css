@@ -154,32 +154,3 @@
   color: var(--color-primary);
   border-color: var(--color-primary);
 }
-
-/* ── Action-Buttons ── */
-.actionBtn {
-  width: 44px;
-  height: 44px;
-  border-radius: var(--radius-md);
-  background: transparent;
-  border: 1px solid var(--color-border);
-  color: var(--color-text-muted);
-  cursor: pointer;
-  font-size: 1rem;
-  transition: all var(--transition-interactive);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.actionBtn:hover:not(:disabled) {
-  background: var(--color-surface-offset);
-  color: var(--color-text);
-}
-.actionBtn:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-}
-.clearBtn:hover:not(:disabled) {
-  background: var(--color-error-highlight);
-  color: var(--color-error);
-  border-color: var(--color-error);
-}

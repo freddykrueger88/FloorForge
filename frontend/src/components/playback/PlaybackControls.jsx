@@ -3,7 +3,9 @@
  * (Issue #11 – v0.3.0)
  */
 import { useTranslation } from 'react-i18next';
+import { Square, Pause, Play, Repeat } from 'lucide-react';
 import useAnnounceStore from '../../store/announceStore.js';
+import Button from '../common/Button.jsx';
 import styles from './PlaybackControls.module.css';
 
 export default function PlaybackControls({
@@ -30,25 +32,29 @@ export default function PlaybackControls({
 
   return (
     <div className={styles.controls} role="group" aria-label={t('playback.controlsLabel')}>
-      <button
-        className={styles.iconBtn}
+      <Button
+        variant="ghost"
+        size="sm"
+        iconOnly
         onClick={handleStop}
         disabled={!playing && activeIndex === 0}
         aria-label={t('playback.stopAriaLabel')}
         title={t('playback.stop')}
       >
-        <span aria-hidden="true">⏹</span>
-      </button>
+        <Square size={16} aria-hidden="true" />
+      </Button>
 
-      <button
-        className={`${styles.iconBtn} ${styles.playBtn}`}
+      <Button
+        variant="primary"
+        size="sm"
+        iconOnly
         onClick={handleTogglePlay}
         disabled={!canPlay}
         aria-label={playing ? t('playback.pause') : t('playback.play')}
         title={playing ? t('playback.pauseTitle') : t('playback.playTitle')}
       >
-        <span aria-hidden="true">{playing ? '⏸' : '▶'}</span>
-      </button>
+        {playing ? <Pause size={18} aria-hidden="true" /> : <Play size={18} aria-hidden="true" />}
+      </Button>
 
       {/* Fortschrittsbalken */}
       <div className={styles.progressWrap} aria-hidden="true">
@@ -74,15 +80,18 @@ export default function PlaybackControls({
       </div>
 
       {/* Loop */}
-      <button
-        className={`${styles.iconBtn} ${loop ? styles.loopActive : ''}`}
+      <Button
+        variant="ghost"
+        size="sm"
+        iconOnly
+        className={loop ? styles.loopActive : ''}
         onClick={handleToggleLoop}
         aria-pressed={loop}
         aria-label={t('playback.loopAriaLabel')}
         title={t('playback.loop')}
       >
-        <span aria-hidden="true">🔁</span>
-      </button>
+        <Repeat size={16} aria-hidden="true" />
+      </Button>
 
       <span className={styles.frameLabel} aria-live="polite">
         {t('playback.frameLabel', { current: Math.min(activeIndex + 1, frameCount), total: frameCount })}

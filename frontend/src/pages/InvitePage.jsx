@@ -7,6 +7,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
+import { AlertTriangle } from 'lucide-react';
 import useAuthStore from '../store/authStore.js';
 import logo from '../assets/openfloorball_logo_cropped.png';
 
@@ -52,7 +53,7 @@ export default function InvitePage() {
         {!loading && (error || !invite) && (
           <>
             <div role="alert" className="auth-error">
-              <span>⚠️ {error ?? t('invite.notFoundOrExpired')}</span>
+              <span><AlertTriangle size={16} aria-hidden="true" /> {error ?? t('invite.notFoundOrExpired')}</span>
             </div>
             <p className="auth-switch">
               <Link to="/login">{t('invite.backToLogin')}</Link>

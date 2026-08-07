@@ -5,6 +5,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
+import { AlertTriangle, LayoutGrid, SearchX, Plus } from 'lucide-react';
 import { useBoardsApi } from '../hooks/useBoardsApi.js';
 import { useSettings } from '../hooks/useSettings.js';
 import { usePlaybooks } from '../hooks/usePlaybooks.js';
@@ -14,6 +15,7 @@ import BoardPostcard from '../components/boards/BoardPostcard.jsx';
 import NewBoardModal from '../components/boards/NewBoardModal.jsx';
 import DeleteConfirmDialog from '../components/boards/DeleteConfirmDialog.jsx';
 import PlaybookFilterBar from '../components/boards/PlaybookFilterBar.jsx';
+import Button from '../components/common/Button.jsx';
 import styles from './BoardsPage.module.css';
 
 const VIEW_STORAGE_KEY = 'openfloorball:boardsView';
@@ -140,13 +142,15 @@ export default function BoardsPage() {
       </header>
 
       <div className={styles.actionsBar}>
-        <button
+        <Button
+          variant="primary"
+          size="md"
           className={styles.newBtn}
           onClick={() => setShowNewModal(true)}
           aria-label={t('boardsPage.newBoardAriaLabel')}
         >
-          <span aria-hidden="true">➕</span> {t('boardsPage.newBoard')}
-        </button>
+          <Plus size={16} aria-hidden="true" /> {t('boardsPage.newBoard')}
+        </Button>
 
         {boards.length > 0 && (
           <input
@@ -211,7 +215,7 @@ export default function BoardsPage() {
 
       {error && (
         <div className={styles.errorBanner} role="alert">
-          ⚠️ {error}
+          <AlertTriangle size={16} aria-hidden="true" /> {error}
         </div>
       )}
 
@@ -223,19 +227,21 @@ export default function BoardsPage() {
         </div>
       ) : boards.length === 0 ? (
         <div className={styles.emptyState} role="status">
-          <div className={styles.emptyIcon} aria-hidden="true">🏑</div>
+          <div className={styles.emptyIcon} aria-hidden="true"><LayoutGrid size={40} aria-hidden="true" /></div>
           <h2>{t('boardsPage.noBoardsYet')}</h2>
           <p>{t('boardsPage.emptyStateDesc')}</p>
-          <button
+          <Button
+            variant="primary"
+            size="md"
             className={styles.newBtn}
             onClick={() => setShowNewModal(true)}
           >
             {t('boardsPage.createFirstBoard')}
-          </button>
+          </Button>
         </div>
       ) : filteredBoards.length === 0 ? (
         <div className={styles.emptyState} role="status">
-          <div className={styles.emptyIcon} aria-hidden="true">🗂️</div>
+          <div className={styles.emptyIcon} aria-hidden="true"><SearchX size={40} aria-hidden="true" /></div>
           <p>{t('boardsPage.noBoardsMatchFilter')}</p>
         </div>
       ) : (

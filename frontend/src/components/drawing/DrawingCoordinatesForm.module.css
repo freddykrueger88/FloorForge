@@ -61,34 +61,6 @@
   outline-offset: 1px;
 }
 
-.addBtn {
-  padding: var(--space-2) var(--space-3);
-  background: var(--color-primary);
-  color: var(--color-text-inverse);
-  border: none;
-  border-radius: var(--radius-md);
-  font-size: var(--text-sm);
-  font-weight: 600;
-  cursor: pointer;
-  transition: var(--transition-interactive);
-}
-.addBtn:hover { background: var(--color-primary-hover); }
-
-.saveBtn {
-  padding: var(--space-2) var(--space-3);
-  background: var(--color-success);
-  color: var(--color-text-inverse);
-  border: none;
-  border-radius: var(--radius-md);
-  font-size: var(--text-sm);
-  font-weight: 600;
-  cursor: pointer;
-}
-.saveBtn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
 .pointList {
   display: flex;
   flex-direction: column;
@@ -111,13 +83,3 @@
   font-size: var(--text-xs);
   color: var(--color-text);
 }
-
-.removeBtn {
-  background: none;
-  border: none;
-  color: var(--color-text-muted);
-  cursor: pointer;
-  font-size: var(--text-xs);
-  padding: 0 var(--space-1);
-}
-.removeBtn:hover { color: var(--color-error); }

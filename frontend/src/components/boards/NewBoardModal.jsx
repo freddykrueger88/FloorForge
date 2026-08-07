@@ -4,7 +4,9 @@
  */
 import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { X } from 'lucide-react';
 import { useFocusTrap } from '../../hooks/useFocusTrap.js';
+import Button from '../common/Button.jsx';
 import styles from './NewBoardModal.module.css';
 
 export default function NewBoardModal({ onConfirm, onClose, loading, defaultFieldType = 'large' }) {
@@ -51,7 +53,7 @@ export default function NewBoardModal({ onConfirm, onClose, loading, defaultFiel
       <div className={styles.modal}>
         <header className={styles.modalHeader}>
           <h2 id="new-board-title" className={styles.modalTitle}>{t('dialogs.newBoard.title')}</h2>
-          <button className={styles.closeBtn} onClick={onClose} aria-label={t('dialogs.newBoard.close')}>✕</button>
+          <Button variant="ghost" size="sm" iconOnly onClick={onClose} aria-label={t('dialogs.newBoard.close')}><X size={18} aria-hidden="true" /></Button>
         </header>
 
         <form onSubmit={handleSubmit} className={styles.form} noValidate>
@@ -124,17 +126,19 @@ export default function NewBoardModal({ onConfirm, onClose, loading, defaultFiel
           </div>
 
           <div className={styles.actions}>
-            <button type="button" className={styles.cancelBtn} onClick={onClose}>
+            <Button type="button" variant="secondary" size="md" className={styles.cancelBtn} onClick={onClose}>
               {t('dialogs.newBoard.cancel')}
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
+              variant="primary"
+              size="md"
               className={styles.confirmBtn}
               disabled={loading || !name.trim()}
               aria-disabled={loading}
             >
               {loading ? t('dialogs.newBoard.creating') : t('dialogs.newBoard.confirm')}
-            </button>
+            </Button>
           </div>
         </form>
       </div>

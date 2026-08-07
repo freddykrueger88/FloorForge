@@ -6,6 +6,8 @@
  */
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { X } from 'lucide-react';
+import Button from '../common/Button.jsx';
 import styles from './DrawingCoordinatesForm.module.css';
 
 const ARROW_TOOLS = ['move', 'pass', 'shot'];
@@ -79,7 +81,7 @@ export default function DrawingCoordinatesForm({ activeTool, field, onAddArrow, 
               <input id="coord-y2" type="number" step="0.1" min={0} max={maxY} value={y2} onChange={(e) => setY2(e.target.value)} required />
             </label>
           </div>
-          <button type="submit" className={styles.addBtn}>{t('drawing.addArrow')}</button>
+          <Button type="submit" variant="primary" size="md">{t('drawing.addArrow')}</Button>
         </form>
       ) : (
         <div className={styles.form}>
@@ -88,9 +90,9 @@ export default function DrawingCoordinatesForm({ activeTool, field, onAddArrow, 
               {points.map(([px, py], i) => (
                 <li key={i} className={styles.pointItem}>
                   <span>{px.toFixed(1)} / {py.toFixed(1)}</span>
-                  <button type="button" className={styles.removeBtn} onClick={() => handleRemovePoint(i)} aria-label={t('drawing.removePoint')}>
-                    ✕
-                  </button>
+                  <Button type="button" variant="danger" size="sm" iconOnly onClick={() => handleRemovePoint(i)} aria-label={t('drawing.removePoint')}>
+                    <X size={16} aria-hidden="true" />
+                  </Button>
                 </li>
               ))}
             </ul>
@@ -104,16 +106,17 @@ export default function DrawingCoordinatesForm({ activeTool, field, onAddArrow, 
               {t('drawing.freehandPointY')}
               <input id="coord-point-y" type="number" step="0.1" min={0} max={maxY} value={pointY} onChange={(e) => setPointY(e.target.value)} required />
             </label>
-            <button type="submit" className={styles.addBtn}>{t('drawing.addPoint')}</button>
+            <Button type="submit" variant="secondary" size="md">{t('drawing.addPoint')}</Button>
           </form>
-          <button
+          <Button
             type="button"
-            className={styles.saveBtn}
+            variant="primary"
+            size="md"
             onClick={handleSaveFreehand}
             disabled={points.length < 2}
           >
             {t('drawing.saveFreehand')}
-          </button>
+          </Button>
         </div>
       )}
     </section>

@@ -14,6 +14,26 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ## [Unreleased]
 
 ### Added
+- UI/UX-Design-Review umgesetzt (alle 13 Punkte aus dem Design-Audit):
+  Emoji-Icon-System vollständig auf `lucide-react` migriert (33 Dateien,
+  betrifft praktisch jede Seite), gemeinsame `Button`-Komponente ersetzt
+  37 unabhängig gestylte Buttons (behebt gemessene 36/44/48px-Höhen-
+  Streuung und uneinheitliche Fokus-Ring-Stile), `SettingsPage.jsx`
+  (1011 Zeilen) in sechs eigenständige Section-Komponenten mit echter
+  Tab-Navigation aufgeteilt (Progressive Disclosure statt einer langen
+  Formular-Wand), Board-Editor-Tab-Leiste bekommt Scroll-Fade +
+  thematische Gruppierung (Bearbeiten/Medien/Info), eigenständige
+  Display-Schrift (Oswald) für Überschriften statt überall derselben
+  Fließtext-Schrift, neues `--color-info`-Token, Empty States mit
+  Erklärung statt bloßem "nichts da" vereinheitlicht, Speicherstatus im
+  Board-Header mit Icon+Farbe statt reinem Textwechsel. Neues Feature:
+  eigenes Farbthema erstellbar (4 Farbwähler, alle übrigen Töne werden
+  automatisch abgeleitet – siehe `deriveCustomThemeTokens()` in
+  `utils/color.js`), rein persönliche Einstellung über die bestehende
+  `settings.preferences_json`-Ablage, keine neue Backend-Tabelle nötig.
+  Bei der optischen Seite (Icon-Look, Farbwähler-Vorschau, Tab-Optik)
+  wie bei früheren Runden ohne echten Browser unterwegs – strukturell
+  verifiziert (Lint/91 Tests/Build grün), bitte selbst gegenchecken.
 - Mobile/Tablet-Touch-Optimierung (ROADMAP-Backlog): `touch-action: none`
   auf dem Spielfeld-Canvas (verhindert, dass Ziehen von Spielern/Zeichnen
   auf Touch-Geräten mit Seiten-Scroll/Pinch-Zoom kollidiert), Werkzeug-

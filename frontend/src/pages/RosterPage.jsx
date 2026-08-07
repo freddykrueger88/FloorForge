@@ -5,8 +5,10 @@
  */
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { AlertTriangle, Trash2, Users } from 'lucide-react';
 import { useRoster } from '../hooks/useRoster.js';
 import { useTeams } from '../hooks/useTeams.js';
+import Button from '../components/common/Button.jsx';
 import styles from './RosterPage.module.css';
 
 const ROLES = ['TW', 'V', 'C', 'S'];
@@ -104,19 +106,19 @@ export default function RosterPage() {
             ))}
           </select>
         )}
-        <button type="submit" className={styles.addBtn} disabled={loading || !name.trim() || !canAddRosterPlayer}>
+        <Button type="submit" variant="primary" size="md" disabled={loading || !name.trim() || !canAddRosterPlayer}>
           {t('roster.add')}
-        </button>
+        </Button>
       </form>
       {!canAddRosterPlayer && <p className={styles.limitHint}>{t('roster.limitHint')}</p>}
 
       {error && (
-        <div className={styles.errorBanner} role="alert">⚠️ {error}</div>
+        <div className={styles.errorBanner} role="alert"><AlertTriangle size={16} aria-hidden="true" /> {error}</div>
       )}
 
       {rosterPlayers.length === 0 ? (
         <div className={styles.emptyState} role="status">
-          <div className={styles.emptyIcon} aria-hidden="true">🧑‍🤝‍🧑</div>
+          <div className={styles.emptyIcon} aria-hidden="true"><Users size={40} aria-hidden="true" /></div>
           <p>{t('roster.emptyStateDesc')}</p>
         </div>
       ) : (
@@ -160,14 +162,17 @@ export default function RosterPage() {
                   {teams.find((tm) => tm._id === player.teamId)?.name ?? t('roster.teamBadgeFallback')}
                 </span>
               )}
-              <button
+              <Button
+                variant="danger"
+                size="sm"
+                iconOnly
                 className={styles.deleteBtn}
                 onClick={() => deleteRosterPlayer(player._id)}
                 aria-label={t('roster.deleteAriaLabel', { name: player.name })}
                 title={t('roster.deleteTitle')}
               >
-                🗑
-              </button>
+                <Trash2 size={16} aria-hidden="true" />
+              </Button>
             </li>
           ))}
         </ul>

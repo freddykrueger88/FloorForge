@@ -17,16 +17,7 @@
 }
 
 .collapseBtn {
-  display: flex;
-  align-items: center;
   gap: var(--space-1);
-  background: none;
-  border: none;
-  color: var(--color-text);
-  font-weight: 600;
-  font-size: var(--text-sm);
-  cursor: pointer;
-  padding: var(--space-1);
 }
 
 .count {
@@ -74,13 +65,7 @@
 
 .lineName {
   flex: 1;
-  text-align: left;
-  background: none;
-  border: none;
-  color: var(--color-text);
-  font-size: var(--text-sm);
-  font-weight: 600;
-  cursor: pointer;
+  justify-content: flex-start;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -107,19 +92,9 @@
   white-space: nowrap;
 }
 
-.iconBtn, .deleteBtn {
-  background: none;
-  border: none;
-  color: var(--color-text-muted);
-  font-size: var(--text-xs);
-  cursor: pointer;
-  padding: 2px var(--space-1);
-  border-radius: var(--radius-sm);
+.iconBtn {
   white-space: nowrap;
 }
-
-.iconBtn:hover { background: var(--color-surface-offset); color: var(--color-text); }
-.deleteBtn:hover { background: var(--color-error-highlight); color: var(--color-error); }
 
 .playerGrid {
   display: flex;
@@ -198,20 +173,7 @@
 }
 
 .addBtn {
-  width: 26px;
-  height: 26px;
-  border-radius: var(--radius-sm);
-  border: none;
-  background: var(--color-primary);
-  color: var(--color-text-inverse);
-  cursor: pointer;
-  font-size: var(--text-sm);
   flex-shrink: 0;
-}
-
-.addBtn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
 }
 
 .limitHint {

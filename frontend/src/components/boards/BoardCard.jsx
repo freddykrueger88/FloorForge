@@ -4,8 +4,10 @@
  */
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Pencil, Eye, Trash2, LayoutGrid } from 'lucide-react';
 import { FIELD_TYPE_LABELS } from '../../constants/fieldConfig.js';
 import { formatDate } from '../../utils/formatDate.js';
+import Button from '../common/Button.jsx';
 import styles from './BoardCard.module.css';
 
 export default function BoardCard({ board, onClick, onRename, onDelete, playbooks, onChangePlaybook }) {
@@ -37,7 +39,7 @@ export default function BoardCard({ board, onClick, onRename, onDelete, playbook
         onClick={onClick}
         aria-label={t('boardCard.openAriaLabel', { name: board.name })}
       >
-        <span className={styles.fieldIcon} aria-hidden="true">🏑</span>
+        <span className={styles.fieldIcon} aria-hidden="true"><LayoutGrid size={16} aria-hidden="true" /></span>
         <span className={styles.fieldType}>{FIELD_TYPE_LABELS[board.fieldType] ?? board.fieldType}</span>
         <span className={styles.date}>{formatDate(board.updatedAt)}</span>
         {board.opponent && (
@@ -48,7 +50,11 @@ export default function BoardCard({ board, onClick, onRename, onDelete, playbook
         )}
         {!isOwner && (
           <span className={styles.accessBadge}>
-            {board.accessLevel === 'write' ? `✏️ ${t('boardShare.writeBadge')}` : `👁 ${t('boardShare.readonlyBadge')}`}
+            {board.accessLevel === 'write' ? (
+              <><Pencil size={16} aria-hidden="true" /> {t('boardShare.writeBadge')}</>
+            ) : (
+              <><Eye size={16} aria-hidden="true" /> {t('boardShare.readonlyBadge')}</>
+            )}
           </span>
         )}
       </button>
@@ -70,7 +76,9 @@ export default function BoardCard({ board, onClick, onRename, onDelete, playbook
             aria-label={t('boardCard.renameAriaLabel')}
           />
         ) : isOwner ? (
-          <button
+          <Button
+            variant="ghost"
+            size="sm"
             className={styles.nameBtn}
             onDoubleClick={() => setEditing(true)}
             onClick={(e) => e.detail === 2 && setEditing(true)}
@@ -78,20 +86,23 @@ export default function BoardCard({ board, onClick, onRename, onDelete, playbook
             aria-label={t('boardCard.renameNameAriaLabel', { name: board.name })}
           >
             {board.name}
-          </button>
+          </Button>
         ) : (
           <span className={styles.nameBtn}>{board.name}</span>
         )}
 
         {isOwner && (
-          <button
+          <Button
+            variant="danger"
+            size="sm"
+            iconOnly
             className={styles.deleteBtn}
             onClick={(e) => { e.stopPropagation(); onDelete(); }}
             aria-label={t('boardCard.deleteAriaLabel')}
             title={t('boardCard.deleteTitle')}
           >
-            🗑
-          </button>
+            <Trash2 size={18} aria-hidden="true" />
+          </Button>
         )}
       </div>
 

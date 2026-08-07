@@ -4,7 +4,9 @@
  */
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Palette, X, RotateCcw } from 'lucide-react';
 import { IFF_BALL_COLORS, DEFAULT_TEAM_COLORS } from '../../constants/fieldConfig.js';
+import Button from '../common/Button.jsx';
 import styles from './TeamColorPanel.module.css';
 
 export default function TeamColorPanel({
@@ -26,7 +28,9 @@ export default function TeamColorPanel({
 
   return (
     <div className={styles.wrapper}>
-      <button
+      <Button
+        variant="secondary"
+        size="sm"
         className={styles.toggleBtn}
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
@@ -41,8 +45,8 @@ export default function TeamColorPanel({
           className={styles.colorDot}
           style={{ background: awayColor ?? DEFAULT_TEAM_COLORS.away.fill }}
         />
-        <span>🎨</span>
-      </button>
+        <span><Palette size={16} aria-hidden="true" /></span>
+      </Button>
 
       {open && (
         <div
@@ -52,11 +56,13 @@ export default function TeamColorPanel({
         >
           <header className={styles.panelHeader}>
             <span className={styles.panelTitle}>{t('teamColorPanel.panelTitle')}</span>
-            <button
-              className={styles.closeBtn}
+            <Button
+              variant="secondary"
+              size="sm"
+              iconOnly
               onClick={handleClose}
               aria-label={t('teamColorPanel.close')}
-            >✕</button>
+            ><X size={18} aria-hidden="true" /></Button>
           </header>
 
           {/* Heimteam */}
@@ -73,11 +79,14 @@ export default function TeamColorPanel({
                   aria-label={t('teamColorPanel.fillColorAria', { team: t('teams.home') })}
                 />
               </div>
-              <button
-                className={styles.resetBtn}
+              <Button
+                variant="secondary"
+                size="sm"
+                iconOnly
                 onClick={() => onChangeHomeColor(DEFAULT_TEAM_COLORS.home.fill)}
                 title={t('teamColorPanel.resetDefault')}
-              >↺</button>
+                aria-label={t('teamColorPanel.resetDefault')}
+              ><RotateCcw size={16} aria-hidden="true" /></Button>
             </div>
           </section>
 
@@ -95,11 +104,14 @@ export default function TeamColorPanel({
                   aria-label={t('teamColorPanel.fillColorAria', { team: t('teams.away') })}
                 />
               </div>
-              <button
-                className={styles.resetBtn}
+              <Button
+                variant="secondary"
+                size="sm"
+                iconOnly
                 onClick={() => onChangeAwayColor(DEFAULT_TEAM_COLORS.away.fill)}
                 title={t('teamColorPanel.resetDefault')}
-              >↺</button>
+                aria-label={t('teamColorPanel.resetDefault')}
+              ><RotateCcw size={16} aria-hidden="true" /></Button>
             </div>
           </section>
 

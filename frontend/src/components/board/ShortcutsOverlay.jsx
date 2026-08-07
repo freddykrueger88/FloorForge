@@ -5,7 +5,9 @@
  */
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { X } from 'lucide-react';
 import { useFocusTrap } from '../../hooks/useFocusTrap.js';
+import Button from '../common/Button.jsx';
 import styles from './ShortcutsOverlay.module.css';
 
 const GROUPS = [
@@ -61,7 +63,7 @@ export default function ShortcutsOverlay({ onClose }) {
       <div className={styles.modal}>
         <header className={styles.modalHeader}>
           <h2 id="shortcuts-title" className={styles.modalTitle}>{t('shortcuts.title')}</h2>
-          <button className={styles.closeBtn} onClick={onClose} aria-label={t('shortcuts.close')}>✕</button>
+          <Button variant="ghost" size="sm" iconOnly onClick={onClose} aria-label={t('shortcuts.close')}><X size={18} aria-hidden="true" /></Button>
         </header>
 
         <div className={styles.content}>

@@ -8,7 +8,15 @@ import i18n from '../i18n/i18n.js';
 export function applyGlobalPreferences(prefs = {}) {
   const root = document.documentElement;
 
-  if (prefs.theme) useThemeStore.getState().setTheme(prefs.theme);
+  if (prefs.theme) {
+    // customTheme muss VOR setTheme('custom') im Store liegen, damit
+    // setTheme beim Anwenden die richtigen Farben ableitet (siehe
+    // themeStore.js).
+    if (prefs.theme === 'custom' && prefs.customTheme) {
+      useThemeStore.getState().setCustomColors(prefs.customTheme);
+    }
+    useThemeStore.getState().setTheme(prefs.theme);
+  }
   if (prefs.language) i18n.changeLanguage(prefs.language);
 
   root.setAttribute('data-font-size', prefs.fontSize || 'mittel');

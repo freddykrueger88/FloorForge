@@ -12,6 +12,26 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams, Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
+import {
+  Eye,
+  Pencil,
+  Users,
+  Undo2,
+  Redo2,
+  Keyboard,
+  Layers,
+  Star,
+  Video,
+  Download,
+  Clipboard,
+  MessageCircle,
+  History,
+  Settings,
+  Loader2,
+  Check,
+  AlertTriangle,
+  WifiOff,
+} from 'lucide-react';
 
 import { IFF_FIELDS, DEFAULT_TEAM_COLORS, IFF_BALL_COLORS, ensureBall, BALL_ID } from '../constants/fieldConfig.js';
 import { POSITION_HINTS } from '../constants/positionHints.js';
@@ -34,6 +54,7 @@ import { NotesPanel, BoardDetailsPanel, ExportPanel, PdfExportPanel, ShortcutsOv
 import { LinesPanel } from '../components/lines/index.js';
 import { FormationsPanel } from '../components/formations/index.js';
 import CommentsPanel from '../components/comments/CommentsPanel.jsx';
+import Button from '../components/common/Button.jsx';
 
 import { useBoardsApi } from '../hooks/useBoardsApi.js';
 import { useFrames } from '../hooks/useFrames.js';
@@ -450,48 +471,50 @@ export default function BoardEditorPage() {
         <Link to="/boards" className={styles.backLink} aria-label={t('boardEditor.backToBoards')}>←</Link>
         <h1 className={styles.title}>{board?.name ?? t('board.untitled')}</h1>
         {board?.accessLevel === 'read' && (
-          <span className={styles.readonlyBadge}>👁 {t('boardShare.readonlyBadge')}</span>
+          <span className={styles.readonlyBadge}><Eye size={16} aria-hidden="true" /> {t('boardShare.readonlyBadge')}</span>
         )}
         {board?.accessLevel === 'write' && (
-          <span className={styles.readonlyBadge}>✏️ {t('boardShare.writeBadge')}</span>
+          <span className={styles.readonlyBadge}><Pencil size={16} aria-hidden="true" /> {t('boardShare.writeBadge')}</span>
         )}
         {otherPresentUsers.length > 0 && (
           <span
             className={styles.presenceBadge}
             title={otherPresentUsers.map((u) => u.displayName).join(', ')}
           >
-            👥 {t('boardEditor.presenceCount', { count: otherPresentUsers.length })}
+            <Users size={16} aria-hidden="true" /> {t('boardEditor.presenceCount', { count: otherPresentUsers.length })}
           </span>
         )}
-        <span className={styles.saveStatus} aria-live="polite">
-          {saveStatus === 'saving'  && t('boardEditor.saving')}
-          {saveStatus === 'saved'   && t('boardEditor.saved')}
-          {saveStatus === 'offline' && t('boardEditor.saveOffline')}
-          {saveStatus === 'error'   && t('boardEditor.saveError')}
+        <span className={`${styles.saveStatus} ${styles[saveStatus] ?? ''}`} aria-live="polite">
+          {saveStatus === 'saving'  && <><Loader2 size={14} className={styles.spin} aria-hidden="true" /> {t('boardEditor.saving')}</>}
+          {saveStatus === 'saved'   && <><Check size={14} aria-hidden="true" /> {t('boardEditor.saved')}</>}
+          {saveStatus === 'offline' && <><WifiOff size={14} aria-hidden="true" /> {t('boardEditor.saveOffline')}</>}
+          {saveStatus === 'error'   && <><AlertTriangle size={14} aria-hidden="true" /> {t('boardEditor.saveError')}</>}
         </span>
         <div className={styles.headerControls}>
           {canEdit && (
             <>
-              <button
-                type="button"
-                className={styles.helpBtn}
+              <Button
+                variant="secondary"
+                size="md"
+                iconOnly
                 onClick={drawing.undo}
                 disabled={!drawing.canUndo}
                 aria-label={t('drawing.undo')}
                 title={t('drawing.undoTitle')}
               >
-                ↩
-              </button>
-              <button
-                type="button"
-                className={styles.helpBtn}
+                <Undo2 size={18} aria-hidden="true" />
+              </Button>
+              <Button
+                variant="secondary"
+                size="md"
+                iconOnly
                 onClick={drawing.redo}
                 disabled={!drawing.canRedo}
                 aria-label={t('drawing.redo')}
                 title={t('drawing.redoTitle')}
               >
-                ↪
-              </button>
+                <Redo2 size={18} aria-hidden="true" />
+              </Button>
             </>
           )}
           {canEdit && (
@@ -504,15 +527,16 @@ export default function BoardEditorPage() {
               onChangeBallColor={handleChangeBallColor}
             />
           )}
-          <button
-            type="button"
-            className={styles.helpBtn}
+          <Button
+            variant="secondary"
+            size="md"
+            iconOnly
             onClick={() => setShowShortcuts(true)}
             aria-label={t('shortcuts.openLabel')}
             title={t('shortcuts.openLabel')}
           >
-            ⌨
-          </button>
+            <Keyboard size={18} aria-hidden="true" />
+          </Button>
         </div>
       </header>
 
@@ -638,7 +662,7 @@ export default function BoardEditorPage() {
             canEdit && {
               id: 'draw',
               label: t('boardEditor.tabs.draw'),
-              icon: '✏️',
+              icon: <Pencil size={16} aria-hidden="true" />,
               content: (
                 <DrawingCoordinatesForm
                   activeTool={drawing.activeTool}
@@ -651,7 +675,7 @@ export default function BoardEditorPage() {
             canEdit && {
               id: 'lines',
               label: t('boardEditor.tabs.lines'),
-              icon: '🥍',
+              icon: <Layers size={16} aria-hidden="true" />,
               content: (
                 <LinesPanel
                   lines={lines.lines}
@@ -669,7 +693,9 @@ export default function BoardEditorPage() {
             canEdit && {
               id: 'formations',
               label: t('boardEditor.tabs.formations'),
-              icon: '⭐',
+              icon: <Star size={16} aria-hidden="true" />,
+              // UI/UX-Audit: Ende der "Bearbeiten"-Tab-Gruppe
+              groupEnd: true,
               content: (
                 <FormationsPanel
                   formations={formations.formations}
@@ -684,13 +710,15 @@ export default function BoardEditorPage() {
             {
               id: 'video',
               label: t('boardEditor.tabs.video'),
-              icon: '🎥',
+              icon: <Video size={16} aria-hidden="true" />,
               content: <VideoPanel boardId={boardId} canEdit={canEdit} />,
             },
             {
               id: 'export',
               label: t('boardEditor.tabs.export'),
-              icon: '📤',
+              icon: <Download size={16} aria-hidden="true" />,
+              // UI/UX-Audit: Ende der "Medien/Export"-Tab-Gruppe
+              groupEnd: true,
               content: (
                 <>
                   <ExportPanel boardId={boardId} frames={frames} activeFrame={activeFrame} renderFrame={renderFrame} />
@@ -701,7 +729,7 @@ export default function BoardEditorPage() {
             {
               id: 'notes',
               label: t('boardEditor.tabs.info'),
-              icon: '📋',
+              icon: <Clipboard size={16} aria-hidden="true" />,
               content: (
                 <>
                   <BoardDetailsPanel
@@ -723,19 +751,21 @@ export default function BoardEditorPage() {
             {
               id: 'comments',
               label: t('boardEditor.tabs.comments'),
-              icon: '💬',
+              icon: <MessageCircle size={16} aria-hidden="true" />,
               content: <CommentsPanel resourceKind="boards" resourceId={boardId} />,
             },
             {
               id: 'history',
               label: t('boardEditor.tabs.history'),
-              icon: '🕓',
+              icon: <History size={16} aria-hidden="true" />,
+              // UI/UX-Audit: Ende der "Info"-Tab-Gruppe
+              groupEnd: true,
               content: <VersionsPanel boardId={boardId} canRestore={canEdit} onRestored={loadFrames} />,
             },
             {
               id: 'settings',
               label: t('boardEditor.tabs.settings'),
-              icon: '⚙️',
+              icon: <Settings size={16} aria-hidden="true" />,
               content: (
                 <FieldSettingsPanel
                   showNames={showNames}

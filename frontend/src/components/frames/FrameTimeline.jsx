@@ -5,6 +5,8 @@
  */
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { GripVertical, X, Plus } from 'lucide-react';
+import Button from '../common/Button.jsx';
 import styles from './FrameTimeline.module.css';
 
 const MAX_FRAMES = 50;
@@ -81,33 +83,38 @@ export default function FrameTimeline({
                 <span className={styles.thumbLabel}>{frame.label}</span>
               )}
               {/* Drag-Indikator */}
-              <span className={styles.dragHandle} aria-hidden="true">☲</span>
+              <span className={styles.dragHandle} aria-hidden="true"><GripVertical size={14} aria-hidden="true" /></span>
             </button>
 
             {/* Frame löschen (nur wenn mehr als 1 Frame) */}
             {frames.length > 1 && (
-              <button
+              <Button
+                variant="danger"
+                size="sm"
+                iconOnly
                 className={styles.deleteBtn}
                 onClick={(e) => { e.stopPropagation(); onDelete?.(frame._id); }}
                 aria-label={t('frames.deleteFrameAriaLabel', { number: idx + 1 })}
                 title={t('frames.deleteFrameTitle')}
-              >×</button>
+              ><X size={14} aria-hidden="true" /></Button>
             )}
           </li>
         ))}
       </ol>
 
       {/* + Frame Button */}
-      <button
+      <Button
+        variant="ghost"
+        size="md"
         className={styles.addBtn}
         onClick={() => onAdd?.(currentPlayers, currentElements)}
         disabled={loading || frames.length >= MAX_FRAMES}
         aria-label={t('frames.addFrameAriaLabel')}
         title={frames.length >= MAX_FRAMES ? t('frames.maxFramesTitle', { max: MAX_FRAMES }) : t('frames.addFrameTitle')}
       >
-        <span aria-hidden="true">+</span>
+        <Plus size={16} aria-hidden="true" />
         <span className={styles.addLabel}>{t('frames.addLabel')}</span>
-      </button>
+      </Button>
 
       {/* Frame-Zähler */}
       <span className={styles.counter} aria-live="polite">

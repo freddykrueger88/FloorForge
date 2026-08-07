@@ -5,6 +5,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
+import { AlertTriangle, Eye } from 'lucide-react';
 import FieldContainer from '../components/field/FieldContainer.jsx';
 import { PlaybackControls } from '../components/playback/index.js';
 import { useAnimation } from '../hooks/useAnimation.js';
@@ -49,7 +50,7 @@ export default function SharePage() {
   if (error || !board) {
     return (
       <main className={styles.page} role="main" id="main-content">
-        <p className={styles.centerMsg} role="alert">⚠️ {error ?? t('sharePage.linkInvalid')}</p>
+        <p className={styles.centerMsg} role="alert"><AlertTriangle size={16} aria-hidden="true" /> {error ?? t('sharePage.linkInvalid')}</p>
       </main>
     );
   }
@@ -61,7 +62,7 @@ export default function SharePage() {
     <main className={styles.page} role="main" id="main-content">
       <header className={styles.header}>
         <h1 className={styles.title}>{board.name}</h1>
-        <span className={styles.badge}>👁 {t('sharePage.readonlyBadge')}</span>
+        <span className={styles.badge}><Eye size={16} aria-hidden="true" /> {t('sharePage.readonlyBadge')}</span>
       </header>
 
       <PlaybackControls

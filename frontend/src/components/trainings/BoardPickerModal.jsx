@@ -4,9 +4,11 @@
  */
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { X } from 'lucide-react';
 import { useFocusTrap } from '../../hooks/useFocusTrap.js';
 import { useBoardsApi } from '../../hooks/useBoardsApi.js';
 import { FIELD_TYPE_LABELS } from '../../constants/fieldConfig.js';
+import Button from '../common/Button.jsx';
 import styles from './BoardPickerModal.module.css';
 
 // ROADMAP-Backlog "Übungsbibliothek": Trainer sollen beim Zusammenstellen
@@ -50,7 +52,7 @@ export default function BoardPickerModal({ onConfirm, onClose, adding }) {
       <div className={styles.modal}>
         <header className={styles.modalHeader}>
           <h2 id="board-picker-title" className={styles.modalTitle}>{t('trainings.pickerTitle')}</h2>
-          <button className={styles.closeBtn} onClick={onClose} aria-label={t('trainings.pickerClose')}>✕</button>
+          <Button variant="ghost" size="sm" iconOnly onClick={onClose} aria-label={t('trainings.pickerClose')}><X size={16} aria-hidden="true" /></Button>
         </header>
 
         {boards === null ? (
@@ -100,18 +102,18 @@ export default function BoardPickerModal({ onConfirm, onClose, adding }) {
         )}
 
         <div className={styles.actions}>
-          <button type="button" className={styles.cancelBtn} onClick={onClose}>
+          <Button variant="secondary" size="md" onClick={onClose}>
             {t('trainings.pickerCancel')}
-          </button>
-          <button
-            type="button"
-            className={styles.confirmBtn}
+          </Button>
+          <Button
+            variant="primary"
+            size="md"
             onClick={handleConfirm}
             disabled={adding || !selected}
             aria-disabled={adding || !selected}
           >
             {adding ? t('trainings.pickerAdding') : t('trainings.pickerConfirm')}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

@@ -6,6 +6,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
+import { AlertTriangle, Trash2, Plus, Ban } from 'lucide-react';
 import { useTrainingSessionItems } from '../hooks/useTrainingSessionItems.js';
 import { useBoardsApi } from '../hooks/useBoardsApi.js';
 import { usePdfExport } from '../hooks/usePdfExport.js';
@@ -14,6 +15,7 @@ import { teamColorToFillStroke } from '../utils/color.js';
 import FieldMiniature from '../components/field/FieldMiniature.jsx';
 import BoardPickerModal from '../components/trainings/BoardPickerModal.jsx';
 import CommentsPanel from '../components/comments/CommentsPanel.jsx';
+import Button from '../components/common/Button.jsx';
 import styles from './TrainingSessionPage.module.css';
 
 const EXPORT_W = 1280;
@@ -137,7 +139,7 @@ export default function TrainingSessionPage() {
   if (!session) {
     return (
       <main className={styles.page} id="main-content">
-        {error && <div className={styles.errorBanner} role="alert">⚠️ {error}</div>}
+        {error && <div className={styles.errorBanner} role="alert"><AlertTriangle size={16} aria-hidden="true" /> {error}</div>}
       </main>
     );
   }
@@ -171,14 +173,16 @@ export default function TrainingSessionPage() {
           </h1>
         )}
 
-        <button
+        <Button
+          variant="primary"
+          size="md"
           className={styles.exportBtn}
           onClick={handleExportPdf}
           disabled={exporting || items.length === 0}
           aria-disabled={exporting || items.length === 0}
         >
           {exporting ? t('trainings.exporting') : t('trainings.exportPdf')}
-        </button>
+        </Button>
       </header>
 
       <div className={styles.metaRow}>
@@ -216,7 +220,7 @@ export default function TrainingSessionPage() {
       />
 
       {(error || exportError || pdfError) && (
-        <div className={styles.errorBanner} role="alert">⚠️ {error ?? exportError ?? pdfError}</div>
+        <div className={styles.errorBanner} role="alert"><AlertTriangle size={16} aria-hidden="true" /> {error ?? exportError ?? pdfError}</div>
       )}
 
       {items.length === 0 ? (
@@ -231,7 +235,7 @@ export default function TrainingSessionPage() {
                 {item.boardName ? (
                   <FieldMiniature fieldType={item.boardFieldType} theme={item.boardTheme} width={56} height={80} />
                 ) : (
-                  <span className={styles.itemThumbMissing} aria-hidden="true">🚫</span>
+                  <span className={styles.itemThumbMissing} aria-hidden="true"><Ban size={20} aria-hidden="true" /></span>
                 )}
               </div>
 
@@ -265,37 +269,44 @@ export default function TrainingSessionPage() {
               </div>
 
               <div className={styles.itemActions}>
-                <button
-                  className={styles.moveBtn}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  iconOnly
                   onClick={() => moveItem(id, index, -1)}
                   disabled={index === 0}
                   aria-label={t('trainings.moveUp')}
-                >▲</button>
-                <button
-                  className={styles.moveBtn}
+                >▲</Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  iconOnly
                   onClick={() => moveItem(id, index, 1)}
                   disabled={index === items.length - 1}
                   aria-label={t('trainings.moveDown')}
-                >▼</button>
-                <button
-                  className={styles.removeBtn}
+                >▼</Button>
+                <Button
+                  variant="danger"
+                  size="sm"
+                  iconOnly
                   onClick={() => removeItem(id, item._id)}
                   aria-label={t('trainings.removeItemAriaLabel')}
                   title={t('trainings.removeItemTitle')}
-                >🗑</button>
+                ><Trash2 size={16} aria-hidden="true" /></Button>
               </div>
             </li>
           ))}
         </ol>
       )}
 
-      <button
-        className={styles.addBtn}
+      <Button
+        variant="secondary"
+        size="md"
         onClick={() => setShowPicker(true)}
         disabled={!canAddItem}
       >
-        <span aria-hidden="true">➕</span> {t('trainings.addItem')}
-      </button>
+        <Plus size={16} aria-hidden="true" /> {t('trainings.addItem')}
+      </Button>
 
       {showPicker && (
         <BoardPickerModal

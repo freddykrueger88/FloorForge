@@ -5,8 +5,10 @@
  */
 import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { X, AlertTriangle, Trash2 } from 'lucide-react';
 import { useFocusTrap } from '../../hooks/useFocusTrap.js';
 import { useBoardCollaborators } from '../../hooks/useBoardCollaborators.js';
+import Button from '../common/Button.jsx';
 import styles from './ShareBoardModal.module.css';
 
 export default function ShareBoardModal({ boardId, onClose }) {
@@ -52,7 +54,7 @@ export default function ShareBoardModal({ boardId, onClose }) {
       <div className={styles.modal}>
         <header className={styles.modalHeader}>
           <h2 id="share-board-title" className={styles.modalTitle}>{t('boardShare.title')}</h2>
-          <button className={styles.closeBtn} onClick={onClose} aria-label={t('boardShare.close')}>✕</button>
+          <Button variant="ghost" size="sm" iconOnly onClick={onClose} aria-label={t('boardShare.close')}><X size={18} aria-hidden="true" /></Button>
         </header>
 
         <form className={styles.form} onSubmit={handleAdd}>
@@ -74,13 +76,13 @@ export default function ShareBoardModal({ boardId, onClose }) {
             <option value="read">{t('boardShare.permissionRead')}</option>
             <option value="write">{t('boardShare.permissionWrite')}</option>
           </select>
-          <button type="submit" className={styles.addBtn} disabled={adding || !email.trim()}>
+          <Button type="submit" variant="primary" size="md" disabled={adding || !email.trim()}>
             {adding ? t('boardShare.adding') : t('boardShare.add')}
-          </button>
+          </Button>
         </form>
         <p className={styles.hint}>{t('boardShare.inviteHint')}</p>
 
-        {error && <p className={styles.errorMsg} role="alert">⚠️ {error}</p>}
+        {error && <p className={styles.errorMsg} role="alert"><AlertTriangle size={16} aria-hidden="true" /> {error}</p>}
 
         {loading && collaborators.length === 0 ? (
           <p className={styles.hint}>{t('boardShare.loading')}</p>
@@ -105,14 +107,17 @@ export default function ShareBoardModal({ boardId, onClose }) {
                   <option value="read">{t('boardShare.permissionRead')}</option>
                   <option value="write">{t('boardShare.permissionWrite')}</option>
                 </select>
-                <button
+                <Button
+                  variant="danger"
+                  size="sm"
+                  iconOnly
                   className={styles.removeBtn}
                   onClick={() => removeCollaborator(boardId, c._id)}
                   aria-label={t('boardShare.removeAriaLabel', { email: c.email })}
                   title={t('boardShare.removeTitle')}
                 >
-                  🗑
-                </button>
+                  <Trash2 size={18} aria-hidden="true" />
+                </Button>
               </li>
             ))}
           </ul>

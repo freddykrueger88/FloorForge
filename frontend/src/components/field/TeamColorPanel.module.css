@@ -5,19 +5,8 @@
 }
 
 .toggleBtn {
-  display: inline-flex;
-  align-items: center;
   gap: var(--space-1);
-  padding: var(--space-1) var(--space-2);
-  background: var(--color-surface-2);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  color: var(--color-text);
-  cursor: pointer;
-  font-size: var(--text-sm);
-  transition: var(--transition-interactive);
 }
-.toggleBtn:hover { background: var(--color-surface-offset); }
 
 .colorDot {
   display: inline-block;
@@ -49,16 +38,6 @@
   border-bottom: 1px solid var(--color-border);
 }
 .panelTitle { font-size: var(--text-sm); font-weight: 600; }
-.closeBtn {
-  background: none;
-  border: none;
-  color: var(--color-text-muted);
-  cursor: pointer;
-  font-size: var(--text-base);
-  line-height: 1;
-  padding: 0 var(--space-1);
-}
-.closeBtn:hover { color: var(--color-text); }
 
 .section {
   padding: var(--space-2) var(--space-3) var(--space-1);
@@ -96,18 +75,6 @@
   background: var(--color-surface-2);
   cursor: pointer;
 }
-.resetBtn {
-  background: none;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  color: var(--color-text-muted);
-  cursor: pointer;
-  font-size: var(--text-base);
-  padding: var(--space-1) var(--space-2);
-  transition: var(--transition-interactive);
-}
-.resetBtn:hover { color: var(--color-text); }
-
 .ballPresets {
   display: flex;
   gap: var(--space-1);

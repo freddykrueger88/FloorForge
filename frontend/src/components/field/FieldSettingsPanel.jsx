@@ -8,7 +8,9 @@
  * Verhaltens-Einstellungen.
  */
 import { useTranslation } from 'react-i18next';
+import { Lightbulb, Handshake } from 'lucide-react';
 import FieldNamesBar from './FieldNamesBar.jsx';
+import Button from '../common/Button.jsx';
 import styles from './FieldSettingsPanel.module.css';
 
 export default function FieldSettingsPanel({
@@ -43,7 +45,7 @@ export default function FieldSettingsPanel({
         aria-label={t('field.toggleHints')}
         title={t('field.showHints')}
       >
-        <span aria-hidden="true">💡</span>
+        <Lightbulb size={16} aria-hidden="true" />
         <span>{t('field.hintsLabel')}</span>
       </button>
 
@@ -65,10 +67,10 @@ export default function FieldSettingsPanel({
       )}
 
       {showShareButton && (
-        <button type="button" className={styles.shareBtn} onClick={onOpenShare}>
-          <span aria-hidden="true">🤝</span>
+        <Button variant="secondary" size="md" onClick={onOpenShare}>
+          <Handshake size={16} aria-hidden="true" />
           <span>{t('boardShare.openLabel')}</span>
-        </button>
+        </Button>
       )}
     </section>
   );

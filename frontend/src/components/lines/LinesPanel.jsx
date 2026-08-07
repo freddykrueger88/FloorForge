@@ -10,6 +10,8 @@
  */
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Trash2, Users, Plus } from 'lucide-react';
+import Button from '../common/Button.jsx';
 import styles from './LinesPanel.module.css';
 
 const TYPE_LABEL_KEYS = { offense: 'lines.typeOffense', defense: 'lines.typeDefense', special: 'lines.typeSpecial' };
@@ -56,14 +58,16 @@ export default function LinesPanel({
   return (
     <section className={styles.panel} aria-label={t('lines.sectionAriaLabel')}>
       <header className={styles.header}>
-        <button
+        <Button
+          variant="ghost"
+          size="sm"
           className={styles.collapseBtn}
           onClick={() => setCollapsed((v) => !v)}
           aria-expanded={!collapsed}
           aria-label={collapsed ? t('lines.expand') : t('lines.collapse')}
         >
           <span aria-hidden="true">{collapsed ? '▸' : '▾'}</span> {t('lines.title')}
-        </button>
+        </Button>
         {!collapsed && <span className={styles.count}>{lines.length}/10</span>}
       </header>
 
@@ -97,31 +101,35 @@ export default function LinesPanel({
                         aria-label={t('lines.renameAriaLabel')}
                       />
                     ) : (
-                      <button className={styles.lineName} onClick={() => startRename(line)} title={t('lines.renameTitle')}>
+                      <Button variant="ghost" size="sm" className={styles.lineName} onClick={() => startRename(line)} title={t('lines.renameTitle')}>
                         {line.name}
-                      </button>
+                      </Button>
                     )}
 
                     <span className={styles.typeBadge}>{TYPE_LABEL_KEYS[line.type] ? t(TYPE_LABEL_KEYS[line.type]) : line.type}</span>
 
-                    <button
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       className={styles.iconBtn}
                       onClick={() => setEditingId(isEditing ? null : line._id)}
                       aria-expanded={isEditing}
                       aria-label={t('lines.assignPlayersAriaLabel', { name: line.name })}
                       title={t('lines.assignPlayersTitle')}
                     >
-                      👥 {line.playerIds.length}
-                    </button>
+                      <Users size={14} aria-hidden="true" /> {line.playerIds.length}
+                    </Button>
 
-                    <button
-                      className={styles.deleteBtn}
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      iconOnly
                       onClick={() => onDeleteLine?.(line._id)}
                       aria-label={t('lines.deleteAriaLabel', { name: line.name })}
                       title={t('lines.deleteTitle')}
                     >
-                      🗑
-                    </button>
+                      <Trash2 size={16} aria-hidden="true" />
+                    </Button>
                   </div>
 
                   {isEditing && (
@@ -184,14 +192,17 @@ export default function LinesPanel({
               disabled={!canAddLine}
               aria-label={t('lines.newLineAriaLabel')}
             />
-            <button
+            <Button
+              variant="primary"
+              size="sm"
+              iconOnly
               className={styles.addBtn}
               onClick={handleAdd}
               disabled={!canAddLine || !newName.trim()}
               aria-label={t('lines.addAriaLabel')}
             >
-              ＋
-            </button>
+              <Plus size={18} aria-hidden="true" />
+            </Button>
           </div>
           {!canAddLine && <p className={styles.limitHint}>{t('lines.limitHint')}</p>}
         </>

@@ -54,29 +54,7 @@
 }
 .cancelBtn {
   flex: 1;
-  padding: var(--space-3);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--color-border);
-  background: transparent;
-  color: var(--color-text-muted);
-  cursor: pointer;
-  font-size: var(--text-sm);
-  min-height: 44px;
-  transition: background var(--transition-interactive);
 }
-.cancelBtn:hover:not(:disabled) { background: var(--color-surface-offset); }
-.cancelBtn:disabled { opacity: 0.4; cursor: not-allowed; }
 .confirmBtn {
   flex: 1;
-  padding: var(--space-3);
-  border-radius: var(--radius-md);
-  border: none;
-  cursor: pointer;
-  font-size: var(--text-sm);
-  font-weight: 600;
-  min-height: 44px;
-  transition: background var(--transition-interactive);
 }
-.confirmBtn:disabled { opacity: 0.4; cursor: not-allowed; }
-.confirm_danger { background: var(--color-error); color: #fff; }
-.confirm_danger:hover:not(:disabled) { background: var(--color-error-hover); }

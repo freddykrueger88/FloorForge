@@ -5,8 +5,10 @@
  */
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { AlertTriangle } from 'lucide-react';
 import { useVersions } from '../../hooks/useVersions.js';
 import { formatDate } from '../../utils/formatDate.js';
+import Button from '../common/Button.jsx';
 import styles from './VersionsPanel.module.css';
 
 export default function VersionsPanel({ boardId, canRestore, onRestored }) {
@@ -32,7 +34,7 @@ export default function VersionsPanel({ boardId, canRestore, onRestored }) {
       <h3 className={styles.heading}>{t('versions.title')}</h3>
       <p className={styles.hint}>{t('versions.intro')}</p>
 
-      {error && <p className={styles.msgError}>⚠️ {error}</p>}
+      {error && <p className={styles.msgError}><AlertTriangle size={16} aria-hidden="true" /> {error}</p>}
 
       {loading && versions.length === 0 ? (
         <p className={styles.hint}>{t('versions.loading')}</p>
@@ -46,14 +48,15 @@ export default function VersionsPanel({ boardId, canRestore, onRestored }) {
                 {formatDate(v.createdAt, { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
               </span>
               {canRestore && (
-                <button
-                  className={styles.restoreBtn}
+                <Button
+                  variant="secondary"
+                  size="sm"
                   onClick={() => handleRestore(v._id)}
                   disabled={restoringId === v._id}
                   aria-label={t('versions.restoreAriaLabel')}
                 >
                   {restoringId === v._id ? t('versions.restoring') : t('versions.restoreBtn')}
-                </button>
+                </Button>
               )}
             </li>
           ))}

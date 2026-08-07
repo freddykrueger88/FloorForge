@@ -3,7 +3,9 @@
  */
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { AlertTriangle } from 'lucide-react';
 import { useFocusTrap } from '../../hooks/useFocusTrap.js';
+import Button from '../common/Button.jsx';
 import styles from './DeleteConfirmDialog.module.css';
 
 export default function DeleteConfirmDialog({ boardName, onConfirm, onCancel, loading }) {
@@ -21,22 +23,24 @@ export default function DeleteConfirmDialog({ boardName, onConfirm, onCancel, lo
       aria-describedby="delete-msg"
     >
       <div className={`${styles.dialog} ${styles.danger}`}>
-        <div className={styles.icon} aria-hidden="true">⚠️</div>
+        <div className={styles.icon}><AlertTriangle size={32} aria-hidden="true" /></div>
         <h2 id="delete-title" className={styles.title}>{t('dialogs.deleteBoard.title')}</h2>
         <p id="delete-msg" className={styles.msg}>{t('dialogs.deleteBoard.message', { name: boardName })}</p>
 
         <div className={styles.actions}>
-          <button className={styles.cancelBtn} onClick={onCancel} disabled={loading}>
+          <Button variant="secondary" size="md" className={styles.cancelBtn} onClick={onCancel} disabled={loading}>
             {t('dialogs.deleteBoard.cancel')}
-          </button>
-          <button
-            className={`${styles.confirmBtn} ${styles.confirm_danger}`}
+          </Button>
+          <Button
+            variant="danger"
+            size="md"
+            className={styles.confirmBtn}
             onClick={onConfirm}
             disabled={loading}
             aria-live="polite"
           >
             {loading ? t('dialogs.deleteBoard.deleting') : t('dialogs.deleteBoard.confirm')}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

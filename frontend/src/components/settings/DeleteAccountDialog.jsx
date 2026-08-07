@@ -4,6 +4,7 @@
  */
 import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { AlertTriangle } from 'lucide-react';
 import { useFocusTrap } from '../../hooks/useFocusTrap.js';
 import styles from '../boards/DeleteConfirmDialog.module.css';
 
@@ -24,7 +25,7 @@ export default function DeleteAccountDialog({ userEmail, onConfirm, onCancel, lo
   return (
     <div ref={containerRef} className={styles.backdrop} role="alertdialog" aria-modal="true" aria-labelledby="del-acc-title">
       <div className={`${styles.dialog} ${styles.danger}`}>
-        <div className={styles.icon} aria-hidden="true">{step === 0 ? '⚠️' : step === 1 ? '🚨' : '🔴'}</div>
+        <div className={styles.icon} aria-hidden="true"><AlertTriangle size={32} aria-hidden="true" /></div>
 
         {step === 0 && (
           <>
@@ -62,7 +63,7 @@ export default function DeleteAccountDialog({ userEmail, onConfirm, onCancel, lo
                 color: 'var(--color-text)', fontSize: 'var(--text-sm)',
               }}
             />
-            {error && <p className={styles.msg} style={{ color: 'var(--color-error)' }}>⚠️ {error}</p>}
+            {error && <p className={styles.msg} style={{ color: 'var(--color-error)' }}><AlertTriangle size={16} aria-hidden="true" /> {error}</p>}
           </>
         )}
 

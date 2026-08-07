@@ -98,21 +98,5 @@
 }
 
 .deleteBtn {
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius-md);
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  font-size: 0.9rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-text-faint);
   flex-shrink: 0;
-  transition: background var(--transition-interactive), color var(--transition-interactive);
-}
-.deleteBtn:hover {
-  background: var(--color-error-highlight);
-  color: var(--color-error);
 }

@@ -6,7 +6,9 @@
  */
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { History, X } from 'lucide-react';
 import { TOOLS } from '../../constants/drawingConfig.js';
+import Button from '../common/Button.jsx';
 import styles from './HistoryPanel.module.css';
 
 function actionLabel(t, isDE, action) {
@@ -26,21 +28,23 @@ export default function HistoryPanel({ undoStack = [], redoStack = [], onJump })
 
   return (
     <div className={styles.wrapper}>
-      <button
-        className={styles.toggleBtn}
+      <Button
+        variant="secondary"
+        size="md"
+        iconOnly
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-label={t('drawing.historyOpen')}
         title={t('drawing.historyOpen')}
       >
-        🕘
-      </button>
+        <History size={18} aria-hidden="true" />
+      </Button>
 
       {open && (
         <div className={styles.panel} role="dialog" aria-label={t('drawing.historyTitle')}>
           <div className={styles.panelHeader}>
             <span className={styles.panelTitle}>{t('drawing.historyTitle')}</span>
-            <button className={styles.closeBtn} onClick={() => setOpen(false)} aria-label={t('shortcuts.close')}>✕</button>
+            <Button variant="ghost" size="sm" iconOnly onClick={() => setOpen(false)} aria-label={t('shortcuts.close')}><X size={18} aria-hidden="true" /></Button>
           </div>
 
           {isEmpty ? (
@@ -49,23 +53,27 @@ export default function HistoryPanel({ undoStack = [], redoStack = [], onJump })
             <ul className={styles.list}>
               {past.map((entry, i) => (
                 <li key={`past-${i}`}>
-                  <button
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     className={styles.entryBtn}
                     onClick={() => onJump(-(past.length - 1 - i))}
                   >
                     {actionLabel(t, isDE, entry.label)}
-                  </button>
+                  </Button>
                 </li>
               ))}
               <li className={styles.now} aria-current="true">{t('drawing.historyNow')}</li>
               {future.map((entry, j) => (
                 <li key={`future-${j}`}>
-                  <button
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     className={styles.entryBtn}
                     onClick={() => onJump(j + 1)}
                   >
                     {actionLabel(t, isDE, entry.label)}
-                  </button>
+                  </Button>
                 </li>
               ))}
             </ul>

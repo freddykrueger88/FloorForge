@@ -6,8 +6,10 @@
  */
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { AlertTriangle, Trash2 } from 'lucide-react';
 import { useVideos } from '../../hooks/useVideos.js';
 import VideoAnnotationOverlay from './VideoAnnotationOverlay.jsx';
+import Button from '../common/Button.jsx';
 import styles from './VideoPanel.module.css';
 
 const MAX_VIDEOS = 5;
@@ -43,7 +45,7 @@ export default function VideoPanel({ boardId, canEdit }) {
       <h3 className={styles.title}>{t('video.title')}</h3>
       <p className={styles.hint}>{t('video.hint')}</p>
 
-      {error && <p className={styles.errorMsg} role="alert">⚠️ {error}</p>}
+      {error && <p className={styles.errorMsg} role="alert"><AlertTriangle size={16} aria-hidden="true" /> {error}</p>}
 
       {canEdit && (
         <div className={styles.uploadRow}>
@@ -86,14 +88,17 @@ export default function VideoPanel({ boardId, canEdit }) {
                 <span className={styles.itemTitle}>{v.title || v.filename}</span>
                 <span className={styles.itemMeta}>{formatSize(v.sizeBytes)}</span>
                 {canEdit && (
-                  <button
+                  <Button
+                    variant="danger"
+                    size="sm"
+                    iconOnly
                     className={styles.deleteBtn}
                     onClick={() => deleteVideo(v._id)}
                     aria-label={t('video.deleteAriaLabel', { title: v.title || v.filename })}
                     title={t('video.delete')}
                   >
-                    🗑
-                  </button>
+                    <Trash2 size={18} aria-hidden="true" />
+                  </Button>
                 )}
               </div>
               <VideoAnnotationOverlay

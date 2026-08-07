@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import useAuthStore from '../../store/authStore.js';
 import { apiFetch } from '../../utils/apiFetch.js';
 import logo from '../../assets/openfloorball_logo_cropped.png';
+import Button from '../common/Button.jsx';
 import styles from './Header.module.css';
 
 const LANGUAGES = ['de', 'en'];
@@ -72,9 +73,9 @@ export default function Header() {
         </div>
 
         {user && (
-          <button type="button" className={styles.logoutBtn} onClick={() => useAuthStore.getState().logout()}>
+          <Button variant="secondary" size="sm" onClick={() => useAuthStore.getState().logout()}>
             {t('nav.logout')}
-          </button>
+          </Button>
         )}
       </div>
     </header>

@@ -18,6 +18,8 @@ import './styles/base.css';
 import './styles/auth.css';
 import '@fontsource/opendyslexic/400.css';
 import '@fontsource/opendyslexic/700.css';
+import '@fontsource/oswald/500.css';
+import '@fontsource/oswald/700.css';
 
 const LoginPage      = lazy(() => import('./pages/LoginPage.jsx'));
 const RegisterPage   = lazy(() => import('./pages/RegisterPage.jsx'));

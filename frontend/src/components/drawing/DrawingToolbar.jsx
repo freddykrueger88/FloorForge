@@ -3,8 +3,10 @@
  * Platzierung: links neben dem Spielfeld (vertikal)
  */
 import { useTranslation } from 'react-i18next';
+import { Undo2, Redo2, Trash2, Palette } from 'lucide-react';
 import { TOOLS, TOOL_ORDER, DEFAULT_COLORS, STROKE_WIDTHS } from '../../constants/drawingConfig.js';
 import HistoryPanel from './HistoryPanel.jsx';
+import Button from '../common/Button.jsx';
 import styles from './DrawingToolbar.module.css';
 
 export default function DrawingToolbar({
@@ -76,7 +78,7 @@ export default function DrawingToolbar({
         })}
         {/* Custom Color Picker */}
         <label className={styles.colorPickerLabel} title={t('drawing.customColor')}>
-          <span aria-hidden="true">🎨</span>
+          <Palette size={16} aria-hidden="true" />
           <input
             type="color"
             className={styles.colorInput}
@@ -116,27 +118,33 @@ export default function DrawingToolbar({
 
       {/* ── Aktionen ── */}
       <div className={styles.group}>
-        <button
-          className={styles.actionBtn}
+        <Button
+          variant="ghost"
+          size="md"
+          iconOnly
           onClick={onUndo}
           disabled={!canUndo}
           title={t('drawing.undoTitle')}
           aria-label={t('drawing.undo')}
-        >↩</button>
-        <button
-          className={styles.actionBtn}
+        ><Undo2 size={18} aria-hidden="true" /></Button>
+        <Button
+          variant="ghost"
+          size="md"
+          iconOnly
           onClick={onRedo}
           disabled={!canRedo}
           title={t('drawing.redoTitle')}
           aria-label={t('drawing.redo')}
-        >↪</button>
-        <button
-          className={`${styles.actionBtn} ${styles.clearBtn}`}
+        ><Redo2 size={18} aria-hidden="true" /></Button>
+        <Button
+          variant="danger"
+          size="md"
+          iconOnly
           onClick={onClear}
           disabled={elementCount === 0}
           title={t('drawing.clearAll')}
           aria-label={t('drawing.clearAll')}
-        >🗑</button>
+        ><Trash2 size={18} aria-hidden="true" /></Button>
         <HistoryPanel undoStack={undoStack} redoStack={redoStack} onJump={onJumpHistory} />
       </div>
     </aside>

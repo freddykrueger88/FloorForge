@@ -17,16 +17,7 @@
 }
 
 .collapseBtn {
-  display: flex;
-  align-items: center;
   gap: var(--space-1);
-  background: none;
-  border: none;
-  color: var(--color-text);
-  font-weight: 600;
-  font-size: var(--text-sm);
-  cursor: pointer;
-  padding: var(--space-1);
 }
 
 .count {
@@ -60,18 +51,8 @@
 .loadBtn {
   flex: 1;
   min-width: 0;
-  display: flex;
-  align-items: center;
   justify-content: space-between;
-  gap: var(--space-2);
-  padding: var(--space-1) var(--space-2);
-  background: var(--color-surface-2);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  transition: var(--transition-interactive);
 }
-.loadBtn:hover { border-color: var(--color-primary); background: var(--color-primary-highlight); }
 
 .name {
   font-size: var(--text-sm);
@@ -99,16 +80,8 @@
 }
 
 .deleteBtn {
-  background: none;
-  border: none;
-  color: var(--color-text-muted);
-  font-size: var(--text-xs);
-  cursor: pointer;
-  padding: 2px var(--space-1);
-  border-radius: var(--radius-sm);
   flex-shrink: 0;
 }
-.deleteBtn:hover { background: var(--color-error-highlight); color: var(--color-error); }
 
 .addRow {
   display: flex;
@@ -141,17 +114,8 @@
 }
 
 .saveBtn {
-  width: 26px;
-  height: 26px;
-  border-radius: var(--radius-sm);
-  border: none;
-  background: var(--color-primary);
-  color: var(--color-text-inverse);
-  cursor: pointer;
-  font-size: var(--text-sm);
   flex-shrink: 0;
 }
-.saveBtn:disabled { opacity: 0.4; cursor: not-allowed; }
 
 .limitHint {
   font-size: var(--text-xs);

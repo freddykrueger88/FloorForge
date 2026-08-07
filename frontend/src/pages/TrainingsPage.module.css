@@ -35,23 +35,8 @@
 }
 
 .newBtn {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-4) var(--space-6);
-  background: var(--color-primary);
-  color: var(--color-text-inverse);
-  border-radius: var(--radius-lg);
-  font-size: var(--text-base);
-  font-weight: 700;
-  border: none;
-  cursor: pointer;
-  transition: background var(--transition-interactive);
   white-space: nowrap;
-  min-height: 48px;
 }
-.newBtn:hover:not(:disabled) { background: var(--color-primary-hover); }
-.newBtn:disabled { opacity: 0.45; cursor: not-allowed; }
 
 .createForm {
   display: flex;
@@ -75,18 +60,6 @@
   outline: none;
   box-shadow: 0 0 0 3px var(--color-primary-highlight);
 }
-.cancelBtn {
-  padding: var(--space-3) var(--space-5);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--color-border);
-  background: transparent;
-  color: var(--color-text-muted);
-  font-size: var(--text-sm);
-  cursor: pointer;
-  min-height: 44px;
-}
-.cancelBtn:hover { background: var(--color-surface-offset); color: var(--color-text); }
-
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));

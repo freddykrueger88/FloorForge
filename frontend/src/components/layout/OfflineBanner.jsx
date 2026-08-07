@@ -8,8 +8,10 @@
  */
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { AlertTriangle, RefreshCw, WifiOff } from 'lucide-react';
 import useOfflineStore from '../../store/offlineStore.js';
 import ConflictReviewDialog from './ConflictReviewDialog.jsx';
+import Button from '../common/Button.jsx';
 import styles from './OfflineBanner.module.css';
 
 export default function OfflineBanner() {
@@ -32,13 +34,13 @@ export default function OfflineBanner() {
       <div className={styles.banner} role="status" aria-live="polite">
         {showQueueMessage && (
           <span>
-            <span aria-hidden="true">{isOnline ? '🔄' : '📡'}</span> {message}
+            {isOnline ? <RefreshCw size={16} aria-hidden="true" /> : <WifiOff size={16} aria-hidden="true" />} {message}
           </span>
         )}
         {conflictCount > 0 && (
-          <button type="button" className={styles.conflictBtn} onClick={() => setShowConflicts(true)}>
-            <span aria-hidden="true">⚠️</span> {t('offline.conflictBannerBtn', { count: conflictCount })}
-          </button>
+          <Button variant="ghost" size="sm" className={styles.conflictBtn} onClick={() => setShowConflicts(true)}>
+            <AlertTriangle size={16} aria-hidden="true" /> {t('offline.conflictBannerBtn', { count: conflictCount })}
+          </Button>
         )}
       </div>
       {showConflicts && <ConflictReviewDialog onClose={() => setShowConflicts(false)} />}

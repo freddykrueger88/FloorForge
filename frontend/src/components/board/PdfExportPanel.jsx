@@ -4,7 +4,9 @@
  */
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { AlertTriangle } from 'lucide-react';
 import { usePdfExport } from '../../hooks/usePdfExport.js';
+import Button from '../common/Button.jsx';
 import styles from './PdfExportPanel.module.css';
 
 const FRAMES_PER_PAGE_OPTIONS = [1, 2, 4];
@@ -124,7 +126,7 @@ export default function PdfExportPanel({ frames, renderFrame, boardName }) {
       )}
 
       {(error || exportError) && (
-        <p className={`${styles.statusMsg} ${styles.statusError}`}>⚠️ {error ?? exportError}</p>
+        <p className={`${styles.statusMsg} ${styles.statusError}`}><AlertTriangle size={16} aria-hidden="true" /> {error ?? exportError}</p>
       )}
 
       {showPreview && renderedFrames && (
@@ -142,21 +144,24 @@ export default function PdfExportPanel({ frames, renderFrame, boardName }) {
       )}
 
       <div className={styles.actions}>
-        <button
-          className={styles.resetBtn}
+        <Button
+          variant="secondary"
+          size="sm"
           onClick={handlePreviewToggle}
           disabled={!canExport}
         >
           {rendering ? t('pdfExport.rendering') : (showPreview ? t('pdfExport.hidePreview') : t('pdfExport.preview'))}
-        </button>
-        <button
+        </Button>
+        <Button
+          variant="primary"
+          size="md"
           className={styles.exportBtn}
           onClick={handleExport}
           disabled={!canExport}
           aria-disabled={!canExport}
         >
           {exporting ? t('pdfExport.exporting') : t('pdfExport.create')}
-        </button>
+        </Button>
       </div>
     </div>
   );

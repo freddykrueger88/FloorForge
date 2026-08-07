@@ -9,9 +9,11 @@
  * innerhalb der geöffneten Board-Ansicht (NotesPanel).
  */
 import { useTranslation } from 'react-i18next';
+import { Trash2, Calendar, Pencil, Eye } from 'lucide-react';
 import FieldMiniature from '../field/FieldMiniature.jsx';
 import { FIELD_TYPE_LABELS } from '../../constants/fieldConfig.js';
 import { formatDate } from '../../utils/formatDate.js';
+import Button from '../common/Button.jsx';
 import styles from './BoardPostcard.module.css';
 
 export default function BoardPostcard({ board, onClick, onDelete, playbooks, onChangePlaybook }) {
@@ -54,14 +56,17 @@ export default function BoardPostcard({ board, onClick, onDelete, playbooks, onC
         <div className={styles.nameRow}>
           <h3 className={styles.name}>{board.name}</h3>
           {isOwner && onDelete && (
-            <button
+            <Button
+              variant="danger"
+              size="sm"
+              iconOnly
               className={styles.deleteBtn}
               onClick={(e) => { e.stopPropagation(); onDelete(); }}
               aria-label={t('boardCard.deleteAriaLabel')}
               title={t('boardCard.deleteTitle')}
             >
-              🗑
-            </button>
+              <Trash2 size={18} aria-hidden="true" />
+            </Button>
           )}
         </div>
 
@@ -73,7 +78,7 @@ export default function BoardPostcard({ board, onClick, onDelete, playbooks, onC
           <span className={styles.badge}>
             {FIELD_TYPE_LABELS[board.fieldType] ?? board.fieldType}
           </span>
-          <span className={styles.date}>📅 {formatDate(board.updatedAt)}</span>
+          <span className={styles.date}><Calendar size={16} aria-hidden="true" /> {formatDate(board.updatedAt)}</span>
           {board.opponent && (
             <span className={styles.badge}>{t('boardCard.vsOpponent', { opponent: board.opponent })}</span>
           )}
@@ -82,7 +87,11 @@ export default function BoardPostcard({ board, onClick, onDelete, playbooks, onC
           )}
           {!isOwner && (
             <span className={styles.badge}>
-              {board.accessLevel === 'write' ? `✏️ ${t('boardShare.writeBadge')}` : `👁 ${t('boardShare.readonlyBadge')}`}
+              {board.accessLevel === 'write' ? (
+                <><Pencil size={16} aria-hidden="true" /> {t('boardShare.writeBadge')}</>
+              ) : (
+                <><Eye size={16} aria-hidden="true" /> {t('boardShare.readonlyBadge')}</>
+              )}
             </span>
           )}
           <span className={styles.colorChips} aria-hidden="true">

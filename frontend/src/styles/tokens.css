@@ -29,6 +29,11 @@
   --color-success:          #3fb950;
   --color-warning:          #d29922;
   --color-warning-hover:    #e6ac3d;
+  /* UI/UX-Audit: eigener neutral-informativer Ton, getrennt von
+     --color-primary – vorher wurde für reine Hinweise (nicht Warnung/
+     Fehler/Erfolg) teils Primary zweckentfremdet, was mit "hier klicken"
+     verwechselbar war. */
+  --color-info:             #58a6ff;
   --color-surface-offset-2: #2a3038;
   --color-border-radius:    0.5rem;
   --radius-sm:  0.25rem;
@@ -40,7 +45,13 @@
   --shadow-md: 0 4px 12px oklch(0 0 0 / 0.4);
   --shadow-lg: 0 12px 32px oklch(0 0 0 / 0.5);
   --font-body:    'Inter', system-ui, sans-serif;
-  --font-display: 'Inter', system-ui, sans-serif;
+  /* UI/UX-Audit: eigenständige, sportlich-kondensierte Schrift für
+     Überschriften statt überall derselben Inter wie im Fließtext –
+     stärkt den eigenen Charakter, ohne die Lesbarkeit des Fließtexts
+     anzufassen. Fällt unter [data-dyslexia-font] weiter unten bewusst
+     wieder auf eine gut lesbare Schrift zurück (kondensierte Schriften
+     gelten als weniger legasthenie-freundlich). */
+  --font-display: 'Oswald', 'Inter', system-ui, sans-serif;
   --transition-interactive: 180ms cubic-bezier(0.16, 1, 0.3, 1);
   --space-1: 0.25rem; --space-2: 0.5rem;  --space-3: 0.75rem;
   --space-4: 1rem;    --space-6: 1.5rem;  --space-8: 2rem;
@@ -81,6 +92,7 @@
   --color-success:          #1a7f37;
   --color-warning:          #9a6700;
   --color-warning-hover:    #b17d00;
+  --color-info:             #0969da;
   --color-surface-offset-2: #c0c9d1;
   --shadow-sm: 0 1px 2px oklch(0.2 0.01 80 / 0.06);
   --shadow-md: 0 4px 12px oklch(0.2 0.01 80 / 0.08);
@@ -110,6 +122,7 @@
   --color-success:          #4ade80;
   --color-warning:          #fbbf24;
   --color-warning-hover:    #fcd34d;
+  --color-info:             #7dd3fc;
   --color-surface-offset-2: #003a8c;
   --shadow-sm: 0 1px 2px oklch(0 0 0 / 0.4);
   --shadow-md: 0 4px 12px oklch(0 0 0 / 0.5);
@@ -123,7 +136,14 @@
 html { font-size: calc(100% * var(--font-scale)); }
 
 /* ── Legasthenie-freundliche Schrift (Issue #19 – Barrierefreiheit) ── */
-[data-dyslexia-font="true"] { --font-body: 'OpenDyslexic', 'Inter', system-ui, sans-serif; }
+/* Überschreibt auch --font-display: die kondensierte Oswald-Display-
+   Schrift (UI/UX-Audit) gilt als weniger legasthenie-freundlich als eine
+   reguläre, breitere Schrift – im Dyslexie-Modus soll das nicht gegen
+   die eigentliche Barrierefreiheits-Absicht dieses Modus arbeiten. */
+[data-dyslexia-font="true"] {
+  --font-body:    'OpenDyslexic', 'Inter', system-ui, sans-serif;
+  --font-display: 'OpenDyslexic', 'Inter', system-ui, sans-serif;
+}
 
 /* Sanftes Fade beim Theme-Wechsel (Issue #17) */
 body {
@@ -170,6 +190,7 @@ body {
   --color-success:          #22c55e;
   --color-warning:          #f59e0b;
   --color-warning-hover:    #fbbf24;
+  --color-info:             #58a6ff;
   --color-surface-offset-2: #2c2c2c;
   --shadow-sm: 0 1px 2px oklch(0 0 0 / 0.4);
   --shadow-md: 0 4px 12px oklch(0 0 0 / 0.5);
