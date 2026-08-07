@@ -30,6 +30,7 @@ export default [
         fetch: 'readonly', URL: 'readonly', FormData: 'readonly',
         navigator: 'readonly', Blob: 'readonly', File: 'readonly',
         indexedDB: 'readonly', IDBKeyRange: 'readonly',
+        WebSocket: 'readonly',
       },
       parserOptions: { ecmaFeatures: { jsx: true } },
     },

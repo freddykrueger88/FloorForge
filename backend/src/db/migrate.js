@@ -271,6 +271,29 @@ export async function runMigrations() {
     await client.query(`CREATE INDEX IF NOT EXISTS idx_board_invites_board_id ON board_invites(board_id);`);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_board_invites_email ON board_invites(email) WHERE accepted_at IS NULL;`);
 
+    // ── board_videos (ROADMAP-Backlog: Video-/Spielfilm-Integration, MVP) ──
+    // Ablage auf Disk (VIDEOS_DIR, analog EXPORTS_DIR) statt als DB-Blob.
+    // Bewusst KEIN Ablauf-/Cleanup-Job wie bei exports – Videos sind
+    // dauerhafter Nutzerinhalt, kein ephemerer Export. Löschung läuft über
+    // deleteVideo (Owner/Write) bzw. kaskadierend beim Board-Löschen (siehe
+    // boardsController.js/deleteBoard – Dateien werden dort explizit
+    // mitgelöscht, weil Boards nur soft-deleted werden und der
+    // ON DELETE CASCADE unten sonst nie greift).
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS board_videos (
+        id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        board_id    UUID NOT NULL REFERENCES boards(id) ON DELETE CASCADE,
+        user_id     UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        filename    TEXT NOT NULL,
+        storage_key TEXT NOT NULL UNIQUE,
+        mime_type   TEXT NOT NULL,
+        size_bytes  BIGINT NOT NULL,
+        title       TEXT,
+        created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      );
+    `);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_board_videos_board_id ON board_videos(board_id);`);
+
     // ── teams + team_members (ROADMAP Phase 2 – Team und Organisation) ────
     // Additiv zum bestehenden user_id-Besitzmodell: ein Team teilt Kader/
     // Playbooks/Trainingspläne/Formationen zwischen mehreren Trainern (siehe

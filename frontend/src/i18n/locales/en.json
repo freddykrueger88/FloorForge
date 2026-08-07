@@ -221,13 +221,16 @@
     "saved": "✓ Saved",
     "saveError": "⚠ Error saving",
     "saveOffline": "📡 Offline – will sync",
+    "presenceCount_one": "{{count}} other person here",
+    "presenceCount_other": "{{count}} other people here",
     "tabsAriaLabel": "Tools",
     "tabs": {
       "draw": "Draw",
       "lines": "Lines",
       "formations": "Formations",
+      "video": "Video",
       "export": "Export",
-      "notes": "Notes",
+      "info": "Info",
       "comments": "Comments",
       "history": "History",
       "settings": "Settings"
@@ -495,6 +498,8 @@
     "historyAction_update": "Element changed",
     "historyAction_delete": "Element deleted",
     "historyAction_clear": "All cleared",
+    "historyAction_movePlayer": "Player moved",
+    "historyAction_formation": "Formation loaded",
     "historyAction_change": "Change",
     "coordinatesTitle": "Draw by coordinates",
     "coordinatesHint": "Alternative to dragging with the mouse – values in meters.",
@@ -820,5 +825,18 @@
     "loggedInAsOther": "You're logged in as {{currentEmail}}. This invitation is for {{invitedEmail}}.",
     "logoutAndRegister": "Log out & register",
     "backToLogin": "Back to login"
+  },
+  "video": {
+    "title": "🎥 Video",
+    "hint": "Attach short video clips to the board (e.g. an opponent's play) – playback only, no drawing over the video yet.",
+    "upload": "Upload video",
+    "uploading": "Uploading…",
+    "titlePlaceholder": "Caption (optional)",
+    "maxReached": "Maximum {{max}} videos per board.",
+    "loading": "Loading videos…",
+    "empty": "No videos attached yet.",
+    "delete": "Delete",
+    "deleteAriaLabel": "Delete {{title}}",
+    "notSupported": "Your browser doesn't support video playback."
   }
 }

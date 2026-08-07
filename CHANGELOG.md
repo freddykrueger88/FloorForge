@@ -14,6 +14,33 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ## [Unreleased]
 
 ### Added
+- Echtzeit-Präsenz MVP (ROADMAP-Backlog "Echtzeit-Co-Editing"): zeigt im
+  Board-Header an, wer gerade dasselbe Board geöffnet hat ("👥 2 weitere
+  Personen hier"). Neue WebSocket-Infrastruktur (`ws`-Paket,
+  `services/presenceServer.js`, `/api/ws/presence`), nginx leitet
+  Upgrade-Requests darüber bereits über die bestehende `/api/`-Location
+  durch. Bewusst NICHT enthalten: Live-Cursor-Positionen, Konflikt-
+  Auflösung bei simultanem Bearbeiten – beides bräuchte ein eigenes
+  UX-Konzept, siehe `presenceServer.js`-Kommentar.
+- Video-Integration MVP (ROADMAP-Backlog): bis zu 5 kurze Videoclips pro
+  Board hochladen (MP4/WebM/MOV, je max. 200MB), nativer Player mit
+  Scrubbing (Range-Requests). Neuer Tab "🎥 Video" im Board-Editor.
+  Bewusst NICHT enthalten: Zeichnen über dem Video, Schnitt/Trimmen,
+  Szenen-Timeline – eigene, deutlich größere Ausbaustufen mit eigenem
+  UX-Konzept, siehe `videoController.js`-Kommentar. Ablage auf Disk
+  (neues `videos_data`-Volume), Dateien werden beim Board-Löschen (auch
+  Soft-Delete) automatisch mitgelöscht.
+- Undo/Redo (Strg+Z / Strg+Y) deckt jetzt auch Spieler-Positionen ab –
+  bisher war nur das Zeichnen (Pfeile, Freihand) rückgängig machbar,
+  Spieler ziehen/per Pfeiltaste verschieben hatte gar keine Undo-
+  Anbindung. `useDrawing.js` verwaltet Spieler und Elemente jetzt über
+  einen gemeinsamen `useReducer`-Verlauf – Strg+Z macht immer die
+  zeitlich letzte Aktion rückgängig, egal ob Zeichnung oder Spielerzug.
+  Formation-Vorlagen laden ist ebenfalls undo-bar; Namensänderungen/
+  Roster-Zuweisungen bewusst nicht (keine Taktik-Entscheidung). Zusätzlich
+  zu den bestehenden Buttons in der Zeichnen-Werkzeugleiste jetzt auch
+  ↩/↪-Buttons direkt im Board-Header, unabhängig vom aktiven Tab/Werkzeug
+  immer sichtbar – nicht jeder kennt Strg+Z/Strg+Y.
 - Fertige GIF-/MP4-Exporte lassen sich jetzt direkt über das native
   Teilen-Menü des Geräts verschicken (u.a. WhatsApp), über die
   Web-Share-API (`navigator.share`). Button erscheint nur, wenn der
@@ -121,6 +148,15 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   bleiben bewusst beim bisherigen Last-Write-Wins.
 
 ### Changed
+- Board-Editor: Gegner + Übungsbibliothek-Metadaten (Kategorie/Altersklasse/
+  Ziel/Material) aus dem "Einstellungen"-Tab in einen umbenannten "Info"-Tab
+  (vormals "Notizen") verschoben, zusammen mit den bestehenden Notizen
+  (neue Komponente `BoardDetailsPanel`). Passt inhaltlich besser dorthin
+  ("worum geht's bei diesem Board" statt Anzeige-/Verhaltens-Einstellungen)
+  und macht nebenbei den Unterschied zu "Kommentare" klarer (Info = ein
+  Dokument zum Board, Kommentare = Diskussions-Thread zwischen
+  Kollaboratoren). "Einstellungen" enthält jetzt nur noch Namen/Hinweise/
+  Feldtyp/Teilen.
 - Board-Editor: rechtes Menü (Zeichnen-Koordinaten, Lines, Formationen,
   Export, PDF-Export, Notizen) von einer schmalen 220px-Seitenleiste in
   eine Tab-Leiste unter der Frame-Timeline verschoben – das Feld bekommt

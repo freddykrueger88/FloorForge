@@ -19,6 +19,7 @@ import { rescalePlayers, rescaleElements } from '../utils/fieldRescale.js';
 import { teamColorToFillStroke, normalizeStoredColor } from '../utils/color.js';
 import useAnnounceStore from '../store/announceStore.js';
 import useThemeStore from '../store/themeStore.js';
+import useAuthStore from '../store/authStore.js';
 
 import FieldContainer from '../components/field/FieldContainer.jsx';
 import FieldSettingsPanel from '../components/field/FieldSettingsPanel.jsx';
@@ -29,7 +30,7 @@ import PlayerAccessibleList from '../components/field/PlayerAccessibleList.jsx';
 import { DrawingToolbar, DrawingCoordinatesForm } from '../components/drawing/index.js';
 import { FrameTimeline } from '../components/frames/index.js';
 import { PlaybackControls } from '../components/playback/index.js';
-import { NotesPanel, ExportPanel, PdfExportPanel, ShortcutsOverlay, ShareBoardModal, BoardSidePanelTabs, VersionsPanel } from '../components/board/index.js';
+import { NotesPanel, BoardDetailsPanel, ExportPanel, PdfExportPanel, ShortcutsOverlay, ShareBoardModal, BoardSidePanelTabs, VersionsPanel, VideoPanel } from '../components/board/index.js';
 import { LinesPanel } from '../components/lines/index.js';
 import { FormationsPanel } from '../components/formations/index.js';
 import CommentsPanel from '../components/comments/CommentsPanel.jsx';
@@ -44,6 +45,7 @@ import { useField } from '../hooks/useField.js';
 import { useDrawing } from '../hooks/useDrawing.js';
 import { useAutoSave } from '../hooks/useAutoSave.js';
 import { useAnimation } from '../hooks/useAnimation.js';
+import { usePresence } from '../hooks/usePresence.js';
 
 import styles from './BoardEditorPage.module.css';
 
@@ -139,6 +141,9 @@ export default function BoardEditorPage() {
   } = useFrames(boardId, field.fieldType, board?.name);
 
   const drawing = useDrawing();
+  const currentUserId = useAuthStore((s) => s.user?.id);
+  const presenceUsers = usePresence(boardId);
+  const otherPresentUsers = presenceUsers.filter((u) => u.userId !== currentUserId);
   const lines = useLines(boardId);
   const formations = useFormations();
   const roster = useRoster();
@@ -147,7 +152,6 @@ export default function BoardEditorPage() {
   const { teams, fetchTeams } = useTeams();
   const teamsICanShareWith = teams.filter((tm) => tm.role === 'owner' || tm.role === 'coach');
 
-  const [livePlayers, setLivePlayers] = useState([]);
   const [selectedPlayerId, setSelectedPlayerId] = useState(null);
 
   const [showNames, setShowNames] = useState(false);
@@ -166,16 +170,16 @@ export default function BoardEditorPage() {
   }, []);
 
   const handleNameChange = useCallback((id, name) => {
-    setLivePlayers((prev) => prev.map((p) => (p.id === id ? { ...p, name } : p)));
-  }, []);
+    drawing.setPlayersRaw((prev) => prev.map((p) => (p.id === id ? { ...p, name } : p)));
+  }, [drawing]);
 
   // Issue #53 – Spieler direkt aus dem zentralen Kader zuweisen (Name +
   // Rückennummer), rein optional, ersetzt nicht die freie Eingabe
   const handleAssignRoster = useCallback((id, rosterPlayer) => {
-    setLivePlayers((prev) => prev.map((p) => (p.id === id
+    drawing.setPlayersRaw((prev) => prev.map((p) => (p.id === id
       ? { ...p, name: rosterPlayer.name, number: rosterPlayer.jerseyNumber ?? undefined }
       : p)));
-  }, []);
+  }, [drawing]);
 
   const anim = useAnimation({ frames, activeIndex, goToFrame, arrowKeysEnabled: !selectedPlayerId });
 
@@ -214,8 +218,7 @@ export default function BoardEditorPage() {
 
   useEffect(() => {
     if (anim.playing) return;
-    setLivePlayers(activeFrame?.players ?? []);
-    drawing.loadElements(activeFrame?.elements ?? []);
+    drawing.loadScene(activeFrame?.players ?? [], activeFrame?.elements ?? []);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeFrame?._id, anim.playing]);
 
@@ -224,11 +227,11 @@ export default function BoardEditorPage() {
     await updateFrame(activeFrame._id, { players, elements });
   }, [activeFrame, updateFrame]);
 
-  // Issue #54: vorher wurde nur livePlayers beobachtet – gezeichnete
-  // Pfeile/Linien lösten dadurch kein Autosave aus und gingen beim
-  // Frame-Wechsel verloren, da drawing.elements noch nicht gespeichert war.
+  // Issue #54: vorher wurden nur die Spieler-Positionen beobachtet –
+  // gezeichnete Pfeile/Linien lösten dadurch kein Autosave aus und gingen
+  // beim Frame-Wechsel verloren, da drawing.elements noch nicht gespeichert war.
   const { status: saveStatus, saveNow: saveFrameNow } = useAutoSave(
-    { players: livePlayers, elements: drawing.elements },
+    { players: drawing.players, elements: drawing.elements },
     saveActiveFrame,
     !!activeFrame && !anim.playing && canEdit,
   );
@@ -248,8 +251,8 @@ export default function BoardEditorPage() {
     const currentField = IFF_FIELDS[field.fieldType] ?? IFF_FIELDS.large;
     const x = Math.max(PLAYER_MARGIN_M, Math.min(currentField.width  - PLAYER_MARGIN_M, rawX));
     const y = Math.max(PLAYER_MARGIN_M, Math.min(currentField.height - PLAYER_MARGIN_M, rawY));
-    setLivePlayers((prev) => prev.map((p) => (p.id === id ? { ...p, x, y } : p)));
-  }, [field.fieldType]);
+    drawing.movePlayer(id, x, y);
+  }, [field.fieldType, drawing]);
 
   // Spieler-Auswahl per Screenreader ansagen (Issue #19 – Teil 2)
   const handleSelectPlayer = useCallback((id) => {
@@ -259,7 +262,7 @@ export default function BoardEditorPage() {
       return;
     }
     if (id) {
-      const player = livePlayers.find((p) => p.id === id);
+      const player = drawing.players.find((p) => p.id === id);
       const hintTable = POSITION_HINTS[i18n.language] ?? POSITION_HINTS.de;
       const roleName = hintTable[player?.role]?.name ?? player?.role ?? t('boardEditor.genericPlayer');
       useAnnounceStore.getState().announce(
@@ -271,7 +274,7 @@ export default function BoardEditorPage() {
       useAnnounceStore.getState().announce(t('boardEditor.playerDeselected'));
     }
     setSelectedPlayerId(id);
-  }, [livePlayers, i18n.language, t]);
+  }, [drawing, i18n.language, t]);
 
   // Pfeiltasten verschieben den ausgewählten Spieler, Escape wählt ihn ab
   // (Issue #19 – Tastaturnavigation). Deaktiviert während der Wiedergabe,
@@ -296,7 +299,7 @@ export default function BoardEditorPage() {
       else if (e.key === 'ArrowRight') dx = NUDGE_STEP_M;
       else return;
 
-      const current = livePlayers.find((p) => p.id === selectedPlayerId);
+      const current = drawing.players.find((p) => p.id === selectedPlayerId);
       if (!current) return;
 
       e.preventDefault();
@@ -304,7 +307,7 @@ export default function BoardEditorPage() {
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [selectedPlayerId, livePlayers, anim.playing, handleDragEndPlayer, handleSelectPlayer]);
+  }, [selectedPlayerId, drawing, anim.playing, handleDragEndPlayer, handleSelectPlayer]);
 
   // "?"-Taste öffnet die Tastaturkürzel-Übersicht (Issue #47)
   const [showShortcuts, setShowShortcuts] = useState(false);
@@ -320,7 +323,7 @@ export default function BoardEditorPage() {
     return () => window.removeEventListener('keydown', handler);
   }, []);
 
-  const displayedPlayers = anim.playing ? anim.displayPlayers : livePlayers;
+  const displayedPlayers = anim.playing ? anim.displayPlayers : drawing.players;
 
   const [pendingFieldType, setPendingFieldType] = useState(null);
   const [changingField, setChangingField] = useState(false);
@@ -345,10 +348,9 @@ export default function BoardEditorPage() {
       });
       setBoard(updatedBoard);
 
-      const rescaledLive = rescalePlayers(livePlayers, scaleX, scaleY);
+      const rescaledLive = rescalePlayers(drawing.players, scaleX, scaleY);
       const rescaledElements = rescaleElements(drawing.elements, scaleX, scaleY);
-      setLivePlayers(rescaledLive);
-      drawing.loadElements(rescaledElements);
+      drawing.loadScene(rescaledLive, rescaledElements);
       if (activeFrame?._id) {
         await updateFrame(activeFrame._id, { players: rescaledLive, elements: rescaledElements });
       }
@@ -367,32 +369,34 @@ export default function BoardEditorPage() {
       setChangingField(false);
       setPendingFieldType(null);
     }
-  }, [pendingFieldType, field, boardId, updateBoard, livePlayers, drawing, activeFrame, updateFrame, frames]);
+  }, [pendingFieldType, field, boardId, updateBoard, drawing, activeFrame, updateFrame, frames]);
 
   // Formations-Vorlagen (Issue #46): aktuelle Aufstellung speichern bzw.
-  // eine gespeicherte Vorlage laden. Beim Laden übernimmt setLivePlayers
-  // direkt – die Persistenz läuft wie bei Drag&Drop automatisch über den
-  // bestehenden useAutoSave-Hook, kein eigener Save-Call nötig.
+  // eine gespeicherte Vorlage laden. Beim Laden übernimmt drawing.applyFormation
+  // direkt (undo-bar) – die Persistenz läuft wie bei Drag&Drop automatisch
+  // über den bestehenden useAutoSave-Hook, kein eigener Save-Call nötig.
   const handleSaveFormation = useCallback((name, teamId) => {
     // Formationen sind wiederverwendbare Spieler-Aufstellungen (Issue #46),
     // keine vollständigen Szenen-Schnappschüsse – der Ball gehört nicht dazu.
-    const playersOnly = livePlayers.filter((p) => p.team !== 'ball');
+    const playersOnly = drawing.players.filter((p) => p.team !== 'ball');
     formations.saveFormation({ name, fieldType: field.fieldType, players: playersOnly, teamId });
-  }, [formations, field.fieldType, livePlayers]);
+  }, [formations, field.fieldType, drawing]);
 
   const handleLoadFormation = useCallback((template) => {
     // Formationen enthalten keinen Ball (siehe handleSaveFormation) – beim
     // Laden ergänzen, statt den Ball aus der aktuellen Szene zu verlieren.
+    // Undo-bar (drawing.applyFormation), damit eine versehentlich geladene
+    // Formation genau wie eine Zeichnung mit Strg+Z rückgängig zu machen ist.
     if (template.fieldType === field.fieldType) {
-      setLivePlayers(ensureBall(template.players, field.fieldType));
+      drawing.applyFormation(ensureBall(template.players, field.fieldType));
       return;
     }
     const sourceField = IFF_FIELDS[template.fieldType] ?? IFF_FIELDS.large;
     const targetField = IFF_FIELDS[field.fieldType] ?? IFF_FIELDS.large;
     const scaleX = targetField.width / sourceField.width;
     const scaleY = targetField.height / sourceField.height;
-    setLivePlayers(ensureBall(rescalePlayers(template.players, scaleX, scaleY), field.fieldType));
-  }, [field.fieldType]);
+    drawing.applyFormation(ensureBall(rescalePlayers(template.players, scaleX, scaleY), field.fieldType));
+  }, [field.fieldType, drawing]);
 
   // Issue #15 – renderFrame: rendert einen Frame offline als PNG via Konva
   // Nutzt Konva.Stage direkt (kein React), um ein unsichtbares Canvas zu erstellen
@@ -421,6 +425,14 @@ export default function BoardEditorPage() {
         {board?.accessLevel === 'write' && (
           <span className={styles.readonlyBadge}>✏️ {t('boardShare.writeBadge')}</span>
         )}
+        {otherPresentUsers.length > 0 && (
+          <span
+            className={styles.presenceBadge}
+            title={otherPresentUsers.map((u) => u.displayName).join(', ')}
+          >
+            👥 {t('boardEditor.presenceCount', { count: otherPresentUsers.length })}
+          </span>
+        )}
         <span className={styles.saveStatus} aria-live="polite">
           {saveStatus === 'saving'  && t('boardEditor.saving')}
           {saveStatus === 'saved'   && t('boardEditor.saved')}
@@ -428,6 +440,30 @@ export default function BoardEditorPage() {
           {saveStatus === 'error'   && t('boardEditor.saveError')}
         </span>
         <div className={styles.headerControls}>
+          {canEdit && (
+            <>
+              <button
+                type="button"
+                className={styles.helpBtn}
+                onClick={drawing.undo}
+                disabled={!drawing.canUndo}
+                aria-label={t('drawing.undo')}
+                title={t('drawing.undoTitle')}
+              >
+                ↩
+              </button>
+              <button
+                type="button"
+                className={styles.helpBtn}
+                onClick={drawing.redo}
+                disabled={!drawing.canRedo}
+                aria-label={t('drawing.redo')}
+                title={t('drawing.redoTitle')}
+              >
+                ↪
+              </button>
+            </>
+          )}
           {canEdit && (
             <TeamColorPanel
               homeColor={homeColor}
@@ -529,7 +565,7 @@ export default function BoardEditorPage() {
 
             {!anim.playing && (
               <PlayerAccessibleList
-                players={livePlayers}
+                players={drawing.players}
                 selectedPlayerId={selectedPlayerId}
                 onSelectPlayer={handleSelectPlayer}
               />
@@ -541,7 +577,7 @@ export default function BoardEditorPage() {
             {!anim.playing && selectedPlayerId && selectedPlayerId !== BALL_ID && (
               <div className={styles.infoPanelWrap}>
                 <PlayerInfoPanel
-                  player={livePlayers.find((p) => p.id === selectedPlayerId)}
+                  player={drawing.players.find((p) => p.id === selectedPlayerId)}
                   onClose={() => handleSelectPlayer(null)}
                   onNameChange={handleNameChange}
                   rosterPlayers={roster.rosterPlayers}
@@ -556,11 +592,11 @@ export default function BoardEditorPage() {
           frames={frames}
           activeIndex={activeIndex}
           onSelect={handleFrameSelect}
-          onAdd={canEdit ? () => addFrame(livePlayers, drawing.elements) : undefined}
+          onAdd={canEdit ? () => addFrame(drawing.players, drawing.elements) : undefined}
           onDelete={canEdit ? deleteFrame : undefined}
           onReorder={canEdit ? reorderFrames : undefined}
           loading={framesLoading}
-          currentPlayers={livePlayers}
+          currentPlayers={drawing.players}
           currentElements={drawing.elements}
         />
 
@@ -587,7 +623,7 @@ export default function BoardEditorPage() {
                 <LinesPanel
                   lines={lines.lines}
                   activeLineId={lines.activeLineId}
-                  players={livePlayers}
+                  players={drawing.players}
                   onAddLine={lines.addLine}
                   onRenameLine={(id, name) => lines.updateLine(id, { name })}
                   onDeleteLine={lines.deleteLine}
@@ -613,6 +649,12 @@ export default function BoardEditorPage() {
               ),
             },
             {
+              id: 'video',
+              label: t('boardEditor.tabs.video'),
+              icon: '🎥',
+              content: <VideoPanel boardId={boardId} canEdit={canEdit} />,
+            },
+            {
               id: 'export',
               label: t('boardEditor.tabs.export'),
               icon: '📤',
@@ -625,9 +667,25 @@ export default function BoardEditorPage() {
             },
             {
               id: 'notes',
-              label: t('boardEditor.tabs.notes'),
-              icon: '📝',
-              content: <NotesPanel value={notes} onChange={setNotes} readonly={!canEdit} />,
+              label: t('boardEditor.tabs.info'),
+              icon: '📋',
+              content: (
+                <>
+                  <BoardDetailsPanel
+                    opponent={board?.opponent}
+                    onChangeOpponent={canEdit ? handleChangeOpponent : undefined}
+                    category={board?.category}
+                    onChangeCategory={canEdit ? handleChangeCategory : undefined}
+                    ageGroup={board?.ageGroup}
+                    onChangeAgeGroup={canEdit ? handleChangeAgeGroup : undefined}
+                    goal={board?.goal}
+                    onChangeGoal={canEdit ? handleChangeGoal : undefined}
+                    material={board?.material}
+                    onChangeMaterial={canEdit ? handleChangeMaterial : undefined}
+                  />
+                  <NotesPanel value={notes} onChange={setNotes} readonly={!canEdit} />
+                </>
+              ),
             },
             {
               id: 'comments',
@@ -658,16 +716,6 @@ export default function BoardEditorPage() {
                   onRequestFieldTypeChange={canEdit ? handleRequestFieldTypeChange : undefined}
                   onOpenShare={() => setShowShareModal(true)}
                   showShareButton={board?.accessLevel === 'owner'}
-                  opponent={board?.opponent}
-                  onChangeOpponent={canEdit ? handleChangeOpponent : undefined}
-                  category={board?.category}
-                  onChangeCategory={canEdit ? handleChangeCategory : undefined}
-                  ageGroup={board?.ageGroup}
-                  onChangeAgeGroup={canEdit ? handleChangeAgeGroup : undefined}
-                  goal={board?.goal}
-                  onChangeGoal={canEdit ? handleChangeGoal : undefined}
-                  material={board?.material}
-                  onChangeMaterial={canEdit ? handleChangeMaterial : undefined}
                 />
               ),
             },

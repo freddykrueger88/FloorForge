@@ -88,6 +88,7 @@ services:
     volumes:
       - exports_data:/app/exports
       - backups_data:/app/backups
+      - videos_data:/app/videos
     networks:
       - internal
     depends_on:
@@ -141,6 +142,8 @@ volumes:
     name: openfloorball_exports_data
   backups_data:
     name: openfloorball_backups_data
+  videos_data:
+    name: openfloorball_videos_data
 
 networks:
   internal:

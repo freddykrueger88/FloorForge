@@ -41,8 +41,8 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/src ./src
 COPY --from=builder /app/package.json ./package.json
 
-# Export-/Backup-Ordner anlegen
-RUN mkdir -p /app/exports /app/backups
+# Export-/Backup-/Video-Ordner anlegen
+RUN mkdir -p /app/exports /app/backups /app/videos
 
 # Non-root User
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup \

@@ -2,6 +2,7 @@
  * OpenFloorball – Express Server
  */
 import 'dotenv/config';
+import http from 'http';
 import express from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
@@ -11,6 +12,7 @@ import rateLimit from 'express-rate-limit';
 import { runMigrations } from './db/migrate.js';
 import { connectRedis } from './db/redis.js';
 import { rescheduleBackupCron } from './services/backupCron.js';
+import { attachPresenceServer } from './services/presenceServer.js';
 import apiRoutes from './routes/index.js';
 import { notFoundHandler, errorHandler } from './middleware/errorHandler.js';
 import logger from './utils/logger.js';
@@ -22,6 +24,15 @@ morgan.token('anon-addr', (req) => anonymizeIp(req.ip));
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+
+// ROADMAP-Backlog "Echtzeit-Co-Editing": explizites http.Server-Objekt statt
+// app.listen() (das intern auch nur einen http.Server erzeugt), weil der
+// WebSocket-Präsenz-Server (services/presenceServer.js) sich in dessen
+// "upgrade"-Event einklinken muss – app.listen() gibt dieses Objekt nicht
+// direkt her. Das Attachen selbst ist synchron und passiert unabhängig
+// davon, ob httpServer später tatsächlich lauscht (siehe Bootstrap unten).
+const httpServer = http.createServer(app);
+attachPresenceServer(httpServer);
 
 // Backend läuft hinter dem Nginx-Reverse-Proxy (docker-compose) – erster Hop vertrauenswürdig
 app.set('trust proxy', 1);
@@ -177,7 +188,7 @@ async function bootstrap() {
     await connectRedis();
     await runMigrations();
     await rescheduleBackupCron();
-    app.listen(PORT, '0.0.0.0', () => {
+    httpServer.listen(PORT, '0.0.0.0', () => {
       logger.info(`OpenFloorball Backend läuft auf Port ${PORT} (${process.env.NODE_ENV || 'development'})`);
     });
   } catch (err) {
@@ -193,3 +204,4 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 export default app;
+export { httpServer };

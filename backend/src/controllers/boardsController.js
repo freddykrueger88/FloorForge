@@ -11,6 +11,7 @@ import { success, created, error } from '../utils/apiResponse.js';
 import { buildDefaultPlayers } from '../constants/defaultPositions.js';
 import { getBoardAccessLevel } from '../utils/boardAccess.js';
 import { assertTeamAccess } from '../utils/teamAccess.js';
+import { deleteVideosForBoard } from './videoController.js';
 
 // snake_case (DB) → camelCase (API/Frontend)
 function toApiBoard(row) {
@@ -250,6 +251,10 @@ export async function deleteBoard(req, res) {
     if (result.rows.length === 0) {
       return res.status(404).json(error('Spielfeld nicht gefunden'));
     }
+    // Boards werden nur soft-deleted – der ON DELETE CASCADE von
+    // board_videos greift daher nie von selbst. Video-Dateien explizit
+    // mitlöschen, sonst bleiben u.U. große Dateien für immer auf Platte.
+    await deleteVideosForBoard(req.params.id);
     res.json(success({ message: 'Spielfeld gelöscht' }));
   } catch (err) {
     logger.error('[deleteBoard]', err);

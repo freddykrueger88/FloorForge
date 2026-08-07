@@ -1,14 +1,24 @@
 /**
- * useDrawing – State-Management für alle Zeichen-Elemente
+ * useDrawing – State-Management für Zeichen-Elemente UND Spieler-Positionen
  *
  * Features:
- *   - Undo / Redo (bis zu 50 Schritte)
+ *   - Ein gemeinsamer Undo/Redo-Verlauf (bis zu 50 Schritte) für gezeichnete
+ *     Elemente (Pfeile, Freihand) UND Spieler-Positionen (Drag/Nudge/
+ *     Formation) – Strg+Z macht immer die zeitlich letzte Aktion rückgängig,
+ *     unabhängig davon, ob das ein Pfeil oder ein verschobener Spieler war.
  *   - Elemente hinzufügen, aktualisieren, löschen
  *   - Freihand-Zeichnen (laufend Punkte hinzufügen)
  *   - Aktives Tool & Farbe verwalten
  *   - Tastaturkürzel (Strg+Z, Strg+Y, Entf)
+ *
+ * `players`+`elements`+`undoStack`+`redoStack` laufen über einen
+ * useReducer statt mehrerer useState: bei jedem Undo/Redo-Schritt müssen
+ * players+elements atomar zusammen gelesen und geschrieben werden – ein
+ * Reducer garantiert das auch bei mehreren synchronen dispatch()-Aufrufen
+ * hintereinander (jumpHistory() für Mehrfach-Schritte), ohne sich auf
+ * verschachtelte funktionale setState-Updates verlassen zu müssen.
  */
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useReducer, useState, useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TOOLS, DEFAULT_COLORS, MAX_UNDO_STEPS } from '../constants/drawingConfig.js';
 import useAnnounceStore from '../store/announceStore.js';
@@ -16,12 +26,107 @@ import useAnnounceStore from '../store/announceStore.js';
 let _id = 0;
 const uid = () => `el_${++_id}_${Date.now()}`;
 
+const initialState = { players: [], elements: [], undoStack: [], redoStack: [] };
+
+function pushEntry(stack, players, elements, label) {
+  return [...stack.slice(-MAX_UNDO_STEPS + 1), { players, elements, label }];
+}
+
+function editorReducer(state, action) {
+  switch (action.type) {
+    case 'ADD_ELEMENT':
+      return {
+        ...state,
+        elements: [...state.elements, action.element],
+        undoStack: pushEntry(state.undoStack, state.players, state.elements, action.label ?? 'add'),
+        redoStack: [],
+      };
+    // Laufende Zwischen-Updates während einer Zeichen-Geste (Freihand-Punkte,
+    // Pfeil-Endpunkt) – kein Undo-Push, der Startpunkt wurde bei ADD_ELEMENT
+    // (handlePointerDown) schon gepusht.
+    case 'SET_ELEMENTS_RAW':
+      return { ...state, elements: action.updater(state.elements) };
+    case 'UPDATE_ELEMENT':
+      return {
+        ...state,
+        elements: state.elements.map((el) => (el.id === action.id ? { ...el, ...action.patch } : el)),
+        undoStack: pushEntry(state.undoStack, state.players, state.elements, 'update'),
+        redoStack: [],
+      };
+    case 'DELETE_ELEMENT':
+      return {
+        ...state,
+        elements: state.elements.filter((el) => el.id !== action.id),
+        undoStack: pushEntry(state.undoStack, state.players, state.elements, 'delete'),
+        redoStack: [],
+      };
+    case 'CLEAR_ALL':
+      if (state.elements.length === 0) return state;
+      return {
+        ...state,
+        elements: [],
+        undoStack: pushEntry(state.undoStack, state.players, state.elements, 'clear'),
+        redoStack: [],
+      };
+    // Spieler-Drag/-Nudge (bisher gar nicht undo-bar, siehe Hook-Kommentar oben)
+    case 'MOVE_PLAYER':
+      return {
+        ...state,
+        players: state.players.map((p) => (p.id === action.id ? { ...p, x: action.x, y: action.y } : p)),
+        undoStack: pushEntry(state.undoStack, state.players, state.elements, 'movePlayer'),
+        redoStack: [],
+      };
+    // Formation-Vorlage laden ist eine bewusste Taktik-Entscheidung, daher undo-bar
+    case 'APPLY_FORMATION':
+      return {
+        ...state,
+        players: action.players,
+        undoStack: pushEntry(state.undoStack, state.players, state.elements, action.label ?? 'formation'),
+        redoStack: [],
+      };
+    // Metadaten-Edits (Name, Roster-Zuweisung) zählen bewusst NICHT als
+    // Taktik-Undo-Schritt – kein Push.
+    case 'SET_PLAYERS_RAW':
+      return { ...state, players: action.updater(state.players) };
+    // Frame-Wechsel / Feldtyp-Rescale: players+elements komplett ersetzen,
+    // Verlauf zurücksetzen (ein alter Undo-Schritt darf nicht in einen
+    // anderen Frame "zurückspringen").
+    case 'LOAD_SCENE':
+      return { players: action.players ?? [], elements: action.elements ?? [], undoStack: [], redoStack: [] };
+    case 'UNDO': {
+      if (state.undoStack.length === 0) return state;
+      const entry = state.undoStack[state.undoStack.length - 1];
+      return {
+        ...state,
+        players: entry.players,
+        elements: entry.elements,
+        undoStack: state.undoStack.slice(0, -1),
+        redoStack: [...state.redoStack, { players: state.players, elements: state.elements, label: entry.label }],
+      };
+    }
+    case 'REDO': {
+      if (state.redoStack.length === 0) return state;
+      const entry = state.redoStack[state.redoStack.length - 1];
+      return {
+        ...state,
+        players: entry.players,
+        elements: entry.elements,
+        redoStack: state.redoStack.slice(0, -1),
+        undoStack: [...state.undoStack, { players: state.players, elements: state.elements, label: entry.label }],
+      };
+    }
+    default:
+      return state;
+  }
+}
+
 export function useDrawing() {
   const { t, i18n } = useTranslation();
   const isEn = i18n.language === 'en';
-  const [elements,    setElements]    = useState([]);
-  const [undoStack,   setUndoStack]   = useState([]);
-  const [redoStack,   setRedoStack]   = useState([]);
+
+  const [state, dispatch] = useReducer(editorReducer, initialState);
+  const { players, elements, undoStack, redoStack } = state;
+
   const [activeTool,  setActiveToolState]  = useState('move');
   const changeTool = useCallback((tool) => {
     const toolDef = TOOLS[tool];
@@ -45,40 +150,9 @@ export function useDrawing() {
   const [isDrawing,   setIsDrawing]   = useState(false);
   const currentElRef = useRef(null); // Laufendes Freihand-Element
 
-  // ── Undo/Redo Helpers ──────────────────────────────────────────────
-  // Jeder Stack-Eintrag trägt neben dem Element-Snapshot ein "label"
-  // (Aktions-Typ, z.B. 'add'/'delete'/'move') – Grundlage für die
-  // sichtbare Verlaufsliste (Issue #48), nicht nur linear vor/zurück.
-  const pushUndo = useCallback((prevElements, label = 'change') => {
-    setUndoStack((s) => [...s.slice(-MAX_UNDO_STEPS + 1), { elements: prevElements, label }]);
-    setRedoStack([]);
-  }, []);
-
-  const undo = useCallback(() => {
-    setUndoStack((prev) => {
-      if (prev.length === 0) return prev;
-      const newStack = [...prev];
-      const entry = newStack.pop();
-      setElements((cur) => {
-        setRedoStack((r) => [...r, { elements: cur, label: entry.label }]);
-        return entry.elements;
-      });
-      return newStack;
-    });
-  }, []);
-
-  const redo = useCallback(() => {
-    setRedoStack((prev) => {
-      if (prev.length === 0) return prev;
-      const newStack = [...prev];
-      const entry = newStack.pop();
-      setElements((cur) => {
-        setUndoStack((u) => [...u, { elements: cur, label: entry.label }]);
-        return entry.elements;
-      });
-      return newStack;
-    });
-  }, []);
+  // ── Undo/Redo ────────────────────────────────────────────────────────
+  const undo = useCallback(() => dispatch({ type: 'UNDO' }), []);
+  const redo = useCallback(() => dispatch({ type: 'REDO' }), []);
 
   // Springt direkt zu einem Punkt in der Verlaufsliste (Issue #48) – ruft
   // die bereits geprüfte undo()/redo()-Logik wiederholt auf, statt die
@@ -90,43 +164,44 @@ export function useDrawing() {
 
   // ── Element CRUD ───────────────────────────────────────────────────────
   const addElement = useCallback((el) => {
-    setElements((prev) => {
-      pushUndo(prev, 'add');
-      return [...prev, { ...el, id: uid() }];
-    });
-  }, [pushUndo]);
+    dispatch({ type: 'ADD_ELEMENT', element: { ...el, id: uid() }, label: 'add' });
+  }, []);
 
   const updateElement = useCallback((id, patch) => {
-    setElements((prev) => {
-      pushUndo(prev, 'update');
-      return prev.map((el) => el.id === id ? { ...el, ...patch } : el);
-    });
-  }, [pushUndo]);
+    dispatch({ type: 'UPDATE_ELEMENT', id, patch });
+  }, []);
 
   const deleteElement = useCallback((id) => {
-    setElements((prev) => {
-      pushUndo(prev, 'delete');
-      return prev.filter((el) => el.id !== id);
-    });
-    setSelectedId((s) => s === id ? null : s);
-  }, [pushUndo]);
+    dispatch({ type: 'DELETE_ELEMENT', id });
+    setSelectedId((s) => (s === id ? null : s));
+  }, []);
 
-  // Elemente eines Frames übernehmen (z.B. bei Frame-Wechsel) – setzt Undo/Redo zurück
-  const loadElements = useCallback((newElements = []) => {
-    setElements(newElements);
-    setUndoStack([]);
-    setRedoStack([]);
+  // Spieler+Elemente eines Frames übernehmen (Frame-Wechsel, Feldtyp-
+  // Rescale) – setzt Undo/Redo zurück.
+  const loadScene = useCallback((newPlayers = [], newElements = []) => {
+    dispatch({ type: 'LOAD_SCENE', players: newPlayers, elements: newElements });
     setSelectedId(null);
   }, []);
 
   const clearAll = useCallback(() => {
-    setElements((prev) => {
-      if (prev.length === 0) return prev;
-      pushUndo(prev, 'clear');
-      return [];
-    });
+    dispatch({ type: 'CLEAR_ALL' });
     setSelectedId(null);
-  }, [pushUndo]);
+  }, []);
+
+  // Spieler verschieben (Drag oder Pfeiltasten-Nudge, siehe BoardEditorPage.jsx)
+  const movePlayer = useCallback((id, x, y) => {
+    dispatch({ type: 'MOVE_PLAYER', id, x, y });
+  }, []);
+
+  // Formations-Vorlage laden (Issue #46) – undo-bar
+  const applyFormation = useCallback((newPlayers, label = 'formation') => {
+    dispatch({ type: 'APPLY_FORMATION', players: newPlayers, label });
+  }, []);
+
+  // Metadaten-Edits ohne Undo-Anbindung (Name, Roster-Zuweisung)
+  const setPlayersRaw = useCallback((updater) => {
+    dispatch({ type: 'SET_PLAYERS_RAW', updater: typeof updater === 'function' ? updater : () => updater });
+  }, []);
 
   // ── Zeichen-Events (Canvas-Koordinaten in Metern) ─────────────────────
   const handlePointerDown = useCallback((x_m, y_m) => {
@@ -147,10 +222,7 @@ export function useDrawing() {
         arrowHead: false,
       };
       currentElRef.current = el.id;
-      setElements((prev) => {
-        pushUndo(prev, 'freehand');
-        return [...prev, el];
-      });
+      dispatch({ type: 'ADD_ELEMENT', element: el, label: 'freehand' });
     } else {
       // Pfeil/Linie: Startpunkt setzen, Endpunkt = Startpunkt (wird on-move aktualisiert)
       const el = {
@@ -164,24 +236,24 @@ export function useDrawing() {
         arrowHead: tool.arrowHead ?? true,
       };
       currentElRef.current = el.id;
-      setElements((prev) => {
-        pushUndo(prev, activeTool);
-        return [...prev, el];
-      });
+      dispatch({ type: 'ADD_ELEMENT', element: el, label: activeTool });
     }
-  }, [activeTool, activeColor, strokeWidth, pushUndo]);
+  }, [activeTool, activeColor, strokeWidth]);
 
   const handlePointerMove = useCallback((x_m, y_m) => {
     if (!isDrawing || !currentElRef.current) return;
     const id = currentElRef.current;
 
-    setElements((prev) => prev.map((el) => {
-      if (el.id !== id) return el;
-      if (el.type === 'freehand') {
-        return { ...el, points: [...el.points, x_m, y_m] };
-      }
-      return { ...el, x2: x_m, y2: y_m };
-    }));
+    dispatch({
+      type: 'SET_ELEMENTS_RAW',
+      updater: (prev) => prev.map((el) => {
+        if (el.id !== id) return el;
+        if (el.type === 'freehand') {
+          return { ...el, points: [...el.points, x_m, y_m] };
+        }
+        return { ...el, x2: x_m, y2: y_m };
+      }),
+    });
   }, [isDrawing]);
 
   const handlePointerUp = useCallback(() => {
@@ -219,12 +291,9 @@ export function useDrawing() {
       dash: toolDef.dash ?? [],
       arrowHead: toolDef.arrowHead ?? true,
     };
-    setElements((prev) => {
-      pushUndo(prev, tool);
-      return [...prev, el];
-    });
+    dispatch({ type: 'ADD_ELEMENT', element: el, label: tool });
     useAnnounceStore.getState().announce(t('drawing.announceElementAdded'));
-  }, [activeColor, strokeWidth, pushUndo, t]);
+  }, [activeColor, strokeWidth, t]);
 
   const addFreehandElement = useCallback((points) => {
     const el = {
@@ -236,12 +305,9 @@ export function useDrawing() {
       dash: [],
       arrowHead: false,
     };
-    setElements((prev) => {
-      pushUndo(prev, 'freehand');
-      return [...prev, el];
-    });
+    dispatch({ type: 'ADD_ELEMENT', element: el, label: 'freehand' });
     useAnnounceStore.getState().announce(t('drawing.announceElementAdded'));
-  }, [activeColor, strokeWidth, pushUndo, t]);
+  }, [activeColor, strokeWidth, t]);
 
   // Eraser: Element per Klick löschen
   const handleElementClick = useCallback((id) => {
@@ -283,17 +349,18 @@ export function useDrawing() {
 
   return {
     // State
-    elements, selectedId, isDrawing,
+    players, elements, selectedId, isDrawing,
     activeTool,  setActiveTool: changeTool,
     activeColor, setActiveColor: changeColor,
     strokeWidth, setStrokeWidth: changeStrokeWidth,
-    // Undo/Redo
+    // Undo/Redo (gemeinsam für players + elements)
     undo, redo, jumpHistory,
     undoStack, redoStack,
     canUndo: undoStack.length > 0,
     canRedo: redoStack.length > 0,
     // Aktionen
-    addElement, updateElement, deleteElement, clearAll, loadElements,
+    addElement, updateElement, deleteElement, clearAll, loadScene,
+    movePlayer, applyFormation, setPlayersRaw,
     handlePointerDown, handlePointerMove, handlePointerUp,
     handleElementClick,
     addArrowElement, addFreehandElement,

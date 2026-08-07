@@ -221,13 +221,16 @@
     "saved": "✓ Gespeichert",
     "saveError": "⚠ Fehler beim Speichern",
     "saveOffline": "📡 Offline – wird synchronisiert",
+    "presenceCount_one": "{{count}} weitere Person hier",
+    "presenceCount_other": "{{count}} weitere Personen hier",
     "tabsAriaLabel": "Werkzeuge",
     "tabs": {
       "draw": "Zeichnen",
       "lines": "Lines",
       "formations": "Formationen",
+      "video": "Video",
       "export": "Export",
-      "notes": "Notizen",
+      "info": "Info",
       "comments": "Kommentare",
       "history": "Verlauf",
       "settings": "Einstellungen"
@@ -495,6 +498,8 @@
     "historyAction_update": "Element geändert",
     "historyAction_delete": "Element gelöscht",
     "historyAction_clear": "Alle gelöscht",
+    "historyAction_movePlayer": "Spieler verschoben",
+    "historyAction_formation": "Formation geladen",
     "historyAction_change": "Änderung",
     "coordinatesTitle": "Per Koordinaten zeichnen",
     "coordinatesHint": "Alternative zum Ziehen mit der Maus – Werte in Metern.",
@@ -820,5 +825,18 @@
     "loggedInAsOther": "Du bist eingeloggt als {{currentEmail}}. Diese Einladung ist für {{invitedEmail}}.",
     "logoutAndRegister": "Ausloggen & registrieren",
     "backToLogin": "Zum Login"
+  },
+  "video": {
+    "title": "🎥 Video",
+    "hint": "Kurze Videoclips ans Board anhängen (z.B. eine Spielsituation des Gegners) – nur zum Ansehen, noch keine Zeichnungen über dem Video.",
+    "upload": "Video hochladen",
+    "uploading": "Lädt hoch…",
+    "titlePlaceholder": "Beschriftung (optional)",
+    "maxReached": "Maximal {{max}} Videos pro Board.",
+    "loading": "Lädt Videos…",
+    "empty": "Noch keine Videos angehängt.",
+    "delete": "Löschen",
+    "deleteAriaLabel": "{{title}} löschen",
+    "notSupported": "Dein Browser unterstützt die Videowiedergabe nicht."
   }
 }

@@ -31,7 +31,8 @@
     "pdfkit": "^0.19.1",
     "pg": "^8.13.1",
     "redis": "^6.2.0",
-    "winston": "^3.17.0"
+    "winston": "^3.17.0",
+    "ws": "^8.21.2"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

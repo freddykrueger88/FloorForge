@@ -31,6 +31,16 @@ beforeAll(async () => {
   await forceRole(admin.id, 'admin');
   await forceRole(regular.id, 'user');
   await forceRole(victim.id, 'user');
+  // Die Rolle steckt im JWT-Payload (Stand beim Ausstellen, siehe
+  // middleware/auth.js) – forceRole() ändert nur die DB, das beim
+  // register() bereits ausgestellte Cookie trägt noch die alte Rolle.
+  // Ohne Re-Login hängt dieser Test also davon ab, dass admin.test.js
+  // zufällig als allererste Datei den allerersten User der gesamten
+  // Test-DB registriert (der wird laut auth.js automatisch Admin) – das
+  // ist von der Jest-Dateireihenfolge abhängig und bricht, sobald eine
+  // andere Testdatei vorher irgendeinen User registriert.
+  const reloginRes = await request(app).post('/api/auth/login').send({ email: admin.email, password: 'Testpass123' });
+  admin.cookie = reloginRes.headers['set-cookie'][0];
 });
 
 afterAll(async () => {

@@ -9,6 +9,7 @@ import frameRoutes from './frames.js';
 import lineRoutes from './lines.js';
 import boardCollaboratorRoutes from './boardCollaborators.js';
 import boardVersionRoutes from './boardVersions.js';
+import videoRoutes from './videos.js';
 import exportRoutes from './exports.js';
 import shareViewRoutes from './shareView.js';
 import inviteRoutes from './invite.js';
@@ -44,6 +45,7 @@ router.use('/boards/:id/lines',   lineRoutes);
 router.use('/boards/:id/collaborators', boardCollaboratorRoutes);
 router.use('/boards/:id/comments', boardCommentRoutes);
 router.use('/boards/:id/versions', boardVersionRoutes);
+router.use('/boards/:id/videos',  videoRoutes);
 router.use('/trainings/:id/comments', sessionCommentRoutes);
 // GIF-Export braucht großes JSON-Limit (Base64-PNGs) – nur auf diesem Sub-Router
 router.use('/export', express.json({ limit: '50mb' }), exportRoutes);
