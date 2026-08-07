@@ -284,6 +284,11 @@
     "title": "404",
     "homeLink": "Back to home"
   },
+  "errorBoundary": {
+    "title": "Something went wrong",
+    "message": "An unexpected error occurred. Reloading the page usually helps – your data is saved and won't be lost.",
+    "reloadButton": "Reload page"
+  },
   "sharePage": {
     "linkInvalid": "Link invalid or expired",
     "loading": "Loading…",

@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Allow: /privacy
+Allow: /rules
+Disallow: /board/
+Disallow: /trainings
+Disallow: /roster
+Disallow: /settings
+Disallow: /boards
+Disallow: /invite/

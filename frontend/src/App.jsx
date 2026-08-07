@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import useAuthStore from './store/authStore.js';
 import { apiFetch } from './utils/apiFetch.js';
 import { applyGlobalPreferences } from './utils/applyPreferences.js';
+import ErrorBoundary from './components/layout/ErrorBoundary.jsx';
 import ColorBlindFilters from './components/a11y/ColorBlindFilters.jsx';
 import LiveRegion from './components/a11y/LiveRegion.jsx';
 import Header from './components/layout/Header.jsx';
@@ -101,30 +102,32 @@ export default function App() {
   if (!booted) return <Loader />;
 
   return (
-    <BrowserRouter>
-      <ColorBlindFilters />
-      <LiveRegion />
-      <OfflineBanner />
-      <Header />
-      <Suspense fallback={<Loader />}>
-        <Routes>
-          <Route path="/" element={<Navigate to="/boards" replace />} />
-          <Route path="/login"    element={<PublicRoute><LoginPage /></PublicRoute>} />
-          <Route path="/register" element={<PublicRoute><RegisterPage /></PublicRoute>} />
-          <Route path="/boards" element={<PrivateRoute><BoardsPage /></PrivateRoute>} />
-          <Route path="/board/:id" element={<PrivateRoute><BoardEditorPage /></PrivateRoute>} />
-          <Route path="/trainings" element={<PrivateRoute><TrainingsPage /></PrivateRoute>} />
-          <Route path="/trainings/:id" element={<PrivateRoute><TrainingSessionPage /></PrivateRoute>} />
-          <Route path="/roster" element={<PrivateRoute><RosterPage /></PrivateRoute>} />
-          <Route path="/settings" element={<PrivateRoute><SettingsPage /></PrivateRoute>} />
-          <Route path="/share/:token" element={<SharePage />} />
-          <Route path="/invite/:token" element={<InvitePage />} />
-          <Route path="/privacy" element={<PrivacyPage />} />
-          <Route path="/rules" element={<RulesPage />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </Suspense>
-      <Footer />
-    </BrowserRouter>
+    <ErrorBoundary>
+      <BrowserRouter>
+        <ColorBlindFilters />
+        <LiveRegion />
+        <OfflineBanner />
+        <Header />
+        <Suspense fallback={<Loader />}>
+          <Routes>
+            <Route path="/" element={<Navigate to="/boards" replace />} />
+            <Route path="/login"    element={<PublicRoute><LoginPage /></PublicRoute>} />
+            <Route path="/register" element={<PublicRoute><RegisterPage /></PublicRoute>} />
+            <Route path="/boards" element={<PrivateRoute><BoardsPage /></PrivateRoute>} />
+            <Route path="/board/:id" element={<PrivateRoute><BoardEditorPage /></PrivateRoute>} />
+            <Route path="/trainings" element={<PrivateRoute><TrainingsPage /></PrivateRoute>} />
+            <Route path="/trainings/:id" element={<PrivateRoute><TrainingSessionPage /></PrivateRoute>} />
+            <Route path="/roster" element={<PrivateRoute><RosterPage /></PrivateRoute>} />
+            <Route path="/settings" element={<PrivateRoute><SettingsPage /></PrivateRoute>} />
+            <Route path="/share/:token" element={<SharePage />} />
+            <Route path="/invite/:token" element={<InvitePage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/rules" element={<RulesPage />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
+        <Footer />
+      </BrowserRouter>
+    </ErrorBoundary>
   );
 }

@@ -46,6 +46,7 @@ import { useDrawing } from '../hooks/useDrawing.js';
 import { useAutoSave } from '../hooks/useAutoSave.js';
 import { useAnimation } from '../hooks/useAnimation.js';
 import { usePresence } from '../hooks/usePresence.js';
+import { useDocumentTitle } from '../hooks/useDocumentTitle.js';
 
 import styles from './BoardEditorPage.module.css';
 
@@ -63,6 +64,7 @@ export default function BoardEditorPage() {
   const { fetchBoard, updateBoard } = useBoardsApi();
   const [board, setBoard] = useState(null);
   const [notes, setNotes] = useState('');
+  useDocumentTitle(board?.name);
 
   // ROADMAP Phase 4: aktuellen Board-Stand für die Konflikt-Baseline lesen,
   // ohne dass die patchBoard-Aufrufer bei jeder Board-Änderung neu erzeugt

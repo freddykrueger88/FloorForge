@@ -1,6 +1,7 @@
 /**
  * OpenFloorball – Zentrale Fehlerbehandlung
  */
+import logger from '../utils/logger.js';
 
 /**
  * 404 Handler – Route nicht gefunden
@@ -24,7 +25,7 @@ export const errorHandler = (err, req, res, _next) => {
 
   // Fehler loggen (nicht in Tests)
   if (process.env.NODE_ENV !== 'test') {
-    console.error(`[ERROR] ${status} ${req.method} ${req.originalUrl}:`, err.stack || err.message);
+    logger.error(`[ERROR] ${status} ${req.method} ${req.originalUrl}:`, err.stack || err.message);
   }
 
   res.status(status).json({

@@ -284,6 +284,11 @@
     "title": "404",
     "homeLink": "Zur Startseite"
   },
+  "errorBoundary": {
+    "title": "Etwas ist schiefgelaufen",
+    "message": "Es gab einen unerwarteten Fehler. Ein Neuladen der Seite hilft meistens – deine Daten sind gespeichert und gehen dabei nicht verloren.",
+    "reloadButton": "Seite neu laden"
+  },
   "sharePage": {
     "linkInvalid": "Link ungültig oder abgelaufen",
     "loading": "Wird geladen…",

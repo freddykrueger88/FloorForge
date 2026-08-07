@@ -7,6 +7,18 @@
     <meta name="theme-color" content="#01696f" />
     <link rel="icon" type="image/png" href="/pwa-icon.png" />
     <title>OpenFloorball</title>
+    <!-- Statischer Fallback für Link-Vorschauen (z.B. geteilte /share/-Links
+         in WhatsApp/Slack) – echte, pro Board personalisierte Vorschauen
+         bräuchten serverseitiges Rendering dieser Route, außerhalb des
+         Umfangs dieser SPA. -->
+    <meta property="og:title" content="OpenFloorball" />
+    <meta property="og:description" content="Taktik-Tool für Floorball Coaches" />
+    <meta property="og:image" content="/pwa-icon.png" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="OpenFloorball" />
+    <meta name="twitter:description" content="Taktik-Tool für Floorball Coaches" />
+    <meta name="twitter:image" content="/pwa-icon.png" />
   </head>
   <body>
     <div id="root"></div>

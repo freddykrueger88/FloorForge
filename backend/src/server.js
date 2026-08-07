@@ -53,7 +53,13 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'"],
+      // Der Vite-Production-Build lädt Skripte ausschließlich extern (kein
+      // Inline-<script>, auch nicht durch vite-plugin-pwa) – 'unsafe-inline'
+      // war hier unnötig und hätte im Falle einer XSS-Lücke Angreifer-
+      // Skripte trotz CSP ausführen lassen. styleSrc behält 'unsafe-inline'
+      // bewusst: React setzt Inline-Styles (style={{...}}) sehr breit ein,
+      // ein Nonce-/Hash-Ansatz dafür wäre unverhältnismäßig aufwendig.
+      scriptSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'"],
       imgSrc: ["'self'", 'data:', 'blob:'],
       connectSrc: ["'self'"],

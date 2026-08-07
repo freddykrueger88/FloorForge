@@ -12,4 +12,12 @@ describe('Security-Header (Helmet/HSTS)', () => {
     const res = await request(app).get('/health');
     expect(res.headers['strict-transport-security']).toBeDefined();
   });
+
+  it('CSP script-src erlaubt kein unsafe-inline (Vite-Build lädt Skripte nur extern)', async () => {
+    const res = await request(app).get('/health');
+    const csp = res.headers['content-security-policy'];
+    expect(csp).toBeDefined();
+    const scriptSrc = csp.split(';').find((d) => d.trim().startsWith('script-src'));
+    expect(scriptSrc).not.toContain('unsafe-inline');
+  });
 });
