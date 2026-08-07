@@ -9,6 +9,11 @@
   border-radius: var(--radius-lg);
   overflow: hidden;
   position: relative;
+  /* Ohne das kollidiert das Ziehen von Spielern/Zeichnen auf Touch-Geräten
+     mit dem Seiten-Scrollen bzw. Pinch-Zoom des Browsers – der Browser
+     interpretiert den ersten Touch-Move sonst als Scroll-Geste statt ihn
+     an Konva für Drag/Zeichnen durchzureichen. */
+  touch-action: none;
 }
 
 /* Lade-Zustand */

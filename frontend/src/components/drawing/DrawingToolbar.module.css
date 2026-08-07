@@ -7,7 +7,7 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
-  min-width: 52px;
+  min-width: 60px;
   align-items: center;
   user-select: none;
   /* Wenn das untere Tab-Menü aufgeklappt ist, schrumpft die verfügbare
@@ -32,11 +32,38 @@
   margin: var(--space-1) 0;
 }
 
-/* ── Tool-Buttons ── */
+/* Gegenstück zur .middleRow-Regel in BoardEditorPage.module.css: auf
+   schmalen Bildschirmen wird aus der vertikalen Seitenleiste eine
+   horizontale, scrollbare Leiste über dem Feld. */
+@media (max-width: 640px) {
+  .toolbar {
+    flex-direction: row;
+    width: 100%;
+    min-width: 0;
+    max-height: 76px;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  .group {
+    flex-direction: row;
+    width: auto;
+  }
+  .divider {
+    width: 1px;
+    height: 32px;
+    margin: 0 var(--space-1);
+    flex-shrink: 0;
+  }
+}
+
+/* ── Tool-Buttons ──
+   44x44px statt vorheriger 40x40px: Mindestgröße für Touch-Targets
+   (Apple HIG / Material Design empfehlen ≥44px), vorher auf dem Handy
+   fummelig zu treffen. */
 .toolBtn {
   position: relative;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: var(--radius-md);
   background: transparent;
   border: 1px solid transparent;
@@ -72,8 +99,8 @@
 
 /* ── Farb-Buttons ── */
 .colorBtn {
-  width: 24px;
-  height: 24px;
+  width: 32px;
+  height: 32px;
   border-radius: var(--radius-full);
   border: 2px solid transparent;
   cursor: pointer;
@@ -87,8 +114,8 @@
 }
 
 .colorPickerLabel {
-  width: 24px;
-  height: 24px;
+  width: 32px;
+  height: 32px;
   border-radius: var(--radius-full);
   background: var(--color-surface-offset);
   border: 1px dashed var(--color-border);
@@ -109,8 +136,8 @@
 
 /* ── Linienstärke ── */
 .strokeBtn {
-  width: 40px;
-  height: 28px;
+  width: 44px;
+  height: 32px;
   border-radius: var(--radius-md);
   background: transparent;
   border: 1px solid transparent;
@@ -130,8 +157,8 @@
 
 /* ── Action-Buttons ── */
 .actionBtn {
-  width: 40px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   border-radius: var(--radius-md);
   background: transparent;
   border: 1px solid var(--color-border);

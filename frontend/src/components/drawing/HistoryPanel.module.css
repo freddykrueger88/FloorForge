@@ -4,8 +4,8 @@
 }
 
 .toggleBtn {
-  width: 40px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -31,6 +31,17 @@
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
   padding: 0 0 var(--space-2) 0;
+}
+
+/* Auf schmalen Bildschirmen sitzt der 🕘-Button als letztes Element einer
+   horizontalen Werkzeugleiste (siehe DrawingToolbar.module.css) oft nahe
+   am rechten Rand – links ausgerichtet würde das Panel dort über den
+   Viewport-Rand hinausragen, rechts ausgerichtet bleibt es innerhalb. */
+@media (max-width: 640px) {
+  .panel {
+    left: auto;
+    right: 0;
+  }
 }
 
 .panelHeader {

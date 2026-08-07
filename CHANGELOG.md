@@ -14,6 +14,15 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ## [Unreleased]
 
 ### Added
+- Mobile/Tablet-Touch-Optimierung (ROADMAP-Backlog): `touch-action: none`
+  auf dem Spielfeld-Canvas (verhindert, dass Ziehen von Spielern/Zeichnen
+  auf Touch-Geräten mit Seiten-Scroll/Pinch-Zoom kollidiert), Werkzeug-
+  Leiste-Buttons von 40×40px auf 44×44px (Apple/Material-Mindestgröße für
+  Touch-Targets) angehoben, Werkzeug-Leiste wird auf schmalen Bildschirmen
+  (≤640px) zu einer horizontalen Leiste über dem Feld statt einer
+  vertikalen Seitenleiste (Floorball-Feld sonst auf Handy-Portrait stark
+  gequetscht). Ohne echtes Gerät zum optischen Gegentesten – strukturell
+  verifiziert (Build/Tests grün), bitte auf einem echten Handy gegenchecken.
 - Echtzeit-Präsenz MVP (ROADMAP-Backlog "Echtzeit-Co-Editing"): zeigt im
   Board-Header an, wer gerade dasselbe Board geöffnet hat ("👥 2 weitere
   Personen hier"). Neue WebSocket-Infrastruktur (`ws`-Paket,

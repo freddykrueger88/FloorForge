@@ -35,8 +35,8 @@
 .backLink:hover { background: var(--color-primary-highlight); }
 
 .helpBtn {
-  width: 32px;
-  height: 32px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -100,6 +100,17 @@
   flex: 1;
   min-height: 0;
   overflow: hidden;
+}
+
+/* Auf schmalen Bildschirmen frisst eine feste vertikale Werkzeugleiste
+   neben dem Feld zu viel Breite (Floorball-Feld ist ~2:1, wird sonst auf
+   Handy-Portrait sehr klein gequetscht) – Werkzeugleiste wird stattdessen
+   eine horizontale Leiste über dem Feld (siehe DrawingToolbar.module.css
+   für die passende Gegenstück-Regel). */
+@media (max-width: 640px) {
+  .middleRow {
+    flex-direction: column;
+  }
 }
 
 .fieldArea {
