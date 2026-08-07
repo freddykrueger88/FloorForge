@@ -828,7 +828,7 @@
   },
   "video": {
     "title": "🎥 Video",
-    "hint": "Attach short video clips to the board (e.g. an opponent's play) – playback only, no drawing over the video yet.",
+    "hint": "Attach short video clips to the board (e.g. an opponent's play) – with drawing overlay, trimming and scene markers.",
     "upload": "Upload video",
     "uploading": "Uploading…",
     "titlePlaceholder": "Caption (optional)",
@@ -837,6 +837,20 @@
     "empty": "No videos attached yet.",
     "delete": "Delete",
     "deleteAriaLabel": "Delete {{title}}",
-    "notSupported": "Your browser doesn't support video playback."
+    "notSupported": "Your browser doesn't support video playback.",
+    "draw": "Draw",
+    "saveDrawing": "Save drawing",
+    "saving": "Saving…",
+    "cancel": "Cancel",
+    "hideOverlay": "Hide drawing",
+    "showOverlay": "Show drawing",
+    "trimLabel": "Trim",
+    "setStart": "Set start here",
+    "setEnd": "Set end here",
+    "resetTrim": "Reset",
+    "addMarker": "Add marker",
+    "addMarkerConfirm": "Save",
+    "markerPlaceholder": "Label (e.g. \"Corner\")",
+    "deleteMarkerAriaLabel": "Delete marker \"{{label}}\""
   }
 }

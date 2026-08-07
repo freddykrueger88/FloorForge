@@ -8,9 +8,9 @@ dort kontinuierlich aktualisiert:
 ## Backlog-Highlights (Auszug)
 
 **Feature-Ideen:**
-- Video-/Spielfilm-Integration – MVP live (Videoclips hochladen/abspielen
-  pro Board). Offen: Zeichnungen über dem Video, Schnitt/Trimmen,
-  Szenen-Timeline
+- Video-/Spielfilm-Integration – Videoclips hochladen/abspielen pro
+  Board, Zeichnen-Überlagerung, Player-seitiges Trimmen, Szenen-Marken
+  live
 - Echtzeit-Co-Editing – Präsenzanzeige live ("wer ist gerade auch hier").
   Offen: Live-Cursor-Positionen, Konflikt-Auflösung bei simultanem
   Bearbeiten (eigenes UX-Konzept nötig – wessen Änderung gewinnt?)

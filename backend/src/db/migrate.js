@@ -294,6 +294,15 @@ export async function runMigrations() {
     `);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_board_videos_board_id ON board_videos(board_id);`);
 
+    // Video-Ausbau: feste Zeichnungs-Überlagerung, Player-seitige Trim-
+    // Grenzen (Originaldatei bleibt unangetastet), Szenen-Marken. Bewusst
+    // JSONB statt eigener Tabellen (analog boards.players_json) – erwartete
+    // Anzahl Elemente/Marken pro Video ist klein.
+    await client.query(`ALTER TABLE board_videos ADD COLUMN IF NOT EXISTS elements_json JSONB NOT NULL DEFAULT '[]'::jsonb;`);
+    await client.query(`ALTER TABLE board_videos ADD COLUMN IF NOT EXISTS trim_start_seconds REAL;`);
+    await client.query(`ALTER TABLE board_videos ADD COLUMN IF NOT EXISTS trim_end_seconds REAL;`);
+    await client.query(`ALTER TABLE board_videos ADD COLUMN IF NOT EXISTS markers_json JSONB NOT NULL DEFAULT '[]'::jsonb;`);
+
     // ── teams + team_members (ROADMAP Phase 2 – Team und Organisation) ────
     // Additiv zum bestehenden user_id-Besitzmodell: ein Team teilt Kader/
     // Playbooks/Trainingspläne/Formationen zwischen mehreren Trainern (siehe

@@ -828,7 +828,7 @@
   },
   "video": {
     "title": "🎥 Video",
-    "hint": "Kurze Videoclips ans Board anhängen (z.B. eine Spielsituation des Gegners) – nur zum Ansehen, noch keine Zeichnungen über dem Video.",
+    "hint": "Kurze Videoclips ans Board anhängen (z.B. eine Spielsituation des Gegners) – mit Zeichen-Überlagerung, Trimmen und Szenen-Marken.",
     "upload": "Video hochladen",
     "uploading": "Lädt hoch…",
     "titlePlaceholder": "Beschriftung (optional)",
@@ -837,6 +837,20 @@
     "empty": "Noch keine Videos angehängt.",
     "delete": "Löschen",
     "deleteAriaLabel": "{{title}} löschen",
-    "notSupported": "Dein Browser unterstützt die Videowiedergabe nicht."
+    "notSupported": "Dein Browser unterstützt die Videowiedergabe nicht.",
+    "draw": "Zeichnen",
+    "saveDrawing": "Zeichnung speichern",
+    "saving": "Speichert…",
+    "cancel": "Abbrechen",
+    "hideOverlay": "Zeichnung ausblenden",
+    "showOverlay": "Zeichnung einblenden",
+    "trimLabel": "Ausschnitt",
+    "setStart": "Start hier setzen",
+    "setEnd": "Ende hier setzen",
+    "resetTrim": "Zurücksetzen",
+    "addMarker": "Marke hinzufügen",
+    "addMarkerConfirm": "Speichern",
+    "markerPlaceholder": "Beschriftung (z.B. \"Ecke\")",
+    "deleteMarkerAriaLabel": "Marke „{{label}}“ löschen"
   }
 }

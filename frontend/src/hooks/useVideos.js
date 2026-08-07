@@ -57,6 +57,24 @@ export function useVideos(boardId) {
     }
   }, [boardId]);
 
+  // Partielles Update (Zeichnungs-Überlagerung, Trim-Grenzen, Szenen-Marken,
+  // Titel) – nur übergebene Felder in patch werden geändert (siehe
+  // videoController.js/updateVideo, 'key' in req.body statt !== undefined,
+  // damit z.B. { trimStart: null } zum Zurücksetzen funktioniert).
+  const updateVideo = useCallback(async (videoId, patch) => {
+    try {
+      const updated = await apiFetch(`${BASE(boardId)}/${videoId}`, {
+        method: 'PUT',
+        body: JSON.stringify(patch),
+      });
+      setVideos((prev) => prev.map((v) => (v._id === videoId ? updated : v)));
+      return updated;
+    } catch (err) {
+      setError(err.message);
+      throw err;
+    }
+  }, [boardId]);
+
   const deleteVideo = useCallback(async (videoId) => {
     try {
       await apiFetch(`${BASE(boardId)}/${videoId}`, { method: 'DELETE' });
@@ -69,5 +87,5 @@ export function useVideos(boardId) {
 
   const streamUrl = useCallback((videoId) => `${BASE(boardId)}/${videoId}/stream`, [boardId]);
 
-  return { videos, loading, uploading, error, fetchVideos, uploadVideo, deleteVideo, streamUrl };
+  return { videos, loading, uploading, error, fetchVideos, uploadVideo, updateVideo, deleteVideo, streamUrl };
 }

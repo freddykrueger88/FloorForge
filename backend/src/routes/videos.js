@@ -5,7 +5,7 @@ import { Router } from 'express';
 import { param } from 'express-validator';
 import { authenticate } from '../middleware/auth.js';
 import { validate } from '../middleware/validate.js';
-import { getVideos, uploadVideo, streamVideo, deleteVideo, uploadMiddleware } from '../controllers/videoController.js';
+import { getVideos, uploadVideo, streamVideo, updateVideo, deleteVideo, uploadMiddleware } from '../controllers/videoController.js';
 import { error } from '../utils/apiResponse.js';
 
 const router = Router({ mergeParams: true });
@@ -29,6 +29,7 @@ router.post('/', [validateBoardId, validate], (req, res, next) => {
 }, uploadVideo);
 
 router.get('/:videoId/stream', [validateBoardId, validateVideoId, validate], streamVideo);
+router.put('/:videoId', [validateBoardId, validateVideoId, validate], updateVideo);
 router.delete('/:videoId', [validateBoardId, validateVideoId, validate], deleteVideo);
 
 export default router;

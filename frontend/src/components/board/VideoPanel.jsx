@@ -1,13 +1,13 @@
 /**
- * VideoPanel – Video-Integration MVP (ROADMAP-Backlog)
+ * VideoPanel – Video-Integration (ROADMAP-Backlog)
  *
- * Upload + Liste + nativer Player für an ein Board angehängte Videoclips.
- * Bewusst KEIN Zeichnen über dem Video, kein Schnitt – siehe
- * videoController.js für die Umfangs-Begründung.
+ * Upload + Liste, pro Video übernimmt VideoAnnotationOverlay.jsx den
+ * Player samt Zeichnen-Überlagerung/Trimmen/Szenen-Marken.
  */
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useVideos } from '../../hooks/useVideos.js';
+import VideoAnnotationOverlay from './VideoAnnotationOverlay.jsx';
 import styles from './VideoPanel.module.css';
 
 const MAX_VIDEOS = 5;
@@ -19,7 +19,7 @@ function formatSize(bytes) {
 
 export default function VideoPanel({ boardId, canEdit }) {
   const { t } = useTranslation();
-  const { videos, loading, uploading, error, fetchVideos, uploadVideo, deleteVideo, streamUrl } = useVideos(boardId);
+  const { videos, loading, uploading, error, fetchVideos, uploadVideo, updateVideo, deleteVideo, streamUrl } = useVideos(boardId);
   const [title, setTitle] = useState('');
   const fileInputRef = useRef(null);
 
@@ -96,9 +96,12 @@ export default function VideoPanel({ boardId, canEdit }) {
                   </button>
                 )}
               </div>
-              <video className={styles.player} controls preload="metadata" src={streamUrl(v._id)}>
-                {t('video.notSupported')}
-              </video>
+              <VideoAnnotationOverlay
+                video={v}
+                canEdit={canEdit}
+                streamUrl={streamUrl(v._id)}
+                onUpdate={(patch) => updateVideo(v._id, patch)}
+              />
             </li>
           ))}
         </ul>

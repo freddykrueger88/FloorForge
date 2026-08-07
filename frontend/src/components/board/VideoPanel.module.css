@@ -127,10 +127,3 @@
   background: var(--color-error-highlight);
   color: var(--color-error);
 }
-
-.player {
-  width: 100%;
-  max-height: 320px;
-  border-radius: var(--radius-sm);
-  background: #000;
-}

@@ -1,0 +1,262 @@
+/**
+ * VideoAnnotationOverlay – Player + Zeichnen-Überlagerung + Trimmen +
+ * Szenen-Marken für ein einzelnes Video (Video-Integration Ausbau,
+ * ROADMAP-Backlog).
+ *
+ * Zeichnen: EINE feste Überlagerung pro Video (kein Zeitstempel-System) –
+ * Video pausieren, mit den vorhandenen Zeichen-Werkzeugen (useDrawing.js,
+ * DrawingLayer/DrawingToolbar – dieselben Komponenten wie im Board-Editor,
+ * players bleibt hier einfach ungenutzt leer) drüberzeichnen, Zeichnung
+ * bleibt fürs ganze Video sichtbar bis geändert/gelöscht.
+ *
+ * Trimmen: rein Player-seitige Start-/Endgrenzen (kein ffmpeg-Schnitt) –
+ * Originaldatei bleibt immer vollständig erhalten, jederzeit rückgängig.
+ *
+ * Szenen-Marken: Zeitstempel mit Label, Klick springt zur Position.
+ */
+import { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Stage } from 'react-konva';
+import { useDrawing } from '../../hooks/useDrawing.js';
+import DrawingLayer from '../drawing/DrawingLayer.jsx';
+import DrawingToolbar from '../drawing/DrawingToolbar.jsx';
+import styles from './VideoAnnotationOverlay.module.css';
+
+function formatTime(seconds) {
+  if (!Number.isFinite(seconds)) return '0:00';
+  const m = Math.floor(seconds / 60);
+  const s = Math.floor(seconds % 60);
+  return `${m}:${String(s).padStart(2, '0')}`;
+}
+
+export default function VideoAnnotationOverlay({ video, canEdit, streamUrl, onUpdate }) {
+  const { t } = useTranslation();
+  const videoRef = useRef(null);
+  const containerRef = useRef(null);
+  const [size, setSize] = useState({ width: 0, height: 0 });
+  const [drawMode, setDrawMode] = useState(false);
+  const [showOverlay, setShowOverlay] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [markerLabel, setMarkerLabel] = useState('');
+  const [addingMarker, setAddingMarker] = useState(false);
+
+  const drawing = useDrawing();
+
+  // Overlay-Größe an die tatsächlich gerenderte Video-Größe koppeln
+  // (gleiches Muster wie FieldContainer.jsx).
+  useEffect(() => {
+    if (!containerRef.current) return undefined;
+    const measure = () => {
+      if (!containerRef.current) return;
+      setSize({ width: containerRef.current.clientWidth, height: containerRef.current.clientHeight });
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(containerRef.current);
+    return () => ro.disconnect();
+  }, []);
+
+  const enterDrawMode = () => {
+    videoRef.current?.pause();
+    drawing.loadScene([], video.elements ?? []);
+    setDrawMode(true);
+  };
+
+  const handleSaveDrawing = async () => {
+    setSaving(true);
+    try {
+      await onUpdate({ elements: drawing.elements });
+      setDrawMode(false);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // ── Trimmen (Player-seitig, siehe Dateikopf-Kommentar) ──
+  const setTrimStartHere = () => onUpdate({ trimStart: videoRef.current?.currentTime ?? 0 });
+  const setTrimEndHere = () => onUpdate({ trimEnd: videoRef.current?.currentTime ?? 0 });
+  const resetTrim = () => onUpdate({ trimStart: null, trimEnd: null });
+
+  const handleLoadedMetadata = () => {
+    if (typeof video.trimStart === 'number' && videoRef.current) {
+      videoRef.current.currentTime = video.trimStart;
+    }
+  };
+  const handleTimeUpdate = () => {
+    if (typeof video.trimEnd === 'number' && videoRef.current && videoRef.current.currentTime >= video.trimEnd) {
+      videoRef.current.pause();
+      videoRef.current.currentTime = video.trimStart ?? 0;
+    }
+  };
+
+  // ── Szenen-Marken ──
+  const handleAddMarker = async () => {
+    const timestamp = videoRef.current?.currentTime ?? 0;
+    const label = markerLabel.trim() || formatTime(timestamp);
+    const markers = [...(video.markers ?? []), { timestamp, label }].sort((a, b) => a.timestamp - b.timestamp);
+    await onUpdate({ markers });
+    setMarkerLabel('');
+    setAddingMarker(false);
+  };
+
+  const handleDeleteMarker = (timestamp) => {
+    onUpdate({ markers: (video.markers ?? []).filter((m) => m.timestamp !== timestamp) });
+  };
+
+  const seekTo = (timestamp) => {
+    if (!videoRef.current) return;
+    videoRef.current.currentTime = timestamp;
+    videoRef.current.play();
+  };
+
+  const hasOverlayElements = (video.elements ?? []).length > 0;
+  const showStage = (drawMode || (showOverlay && hasOverlayElements)) && size.width > 0;
+
+  return (
+    <div className={styles.wrap}>
+      <div className={styles.playerWrap} ref={containerRef}>
+        <video
+          ref={videoRef}
+          className={styles.player}
+          controls={!drawMode}
+          preload="metadata"
+          src={streamUrl}
+          onLoadedMetadata={handleLoadedMetadata}
+          onTimeUpdate={handleTimeUpdate}
+        >
+          {t('video.notSupported')}
+        </video>
+
+        {showStage && (
+          <Stage
+            className={`${styles.stage} ${drawMode ? styles.stageActive : ''}`}
+            width={size.width}
+            height={size.height}
+            listening={drawMode}
+          >
+            <DrawingLayer
+              elements={drawMode ? drawing.elements : (video.elements ?? [])}
+              scale={1}
+              offsetX={0}
+              offsetY={0}
+              fieldW={size.width}
+              fieldH={size.height}
+              selectedId={drawMode ? drawing.selectedId : null}
+              activeTool={drawMode ? drawing.activeTool : 'select'}
+              isDrawing={drawMode ? drawing.isDrawing : false}
+              onPointerDown={drawing.handlePointerDown}
+              onPointerMove={drawing.handlePointerMove}
+              onPointerUp={drawing.handlePointerUp}
+              onElementClick={drawing.handleElementClick}
+              readonly={!drawMode}
+            />
+          </Stage>
+        )}
+      </div>
+
+      {canEdit && (
+        <div className={styles.actions}>
+          {drawMode ? (
+            <>
+              <DrawingToolbar
+                activeTool={drawing.activeTool}
+                setActiveTool={drawing.setActiveTool}
+                activeColor={drawing.activeColor}
+                setActiveColor={drawing.setActiveColor}
+                strokeWidth={drawing.strokeWidth}
+                setStrokeWidth={drawing.setStrokeWidth}
+                onUndo={drawing.undo}
+                onRedo={drawing.redo}
+                onClear={drawing.clearAll}
+                canUndo={drawing.canUndo}
+                canRedo={drawing.canRedo}
+                elementCount={drawing.elements.length}
+                undoStack={drawing.undoStack}
+                redoStack={drawing.redoStack}
+                onJumpHistory={drawing.jumpHistory}
+              />
+              <div className={styles.drawModeActions}>
+                <button className={styles.saveBtn} onClick={handleSaveDrawing} disabled={saving}>
+                  {saving ? t('video.saving') : t('video.saveDrawing')}
+                </button>
+                <button className={styles.cancelBtn} onClick={() => setDrawMode(false)} disabled={saving}>
+                  {t('video.cancel')}
+                </button>
+              </div>
+            </>
+          ) : (
+            <div className={styles.toolRow}>
+              <button className={styles.smallBtn} onClick={enterDrawMode}>
+                ✏️ {t('video.draw')}
+              </button>
+              {hasOverlayElements && (
+                <button className={styles.smallBtn} onClick={() => setShowOverlay((v) => !v)}>
+                  {showOverlay ? `👁 ${t('video.hideOverlay')}` : `🙈 ${t('video.showOverlay')}`}
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {canEdit && (
+        <div className={styles.trimRow}>
+          <span className={styles.trimLabel}>{t('video.trimLabel')}</span>
+          <button className={styles.smallBtn} onClick={setTrimStartHere}>{t('video.setStart')}</button>
+          <button className={styles.smallBtn} onClick={setTrimEndHere}>{t('video.setEnd')}</button>
+          {(typeof video.trimStart === 'number' || typeof video.trimEnd === 'number') && (
+            <>
+              <span className={styles.trimValues}>
+                {formatTime(video.trimStart ?? 0)} – {typeof video.trimEnd === 'number' ? formatTime(video.trimEnd) : '…'}
+              </span>
+              <button className={styles.smallBtn} onClick={resetTrim}>{t('video.resetTrim')}</button>
+            </>
+          )}
+        </div>
+      )}
+
+      <div className={styles.markersSection}>
+        {(video.markers ?? []).length > 0 && (
+          <ul className={styles.markerList} role="list">
+            {video.markers.map((m, i) => (
+              <li key={`${m.timestamp}-${i}`} className={styles.markerItem}>
+                <button className={styles.markerBtn} onClick={() => seekTo(m.timestamp)}>
+                  {formatTime(m.timestamp)} – {m.label}
+                </button>
+                {canEdit && (
+                  <button
+                    className={styles.markerDeleteBtn}
+                    onClick={() => handleDeleteMarker(m.timestamp)}
+                    aria-label={t('video.deleteMarkerAriaLabel', { label: m.label })}
+                  >
+                    🗑
+                  </button>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+        {canEdit && (
+          addingMarker ? (
+            <div className={styles.markerAddRow}>
+              <input
+                type="text"
+                className={styles.markerInput}
+                value={markerLabel}
+                onChange={(e) => setMarkerLabel(e.target.value)}
+                placeholder={t('video.markerPlaceholder')}
+                maxLength={60}
+              />
+              <button className={styles.smallBtn} onClick={handleAddMarker}>{t('video.addMarkerConfirm')}</button>
+              <button className={styles.smallBtn} onClick={() => { setAddingMarker(false); setMarkerLabel(''); }}>{t('video.cancel')}</button>
+            </div>
+          ) : (
+            <button className={styles.smallBtn} onClick={() => setAddingMarker(true)}>
+              📍 {t('video.addMarker')}
+            </button>
+          )
+        )}
+      </div>
+    </div>
+  );
+}

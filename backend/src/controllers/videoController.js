@@ -52,12 +52,16 @@ export const uploadMiddleware = multer({
 
 function toApiVideo(row) {
   return {
-    _id:       row.id,
-    filename:  row.filename,
-    mimeType:  row.mime_type,
-    sizeBytes: Number(row.size_bytes),
-    title:     row.title,
-    createdAt: row.created_at,
+    _id:        row.id,
+    filename:   row.filename,
+    mimeType:   row.mime_type,
+    sizeBytes:  Number(row.size_bytes),
+    title:      row.title,
+    elements:   row.elements_json,
+    trimStart:  row.trim_start_seconds,
+    trimEnd:    row.trim_end_seconds,
+    markers:    row.markers_json,
+    createdAt:  row.created_at,
   };
 }
 
@@ -142,6 +146,69 @@ export async function streamVideo(req, res) {
   } catch (err) {
     logger.error('[streamVideo]', err);
     if (!res.headersSent) res.status(500).json(error('Interner Serverfehler'));
+  }
+}
+
+// PUT /api/boards/:id/videos/:videoId – partielles Update. Ausbau-Features:
+// feste Zeichnungs-Überlagerung (elements), Player-seitige Trim-Grenzen
+// (trimStart/trimEnd – nur Wiedergabe, Originaldatei bleibt unangetastet),
+// Szenen-Marken (markers). Nur im Body vorhandene Felder werden geändert –
+// 'key' in req.body statt !== undefined, damit ein bewusstes { trimStart:
+// null } (Trim-Grenze zurücksetzen) nicht mit "nicht übergeben" verwechselt wird.
+export async function updateVideo(req, res) {
+  try {
+    if (!(await assertBoardAccess(req.params.id, req.user.id, 'write'))) {
+      return res.status(404).json(error('Board nicht gefunden'));
+    }
+
+    const fields = [];
+    const values = [];
+    let i = 1;
+
+    if ('title' in req.body) {
+      const title = typeof req.body.title === 'string' && req.body.title.trim() ? req.body.title.trim() : null;
+      fields.push(`title = $${i++}`);
+      values.push(title);
+    }
+    if ('elements' in req.body) {
+      if (!Array.isArray(req.body.elements)) {
+        return res.status(400).json(error('elements muss ein Array sein'));
+      }
+      fields.push(`elements_json = $${i++}`);
+      values.push(JSON.stringify(req.body.elements));
+    }
+    if ('trimStart' in req.body) {
+      fields.push(`trim_start_seconds = $${i++}`);
+      values.push(req.body.trimStart);
+    }
+    if ('trimEnd' in req.body) {
+      fields.push(`trim_end_seconds = $${i++}`);
+      values.push(req.body.trimEnd);
+    }
+    if ('markers' in req.body) {
+      if (!Array.isArray(req.body.markers)) {
+        return res.status(400).json(error('markers muss ein Array sein'));
+      }
+      fields.push(`markers_json = $${i++}`);
+      values.push(JSON.stringify(req.body.markers));
+    }
+
+    if (fields.length === 0) {
+      return res.status(400).json(error('Keine Änderungen übergeben'));
+    }
+
+    values.push(req.params.videoId, req.params.id);
+    const result = await pool.query(
+      `UPDATE board_videos SET ${fields.join(', ')} WHERE id = $${i++} AND board_id = $${i} RETURNING *`,
+      values
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json(error('Video nicht gefunden'));
+    }
+    res.json(success(toApiVideo(result.rows[0])));
+  } catch (err) {
+    logger.error('[updateVideo]', err);
+    res.status(500).json(error('Interner Serverfehler'));
   }
 }
 

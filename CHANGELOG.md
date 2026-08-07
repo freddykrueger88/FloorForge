@@ -39,6 +39,19 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   UX-Konzept, siehe `videoController.js`-Kommentar. Ablage auf Disk
   (neues `videos_data`-Volume), Dateien werden beim Board-Löschen (auch
   Soft-Delete) automatisch mitgelöscht.
+- Video-Integration ausgebaut: die drei in der MVP zurückgestellten Teile
+  sind jetzt da. Zeichnen über dem Video – eine feste Überlagerung pro
+  Video (Video pausieren, mit denselben Zeichen-Werkzeugen wie im Board-
+  Editor drüberzeichnen, Zeichnung bleibt fürs ganze Video sichtbar),
+  bewusst kein zeitstempel-gebundenes Mehrfach-Annotationssystem. Trimmen
+  – rein Player-seitige Start-/Endgrenzen, kein serverseitiger ffmpeg-
+  Schnitt, Originaldatei bleibt immer vollständig erhalten und die Grenzen
+  sind jederzeit zurücksetzbar. Szenen-Marken – Zeitstempel mit Label
+  unter dem Player, Klick springt zur Position. Neuer PUT-Endpoint
+  `/api/boards/:id/videos/:videoId` für partielle Updates (Zeichnung/Trim/
+  Marken/Titel einzeln änderbar). Bei der Konva-Overlay-Optik bin ich wie
+  beim Touch-Umbau ohne echten Browser unterwegs – strukturell verifiziert
+  (Build/Tests grün), bitte selbst gegenchecken.
 - Undo/Redo (Strg+Z / Strg+Y) deckt jetzt auch Spieler-Positionen ab –
   bisher war nur das Zeichnen (Pfeile, Freihand) rückgängig machbar,
   Spieler ziehen/per Pfeiltaste verschieben hatte gar keine Undo-
