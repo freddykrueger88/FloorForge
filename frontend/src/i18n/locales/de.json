@@ -656,7 +656,21 @@
     "sessionNamePlaceholder": "Name der Trainingseinheit",
     "notConfiguredError": "KI-Assistent ist auf dieser Instanz nicht konfiguriert",
     "unavailableError": "KI-Anbieter ist gerade nicht erreichbar, bitte später erneut versuchen",
-    "rateLimitError": "Zu viele Anfragen, bitte kurz warten"
+    "rateLimitError": "Zu viele Anfragen, bitte kurz warten",
+    "tacticAssistant": "Taktik-Ideen mit KI",
+    "tacticFormTitle": "Taktik-Varianten mit KI erstellen",
+    "tacticCategoryLabel": "Kategorie",
+    "tacticQuestionLabel": "Frage",
+    "tacticQuestionPlaceholder": "z.B. Wie können wir unser Forechecking variieren?",
+    "useAsTacticBoard": "Als Taktik-Board übernehmen",
+    "boardNamePlaceholder": "Name des Boards",
+    "analysisAssistant": "Analyse mit KI",
+    "analysisFormTitle": "Beobachtungen mit KI strukturieren",
+    "observationsLabel": "Beobachtungen",
+    "observationsPlaceholder": "z.B. Wir haben in der zweiten Drittelhälfte oft den Puck beim Übergang ins Angriffsdrittel verloren...",
+    "analysisPrivacyHint": "Bitte keine Namen oder personenbezogenen Angaben eintragen – beschreibe Situationen und Muster, nicht einzelne Personen.",
+    "focusOptionalLabel": "Fokus (optional)",
+    "useAsAnalysisBoard": "Als Analyse-Board übernehmen"
   },
   "dialogs": {
     "newBoard": {

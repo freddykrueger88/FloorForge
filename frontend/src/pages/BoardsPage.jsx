@@ -5,16 +5,19 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { AlertTriangle, Presentation, SearchX, Plus, Grid2x2, Grid3x3 } from 'lucide-react';
+import { AlertTriangle, Presentation, SearchX, Plus, Grid2x2, Grid3x3, Sparkles } from 'lucide-react';
 import { useBoardsApi } from '../hooks/useBoardsApi.js';
 import { useSettings } from '../hooks/useSettings.js';
 import { usePlaybooks } from '../hooks/usePlaybooks.js';
 import { useTeams } from '../hooks/useTeams.js';
+import { useAiApi } from '../hooks/useAiApi.js';
 import BoardCard from '../components/boards/BoardCard.jsx';
 import BoardPostcard from '../components/boards/BoardPostcard.jsx';
 import NewBoardModal from '../components/boards/NewBoardModal.jsx';
 import DeleteConfirmDialog from '../components/boards/DeleteConfirmDialog.jsx';
 import PlaybookFilterBar from '../components/boards/PlaybookFilterBar.jsx';
+import AiTacticAssistantModal from '../components/boards/AiTacticAssistantModal.jsx';
+import AiAnalysisAssistantModal from '../components/boards/AiAnalysisAssistantModal.jsx';
 import Button from '../components/common/Button.jsx';
 import styles from './BoardsPage.module.css';
 
@@ -32,6 +35,12 @@ export default function BoardsPage() {
   // team-geteilt statt rein persönlich anzulegen (analog Roster/Trainings).
   const { teams, fetchTeams } = useTeams();
   const teamsICanShareWith = teams.filter((tm) => tm.role === 'owner' || tm.role === 'coach');
+  // EPIC 010 – KI-Taktik-/Analyseassistent: Buttons nur sichtbar, wenn
+  // diese Instanz überhaupt einen KI-Anbieter konfiguriert hat.
+  const { fetchStatus: fetchAiStatus } = useAiApi();
+  const [aiStatus, setAiStatus] = useState(null);
+  const [showTacticModal,  setShowTacticModal ] = useState(false);
+  const [showAnalysisModal, setShowAnalysisModal] = useState(false);
 
   const [boards,        setBoards       ] = useState([]);
   const [showNewModal,  setShowNewModal  ] = useState(false);
@@ -60,6 +69,7 @@ export default function BoardsPage() {
   useEffect(() => { load(); }, [load]);
   useEffect(() => { fetchPlaybooks(); }, [fetchPlaybooks]);
   useEffect(() => { fetchTeams().catch(() => {}); }, [fetchTeams]);
+  useEffect(() => { fetchAiStatus().then(setAiStatus).catch(() => {}); }, [fetchAiStatus]);
 
   const filteredBoards = useMemo(() => {
     let result = boards;
@@ -100,6 +110,8 @@ export default function BoardsPage() {
         ...data,
       });
       setShowNewModal(false);
+      setShowTacticModal(false);
+      setShowAnalysisModal(false);
       navigate(`/board/${board._id}`);
     } catch { /* error via hook */ }
   };
@@ -151,6 +163,17 @@ export default function BoardsPage() {
         >
           <Plus size={16} aria-hidden="true" /> {t('boardsPage.newBoard')}
         </Button>
+
+        {aiStatus?.configured && (
+          <>
+            <Button variant="secondary" size="md" onClick={() => setShowTacticModal(true)}>
+              <Sparkles size={16} aria-hidden="true" /> {t('ai.tacticAssistant')}
+            </Button>
+            <Button variant="secondary" size="md" onClick={() => setShowAnalysisModal(true)}>
+              <Sparkles size={16} aria-hidden="true" /> {t('ai.analysisAssistant')}
+            </Button>
+          </>
+        )}
 
         {boards.length > 0 && (
           <input
@@ -281,6 +304,22 @@ export default function BoardsPage() {
           onClose={() => setShowNewModal(false)}
           loading={loading}
           defaultFieldType={settings?.defaultFieldType ?? 'large'}
+        />
+      )}
+
+      {showTacticModal && (
+        <AiTacticAssistantModal
+          onClose={() => setShowTacticModal(false)}
+          onCreate={handleCreate}
+          creating={loading}
+        />
+      )}
+
+      {showAnalysisModal && (
+        <AiAnalysisAssistantModal
+          onClose={() => setShowAnalysisModal(false)}
+          onCreate={handleCreate}
+          creating={loading}
         />
       )}
 

@@ -1,5 +1,6 @@
 /**
- * useAiApi – API-Hook für den KI-Trainingsassistenten (EPIC 010 MVP)
+ * useAiApi – API-Hook für die KI-Assistenten (EPIC 010: Trainings-,
+ * Taktik- und Analyseassistent, AI_SYSTEM.md §5.1-5.3)
  * Struktur analog useLibraryApi.js
  */
 import { useState, useCallback } from 'react';
@@ -31,5 +32,13 @@ export function useAiApi() {
   const generateTrainingPlan = useCallback((params) =>
     request(() => apiFetch(`${BASE}/training-plan`, { method: 'POST', body: JSON.stringify(params) })), [request]);
 
-  return { loading, error, fetchStatus, generateTrainingPlan };
+  const generateTacticSuggestion = useCallback((params) =>
+    request(() => apiFetch(`${BASE}/tactic-suggestion`, { method: 'POST', body: JSON.stringify(params) })), [request]);
+
+  const generateAnalysis = useCallback((params) =>
+    request(() => apiFetch(`${BASE}/analysis`, { method: 'POST', body: JSON.stringify(params) })), [request]);
+
+  return {
+    loading, error, fetchStatus, generateTrainingPlan, generateTacticSuggestion, generateAnalysis,
+  };
 }

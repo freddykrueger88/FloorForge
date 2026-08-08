@@ -7,9 +7,11 @@
  * (AI_STRATEGY.md §19: KI erstellt, Trainer prüft, dann Speichern).
  */
 import { getAiProvider } from '../services/ai/aiProvider.js';
-import { renderTrainingPrompt } from '../services/ai/promptLoader.js';
+import { renderTrainingPrompt, renderTacticsPrompt, renderAnalysisPrompt } from '../services/ai/promptLoader.js';
 import { success, error } from '../utils/apiResponse.js';
 import logger from '../utils/logger.js';
+
+const SYSTEM_PROMPT = 'Du folgst den Anweisungen und Regeln aus der folgenden Vorlage exakt.';
 
 // GET /api/ai/status – Transparenz (AI_SYSTEM.md §2 "der Nutzer muss
 // erkennen, wann KI verwendet wird") + steuert im Frontend, ob der
@@ -38,10 +40,7 @@ export async function generateTrainingPlan(req, res) {
     const { ageGroup, goal, durationMinutes, playerCount, focus } = req.body;
     const userPrompt = renderTrainingPrompt({ ageGroup, goal, durationMinutes, playerCount, focus });
 
-    const { text, model } = await provider.generate({
-      systemPrompt: 'Du folgst den Anweisungen und Regeln aus der folgenden Vorlage exakt.',
-      userPrompt,
-    });
+    const { text, model } = await provider.generate({ systemPrompt: SYSTEM_PROMPT, userPrompt });
     res.json(success({
       planText: text,
       model,
@@ -50,6 +49,54 @@ export async function generateTrainingPlan(req, res) {
     }));
   } catch (err) {
     logger.error('[generateTrainingPlan]', err);
+    res.status(502).json(error('KI-Anbieter konnte keinen Vorschlag liefern, bitte später erneut versuchen'));
+  }
+}
+
+// POST /api/ai/tactic-suggestion
+export async function generateTacticSuggestion(req, res) {
+  try {
+    const provider = await getAiProvider();
+    if (!provider) {
+      return res.status(503).json(error('KI-Assistent ist auf dieser Instanz nicht konfiguriert'));
+    }
+
+    const { category, question } = req.body;
+    const userPrompt = renderTacticsPrompt({ category, question });
+
+    const { text, model } = await provider.generate({ systemPrompt: SYSTEM_PROMPT, userPrompt });
+    res.json(success({
+      suggestionText: text,
+      model,
+      generatedAt: new Date().toISOString(),
+      disclaimer: 'Von KI generiert – bitte vor dem Einsatz prüfen und anpassen.',
+    }));
+  } catch (err) {
+    logger.error('[generateTacticSuggestion]', err);
+    res.status(502).json(error('KI-Anbieter konnte keinen Vorschlag liefern, bitte später erneut versuchen'));
+  }
+}
+
+// POST /api/ai/analysis
+export async function generateAnalysis(req, res) {
+  try {
+    const provider = await getAiProvider();
+    if (!provider) {
+      return res.status(503).json(error('KI-Assistent ist auf dieser Instanz nicht konfiguriert'));
+    }
+
+    const { observations, focus = '' } = req.body;
+    const userPrompt = renderAnalysisPrompt({ observations, focus });
+
+    const { text, model } = await provider.generate({ systemPrompt: SYSTEM_PROMPT, userPrompt });
+    res.json(success({
+      analysisText: text,
+      model,
+      generatedAt: new Date().toISOString(),
+      disclaimer: 'Von KI generiert – bitte vor dem Einsatz prüfen und anpassen.',
+    }));
+  } catch (err) {
+    logger.error('[generateAnalysis]', err);
     res.status(502).json(error('KI-Anbieter konnte keinen Vorschlag liefern, bitte später erneut versuchen'));
   }
 }

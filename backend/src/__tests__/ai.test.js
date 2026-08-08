@@ -103,6 +103,77 @@ describe('POST /api/ai/training-plan', () => {
   });
 });
 
+describe('POST /api/ai/tactic-suggestion', () => {
+  const validBody = { category: 'Forechecking', question: 'Wie können wir variieren?' };
+
+  it('lehnt nicht eingeloggte Anfragen ab', async () => {
+    const res = await request(app).post('/api/ai/tactic-suggestion').send(validBody);
+    expect(res.status).toBe(401);
+  });
+
+  it('lehnt eine ungültige Kategorie ab (feste Liste statt Freitext)', async () => {
+    const res = await request(app).post('/api/ai/tactic-suggestion')
+      .set('Cookie', user.cookie)
+      .send({ ...validBody, category: 'Sonstiges' });
+    expect(res.status).toBe(422);
+  });
+
+  it('lehnt eine zu lange Frage ab', async () => {
+    const res = await request(app).post('/api/ai/tactic-suggestion')
+      .set('Cookie', user.cookie)
+      .send({ ...validBody, question: 'x'.repeat(301) });
+    expect(res.status).toBe(422);
+  });
+
+  it('liefert 503, solange kein KI-Anbieter konfiguriert ist', async () => {
+    const res = await request(app).post('/api/ai/tactic-suggestion')
+      .set('Cookie', user.cookie)
+      .send(validBody);
+    expect(res.status).toBe(503);
+    expect(res.body.success).toBe(false);
+  });
+});
+
+describe('POST /api/ai/analysis', () => {
+  const validBody = { observations: 'Wir verlieren oft den Puck beim Übergang ins Angriffsdrittel.' };
+
+  it('lehnt nicht eingeloggte Anfragen ab', async () => {
+    const res = await request(app).post('/api/ai/analysis').send(validBody);
+    expect(res.status).toBe(401);
+  });
+
+  it('lehnt leere Beobachtungen ab', async () => {
+    const res = await request(app).post('/api/ai/analysis')
+      .set('Cookie', user.cookie)
+      .send({ observations: '' });
+    expect(res.status).toBe(422);
+  });
+
+  it('lehnt zu lange Beobachtungen ab', async () => {
+    const res = await request(app).post('/api/ai/analysis')
+      .set('Cookie', user.cookie)
+      .send({ observations: 'x'.repeat(2001) });
+    expect(res.status).toBe(422);
+  });
+
+  it('akzeptiert Beobachtungen ohne optionalen Fokus', async () => {
+    const res = await request(app).post('/api/ai/analysis')
+      .set('Cookie', user.cookie)
+      .send(validBody);
+    // Kein Provider konfiguriert -> 503, aber die Validierung selbst
+    // (Fokus optional) darf hier nicht mit 422 scheitern.
+    expect(res.status).toBe(503);
+  });
+
+  it('liefert 503, solange kein KI-Anbieter konfiguriert ist', async () => {
+    const res = await request(app).post('/api/ai/analysis')
+      .set('Cookie', user.cookie)
+      .send(validBody);
+    expect(res.status).toBe(503);
+    expect(res.body.success).toBe(false);
+  });
+});
+
 describe('Admin AI-Config', () => {
   afterEach(async () => {
     // Jeden Test mit einer leeren Konfiguration starten/beenden, damit sich

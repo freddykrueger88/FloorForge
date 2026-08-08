@@ -28,7 +28,11 @@ const validateBoard = [
   body('theme')
     .optional()
     .isIn(['dark', 'light', 'vikings', 'iff']),
-  body('notes').optional().isLength({ max: 500 }).withMessage('Notizen max. 500 Zeichen'),
+  // EPIC 010 – KI-Taktik-/Analyseassistent: generierter Text (Varianten
+  // mit Vor-/Nachteilen bzw. Analyse-Zusammenfassung) sprengt das
+  // vorherige 500-Zeichen-Limit leicht; 4000 analog zu
+  // training_sessions.notes (routes/trainings.js).
+  body('notes').optional().isLength({ max: 4000 }).withMessage('Notizen max. 4000 Zeichen'),
   body('opponent').optional().trim().isLength({ max: 80 }).withMessage('Gegner max. 80 Zeichen'),
   body('category')
     .optional()

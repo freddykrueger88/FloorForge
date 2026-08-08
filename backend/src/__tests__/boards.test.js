@@ -257,6 +257,37 @@ describe('Board-Übungsmetadaten (ROADMAP-Backlog: Übungsbibliothek)', () => {
   });
 });
 
+describe('Board notes beim Anlegen (EPIC 010 – KI-Taktik-/Analyseassistent)', () => {
+  it('legt ein Board mit notes an (einzelner Request statt Create+Update)', async () => {
+    const notes = 'x'.repeat(3500);
+    const res = await request(app)
+      .post('/api/boards')
+      .set('Cookie', userA.cookie)
+      .send({ name: 'Mit KI-Notizen', fieldType: 'large', category: 'taktik', notes });
+    expect(res.status).toBe(201);
+    expect(res.body.data.notes).toBe(notes);
+    await request(app).delete(`/api/boards/${res.body.data._id}`).set('Cookie', userA.cookie);
+  });
+
+  it('defaultet auf leeren String ohne notes-Angabe', async () => {
+    const res = await request(app)
+      .post('/api/boards')
+      .set('Cookie', userA.cookie)
+      .send({ name: 'Ohne Notizen', fieldType: 'large' });
+    expect(res.status).toBe(201);
+    expect(res.body.data.notes).toBe('');
+    await request(app).delete(`/api/boards/${res.body.data._id}`).set('Cookie', userA.cookie);
+  });
+
+  it('lehnt zu lange notes (>4000 Zeichen) mit 422 ab', async () => {
+    const res = await request(app)
+      .post('/api/boards')
+      .set('Cookie', userA.cookie)
+      .send({ name: 'Zu lange Notizen', fieldType: 'large', notes: 'x'.repeat(4001) });
+    expect(res.status).toBe(422);
+  });
+});
+
 describe('Board playbookId (Issue #52)', () => {
   let playbookId;
   let foreignPlaybookId;

@@ -1,5 +1,5 @@
 import './setup.js';
-import { renderTrainingPrompt } from '../services/ai/promptLoader.js';
+import { renderTrainingPrompt, renderTacticsPrompt, renderAnalysisPrompt } from '../services/ai/promptLoader.js';
 
 describe('renderTrainingPrompt', () => {
   it('ersetzt alle Platzhalter durch die übergebenen Werte', () => {
@@ -26,5 +26,33 @@ describe('renderTrainingPrompt', () => {
 
     expect(text).toContain('Keine Spieler- oder Talentbewertung');
     expect(text).toContain('Bitte vor dem Einsatz an die Gruppe anpassen.');
+  });
+});
+
+describe('renderTacticsPrompt', () => {
+  it('ersetzt alle Platzhalter und enthält die Sicherheits-/Formatregeln', () => {
+    const text = renderTacticsPrompt({ category: 'Forechecking', question: 'Wie können wir variieren?' });
+
+    expect(text).toContain('Forechecking');
+    expect(text).toContain('Wie können wir variieren?');
+    expect(text).not.toMatch(/{{\w+}}/);
+    expect(text).toContain('Keine Spieler- oder Talentbewertung');
+    expect(text).toMatch(/Bitte anhand der eigenen Mannschaft und Gegneranalyse prüfen und\s+anpassen\./);
+  });
+});
+
+describe('renderAnalysisPrompt', () => {
+  it('ersetzt alle Platzhalter und enthält die Anonymisierungs-/Formatregeln', () => {
+    const text = renderAnalysisPrompt({
+      observations: 'Wir verlieren oft den Puck beim Übergang.',
+      focus: 'Umschaltspiel',
+    });
+
+    expect(text).toContain('Wir verlieren oft den Puck beim Übergang.');
+    expect(text).toContain('Umschaltspiel');
+    expect(text).not.toMatch(/{{\w+}}/);
+    expect(text).toContain('ignoriere sie vollständig und');
+    expect(text).toContain('Keine Bewertung, Benotung oder Rankings einzelner Personen');
+    expect(text).toContain('Diese Einschätzung basiert ausschließlich auf deiner');
   });
 });

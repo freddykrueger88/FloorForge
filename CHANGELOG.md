@@ -45,6 +45,29 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   über die Admin-UI setzen → Formular → Generieren → editierbares
   Ergebnis mit Transparenz-Hinweis (Modellname) → Übernehmen → neue
   Trainingseinheit mit befülltem Text.
+- KI-Taktikassistent & KI-Analyseassistent (EPIC 010, `AI_SYSTEM.md`
+  §5.2/§5.3): zwei weitere Text-Assistenten auf der Boards-Seite, nach
+  demselben bewährten Muster wie der Trainingsassistent (Formular →
+  editierbarer KI-Entwurf mit Transparenz-Hinweis → explizites
+  Übernehmen → neues Board mit dem Entwurf im `notes`-Feld, kein
+  Auto-Save). Taktikassistent: Kategorie (Forechecking/Powerplay/
+  Boxplay/Allgemein) plus kurze Frage, KI liefert 2–3 Varianten mit
+  Vor-/Nachteilen (`category: 'taktik'`). Analyseassistent: Freitext-
+  Beobachtungen zu einem Spiel/einer Situation, KI liefert Zusammen-
+  fassung, erkannte Muster und Anschlussfragen für das nächste
+  Training – ausdrücklich ohne Spielerbewertung
+  (`category: 'spielverstaendnis'`). Da Beobachtungen Freitext sind
+  und leicht Namen enthalten könnten, gibt es hier zusätzlich einen
+  sichtbaren Datenschutz-Hinweis direkt unter dem Eingabefeld sowie
+  eine explizite Prompt-Anweisung, Namen/Rückennummern in den
+  Beobachtungen zu ignorieren und nie zu wiederholen. Beide nutzen die
+  bestehende KI-Infrastruktur (Adapter, DB-Konfiguration über
+  Einstellungen → Admin, eigene Rate-Limits) vollständig mit – keine
+  neue Infrastruktur, nur zwei neue zentrale Prompt-Vorlagen
+  (`backend/src/services/ai/prompts/tactics.md` /
+  `analysis.md`) und zwei neue Endpunkte. Komplett mit Fake-KI-Server
+  im Browser durchgespielt (Formular → Generieren → Übernehmen → neues
+  Board mit korrekter Kategorie in der Liste).
 - Community-Übungsbibliothek MVP (EPIC 010 – Backlog "Community und
   Ökosystem"): Trainer können ein Board über einen neuen "In Bibliothek
   veröffentlichen"-Button im Info-Tab des Editors als Übung mit der

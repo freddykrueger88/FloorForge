@@ -125,6 +125,10 @@ export async function createBoard(req, res) {
     homeColor = '#1d4ed8', awayColor = '#dc2626', ballColor = '#ffffff',
     playbookId = null, opponent = '',
     category = '', ageGroup = '', goal = '', material = '',
+    // EPIC 010 – KI-Taktik-/Analyseassistent: optional direkt beim Anlegen
+    // setzbar, damit "Übernehmen" ein einzelner Request ist (analog
+    // trainingSessionsController.js createSession).
+    notes = '',
   } = req.body;
 
   try {
@@ -142,11 +146,11 @@ export async function createBoard(req, res) {
 
     const result = await client.query(
       `INSERT INTO boards (user_id, name, field_type, theme, home_color, away_color, ball_color, playbook_id, opponent,
-                            category, age_group, goal, material)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+                            category, age_group, goal, material, notes)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
        RETURNING *`,
       [req.user.id, name, fieldType, theme, homeColor, awayColor, ballColor, playbookId, opponent,
-       category, ageGroup, goal, material]
+       category, ageGroup, goal, material, notes]
     );
     const board = result.rows[0];
 

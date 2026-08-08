@@ -11,6 +11,8 @@ import path from 'path';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 let cachedTrainingTemplate = null;
+let cachedTacticsTemplate = null;
+let cachedAnalysisTemplate = null;
 
 function renderTemplate(template, vars) {
   return Object.entries(vars).reduce(
@@ -19,12 +21,21 @@ function renderTemplate(template, vars) {
   );
 }
 
+function loadTemplate(filename) {
+  return readFileSync(path.join(__dirname, 'prompts', filename), 'utf-8');
+}
+
 export function renderTrainingPrompt(vars) {
-  if (cachedTrainingTemplate === null) {
-    cachedTrainingTemplate = readFileSync(
-      path.join(__dirname, 'prompts', 'training.md'),
-      'utf-8'
-    );
-  }
+  if (cachedTrainingTemplate === null) cachedTrainingTemplate = loadTemplate('training.md');
   return renderTemplate(cachedTrainingTemplate, vars);
+}
+
+export function renderTacticsPrompt(vars) {
+  if (cachedTacticsTemplate === null) cachedTacticsTemplate = loadTemplate('tactics.md');
+  return renderTemplate(cachedTacticsTemplate, vars);
+}
+
+export function renderAnalysisPrompt(vars) {
+  if (cachedAnalysisTemplate === null) cachedAnalysisTemplate = loadTemplate('analysis.md');
+  return renderTemplate(cachedAnalysisTemplate, vars);
 }

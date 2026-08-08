@@ -656,7 +656,21 @@
     "sessionNamePlaceholder": "Training session name",
     "notConfiguredError": "AI assistant is not configured on this instance",
     "unavailableError": "AI provider is currently unreachable, please try again later",
-    "rateLimitError": "Too many requests, please wait a moment"
+    "rateLimitError": "Too many requests, please wait a moment",
+    "tacticAssistant": "Tactic ideas with AI",
+    "tacticFormTitle": "Create tactic variants with AI",
+    "tacticCategoryLabel": "Category",
+    "tacticQuestionLabel": "Question",
+    "tacticQuestionPlaceholder": "e.g. How can we vary our forechecking?",
+    "useAsTacticBoard": "Use as tactic board",
+    "boardNamePlaceholder": "Board name",
+    "analysisAssistant": "Analysis with AI",
+    "analysisFormTitle": "Structure observations with AI",
+    "observationsLabel": "Observations",
+    "observationsPlaceholder": "e.g. We often lost the ball transitioning into the attacking third in the second half...",
+    "analysisPrivacyHint": "Please don't enter names or personal details – describe situations and patterns, not individual people.",
+    "focusOptionalLabel": "Focus (optional)",
+    "useAsAnalysisBoard": "Use as analysis board"
   },
   "dialogs": {
     "newBoard": {

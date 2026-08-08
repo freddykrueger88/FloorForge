@@ -1,13 +1,15 @@
 /**
- * /api/ai – KI-Trainingsassistent (EPIC 010, AI_SYSTEM.md §5.1 MVP)
+ * /api/ai – KI-Assistenten (EPIC 010, AI_SYSTEM.md §5.1-5.3)
  * Authentifiziert, kein Admin-Zwang – jeder eingeloggte Trainer dieser
- * Instanz darf den Assistenten nutzen.
+ * Instanz darf die Assistenten nutzen.
  */
 import { Router } from 'express';
 import { body } from 'express-validator';
 import { authenticate } from '../middleware/auth.js';
 import { validate } from '../middleware/validate.js';
-import { getAiStatus, generateTrainingPlan } from '../controllers/aiController.js';
+import {
+  getAiStatus, generateTrainingPlan, generateTacticSuggestion, generateAnalysis,
+} from '../controllers/aiController.js';
 
 const router = Router();
 
@@ -26,5 +28,24 @@ router.post('/training-plan', [
   body('playerCount').isInt({ min: 1, max: 40 }).withMessage('Spieleranzahl 1-40'),
   validate,
 ], generateTrainingPlan);
+
+// AI_SYSTEM.md §5.2 Taktikassistent
+router.post('/tactic-suggestion', [
+  body('category').isIn(['Forechecking', 'Powerplay', 'Boxplay', 'Allgemein'])
+    .withMessage('Ungültige Kategorie'),
+  body('question').trim().notEmpty().isLength({ max: 300 }).withMessage('Frage max. 300 Zeichen'),
+  validate,
+], generateTacticSuggestion);
+
+// AI_SYSTEM.md §5.3 Analyseassistent – "observations" bleibt bewusst
+// Freitext (keine feste Liste möglich für Beobachtungen); der Schutz vor
+// Personendaten kommt hier aus dem UI-Hinweis + der expliziten
+// Anonymisierungs-Anweisung im Prompt (prompts/analysis.md), nicht aus
+// der Validierung.
+router.post('/analysis', [
+  body('observations').trim().notEmpty().isLength({ max: 2000 }).withMessage('Beobachtungen max. 2000 Zeichen'),
+  body('focus').optional().trim().isLength({ max: 150 }).withMessage('Fokus max. 150 Zeichen'),
+  validate,
+], generateAnalysis);
 
 export default router;
