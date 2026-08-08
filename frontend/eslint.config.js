@@ -27,7 +27,7 @@ export default [
         setInterval: 'readonly', clearInterval: 'readonly',
         requestAnimationFrame: 'readonly', cancelAnimationFrame: 'readonly',
         ResizeObserver: 'readonly',
-        fetch: 'readonly', URL: 'readonly', FormData: 'readonly',
+        fetch: 'readonly', URL: 'readonly', URLSearchParams: 'readonly', FormData: 'readonly',
         navigator: 'readonly', Blob: 'readonly', File: 'readonly',
         indexedDB: 'readonly', IDBKeyRange: 'readonly',
         WebSocket: 'readonly',

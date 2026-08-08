@@ -31,6 +31,7 @@ import {
   Check,
   AlertTriangle,
   WifiOff,
+  Library,
 } from 'lucide-react';
 
 import { IFF_FIELDS, DEFAULT_TEAM_COLORS, IFF_BALL_COLORS, ensureBall, BALL_ID } from '../constants/fieldConfig.js';
@@ -51,6 +52,7 @@ import { DrawingToolbar, DrawingCoordinatesForm } from '../components/drawing/in
 import { FrameTimeline } from '../components/frames/index.js';
 import { PlaybackControls } from '../components/playback/index.js';
 import { NotesPanel, BoardDetailsPanel, ExportPanel, PdfExportPanel, ShortcutsOverlay, ShareBoardModal, BoardSidePanelTabs, VersionsPanel, VideoPanel } from '../components/board/index.js';
+import PublishBoardModal from '../components/library/PublishBoardModal.jsx';
 import { LinesPanel } from '../components/lines/index.js';
 import { FormationsPanel } from '../components/formations/index.js';
 import CommentsPanel from '../components/comments/CommentsPanel.jsx';
@@ -364,6 +366,8 @@ export default function BoardEditorPage() {
   const [showShortcuts, setShowShortcuts] = useState(false);
   // Issue #51 MVP – Board-Sharing (Owner-only)
   const [showShareModal, setShowShareModal] = useState(false);
+  // EPIC 010 MVP – Community-Übungsbibliothek (Owner-only)
+  const [showPublishModal, setShowPublishModal] = useState(false);
   useEffect(() => {
     const handler = (e) => {
       const tag = document.activeElement?.tagName;
@@ -542,6 +546,9 @@ export default function BoardEditorPage() {
 
       {showShortcuts && <ShortcutsOverlay onClose={() => setShowShortcuts(false)} />}
       {showShareModal && <ShareBoardModal boardId={boardId} onClose={() => setShowShareModal(false)} />}
+      {showPublishModal && (
+        <PublishBoardModal boardId={boardId} onClose={() => setShowPublishModal(false)} />
+      )}
 
       {pendingFieldType && (
         <FieldTypeChangeDialog
@@ -744,6 +751,12 @@ export default function BoardEditorPage() {
                     material={board?.material}
                     onChangeMaterial={canEdit ? handleChangeMaterial : undefined}
                   />
+                  {board?.accessLevel === 'owner' && (
+                    <Button variant="secondary" size="md" onClick={() => setShowPublishModal(true)}>
+                      <Library size={16} aria-hidden="true" />
+                      <span>{t('library.publishButton')}</span>
+                    </Button>
+                  )}
                   <NotesPanel value={notes} onChange={setNotes} readonly={!canEdit} />
                 </>
               ),

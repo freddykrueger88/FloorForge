@@ -8,6 +8,7 @@ import { validate } from '../middleware/validate.js';
 import {
   listUsers, deleteUser, updateUserRole, getBackupConfig, updateBackupConfig,
 } from '../controllers/adminController.js';
+import { listReportedLibraryEntries } from '../controllers/libraryController.js';
 
 const router = Router();
 
@@ -20,6 +21,8 @@ router.put('/users/:id/role', [
   body('role').isIn(['admin', 'user']).withMessage('Ungültige Rolle'),
   validate,
 ], updateUserRole);
+
+router.get('/library-reports', listReportedLibraryEntries);
 
 router.get('/backup-config', getBackupConfig);
 router.put('/backup-config', [

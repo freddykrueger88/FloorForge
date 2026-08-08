@@ -515,6 +515,66 @@ export async function runMigrations() {
       WHERE NOT EXISTS (SELECT 1 FROM app_config);
     `);
 
+    // ── library_entries (EPIC 010 – Community-Übungsbibliothek MVP) ──────
+    // Snapshot-Kopie statt Live-Verweis auf boards: beim Veröffentlichen
+    // werden nur die taktischen Inhalte (Aufstellung Frame 0, Zeichnungen,
+    // Feldtyp, Farben, Kategorie-Metadaten) kopiert. Bewusst NICHT
+    // übernommen: notes (Trainervermerke), opponent (Gegner-Name),
+    // board_collaborators, Kommentare – Privacy by Design, eine
+    // Veröffentlichung darf nie interne Notizen offenlegen. Der Snapshot
+    // bleibt unabhängig davon bestehen, ob das Quell-Board später
+    // geändert/gelöscht wird (source_board_id ist reine Provenienz, kein
+    // Zugriffspfad). owner_id -> SET NULL statt CASCADE: löscht ein Nutzer
+    // seinen Account, bleibt sein Beitrag für die Community erhalten, nur
+    // die Autoren-Zuordnung wird anonymisiert (Frontend zeigt dann einen
+    // Platzhalter statt display_name).
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS library_entries (
+        id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        source_board_id UUID REFERENCES boards(id) ON DELETE SET NULL,
+        owner_id        UUID REFERENCES users(id) ON DELETE SET NULL,
+        name            TEXT NOT NULL,
+        field_type      TEXT NOT NULL DEFAULT 'large'
+                        CHECK (field_type IN ('large', 'small', 'street', '3v3')),
+        category        TEXT NOT NULL DEFAULT ''
+                        CHECK (category IN ('', 'technik', 'taktik', 'kondition', 'spielverstaendnis', 'nachwuchs')),
+        age_group       TEXT NOT NULL DEFAULT '',
+        goal            TEXT NOT NULL DEFAULT '',
+        material        TEXT NOT NULL DEFAULT '',
+        theme           TEXT NOT NULL DEFAULT 'dark'
+                        CHECK (theme IN ('dark', 'light', 'vikings', 'iff')),
+        home_color      TEXT NOT NULL DEFAULT '#1d4ed8',
+        away_color      TEXT NOT NULL DEFAULT '#dc2626',
+        ball_color      TEXT NOT NULL DEFAULT '#ffffff',
+        players_json    JSONB NOT NULL DEFAULT '[]',
+        elements_json   JSONB NOT NULL DEFAULT '[]',
+        created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      );
+    `);
+    await client.query(`
+      DROP TRIGGER IF EXISTS trg_library_entries_updated_at ON library_entries;
+      CREATE TRIGGER trg_library_entries_updated_at
+        BEFORE UPDATE ON library_entries
+        FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+    `);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_library_entries_category ON library_entries(category);`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_library_entries_owner_id ON library_entries(owner_id);`);
+
+    // Melde-Funktion: ein Report pro Nutzer und Eintrag (UNIQUE),
+    // verhindert Spam-Meldungen ohne eigene Rate-Limiting-Infrastruktur.
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS library_entry_reports (
+        id               UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        library_entry_id UUID NOT NULL REFERENCES library_entries(id) ON DELETE CASCADE,
+        reported_by      UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        reason           TEXT NOT NULL DEFAULT '',
+        created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        UNIQUE (library_entry_id, reported_by)
+      );
+    `);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_library_entry_reports_entry_id ON library_entry_reports(library_entry_id);`);
+
     await client.query('COMMIT');
     logger.info('Database migrations completed successfully.');
   } catch (err) {

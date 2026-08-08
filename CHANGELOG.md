@@ -14,6 +14,29 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ## [Unreleased]
 
 ### Added
+- Community-Übungsbibliothek MVP (EPIC 010 – Backlog "Community und
+  Ökosystem"): Trainer können ein Board über einen neuen "In Bibliothek
+  veröffentlichen"-Button im Info-Tab des Editors als Übung mit der
+  ganzen (self-hosted) Instanz teilen. Neue Seite `/library` (nur für
+  eingeloggte Nutzer dieser Instanz, kein anonymer Zugriff wie bei
+  `/share/:token`) mit Kategorie-Filter und Namenssuche; jeder Eintrag
+  lässt sich als eigenes, voll editierbares Board übernehmen ("Add to
+  my boards") oder melden. Veröffentlichen erzeugt bewusst eine
+  SNAPSHOT-Kopie in einer neuen `library_entries`-Tabelle statt eines
+  Live-Verweises auf das Board – `notes` (Trainervermerke) und
+  `opponent` (Gegner-Name) werden dabei nie mitkopiert (Privacy by
+  Design). Löscht der Ersteller später seinen Account, bleibt der
+  Eintrag erhalten, nur die Autoren-Zuordnung wird anonymisiert
+  (`owner_id` → `SET NULL`, Anzeige "Former member"). Moderation ist
+  Post-Moderation statt Freigabe-Workflow: jeder Nutzer kann einen
+  Eintrag einmal melden, Admins sehen gemeldete Einträge sortiert nach
+  Meldungsanzahl unter Einstellungen → "Library reports" und können sie
+  entfernen (Hard-Delete). Eigene Einträge lassen sich jederzeit selbst
+  entfernen (Löschrecht). Mit zwei echten Test-Accounts im Browser
+  durchgespielt: Veröffentlichen, Filtern/Suchen, Übernehmen (inkl.
+  Zugriffsprüfung – nur Owner/Admin sieht den Entfernen-Button),
+  Melden (keine Duplikate) und Admin-Entfernen funktionieren wie
+  vorgesehen.
 - UI/UX-Design-Review umgesetzt (alle 13 Punkte aus dem Design-Audit):
   Emoji-Icon-System vollständig auf `lucide-react` migriert (33 Dateien,
   betrifft praktisch jede Seite), gemeinsame `Button`-Komponente ersetzt

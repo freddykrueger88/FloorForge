@@ -19,6 +19,7 @@ import TeamsSection from '../components/settings/TeamsSection.jsx';
 import OrganizationsSection from '../components/settings/OrganizationsSection.jsx';
 import DataSection from '../components/settings/DataSection.jsx';
 import AdminSection from '../components/settings/AdminSection.jsx';
+import LibraryModerationSection from '../components/settings/LibraryModerationSection.jsx';
 import styles from './SettingsPage.module.css';
 
 export default function SettingsPage() {
@@ -36,6 +37,7 @@ export default function SettingsPage() {
     { id: 'organizations', label: t('settings.nav.organizations'), content: <OrganizationsSection /> },
     { id: 'data',          label: t('settings.nav.data'),          content: <DataSection /> },
     isAdmin && { id: 'admin', label: t('settings.nav.admin'), content: <AdminSection /> },
+    isAdmin && { id: 'library-moderation', label: t('settings.nav.libraryModeration'), content: <LibraryModerationSection /> },
   ].filter(Boolean);
 
   return (

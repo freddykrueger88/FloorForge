@@ -31,6 +31,7 @@ export default function Header() {
     { to: '/boards',    label: t('nav.boards') },
     { to: '/trainings', label: t('nav.trainings') },
     { to: '/roster',    label: t('nav.roster') },
+    { to: '/library',   label: t('nav.library') },
     { to: '/settings',  label: t('nav.settings') },
   ];
 

@@ -48,5 +48,10 @@ export function useBoardsApi() {
       baselineUpdatedAt, conflictCheckUrl: `${BASE}/${id}`, label,
     })), [request]);
 
-  return { loading, error, fetchBoards, fetchBoard, createBoard, updateBoard, deleteBoard };
+  // EPIC 010 – Community-Übungsbibliothek: erzeugt eine Snapshot-Kopie
+  // dieses Boards in library_entries (siehe libraryController.js).
+  const publishBoard = useCallback((id, data = {}) =>
+    request(() => apiFetch(`${BASE}/${id}/publish`, { method: 'POST', body: JSON.stringify(data) })), [request]);
+
+  return { loading, error, fetchBoards, fetchBoard, createBoard, updateBoard, deleteBoard, publishBoard };
 }

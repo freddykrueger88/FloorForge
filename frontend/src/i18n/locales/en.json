@@ -10,7 +10,8 @@
     "mainNavigation": "Main navigation",
     "brandHome": "Go to homepage",
     "trainings": "Trainings",
-    "roster": "Roster"
+    "roster": "Roster",
+    "library": "Exercise Library"
   },
   "field": {
     "large": "Full Field (40×20m)",
@@ -76,7 +77,8 @@
       "teams": "Teams",
       "organizations": "Organizations",
       "data": "Data",
-      "admin": "Admin"
+      "admin": "Admin",
+      "libraryModeration": "Library reports"
     },
     "languageDe": "German",
     "languageEn": "English",
@@ -584,6 +586,43 @@
     "kondition": "Conditioning",
     "spielverstaendnis": "Game sense",
     "nachwuchs": "Youth"
+  },
+  "library": {
+    "pageTitle": "Exercise Library",
+    "count_one": "{{count}} exercise",
+    "count_other": "{{count}} exercises",
+    "noEntriesYet": "No exercise published yet",
+    "emptyStateDesc": "Publish an exercise from your board editor to make it appear here for every coach on this instance.",
+    "noFilterMatch": "No exercise matches your filter",
+    "searchPlaceholder": "Search by name",
+    "searchAriaLabel": "Search the exercise library by name",
+    "categoryFilterAriaLabel": "Filter by exercise category",
+    "loading": "Loading exercise library...",
+    "byAuthor": "by {{name}}",
+    "authorFallback": "Former member",
+    "clone": "Add to my boards",
+    "cloneSuccess": "Added as your own board",
+    "report": "Report",
+    "reportReasonLabel": "Reason (optional)",
+    "reportSubmit": "Report",
+    "reportSuccess": "Thanks, your report has been submitted",
+    "remove": "Remove",
+    "removeConfirm": "Permanently remove this exercise from the library?",
+    "publishButton": "Publish to library",
+    "publishConfirmTitle": "Publish exercise",
+    "publishConfirmBody": "Visible to every user on this instance. Notes and opponent name will NOT be published.",
+    "publishConfirmAction": "Publish",
+    "publishing": "Publishing...",
+    "publishSuccess": "Published",
+    "moderation": {
+      "title": "Library reports",
+      "empty": "No open reports",
+      "columnName": "Name",
+      "columnCategory": "Category",
+      "columnAuthor": "Author",
+      "columnReports": "Reports",
+      "columnLastReported": "Last reported"
+    }
   },
   "dialogs": {
     "newBoard": {

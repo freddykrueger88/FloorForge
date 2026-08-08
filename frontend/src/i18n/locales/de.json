@@ -10,7 +10,8 @@
     "mainNavigation": "Hauptnavigation",
     "brandHome": "Zur Startseite",
     "trainings": "Trainings",
-    "roster": "Kader"
+    "roster": "Kader",
+    "library": "Übungsbibliothek"
   },
   "field": {
     "large": "Großfeld (40×20m)",
@@ -76,7 +77,8 @@
       "teams": "Teams",
       "organizations": "Vereine",
       "data": "Daten",
-      "admin": "Admin"
+      "admin": "Admin",
+      "libraryModeration": "Bibliotheks-Meldungen"
     },
     "languageDe": "Deutsch",
     "languageEn": "Englisch",
@@ -584,6 +586,43 @@
     "kondition": "Kondition",
     "spielverstaendnis": "Spielverständnis",
     "nachwuchs": "Nachwuchs"
+  },
+  "library": {
+    "pageTitle": "Übungsbibliothek",
+    "count_one": "{{count}} Übung",
+    "count_other": "{{count}} Übungen",
+    "noEntriesYet": "Noch keine Übung veröffentlicht",
+    "emptyStateDesc": "Veröffentliche eine Übung aus deinem Spielfeld-Editor, damit sie hier für alle Trainer dieser Instanz erscheint.",
+    "noFilterMatch": "Keine Übung passt zu deiner Auswahl",
+    "searchPlaceholder": "Nach Name suchen",
+    "searchAriaLabel": "Übungsbibliothek nach Name durchsuchen",
+    "categoryFilterAriaLabel": "Nach Übungskategorie filtern",
+    "loading": "Lädt Übungsbibliothek...",
+    "byAuthor": "von {{name}}",
+    "authorFallback": "Ehemaliges Mitglied",
+    "clone": "Übernehmen",
+    "cloneSuccess": "Als eigenes Spielfeld übernommen",
+    "report": "Melden",
+    "reportReasonLabel": "Grund (optional)",
+    "reportSubmit": "Melden",
+    "reportSuccess": "Danke, die Meldung wurde übermittelt",
+    "remove": "Entfernen",
+    "removeConfirm": "Diese Übung endgültig aus der Bibliothek entfernen?",
+    "publishButton": "In Bibliothek veröffentlichen",
+    "publishConfirmTitle": "Übung veröffentlichen",
+    "publishConfirmBody": "Sichtbar für alle Nutzer dieser Instanz. Notizen und Gegnername werden NICHT mit veröffentlicht.",
+    "publishConfirmAction": "Veröffentlichen",
+    "publishing": "Wird veröffentlicht...",
+    "publishSuccess": "Veröffentlicht",
+    "moderation": {
+      "title": "Bibliotheks-Meldungen",
+      "empty": "Keine offenen Meldungen",
+      "columnName": "Name",
+      "columnCategory": "Kategorie",
+      "columnAuthor": "Autor",
+      "columnReports": "Meldungen",
+      "columnLastReported": "Zuletzt gemeldet"
+    }
   },
   "dialogs": {
     "newBoard": {

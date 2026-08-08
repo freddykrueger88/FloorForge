@@ -9,6 +9,7 @@ import {
   getBoards, getBoard, createBoard, updateBoard, deleteBoard,
 } from '../controllers/boardsController.js';
 import { createShareLink } from '../controllers/shareController.js';
+import { publishToLibrary } from '../controllers/libraryController.js';
 
 const router = Router();
 
@@ -56,5 +57,10 @@ router.post  ('/',     [validateCreateBoard, validate], createBoard);
 router.put   ('/:id',  [param('id').isUUID(), ...validateBoard, validate], updateBoard);
 router.delete('/:id',  [param('id').isUUID().withMessage('Ungültige Board-ID'), validate], deleteBoard);
 router.post  ('/:id/share', [param('id').isUUID().withMessage('Ungültige Board-ID'), validate], createShareLink);
+router.post  ('/:id/publish', [
+  param('id').isUUID().withMessage('Ungültige Board-ID'),
+  body('name').optional().trim().isLength({ max: 80 }).withMessage('Name max. 80 Zeichen'),
+  validate,
+], publishToLibrary);
 
 export default router;
