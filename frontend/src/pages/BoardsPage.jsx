@@ -5,7 +5,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { AlertTriangle, LayoutGrid, SearchX, Plus } from 'lucide-react';
+import { AlertTriangle, Presentation, SearchX, Plus, Grid2x2, Grid3x3 } from 'lucide-react';
 import { useBoardsApi } from '../hooks/useBoardsApi.js';
 import { useSettings } from '../hooks/useSettings.js';
 import { usePlaybooks } from '../hooks/usePlaybooks.js';
@@ -186,7 +186,7 @@ export default function BoardsPage() {
             aria-label={t('boardsPage.postcardView')}
             title={t('boardsPage.postcardView')}
           >
-            <span aria-hidden="true">🃏</span>
+            <Grid2x2 size={18} aria-hidden="true" />
           </button>
           <button
             className={`${styles.viewBtn} ${view === 'compact' ? styles.viewActive : ''}`}
@@ -195,7 +195,7 @@ export default function BoardsPage() {
             aria-label={t('boardsPage.compactView')}
             title={t('boardsPage.compactView')}
           >
-            <span aria-hidden="true">▦</span>
+            <Grid3x3 size={18} aria-hidden="true" />
           </button>
         </div>
       </div>
@@ -227,7 +227,7 @@ export default function BoardsPage() {
         </div>
       ) : boards.length === 0 ? (
         <div className={styles.emptyState} role="status">
-          <div className={styles.emptyIcon} aria-hidden="true"><LayoutGrid size={40} aria-hidden="true" /></div>
+          <div className={styles.emptyIcon} aria-hidden="true"><Presentation size={40} aria-hidden="true" /></div>
           <h2>{t('boardsPage.noBoardsYet')}</h2>
           <p>{t('boardsPage.emptyStateDesc')}</p>
           <Button

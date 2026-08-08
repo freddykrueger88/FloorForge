@@ -244,6 +244,11 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   gemeinsamen, kanonischen Stand gebracht.
 
 ### Fixed
+- Boards-Übersicht: drei vom `lucide-react`-Umzug übersehene Icons.
+  Empty-State (vier gleiche Kästchen, `LayoutGrid`) wirkte für ein
+  Taktikboard beliebig – jetzt `Presentation` (Whiteboard auf Ständer).
+  Die beiden View-Toggle-Buttons (Postkarten-/Kompaktansicht) waren noch
+  rohes Unicode (🃏/▦) statt Icon-Komponente, jetzt `Grid2x2`/`Grid3x3`.
 - Reload-Endlosschleife für nicht eingeloggte Besucher, die direkt auf
   `/login` oder `/register` landen (also den normalen Haupteinstieg der
   App): `App.jsx` ruft `fetchMe()` bei jedem Seiten-Mount auf, auch auf
