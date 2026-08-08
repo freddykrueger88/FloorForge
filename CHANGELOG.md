@@ -31,9 +31,10 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   automatisch abgeleitet – siehe `deriveCustomThemeTokens()` in
   `utils/color.js`), rein persönliche Einstellung über die bestehende
   `settings.preferences_json`-Ablage, keine neue Backend-Tabelle nötig.
-  Bei der optischen Seite (Icon-Look, Farbwähler-Vorschau, Tab-Optik)
-  wie bei früheren Runden ohne echten Browser unterwegs – strukturell
-  verifiziert (Lint/91 Tests/Build grün), bitte selbst gegenchecken.
+  Optische Seite (Icon-Look, Farbwähler-Vorschau, Tab-Optik) diesmal per
+  echtem (headless) Browser gegen den laufenden Container geprüft –
+  Boards-Empty-State, Settings-Tabs, Custom-Theme-Farbwähler und
+  Board-Editor-Speicherstatus sehen wie vorgesehen aus.
 - Mobile/Tablet-Touch-Optimierung (ROADMAP-Backlog): `touch-action: none`
   auf dem Spielfeld-Canvas (verhindert, dass Ziehen von Spielern/Zeichnen
   auf Touch-Geräten mit Seiten-Scroll/Pinch-Zoom kollidiert), Werkzeug-
@@ -239,6 +240,24 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   gemeinsamen, kanonischen Stand gebracht.
 
 ### Fixed
+- Reload-Endlosschleife für nicht eingeloggte Besucher, die direkt auf
+  `/login` oder `/register` landen (also den normalen Haupteinstieg der
+  App): `App.jsx` ruft `fetchMe()` bei jedem Seiten-Mount auf, auch auf
+  diesen beiden öffentlichen Seiten. Der Axios-Interceptor in `api.js`
+  hat auf das dabei erwartete 401 (nicht eingeloggt) bisher mit einem
+  harten `window.location.href = '/login'` reagiert – ein kompletter
+  Seiten-Reload selbst dann, wenn man bereits auf `/login` war, was
+  `fetchMe()` erneut auslöst und so in eine Schleife aus Reloads läuft.
+  Endet erst, wenn der allgemeine Rate-Limiter `/api/auth/me` mit 429
+  blockt (auf das der Interceptor nicht reagiert). `/auth/me` ist jetzt
+  wie `/auth/login`/`/auth/register` von diesem Redirect ausgenommen
+  (ein 401 dort ist die normale "nicht eingeloggt"-Antwort, kein
+  abgelaufenes Session-Cookie mitten in der Nutzung) – `authStore.
+  fetchMe()` fängt den Fehler bereits selbst ab und setzt `user: null`,
+  die bestehenden Route-Guards greifen dann ohne Reload. Zusätzliche
+  Absicherung: kein Redirect mehr, wenn die aktuelle Seite bereits
+  `/login` ist. Beim Live-Check des UI/UX-Reviews mit einem frischen,
+  nicht eingeloggten Browser-Profil aufgefallen.
 - GIF-/MP4-Export funktionierte über das echte Frontend nie (413
   "Payload Too Large"), obwohl die Live-Verifikation per curl zuvor
   erfolgreich aussah – lag an zwei unabhängigen Bugs, die sich mit
