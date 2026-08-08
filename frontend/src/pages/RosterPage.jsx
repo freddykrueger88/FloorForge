@@ -130,8 +130,11 @@ export default function RosterPage() {
                 defaultValue={player.name}
                 onBlur={(e) => {
                   const trimmed = e.target.value.trim();
-                  if (trimmed && trimmed !== player.name) updateRosterPlayer(player._id, { name: trimmed });
-                  else e.target.value = player.name;
+                  if (trimmed && trimmed !== player.name) {
+                    updateRosterPlayer(player._id, { name: trimmed }, {
+                      baselineUpdatedAt: player.updatedAt, label: player.name,
+                    });
+                  } else e.target.value = player.name;
                 }}
                 maxLength={40}
                 aria-label={t('roster.rowNameAriaLabel', { name: player.name })}
@@ -142,7 +145,11 @@ export default function RosterPage() {
                 defaultValue={player.jerseyNumber ?? ''}
                 onBlur={(e) => {
                   const val = e.target.value === '' ? null : Number(e.target.value);
-                  if (val !== player.jerseyNumber) updateRosterPlayer(player._id, { jerseyNumber: val });
+                  if (val !== player.jerseyNumber) {
+                    updateRosterPlayer(player._id, { jerseyNumber: val }, {
+                      baselineUpdatedAt: player.updatedAt, label: player.name,
+                    });
+                  }
                 }}
                 min={0}
                 max={99}
@@ -151,7 +158,9 @@ export default function RosterPage() {
               <select
                 className={styles.rowRoleSelect}
                 value={player.role ?? ''}
-                onChange={(e) => updateRosterPlayer(player._id, { role: e.target.value === '' ? null : e.target.value })}
+                onChange={(e) => updateRosterPlayer(player._id, { role: e.target.value === '' ? null : e.target.value }, {
+                  baselineUpdatedAt: player.updatedAt, label: player.name,
+                })}
                 aria-label={t('roster.rowRoleAriaLabel', { name: player.name })}
               >
                 <option value="">{t('roster.roleNone')}</option>
@@ -167,7 +176,9 @@ export default function RosterPage() {
                 size="sm"
                 iconOnly
                 className={styles.deleteBtn}
-                onClick={() => deleteRosterPlayer(player._id)}
+                onClick={() => deleteRosterPlayer(player._id, {
+                  baselineUpdatedAt: player.updatedAt, label: player.name,
+                })}
                 aria-label={t('roster.deleteAriaLabel', { name: player.name })}
                 title={t('roster.deleteTitle')}
               >

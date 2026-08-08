@@ -66,11 +66,21 @@ export default function TrainingsPage() {
   };
 
   const handleRename = async (id, name) => {
-    try { await renameSession(id, name); } catch { /* error via hook */ }
+    try {
+      const current = sessions.find((s) => s._id === id);
+      await renameSession(id, name, {
+        baselineUpdatedAt: current?.updatedAt ?? null, label: current?.name ?? null,
+      });
+    } catch { /* error via hook */ }
   };
 
   const handleDelete = async (id) => {
-    try { await deleteSession(id); } catch { /* error via hook */ }
+    try {
+      const current = sessions.find((s) => s._id === id);
+      await deleteSession(id, {
+        baselineUpdatedAt: current?.updatedAt ?? null, label: current?.name ?? null,
+      });
+    } catch { /* error via hook */ }
   };
 
   return (

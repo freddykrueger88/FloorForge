@@ -586,6 +586,17 @@ export async function runMigrations() {
     `);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_library_entry_reports_entry_id ON library_entry_reports(library_entry_id);`);
 
+    // ── roster_players: updated_at (Voraussetzung für die Offline-
+    // Konfliktlösung, EPIC 010-Backlog – bisher hatten nur Boards/Frames/
+    // Trainingseinheiten überhaupt eine Grundlage für einen Konfliktcheck).
+    await client.query(`ALTER TABLE roster_players ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW();`);
+    await client.query(`
+      DROP TRIGGER IF EXISTS trg_roster_players_updated_at ON roster_players;
+      CREATE TRIGGER trg_roster_players_updated_at
+        BEFORE UPDATE ON roster_players
+        FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+    `);
+
     await client.query('COMMIT');
     logger.info('Database migrations completed successfully.');
   } catch (err) {

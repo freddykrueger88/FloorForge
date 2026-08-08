@@ -11,7 +11,7 @@ const uniqueEmail = (tag) => `${TEST_EMAIL_PREFIX}${tag}-${Math.floor(Math.rando
 async function registerAndLogin(tag) {
   const email = uniqueEmail(tag);
   const res = await request(app).post('/api/auth/register').send({ email, password: 'Testpass123' });
-  return { email, cookie: res.headers['set-cookie'][0] };
+  return { id: res.body.data.user.id, email, cookie: res.headers['set-cookie'][0] };
 }
 
 let owner;
@@ -43,6 +43,79 @@ describe('GET /api/roster', () => {
   });
 });
 
+describe('GET /api/roster/:id', () => {
+  // Eigener Test-User statt owner/other, damit diese GET-Tests nicht
+  // heimlich das Kader-Limit des Owners für den späteren
+  // "41. Kader-Spieler"-Test verändern (der zählt auf einen exakten
+  // Ausgangsstand von owner).
+  let getOwner;
+  let ownPlayerId;
+  let teamPlayerId;
+  let teamMember;
+  let unrelated;
+  let teamId;
+
+  beforeAll(async () => {
+    getOwner = await registerAndLogin('getowner');
+    teamMember = await registerAndLogin('teammember');
+    unrelated = await registerAndLogin('unrelated');
+
+    const ownRes = await request(app)
+      .post('/api/roster').set('Cookie', getOwner.cookie).send({ name: 'Eigener Spieler für GET' });
+    ownPlayerId = ownRes.body.data._id;
+
+    const teamResult = await pool.query(
+      'INSERT INTO teams (name, created_by) VALUES ($1, $2) RETURNING id',
+      ['Roster-GET-Team', getOwner.id]
+    );
+    teamId = teamResult.rows[0].id;
+    await pool.query(
+      'INSERT INTO team_members (team_id, user_id, role) VALUES ($1, $2, $3), ($1, $4, $5)',
+      [teamId, getOwner.id, 'owner', teamMember.id, 'member']
+    );
+
+    const teamPlayerRes = await request(app)
+      .post('/api/roster').set('Cookie', getOwner.cookie)
+      .send({ name: 'Team-Spieler', teamId });
+    teamPlayerId = teamPlayerRes.body.data._id;
+  });
+
+  it('lehnt nicht authentifizierte Anfragen mit 401 ab', async () => {
+    const res = await request(app).get(`/api/roster/${ownPlayerId}`);
+    expect(res.status).toBe(401);
+  });
+
+  it('liefert den eigenen Kader-Spieler inkl. updatedAt', async () => {
+    const res = await request(app).get(`/api/roster/${ownPlayerId}`).set('Cookie', getOwner.cookie);
+    expect(res.status).toBe(200);
+    expect(res.body.data._id).toBe(ownPlayerId);
+    expect(res.body.data.updatedAt).toBeTruthy();
+  });
+
+  it('verweigert einem unbeteiligten User den Zugriff mit 404', async () => {
+    const res = await request(app).get(`/api/roster/${ownPlayerId}`).set('Cookie', unrelated.cookie);
+    expect(res.status).toBe(404);
+  });
+
+  it('erlaubt einem einfachen Team-Mitglied das Lesen eines team-geteilten Spielers', async () => {
+    const res = await request(app).get(`/api/roster/${teamPlayerId}`).set('Cookie', teamMember.cookie);
+    expect(res.status).toBe(200);
+    expect(res.body.data._id).toBe(teamPlayerId);
+  });
+
+  it('liefert 404 für eine nicht existierende ID', async () => {
+    const res = await request(app)
+      .get('/api/roster/00000000-0000-0000-0000-000000000000')
+      .set('Cookie', owner.cookie);
+    expect(res.status).toBe(404);
+  });
+
+  it('liefert 422 für eine ungültige ID', async () => {
+    const res = await request(app).get('/api/roster/not-a-uuid').set('Cookie', owner.cookie);
+    expect(res.status).toBe(422);
+  });
+});
+
 describe('POST /api/roster', () => {
   it('legt einen neuen Kader-Spieler an', async () => {
     const res = await request(app)
@@ -53,6 +126,7 @@ describe('POST /api/roster', () => {
     expect(res.body.data.name).toBe('Max Mustermann');
     expect(res.body.data.jerseyNumber).toBe(7);
     expect(res.body.data.role).toBe('S');
+    expect(res.body.data.updatedAt).toBeTruthy();
   });
 
   it('legt einen Kader-Spieler ohne Nummer/Position an', async () => {
@@ -113,7 +187,8 @@ describe('PUT/DELETE /api/roster/:id + Ownership', () => {
     playerId = res.body.data._id;
   });
 
-  it('erlaubt dem Eigentümer, den Kader-Spieler zu ändern', async () => {
+  it('erlaubt dem Eigentümer, den Kader-Spieler zu ändern (updatedAt wechselt)', async () => {
+    const before = await request(app).get(`/api/roster/${playerId}`).set('Cookie', other.cookie);
     const res = await request(app)
       .put(`/api/roster/${playerId}`)
       .set('Cookie', other.cookie)
@@ -121,6 +196,7 @@ describe('PUT/DELETE /api/roster/:id + Ownership', () => {
     expect(res.status).toBe(200);
     expect(res.body.data.jerseyNumber).toBe(11);
     expect(res.body.data.role).toBe('C');
+    expect(res.body.data.updatedAt).not.toBe(before.body.data.updatedAt);
   });
 
   it('verweigert einem fremden User das Ändern mit 404', async () => {

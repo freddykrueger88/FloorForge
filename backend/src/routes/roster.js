@@ -7,7 +7,7 @@ import { body, param } from 'express-validator';
 import { authenticate } from '../middleware/auth.js';
 import { validate } from '../middleware/validate.js';
 import {
-  getRosterPlayers, createRosterPlayer, updateRosterPlayer, deleteRosterPlayer,
+  getRosterPlayers, getRosterPlayer, createRosterPlayer, updateRosterPlayer, deleteRosterPlayer,
 } from '../controllers/rosterController.js';
 
 const router = Router();
@@ -21,6 +21,7 @@ const rosterFields = [
 ];
 
 router.get   ('/',     getRosterPlayers);
+router.get   ('/:id',  [param('id').isUUID().withMessage('Ungültige Kader-ID'), validate], getRosterPlayer);
 router.post  ('/',     [
   body('name').trim().notEmpty().withMessage('Name ist erforderlich').isLength({ max: 40 }),
   ...rosterFields.slice(1),

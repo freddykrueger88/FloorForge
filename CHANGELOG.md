@@ -14,6 +14,28 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ## [Unreleased]
 
 ### Added
+- Offline-Konfliktlösung auf Trainingseinheiten und Kader-Einträge
+  erweitert (bisher nur Boards/Frames): beide Ressourcen sind
+  team-geteilt, zwei Co-Trainer können also real denselben Datensatz
+  gleichzeitig bearbeiten. Bearbeitet ein Trainer offline eine
+  Trainingseinheit oder einen Kader-Eintrag, während ein anderer
+  Co-Trainer denselben Datensatz zwischenzeitlich online geändert
+  hat, wird das beim Wiederverbinden erkannt (Vergleich von
+  `updatedAt`) und im bestehenden "Sync conflicts"-Dialog angezeigt,
+  statt die fremde Änderung stillschweigend zu überschreiben. Nutzt
+  dieselbe, bereits bewährte Mechanik wie bei Boards vollständig mit
+  (`frontend/src/utils/offlineSync.js`/`offlineQueue.js` bleiben
+  unverändert – bereits ressourcen-agnostisch) – nur die beiden Hooks
+  (`useTrainingSessions.js`, `useRoster.js`) übergeben jetzt
+  `baselineUpdatedAt`/`conflictCheckUrl`/`label` beim Bearbeiten/
+  Löschen. Voraussetzung für den Kader: `roster_players` hatte bisher
+  kein `updated_at` und keinen Einzel-Endpunkt – beides ergänzt
+  (`GET /api/roster/:id` als neue `conflictCheckUrl`, additive
+  Migration mit Standard-Update-Trigger, kein Datenverlust für
+  bestehende Einträge). Verifiziert mit zwei simulierten Co-Trainern
+  im Browser (einer offline, einer ändert währenddessen denselben
+  Datensatz online) sowie einer Gegenprobe ohne Fremdänderung (kein
+  falsch-positiver Konflikt).
 - KI-Trainingsassistent MVP (EPIC 010, `docs/planning/AI_SYSTEM.md`
   §5.1): neuer "Mit KI planen"-Button auf der Trainings-Seite (nur
   sichtbar, wenn diese Instanz einen KI-Anbieter konfiguriert hat).

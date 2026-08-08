@@ -25,6 +25,7 @@ function toApiRosterPlayer(row) {
     role:          row.role,
     teamId:        row.team_id,
     createdAt:     row.created_at,
+    updatedAt:     row.updated_at,
   };
 }
 
@@ -35,6 +36,16 @@ async function assertResourceWrite(row, userId) {
   if (row.user_id === userId) return true;
   if (!row.team_id) return false;
   return assertTeamAccess(row.team_id, userId, 'coach');
+}
+
+// Darf der Nutzer diesen Datensatz überhaupt sehen? Wie die Sichtbarkeit
+// von getRosterPlayers (jedes Team-Mitglied, nicht nur coach/owner) – für
+// den Offline-Konfliktcheck (GET /:id als conflictCheckUrl) reicht Lesen.
+async function assertResourceRead(row, userId) {
+  if (!row) return false;
+  if (row.user_id === userId) return true;
+  if (!row.team_id) return false;
+  return assertTeamAccess(row.team_id, userId, 'member');
 }
 
 // GET /api/roster
@@ -50,6 +61,21 @@ export async function getRosterPlayers(req, res) {
     res.json(success(result.rows.map(toApiRosterPlayer)));
   } catch (err) {
     logger.error('[getRosterPlayers]', err);
+    res.status(500).json(error('Interner Serverfehler'));
+  }
+}
+
+// GET /api/roster/:id – dient dem Frontend als conflictCheckUrl für die
+// Offline-Konfliktlösung (offlineSync.js vergleicht updatedAt).
+export async function getRosterPlayer(req, res) {
+  try {
+    const existing = await pool.query('SELECT * FROM roster_players WHERE id = $1', [req.params.id]);
+    if (existing.rows.length === 0 || !(await assertResourceRead(existing.rows[0], req.user.id))) {
+      return res.status(404).json(error('Kader-Spieler nicht gefunden'));
+    }
+    res.json(success(toApiRosterPlayer(existing.rows[0])));
+  } catch (err) {
+    logger.error('[getRosterPlayer]', err);
     res.status(500).json(error('Interner Serverfehler'));
   }
 }

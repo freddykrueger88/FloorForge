@@ -13,8 +13,9 @@
  * damit aufrufender Code (z.B. useAutoSave.js) das von einem echten
  * Fehler unterscheiden kann.
  *
- * ROADMAP Phase 4: optionaler dritter Parameter `offlineMeta` (nur von
- * Frames/Boards genutzt, siehe useFrames.js/useBoardsApi.js) wird nur
+ * ROADMAP Phase 4: optionaler dritter Parameter `offlineMeta` (genutzt
+ * von Boards/Frames/Trainingseinheiten/Kader, siehe useBoardsApi.js/
+ * useFrames.js/useTrainingSessions.js/useRoster.js) wird nur
  * durchgereicht, ermöglicht offlineSync.js später eine Konfliktprüfung
  * vor dem erneuten Abschicken.
  */

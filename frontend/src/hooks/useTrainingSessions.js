@@ -39,16 +39,23 @@ export function useTrainingSessions() {
       return newSession;
     }), [request]);
 
-  const renameSession = useCallback((id, name) =>
+  // Offline-Konflikterkennung (siehe offlineSync.js), analog useBoardsApi.js:
+  // der Aufrufer kennt die aktuell geladene session.updatedAt/session.name,
+  // dieser Hook selbst hält keinen Baseline-State.
+  const renameSession = useCallback((id, name, { baselineUpdatedAt = null, label = null } = {}) =>
     request(async () => {
-      const updated = await apiFetch(`${BASE}/${id}`, { method: 'PUT', body: JSON.stringify({ name }) });
+      const updated = await apiFetch(`${BASE}/${id}`, { method: 'PUT', body: JSON.stringify({ name }) }, {
+        baselineUpdatedAt, conflictCheckUrl: `${BASE}/${id}`, label,
+      });
       setSessions((prev) => prev.map((s) => s._id === id ? updated : s));
       return updated;
     }), [request]);
 
-  const deleteSession = useCallback((id) =>
+  const deleteSession = useCallback((id, { baselineUpdatedAt = null, label = null } = {}) =>
     request(async () => {
-      await apiFetch(`${BASE}/${id}`, { method: 'DELETE' });
+      await apiFetch(`${BASE}/${id}`, { method: 'DELETE' }, {
+        baselineUpdatedAt, conflictCheckUrl: `${BASE}/${id}`, label,
+      });
       setSessions((prev) => prev.filter((s) => s._id !== id));
     }), [request]);
 

@@ -41,9 +41,14 @@ export function useRoster() {
     }
   }, []);
 
-  const updateRosterPlayer = useCallback(async (id, patch) => {
+  // Offline-Konflikterkennung (siehe offlineSync.js), analog useBoardsApi.js:
+  // der Aufrufer kennt den aktuell geladenen player.updatedAt/player.name,
+  // dieser Hook selbst hält keinen Baseline-State.
+  const updateRosterPlayer = useCallback(async (id, patch, { baselineUpdatedAt = null, label = null } = {}) => {
     try {
-      const updated = await apiFetch(`${BASE}/${id}`, { method: 'PUT', body: JSON.stringify(patch) });
+      const updated = await apiFetch(`${BASE}/${id}`, { method: 'PUT', body: JSON.stringify(patch) }, {
+        baselineUpdatedAt, conflictCheckUrl: `${BASE}/${id}`, label,
+      });
       setRosterPlayers((prev) => prev.map((p) => p._id === id ? updated : p));
       return updated;
     } catch (err) {
@@ -52,9 +57,11 @@ export function useRoster() {
     }
   }, []);
 
-  const deleteRosterPlayer = useCallback(async (id) => {
+  const deleteRosterPlayer = useCallback(async (id, { baselineUpdatedAt = null, label = null } = {}) => {
     try {
-      await apiFetch(`${BASE}/${id}`, { method: 'DELETE' });
+      await apiFetch(`${BASE}/${id}`, { method: 'DELETE' }, {
+        baselineUpdatedAt, conflictCheckUrl: `${BASE}/${id}`, label,
+      });
       setRosterPlayers((prev) => prev.filter((p) => p._id !== id));
     } catch (err) {
       setError(err.message);
