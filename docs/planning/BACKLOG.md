@@ -504,6 +504,61 @@ P1
 
 ---
 
+# ISSUE 024
+
+## Vertiefte Editor-Tour: Spielfeld-Erstellung erklären
+
+### Beschreibung
+
+Feedback nach dem ersten Live-Einsatz von ISSUE 023: die Einführungs-
+tour zeigt bisher nur, WO die wichtigsten Bereiche liegen (Nav-Links),
+erklärt aber nicht, WIE man z.B. ein Taktikboard tatsächlich anlegt
+und benutzt ("wie erstelle ich das, was ist wofür"). Sinnvolle
+Erweiterung: eine zweite, tiefere Tour-Ebene direkt im Board-Editor,
+die die konkreten Werkzeuge erklärt statt nur die Navigation.
+
+### Aufgaben
+
+* Eigene, optionale Editor-Tour (getrennt von der Nav-Tour aus
+  ISSUE 023), die beim ersten Öffnen eines neu erstellten Boards
+  startet – erklärt z.B.: Spieler platzieren/verschieben, Laufwege/
+  Passwege zeichnen, Szenen anlegen und wechseln, Abspielen/Animation,
+  Speichern, Teilen.
+* Gleiches Muster wie ISSUE 023 wiederverwenden (Spotlight auf
+  Werkzeugleiste/Editor-Elemente, jederzeit überspringbar, Fokus-
+  Falle, Screenreader-Ankündigungen) – kein zweites Tour-Framework,
+  dieselbe `tourStore.js`/`TourOverlay.jsx`-Grundlage erweitern statt
+  parallel etwas Neues zu bauen.
+* Erneuter Aufruf ebenfalls über die Einstellungen (oder direkt aus
+  dem Editor über ein Hilfe-Icon) möglich.
+* Eigener "gesehen"-Status getrennt von der Nav-Tour (z.B.
+  `editorTourCompleted` neben `tourCompleted` in `preferences_json`).
+
+### Technische Überlegungen
+
+* Editor-Werkzeuge sind komplexer als Nav-Links (Canvas-Elemente statt
+  einfacher DOM-Buttons) – Zielelemente brauchen ggf. eigene
+  `data-tour`-Attribute auf der Werkzeugleiste statt auf Canvas-
+  Objekten selbst.
+* Reihenfolge/Inhalt der Schritte sollte sich eng an CLAUDE.md Kapitel
+  10 (Virtuelles Taktikboard) orientieren (Drag & Drop, Layer-System,
+  Animation Engine, Vorlagen).
+
+### Akzeptanzkriterien
+
+* Ein Nutzer, der zum ersten Mal ein Board öffnet, bekommt optional
+  eine kurze Erklärung der wichtigsten Editor-Werkzeuge.
+* Jederzeit überspringbar, erneut aufrufbar, tastatur- und
+  screenreader-bedienbar (wie ISSUE 023).
+* Nav-Tour (ISSUE 023) und Editor-Tour sind unabhängig voneinander
+  – Überspringen/Abschließen der einen beeinflusst die andere nicht.
+
+Priorität:
+
+P2
+
+---
+
 # EPIC 009 – Nach MVP
 
 Priorität:
