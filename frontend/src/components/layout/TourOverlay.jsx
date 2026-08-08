@@ -63,7 +63,13 @@ export default function TourOverlay() {
   useEffect(() => {
     if (!active || !step?.target) { setRect(null); return undefined; }
     const update = () => {
-      const el = document.querySelector(`[data-tour="${step.target}"]`);
+      // Es kann mehrere Elemente mit demselben data-tour-Attribut geben
+      // (z.B. Header.jsx: derselbe Nav-Link einmal in der Desktop-Leiste,
+      // einmal im mobilen Hamburger-Menü – je nach Bildschirmbreite ist
+      // nur eines davon sichtbar). Das erste, tatsächlich sichtbare
+      // Element auswählen statt blind das erste im DOM.
+      const candidates = document.querySelectorAll(`[data-tour="${step.target}"]`);
+      const el = Array.from(candidates).find((c) => c.offsetParent !== null);
       setRect(el ? el.getBoundingClientRect() : null);
     };
     update();

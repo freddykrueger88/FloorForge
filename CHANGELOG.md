@@ -385,6 +385,18 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   gemeinsamen, kanonischen Stand gebracht.
 
 ### Fixed
+- Hauptnavigation auf schmalen Bildschirmen (Handy gemeldet): die
+  Header-Nav-Leiste hatte kein eigenes Mobile-Layout und musste
+  horizontal gescrollt/gewischt werden, um an hintere Links (Kader,
+  Übungsbibliothek, Wissen, Einstellungen) zu kommen. `Header.jsx`
+  bekommt jetzt unterhalb von 700px ein Hamburger-Menü (fokusfallen-
+  gesichertes Dropdown-Panel statt horizontaler Leiste, 44px-Touch-
+  Ziele, schließt automatisch bei Navigation/Escape/Klick daneben).
+  `TourOverlay.jsx` musste dabei angepasst werden: sie sucht Tour-
+  Zielelemente per `data-tour`-Attribut, das jetzt auf zwei Elementen
+  gleichzeitig sitzt (Desktop-Leiste + mobiles Menü, je nach
+  Bildschirmbreite ist nur eines sichtbar) – wählt jetzt gezielt das
+  tatsächlich sichtbare Element statt blind das erste im DOM.
 - Reload-Endlosschleife für nicht eingeloggte Erstbesucher auf einem
   neuen Gerät (u.a. auf dem Handy gemeldet): die neu eingeführte
   `TourOverlay.jsx` (Onboarding-Tour) rief unbedingt `useSettings()`

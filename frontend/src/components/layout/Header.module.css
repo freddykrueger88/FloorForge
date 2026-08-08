@@ -85,6 +85,59 @@
   color: var(--color-text-inverse);
 }
 
+/* Hamburger-Toggle: nur unterhalb des Breakpoints sichtbar, wo die
+   Nav-Leiste sonst horizontal gescrollt werden müsste. */
+.menuToggle {
+  display: none;
+}
+
+.menuBackdrop {
+  position: fixed;
+  inset: 0;
+  top: var(--header-height);
+  z-index: 149;
+  background: oklch(0 0 0 / 0.5);
+}
+
+.menuPanel {
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  max-height: calc(100dvh - var(--header-height));
+  overflow-y: auto;
+}
+
+.menuPanel nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.menuLink {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
+  text-decoration: none;
+  font-size: var(--text-md);
+  font-weight: 600;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  transition: var(--transition-interactive);
+}
+
+.menuLink:hover {
+  color: var(--color-text);
+  background: var(--color-surface-2);
+}
+
+.menuLogoutBtn {
+  width: 100%;
+}
+
 @media (max-width: 700px) {
   .header {
     gap: var(--space-3);
@@ -93,11 +146,16 @@
   .brandLogo {
     height: 24px;
   }
+  /* Ab hier ersetzt das Hamburger-Menü die horizontale Nav-Leiste
+     vollständig statt sie zu verkleinern – vorher musste man die
+     Leiste seitlich wischen, um an die hinteren Links zu kommen. */
   .nav {
-    gap: 0;
+    display: none;
   }
-  .navLink {
-    padding: var(--space-2);
-    font-size: var(--text-xs);
+  .logoutDesktop {
+    display: none;
+  }
+  .menuToggle {
+    display: inline-flex;
   }
 }
