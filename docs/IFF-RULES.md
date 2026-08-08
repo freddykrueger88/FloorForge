@@ -20,7 +20,9 @@ Offizielle Quelle: [IFF Offizielle Regeln](https://floorball.sport/game/rules/)
 - **Spieler:** 3 Feldspieler + 1 Torwart pro Team
 
 ### 3. 3v3 (IFF 3v3 WFC 2026)
-- **Maße:** 22m x 11m (Standard), min. 18m x 9m, max. 24m x 12m
+- **Maße:** 22m x 11m (Standard), min. 18m x 9m (die IFF 3v3 Rules of the
+  Game nennen kein Maximum – gegen die offizielle PDF geprüft am
+  08.08.2026)
 - **Spieler:** max. 10 Spieler pro Team (max. 9 Feldspieler + max. 2 Torwärter)
 - **Torwartbereich:** 1.5m x 2.5m
 
@@ -64,4 +66,9 @@ Standard-Großfeld-System ist 2-1-2: 2 Verteidiger, 1 Center, 2 Stürmer
 
 ---
 
-*Quellen: IFF Rules of the Game 2022-2026, IFF 3v3 Rules 2026, IFF Material Regulations*
+*Quellen: IFF Rules of the Game 2026 Edition (gültig seit 1. Juli 2026,
+löst die vorherige 2022-2026-Edition ab), IFF 3v3 WFC 2026 Rules of the
+Game, IFF Material Regulations. Maße gegen die offiziellen PDFs
+geprüft am 08.08.2026 – die 2026-Edition ändert nur Spielregeln
+(Torhüterschutz, Torhüter-Tore jetzt auch in 5v5, Elfmeterschießen,
+gleichzeitige Strafen), keine Feld-/Ausrüstungsmaße.*
