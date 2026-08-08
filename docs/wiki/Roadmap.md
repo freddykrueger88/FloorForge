@@ -1,23 +1,32 @@
 # 🗺️ Roadmap
 
-Die vollständige, versionierte Roadmap liegt im Repository und wird
-dort kontinuierlich aktualisiert:
+Die vollständige, langfristige Roadmap und der Backlog liegen im
+Repository und werden dort kontinuierlich aktualisiert:
 
-👉 **[ROADMAP.md](../../ROADMAP.md)**
+👉 **[docs/planning/ROADMAP.md](../planning/ROADMAP.md)** (Vision/Phasen)
+👉 **[docs/planning/BACKLOG.md](../planning/BACKLOG.md)** (einzelne Issues)
 
-## Backlog-Highlights (Auszug)
+## Bereits umgesetzt (ehemalige Backlog-Punkte)
+
+- **Video-Integration** – Videoclips hochladen/abspielen pro Board,
+  inkl. Zeichnen-Überlagerung, Trimmen und Szenen-Marken. Siehe
+  [Video-Integration](./Video-Integration.md).
+- **Echtzeit-Zusammenarbeit** – Präsenzanzeige und Live-Cursor beim
+  gemeinsamen Bearbeiten eines Boards. Siehe
+  [Echtzeit-Zusammenarbeit](./Echtzeit-Zusammenarbeit.md).
+- **Onboarding-Tour** (Backlog-ISSUE 023) – kurze, überspringbare
+  Einführungstour beim ersten Login.
+
+## Offene Backlog-Highlights (Auszug)
 
 **Feature-Ideen:**
-- Video-/Spielfilm-Integration – Videoclips hochladen/abspielen pro
-  Board, Zeichnen-Überlagerung, Player-seitiges Trimmen, Szenen-Marken
-  live
-- Echtzeit-Co-Editing – Präsenzanzeige, Live-Cursor und Live-Merging von
-  Spielerzügen/Zeichnungen (nur fürs gerade gemeinsam betrachtete Frame)
-  live
+- Vertiefte Editor-Tour (Backlog-ISSUE 024) – Aufbauend auf ISSUE 023,
+  erklärt direkt im Board-Editor die konkreten Werkzeuge (Spieler
+  platzieren, Laufwege zeichnen, Szenen, Animation).
 - Native App-Store-Präsenz (Google Play + Apple App Store) – App ist
   schon eine installierbare PWA (vite-plugin-pwa), naheliegender Weg
   wäre ein Wrapper wie Capacitor/Trusted Web Activity statt einer
-  komplett separaten Codebasis
+  komplett separaten Codebasis.
 
 **Technisch:**
 - Vite 7→8 (Stand 2026-08-07 erneut geprüft, weiterhin blockiert: jetzt

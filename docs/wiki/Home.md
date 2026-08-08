@@ -13,13 +13,20 @@ als GIF/MP4/PDF/Link, Docker-basiert und IFF-konform.
 ## Hauptfunktionen
 
 - Virtuelles IFF-konformes Spielfeld (Großfeld/Kleinfeld/Street/3vs3)
-- Frame-by-Frame-Animation mit flüssiger Interpolation
+- Frame-by-Frame-Animation mit flüssiger Interpolation, automatische
+  Versionierung
 - Zeichenwerkzeuge (Bewegungs-/Pass-/Schuss-Pfeile, Freihand)
 - Lines (Sturm-/Defensivreihen), Formationen-Vorlagen, Playbooks
-- Zentraler Team-Kader, Trainingsplaner
+- Zentraler Team-Kader, Trainingsplaner, Teams & Vereine
+- Video-Integration (Upload, Zeichnen-Überlagerung, Trimmen,
+  Szenen-Marken)
+- Echtzeit-Zusammenarbeit (Präsenzanzeige, Live-Cursor)
+- Vier optionale KI-Assistenten (Training, Taktik, Analyse, Wissen)
+- Community-Bibliothek zum Teilen von Übungen instanzweit
 - Export als GIF, MP4, PDF oder öffentlicher Link; Board-Sharing
   zwischen Nutzern
-- PWA/Offline-Modus, zweisprachig (DE/EN), barrierefrei nutzbar
+- PWA/Offline-Modus mit Konflikterkennung, zweisprachig (DE/EN),
+  barrierefrei nutzbar
 
 ---
 
@@ -40,7 +47,13 @@ als GIF/MP4/PDF/Link, Docker-basiert und IFF-konform.
 - [Formationen-Vorlagen](./Formationen.md)
 - [Trainingsplaner](./Trainingsplaner.md)
 - [Kader](./Kader.md)
+- [Teams und Vereine](./Teams-und-Vereine.md)
+- [Video-Integration](./Video-Integration.md)
+- [Echtzeit-Zusammenarbeit](./Echtzeit-Zusammenarbeit.md)
+- [KI-Assistenten](./KI-Assistenten.md)
+- [Community-Bibliothek](./Community-Bibliothek.md)
 - [Export & Teilen (GIF, MP4, PDF, Link, Kollaboratoren)](./Export.md)
+- [Offline-Modus (PWA)](./Offline-Modus.md)
 - [Einstellungen](./Einstellungen.md)
 
 ## 🏒 IFF-Regelwerk

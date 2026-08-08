@@ -36,18 +36,24 @@ Boards – z. B. um Spielern einen Spielzug ohne eigenen OpenFloorball-Account
 zu zeigen. Der Link läuft automatisch nach `SHARE_LINK_EXPIRES_HOURS`
 (Standard 72h) ab und ist danach nicht mehr aufrufbar.
 
+Für ein einzelnes Frame (statt des ganzen Boards) gibt es zusätzlich
+einen eigenen Frame-Share-Link: erzeugt ein gerendertes PNG-Bild
+(max. 5 MB) mit eigenem Token, unabhängig vom Board-Link.
+
 ## Board teilen (Kollaboratoren)
 
 Anders als der öffentliche Link: ein **anderer registrierter
 OpenFloorball-Nutzer** bekommt dauerhaften Zugriff auf das Board.
 
-- **Voraussetzung**: die eingeladene Person hat bereits einen
-  OpenFloorball-Account (kein Einladungslink für neue Nutzer, siehe
-  [FAQ](./FAQ.md))
 - **Berechtigungsstufen**: Lesen oder Bearbeiten
-- Maximal 10 Kollaboratoren pro Board
+- Maximal 10 Kollaboratoren (inkl. offener Einladungen) pro Board
 - Ist [SMTP konfiguriert](./E-Mail-Versand.md), bekommt die
   hinzugefügte Person eine kurze Benachrichtigungsmail
 
 Nur der Board-Owner kann Kollaboratoren verwalten (hinzufügen, Rechte
 ändern, entfernen).
+
+**Hat die eingeladene E-Mail-Adresse noch keinen Account?** Dann wird
+die Einladung als offene Einladung gespeichert – sobald sich diese
+Adresse registriert, wird sie automatisch zum Kollaborator des
+jeweiligen Boards, ohne dass der Owner erneut etwas tun muss.

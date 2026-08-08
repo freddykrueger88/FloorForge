@@ -96,14 +96,44 @@ Alle Tabellen sind Postgres, Migration idempotent über
 - `users`, `settings` – Konto & Präferenzen
 - `boards`, `frames`, `lines` – Kern-Taktikdaten (ein Board hat mehrere
   Frames für Animation, mehrere Lines für Sturm-/Defensivreihen)
-- `board_collaborators` – Board-Sharing (Issue #51 MVP)
+- `board_versions` – automatische Snapshots bei jeder Frame-Änderung
+  (max. 50/Board, älteste werden verdrängt), erlaubt Wiederherstellen
+- `board_collaborators`, `board_invites` – Board-Sharing für
+  registrierte bzw. noch nicht registrierte Personen (Issue #51 MVP)
+- `board_videos` – Video-Integration (Datei liegt auf Disk, Metadaten/
+  Zeichnen-Overlay/Trim/Marken hier in der DB)
+- `comments` – Kommentare auf Boards und Trainingseinheiten
 - `playbooks` – Board-Sammlungen (Issue #52)
 - `formation_templates` – wiederverwendbare Aufstellungen (Issue #46)
 - `training_sessions`, `training_session_items` – Trainingsplaner,
   referenziert Boards per Fremdschlüssel statt Kopie (Issue #45)
 - `roster_players` – zentraler Team-Kader (Issue #53)
-- `exports` – Metadaten für Share-Links (Ablaufzeit, Token)
-- `app_config` – globale Singleton-Konfiguration (u. a. Backup-Zeitplan)
+- `teams`, `team_members` – Mannschaften mit Rollenmodell
+- `organizations`, `organization_members` – Vereine mit mehreren Teams
+- `library_entries`, `library_entry_reports` – Community-Bibliothek
+  (Snapshot-Kopien veröffentlichter Boards) und Meldungen dazu
+- `exports` – Metadaten für Share-Links (Board- und Frame-Ebene,
+  Ablaufzeit, Token)
+- `app_config` – globale Singleton-Konfiguration (u. a. Backup-Zeitplan,
+  KI-Anbieter-Konfiguration)
+
+## 🔌 KI-Anbieter (optional)
+
+Vier textbasierte Assistenten (siehe [KI-Assistenten](./KI-Assistenten.md))
+sprechen über einen austauschbaren Adapter mit einem beliebigen,
+OpenAI-kompatiblen `/v1/chat/completions`-Endpunkt (`app_config`-Tabelle
+oder `AI_PROVIDER_*`-Env-Vars). Ohne Konfiguration sind die
+zugehörigen Buttons im Frontend einfach nicht sichtbar – kein
+Fehlerzustand, keine Pflicht-Abhängigkeit von einem bestimmten Anbieter.
+
+## 🟢 Echtzeit-Zusammenarbeit
+
+Ein eigener WebSocket-Server (nicht Teil der REST-API unter `/api`,
+siehe `services/presenceServer.js`) überträgt Präsenz-Badges und
+Live-Cursor-Positionen pro Board-"Raum". Authentifizierung über
+denselben HttpOnly-Session-Cookie wie die REST-API. Bewusst **keine**
+serverseitige Konfliktauflösung oder Persistenz – siehe
+[Echtzeit-Zusammenarbeit](./Echtzeit-Zusammenarbeit.md).
 
 ## 📶 Offline-Modus (PWA)
 

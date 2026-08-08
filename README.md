@@ -1,314 +1,216 @@
 # 🏒 OpenFloorball
 
-**Digitales Taktikboard für Floorball – Open Source, selbst gehostet, IFF-konform**
+**Selbst gehostetes Taktikboard und Coaching-Plattform für Floorball**
 
+[![CI](https://github.com/freddykrueger88/OpenFloorball/actions/workflows/ci.yml/badge.svg)](https://github.com/freddykrueger88/OpenFloorball/actions/workflows/ci.yml)
 [![License](https://img.shields.io/github/license/freddykrueger88/OpenFloorball)](https://github.com/freddykrueger88/OpenFloorball/blob/main/LICENSE)
 [![Docker](https://img.shields.io/badge/docker-ready-blue)](https://hub.docker.com/)
-[![GitHub contributors](https://img.shields.io/github/contributors/freddykrueger88/OpenFloorball)](https://github.com/freddykrueger88/OpenFloorball/graphs/contributors)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/freddykrueger88/OpenFloorball/blob/main/CONTRIBUTING.md)
 [![GitHub issues](https://img.shields.io/github/issues/freddykrueger88/OpenFloorball)](https://github.com/freddykrueger88/OpenFloorball/issues)
 
-> **Mission:** OpenFloorball ist ein modernes, kostenloses Taktikboard für Floorball. Entwickelt für Trainer, Vereine und Teams, um Spielzug, Formationen und Trainingsinhalte einfach digital zu planen, zu visualisieren und zu teilen – vollständig als Open-Source-Lö¬¶¬ƒung.
+> **Version:** 0.9.0 · **Status:** Aktive Entwicklung, produktiv im
+> Einsatz · **Stack:** React/Vite · Node/Express · PostgreSQL · Redis
+> · Docker
+
+Ausführlicher, laufend aktualisierter Stand:
+**[docs/current-status.md](docs/current-status.md)**
 
 ---
 
 ## 📋 Inhaltsverzeichnis
 
-- [Warum OpenFloorball?](#-warum-openfloorball)
-- [Fur wen eignet sich OpenFloorball?](#-fur-wen-eignet-sich-openfloorball)
+- [Was ist OpenFloorball?](#-was-ist-openfloorball)
+- [Aktueller Stand](#-aktueller-stand)
 - [Features](#-features)
-- [Screenshots](#-screenshots)
-- [Installation](#-installation)
-- [Erste Schritte](#-erste-schritte)
-- [Verwendung](#-verwendung)
-- [Projektstruktur](#-projektstruktur)
-- [Technischer Stack](#-technischer-stack)
-- [Entwicklung](#-entwicklung)
 - [Roadmap](#-roadmap)
+- [Installation](#-installation)
+- [Entwicklung](#-entwicklung)
+- [Architektur](#-architektur)
+- [Projektstruktur](#-projektstruktur)
+- [Dokumentation](#-dokumentation)
 - [Mitwirken](#-mitwirken)
 - [Lizenz](#-lizenz)
-- [Kontakt](#-kontakt)
 
 ---
 
-## 🤔 Warum OpenFloorball?
+## 🤔 Was ist OpenFloorball?
 
-Als Floorball-Trainer oder Verein stehst du vor der Herausforderung, Taktiken und Spielzuge effektiv zu vermitteln. Klassische Whiteboards sind begrenzt, kommerzielle Losungen oft teuer und nicht flexibel genug.
+OpenFloorball ist ein digitales Taktikboard für Floorball-Trainer:
+Spielfeld, Spieler und Spielzüge lassen sich am Bildschirm platzieren,
+zeichnen, als Animation abspielen und als GIF/MP4/PDF/Link teilen.
+Darüber hinaus deckt die Plattform den weiteren Trainingsalltag ab –
+Trainingsplanung, Kaderverwaltung, Team-/Vereinsstruktur, eine
+Übungsbibliothek zum Teilen mit anderen Vereinen sowie optionale
+KI-Unterstützung bei Trainingsplanung, Taktikvarianten und Analyse.
 
-**OpenFloorball bietet:**
+Die Plattform wird selbst gehostet (Docker Compose), nicht als
+Cloud-Dienst eines Anbieters – die Daten bleiben auf der eigenen
+Infrastruktur.
 
-- **💰 Kostenlose Nutzung** – Keine Lizenzgebuhren, keine versteckten Kosten
-- **🔓 Open Source** – Vollstandig einsehbar, anpassbar und langfristig sicher
-- **🏠 Self-Hosted** – Du behaltst die Kontrolle uber deine Daten (DSGVO-konform)
-- **🎯 IFF-konform** – Entspricht den offiziellen Floorball-Standards
-- **🚀 Modern & intuitiv** – Entwickelt mit aktuellen Webtechnologien fur optimale Bedienbarkeit
-- **🔄 Dauerhaft verfugbar** – Keine Abhangigkeit von kommerziellen Anbietern
+## 📊 Aktueller Stand
 
----
-
-## 👥 Fur wen eignet sich OpenFloorball?
-
-| Zielgruppe | Nutzen |
-|------------|--------|
-| **🏑 Floorball-Vereine** | Zentrale Plattform fur alle Trainer, konsistente Taktikdarstellung |
-| **👨‍🏫 Trainerinnen & Trainer** | Intuitive Spielzugplanung, einfache Visualisierung |
-| **👥 Mannschaften** | Gemeinsame Taktikentwicklung, klare Kommunikation |
-| **🧒 Jugendtrainer** | Anschauliche Darstellung fur junge Spieler |
-| **🎓 Ausbilder** | Professionelles Tool fur Schulungen und Trainings |
-| **💻 Entwickler** | Mitwirken an einem sinnvollen Open-Source-Projekt |
-
----
+Der Kern (Taktikboard, Animation, Export) ist stabil im Einsatz.
+Rund um den Kern sind bereits Trainingsplaner, Team-/Vereinsverwaltung,
+Community-Bibliothek, vier KI-Assistenten, Video-Integration und
+Echtzeit-Präsenz (Live-Cursor) implementiert. Es fehlt u. a. noch ein
+Passwort-Reset-Flow, eine vertiefte Editor-Einführungstour ist geplant
+aber nicht begonnen, und die Offline-Konflikterkennung deckt bisher
+nicht alle Ressourcen ab. Details, Einschränkungen und bekannte
+Probleme: **[docs/current-status.md](docs/current-status.md)**.
 
 ## ✨ Features
 
-### 🎯 Taktikplanung
+| Bereich | Status | Details |
+|---|---|---|
+| Taktikboard (Spielfeld, Zeichnen, Frame-Animation, Versionierung) | ✅ | [Spielzüge zeichnen](docs/wiki/Spielzuege-Zeichnen.md), [Animation](docs/wiki/Animation.md) |
+| Lines, Formationsvorlagen, Playbooks | ✅ | [Lines](docs/wiki/Lines.md), [Formationen](docs/wiki/Formationen.md), [Playbooks](docs/wiki/Playbooks.md) |
+| Trainingsplaner, Kader | ✅ | [Trainingsplaner](docs/wiki/Trainingsplaner.md), [Kader](docs/wiki/Kader.md) |
+| Teams und Vereine | ✅ | [Teams und Vereine](docs/wiki/Teams-und-Vereine.md) |
+| Board-Sharing (Kollaboratoren, Einladungen, Links) | ✅ | [Export & Teilen](docs/wiki/Export.md) |
+| Community-Übungsbibliothek | ✅ | [Community-Bibliothek](docs/wiki/Community-Bibliothek.md) |
+| KI-Assistenten (Training/Taktik/Analyse/Wissen, optional) | ✅ | [KI-Assistenten](docs/wiki/KI-Assistenten.md) |
+| Video-Integration (Upload, Zeichnen-Overlay, Trimmen, Marken) | ✅ | [Video-Integration](docs/wiki/Video-Integration.md) |
+| Echtzeit-Präsenz (Live-Cursor) | ✅ | [Echtzeit-Zusammenarbeit](docs/wiki/Echtzeit-Zusammenarbeit.md) |
+| Export als GIF/MP4/PDF | ✅ | [Export & Teilen](docs/wiki/Export.md) |
+| PWA / Offline-Modus | 🟡 | Konflikterkennung nur für Boards/Frames/Trainings/Kader, siehe [Offline-Modus](docs/wiki/Offline-Modus.md) |
+| Onboarding-Tour | ✅ | Beim ersten Login, überspringbar |
+| DSGVO (Export, Löschung, Backup) | ✅ | [Datenschutz](docs/wiki/Datenschutz.md), [Backup](docs/wiki/Backup.md) |
+| Barrierefreiheit | ✅ | Farbenblind-Filter, Screenreader, Tastatur, Schriftgrößen |
+| Passwort-Reset | ❌ | Noch nicht implementiert |
+| Vertiefte Editor-Tour | 🚧 | Geplant, siehe Roadmap |
 
-- **Interaktives 2D-Spielfeld** – IFF-konforme Darstellung
-- **Spieler positionieren** – Intuitives Verschieben per Drag & Drop
-- **Spielzuge erstellen** – Formationen und Bewegungsablaufe planen
-- **Taktiken speichern** – Wiederverwendbare Vorlagen anlegen
+## 🗺️ Roadmap
 
-### 🎬 Animation & Export
+**Fertig** (Auszug, vollständig siehe [CHANGELOG](CHANGELOG.md)):
+Taktikboard-Kern, Trainingsplaner, Teams/Vereine, Community-Bibliothek,
+KI-Assistenten, Video-Integration, Echtzeit-Präsenz, Onboarding-Tour,
+erweiterte Offline-Konfliktlösung.
 
-- **Frame-by-Frame-Animation** – Schrittweise Bewegungsablaufe darstellen
-- **Export-Optionen** – Spielzuge als GIF, MP4 oder per Link teilen
-- **Prasentationsmodus** – Taktiken im Training oder Meeting zeigen
+**In Arbeit:** aktuell kein Feature in sichtbar unfertigem Zustand –
+siehe [docs/current-status.md](docs/current-status.md) für den
+laufend aktualisierten Stand.
 
-### 🛠️ Technik
-
-- **Docker-basiert** – Einfache Installation und Wartung
-- **Progressive Web App (PWA)** – Plattformunabhangig nutzbar
-- **Barrierefreiheit** – Accessibility-Features integriert
-- **DSGVO-konform** – Self-Hosting fur maximale Datenschutzkontrolle
-
----
-
-## 📸 Screenshots
-
-> **Hinweis:** Screenshots werden in Kurze erganzt. Besuche die [Demo](#) oder installiere OpenFloorball lokal, um die Oberflache selbst zu erkunden.
-
----
+**Geplant** (Auszug aus [docs/planning/BACKLOG.md](docs/planning/BACKLOG.md)):
+- Vertiefte Editor-Tour (ISSUE 024)
+- Passwort-Reset-Flow
+- Offline-Konflikterkennung auf weitere Ressourcen ausweiten
+- Native App-Store-Präsenz (PWA-Wrapper)
+- Vite 8 / ESLint 10 Upgrade (aktuell durch Peer-Dependency-Konflikte blockiert)
 
 ## 🚀 Installation
 
 ### Voraussetzungen
 
-- Docker & Docker Compose
+- Docker und Docker Compose
 - Ein Server oder lokaler Rechner zum Hosten
 
 ### Schnellstart mit Docker
 
-1. **Repository klonen:**
-
 ```bash
 git clone https://github.com/freddykrueger88/OpenFloorball.git
 cd OpenFloorball
-```
-
-2. **Umgebungsvariablen konfigurieren:**
-
-```bash
 cp .env.example .env
 ```
 
-Passe die Werte in der `.env`-Datei an deine Bedurfnisse an.
-
-3. **Container starten:**
+**Vor dem Start `.env` bearbeiten** – mindestens `DB_PASSWORD`,
+`REDIS_PASSWORD` und `JWT_SECRET` müssen gesetzt sein, sonst startet
+Docker Compose nicht (bewusst harte Pflichtfelder, keine unsicheren
+Standardwerte). Alle Variablen sind erklärt in
+[docs/wiki/Umgebungsvariablen.md](docs/wiki/Umgebungsvariablen.md).
 
 ```bash
 docker compose up -d
 ```
 
-4. **OpenFloorball im Browser offnen:**
+Startet vier Container: `frontend` (Nginx, einziger Host-Port),
+`backend` (Node/Express), `db` (PostgreSQL) und `redis` – Backend, DB
+und Redis sind nur intern im Docker-Netzwerk erreichbar.
 
-```
-http://localhost:3000
-```
+Danach im Browser öffnen: `http://localhost:${APP_PORT:-3000}`
 
-### Option: TLS/SSL fur produktiven Einsatz
-
-Fur eine verschlusselte Verbindung (HTTPS) nutze zusatzlich:
+### Optional: TLS/HTTPS für den produktiven Einsatz
 
 ```bash
-docker compose -f docker-compose.yml -f docker-compose.tls.yml up -d
+DOMAIN=deine-domain.de docker compose -f docker-compose.yml -f docker-compose.tls.yml up -d
 ```
 
----
-
-## 📖 Erste Schritte
-
-Nach der Installation:
-
-1. **Zugang erstellen** – Erstelle dein erstes Benutzerkonto
-2. **Spielfeld erkunden** – Mache dich mit der Oberflache vertraut
-3. **Ersten Spielzug erstellen** – Spieler positionieren und speichern
-4. **Animation ausprobieren** – Bewegungsablaufe frame-by-frame hinzufugen
-5. **Exportieren & teilen** – Spielzug als GIF, MP4 oder Link teilen
-
----
-
-## 🎮 Verwendung
-
-### Spielzug erstellen
-
-1. Offne das virtuelle Spielfeld
-2. Platziere Spieler per Drag & Drop
-3. Fuge Bewegungsrichtungen hinzu
-4. Speichere den Spielzug
-
-### Animation erstellen
-
-1. Wahle einen gespeicherten Spielzug
-2. Fuge Frames hinzu
-3. Annotiere Bewegungen
-4. Vorschau und Export
-
-### Taktiken teilen
-
-- **Export als GIF** – Fur Prasentationen oder Social Media
-- **Export als MP4** – Fur Videoschnitt oder Schulungen
-- **Link teilen** – Direkter Zugriff fur Teammitglieder
-
----
-
-## 📁 Projektstruktur
-
-```
-OpenFloorball/
-├── backend/                 # Node.js-Backend (API, Datenbank)
-│   ├── src/                 # Quellcode
-│   ├── Dockerfile           # Backend-Container
-│   ├── package.json         # Dependencies
-│   └── jest.config.js       # Testkonfiguration
-├── frontend/                # React-Frontend (PWA)
-│   ├── src/                 # Quellcode
-│   ├── Dockerfile           # Frontend-Container
-│   ├── package.json         # Dependencies
-│   └── vite.config.js       # Build-Konfiguration
-├── docs/                    # Dokumentation
-├── .env.example             # Beispiel-Umgebungsvariablen
-├── docker-compose.yml       # Haupt-Docker-Konfiguration
-├── docker-compose.tls.yml   # TLS/SSL-Erweiterung
-├── Caddyfile                # Caddy-Server-Konfiguration
-├── LICENSE                  # Lizenzdatei
-├── README.md                # Diese Datei
-├── CHANGELOG.md             # Versionshistorie
-├── CONTRIBUTING.md          # Beitrage-Regeln
-├── CODE_OF_CONDUCT.md       # Verhaltenskodex
-└── SECURITY.md              # Sicherheitsrichtlinien
-```
-
----
-
-## 🛠️ Technischer Stack
-
-| Bereich | Technologie |
-|---------|-------------|
-| **Frontend** | React, Vite, PWA |
-| **Backend** | Node.js |
-| **Datenbank** | PostgreSQL |
-| **Container** | Docker, Docker Compose |
-| **Webserver** | Caddy (automatisches HTTPS) |
-| **Testing** | Jest |
-| **Code Quality** | ESLint |
-
----
+Details: [docs/wiki/Installation-Docker.md](docs/wiki/Installation-Docker.md)
 
 ## 👨‍💻 Entwicklung
 
-### Lokale Entwicklungsumgebung
-
-1. **Repository klonen:**
-
-```bash
-git clone https://github.com/freddykrueger88/OpenFloorball.git
-cd OpenFloorball
-```
-
-2. **Frontend einrichten:**
+Kein lokales Node.js nötig – Backend und Frontend laufen jeweils in
+eigenen Containern; Lint/Test/Build laufen ebenfalls containerisiert
+(siehe [docs/wiki/Installation-Entwicklung.md](docs/wiki/Installation-Entwicklung.md)
+für den vollständigen Workflow inkl. Live-Reload).
 
 ```bash
-cd frontend
-npm install
-npm run dev
+# Backend: Lint & Tests
+docker run --rm -v $(pwd)/backend:/app -w /app node:24-alpine \
+  sh -c "npm install && npm run lint && npm test"
+
+# Frontend: Lint, Tests & Build
+docker run --rm -v $(pwd)/frontend:/app -w /app node:24-alpine \
+  sh -c "npm install && npm run lint && npm test && npm run build"
+
+# Nach Codeänderungen: betroffenen Service neu bauen und neu starten
+docker compose build backend   # oder: frontend
+docker compose up -d backend
 ```
 
-3. **Backend einrichten:**
+Dieselben Lint-/Test-Schritte laufen auch in der CI (GitHub Actions,
+siehe Badge oben).
 
-```bash
-cd backend
-npm install
-npm run dev
+## 🏛️ Architektur
+
+```mermaid
+flowchart LR
+    A["Frontend<br/>React + PWA"] -->|REST /api| B["Backend<br/>Express"]
+    A -->|WebSocket| E["Presence-Server<br/>Live-Cursor"]
+    B --> C[("PostgreSQL")]
+    B --> D[("Redis<br/>Session-Blacklist")]
+    E --> B
 ```
 
-4. **Datenbank starten:**
+Details inkl. Datenmodell, Datenfluss beim Export und KI-Anbieter-
+Anbindung: [docs/wiki/Architektur.md](docs/wiki/Architektur.md)
 
-```bash
-docker compose up -d postgres
+## 📁 Projektstruktur
+
+```text
+OpenFloorball/
+├── backend/     # Node/Express-API, PostgreSQL-Migrationen, Tests
+├── frontend/    # React/Vite-PWA
+├── docs/
+│   ├── planning/   # Vision, Architektur-Entscheidungen, Backlog
+│   └── wiki/       # Benutzer- und Entwickler-Dokumentation
+├── scripts/     # Eigenständige Hilfsskripte (z. B. Test-KI-Server)
+├── docker-compose.yml
+└── docker-compose.tls.yml   # optionales TLS-Overlay (Caddy)
 ```
 
-### Tests ausfuhren
+Vollständige, aktuelle Struktur mit Begründung:
+[docs/planning/REPOSITORY_STRUCTURE.md](docs/planning/REPOSITORY_STRUCTURE.md)
 
-```bash
-# Backend
-cd backend
-npm test
+## 📚 Dokumentation
 
-# Frontend
-cd frontend
-npm test
-```
-
----
-
-## 🗺️ Roadmap
-
-> **Hinweis:** Die Roadmap wird laufend aktualisiert. Aktuelle Plane findest du in den [GitHub Issues](https://github.com/freddykrueger88/OpenFloorball/issues).
-
-Geplante Features:
-
-- [ ] Erweiterte Export-Optionen
-- [ ] Team-Management-Funktionen
-- [ ] Vorlagen-Bibliothek fur haufige Spielzuge
-- [ ] Mobile Optimierung
-- [ ] Mehrsprachigkeit
-- [ ] API fur Integrationen
-
----
+- **[docs/wiki/Home.md](docs/wiki/Home.md)** – vollständiges Wiki
+  (Installation, alle Features im Detail, API-Referenz, Architektur)
+- **[docs/current-status.md](docs/current-status.md)** – detaillierter
+  aktueller Stand, bekannte Probleme, nächste Schritte
+- **[CHANGELOG.md](CHANGELOG.md)** – vollständige Versionshistorie
 
 ## 🤝 Mitwirken
 
-Beitrage sind herzlich willkommen! Lies dir bitte zuerst die [CONTRIBUTING.md](https://github.com/freddykrueger88/OpenFloorball/blob/main/CONTRIBUTING.md) durch.
-
-### Wie du beitragen kannst:
-
-- **💡 Ideen vorschlagen** – Erstelle ein Issue mit deinem Vorschlag
-- **🐛 Fehler melden** – Beschreibe Bugs detailliert
-- **📝 Dokumentation verbessern** – Hilfe bei Texten ist immer wertvoll
-- **💻 Code beitragen** – Sende einen Pull Request
-- **🌍 Übersetzungen** – Mache OpenFloorball mehrsprachig
-
-### Verhaltenskodex
-
-Wir bitten alle Beteiligten, unseren [Code of Conduct](https://github.com/freddykrueger88/OpenFloorball/blob/main/CODE_OF_CONDUCT.md) zu beachten.
-
----
+Beiträge sind willkommen – lies zuerst
+[CONTRIBUTING.md](CONTRIBUTING.md). Verhaltensregeln:
+[CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md). Sicherheitslücken bitte
+gemäß [SECURITY.md](SECURITY.md) melden, nicht als öffentliches Issue.
 
 ## 📄 Lizenz
 
-OpenFloorball steht unter einer Open-Source-Lizenz. Details findest du in der [LICENSE](https://github.com/freddykrueger88/OpenFloorball/blob/main/LICENSE).
-
----
-
-## 📬 Kontakt
-
-- **GitHub:** [freddykrueger88/OpenFloorball](https://github.com/freddykrueger88/OpenFloorball)
-- **Issues:** [Fehler melden oder Features vorschlagen](https://github.com/freddykrueger88/OpenFloorball/issues)
-- **Sicherheit:** [SECURITY.md](https://github.com/freddykrueger88/OpenFloorball/blob/main/SECURITY.md)
+MIT-Lizenz – siehe [LICENSE](LICENSE).
 
 ---
 
 <p align="center">
-  <strong>Mit ❤️ fur die Floorball-Community entwickelt</strong><br>
-  <em>OpenFloorball – Weil Taktik mehr als nur Kreide an der Tafel ist.</em>
+  <em>OpenFloorball – weil Taktik mehr ist als Kreide an der Tafel.</em>
 </p>

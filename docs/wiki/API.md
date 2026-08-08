@@ -62,6 +62,37 @@ Ressourcen-ID überhaupt existiert).
 | POST | `/api/boards/:id/collaborators` | Hinzufügen per E-Mail, max. 10/Board (Owner-only) |
 | PUT | `/api/boards/:id/collaborators/:collaboratorId` | Berechtigung ändern (Owner-only) |
 | DELETE | `/api/boards/:id/collaborators/:collaboratorId` | Entfernen (Owner-only) |
+| GET | `/api/invite/:token` | Offene Einladung ansehen (öffentlich, keine Auth) |
+
+## Board-Versionen
+
+| Methode | Pfad | Beschreibung |
+|---|---|---|
+| GET | `/api/boards/:id/versions` | Liste aller Snapshots (max. 50/Board) |
+| GET | `/api/boards/:id/versions/:versionId` | Vollständiger Snapshot |
+| POST | `/api/boards/:id/versions/:versionId/restore` | Wiederherstellen (sichert vorher den aktuellen Stand) |
+
+## Video
+
+| Methode | Pfad | Beschreibung |
+|---|---|---|
+| GET | `/api/boards/:id/videos` | Liste (max. 5/Board) |
+| POST | `/api/boards/:id/videos` | Hochladen (MP4/WebM/MOV, max. 200 MB) |
+| GET | `/api/boards/:id/videos/:videoId/stream` | Wiedergabe (Range-Requests) |
+| PUT | `/api/boards/:id/videos/:videoId` | Ändern (Zeichnen-Overlay, Trim, Marken) |
+| DELETE | `/api/boards/:id/videos/:videoId` | Löschen |
+
+## Kommentare
+
+Gemountet auf zwei Ressourcen mit identischer Struktur:
+`/api/boards/:id/comments` und `/api/trainings/:id/comments`.
+
+| Methode | Pfad | Beschreibung |
+|---|---|---|
+| GET | `.../comments` | Liste |
+| POST | `.../comments` | Anlegen (max. 500/Ressource) |
+| PUT | `.../comments/:commentId` | Ändern (nur Autor) |
+| DELETE | `.../comments/:commentId` | Löschen (Autor oder jeder mit Schreibrecht an der Ressource) |
 
 ## Export
 
@@ -78,6 +109,8 @@ Ressourcen-ID überhaupt existiert).
 | Methode | Pfad | Beschreibung |
 |---|---|---|
 | GET | `/api/share/:token` | Board lesen ohne Login (bewusst **nicht** hinter Auth) |
+| POST | `/api/export/frame-share` | Einzelnes Frame als PNG-Share-Link erzeugen (max. 5 MB) |
+| GET | `/api/share/frame/:token` | Frame-Share-Bild ansehen (öffentlich) |
 
 ## Settings
 
@@ -106,6 +139,9 @@ Nur für Nutzer mit Admin-Rolle.
 | PUT | `/api/admin/users/:id/role` | Rolle ändern |
 | GET | `/api/admin/backup-config` | Backup-Zeitplan lesen |
 | PUT | `/api/admin/backup-config` | Backup-Zeitplan ändern |
+| GET | `/api/admin/library-reports` | Gemeldete Bibliothekseinträge |
+| GET | `/api/admin/ai-config` | KI-Anbieter-Konfiguration lesen (API-Key nur als "gesetzt/nicht gesetzt") |
+| PUT | `/api/admin/ai-config` | KI-Anbieter-Konfiguration ändern |
 
 ## Formationen
 
@@ -145,6 +181,59 @@ Nur für Nutzer mit Admin-Rolle.
 | POST | `/api/roster` | Spieler anlegen (max. 40) |
 | PUT | `/api/roster/:id` | Spieler ändern |
 | DELETE | `/api/roster/:id` | Spieler löschen |
+
+## Teams
+
+| Methode | Pfad | Beschreibung |
+|---|---|---|
+| GET | `/api/teams` | Eigene Teams |
+| POST | `/api/teams` | Team anlegen |
+| GET | `/api/teams/:id` | Einzelnes Team |
+| PUT | `/api/teams/:id` | Team ändern (owner/coach) |
+| DELETE | `/api/teams/:id` | Team löschen (owner) |
+| GET | `/api/teams/:id/members` | Mitgliederliste |
+| POST | `/api/teams/:id/members` | Mitglied einladen (bestehender Account nötig) |
+| PUT | `/api/teams/:id/members/:memberId` | Rolle ändern |
+| DELETE | `/api/teams/:id/members/:memberId` | Mitglied entfernen |
+
+## Organizations (Vereine)
+
+| Methode | Pfad | Beschreibung |
+|---|---|---|
+| GET | `/api/organizations` | Eigene Vereine |
+| POST | `/api/organizations` | Verein anlegen |
+| GET | `/api/organizations/:id` | Einzelner Verein |
+| PUT | `/api/organizations/:id` | Verein ändern (admin) |
+| DELETE | `/api/organizations/:id` | Verein löschen (admin) |
+| GET | `/api/organizations/:id/members` | Mitgliederliste |
+| POST | `/api/organizations/:id/members` | Mitglied einladen |
+| PUT | `/api/organizations/:id/members/:memberId` | Rolle ändern |
+| DELETE | `/api/organizations/:id/members/:memberId` | Mitglied entfernen |
+
+## Community-Bibliothek
+
+| Methode | Pfad | Beschreibung |
+|---|---|---|
+| GET | `/api/library` | Durchsuchen (Kategorie-Filter, Textsuche, paginiert) |
+| GET | `/api/library/:id` | Einzelner Eintrag |
+| POST | `/api/boards/:id/publish` | Board als Snapshot veröffentlichen (Owner-only) |
+| POST | `/api/library/:id/clone` | Als eigenes Board übernehmen |
+| POST | `/api/library/:id/report` | Eintrag melden |
+| DELETE | `/api/library/:id` | Löschen (Ersteller oder Admin) |
+
+## KI-Assistenten
+
+Sichtbar/nutzbar nur, wenn ein KI-Anbieter konfiguriert ist (siehe
+[KI-Assistenten](./KI-Assistenten.md)). Liefern ausschließlich
+Textentwürfe, kein Auto-Save.
+
+| Methode | Pfad | Beschreibung |
+|---|---|---|
+| GET | `/api/ai/status` | Ob/welcher KI-Anbieter konfiguriert ist |
+| POST | `/api/ai/training-plan` | Trainingsassistent |
+| POST | `/api/ai/tactic-suggestion` | Taktikassistent |
+| POST | `/api/ai/analysis` | Analyseassistent |
+| POST | `/api/ai/knowledge-query` | Wissensassistent (nur Antwort, wenn eigene Treffer gefunden werden) |
 
 ## Fehlercodes
 
