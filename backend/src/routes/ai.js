@@ -1,5 +1,5 @@
 /**
- * /api/ai – KI-Assistenten (EPIC 010, AI_SYSTEM.md §5.1-5.3)
+ * /api/ai – KI-Assistenten (EPIC 010, AI_SYSTEM.md §5.1-5.4)
  * Authentifiziert, kein Admin-Zwang – jeder eingeloggte Trainer dieser
  * Instanz darf die Assistenten nutzen.
  */
@@ -8,7 +8,7 @@ import { body } from 'express-validator';
 import { authenticate } from '../middleware/auth.js';
 import { validate } from '../middleware/validate.js';
 import {
-  getAiStatus, generateTrainingPlan, generateTacticSuggestion, generateAnalysis,
+  getAiStatus, generateTrainingPlan, generateTacticSuggestion, generateAnalysis, generateKnowledgeAnswer,
 } from '../controllers/aiController.js';
 
 const router = Router();
@@ -47,5 +47,13 @@ router.post('/analysis', [
   body('focus').optional().trim().isLength({ max: 150 }).withMessage('Fokus max. 150 Zeichen'),
   validate,
 ], generateAnalysis);
+
+// AI_SYSTEM.md §5.4 Wissensassistent – Frage bleibt kurz (max. 300 Zeichen,
+// wie beim Taktikassistenten), die eigentliche Suche in den eigenen Daten
+// übernimmt findRelevantItems() in aiController.js.
+router.post('/knowledge-query', [
+  body('question').trim().notEmpty().isLength({ max: 300 }).withMessage('Frage max. 300 Zeichen'),
+  validate,
+], generateKnowledgeAnswer);
 
 export default router;

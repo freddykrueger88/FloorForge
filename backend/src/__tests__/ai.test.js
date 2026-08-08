@@ -174,6 +174,61 @@ describe('POST /api/ai/analysis', () => {
   });
 });
 
+describe('POST /api/ai/knowledge-query', () => {
+  afterEach(async () => {
+    await pool.query(
+      `UPDATE app_config SET ai_provider_base_url = '', ai_provider_api_key = '',
+                              ai_provider_model = '', ai_provider_timeout_ms = 30000`
+    );
+  });
+
+  it('lehnt nicht eingeloggte Anfragen ab', async () => {
+    const res = await request(app).post('/api/ai/knowledge-query').send({ question: 'Was haben wir?' });
+    expect(res.status).toBe(401);
+  });
+
+  it('lehnt eine leere Frage ab', async () => {
+    const res = await request(app).post('/api/ai/knowledge-query')
+      .set('Cookie', user.cookie)
+      .send({ question: '' });
+    expect(res.status).toBe(422);
+  });
+
+  it('lehnt eine zu lange Frage ab', async () => {
+    const res = await request(app).post('/api/ai/knowledge-query')
+      .set('Cookie', user.cookie)
+      .send({ question: 'x'.repeat(301) });
+    expect(res.status).toBe(422);
+  });
+
+  it('liefert 503, solange kein KI-Anbieter konfiguriert ist', async () => {
+    const res = await request(app).post('/api/ai/knowledge-query')
+      .set('Cookie', user.cookie)
+      .send({ question: 'Welche Powerplay-Varianten haben wir?' });
+    expect(res.status).toBe(503);
+  });
+
+  it('liefert hasMatches:false ohne KI-Aufruf, wenn keine eigenen Einträge passen', async () => {
+    // Provider ist konfiguriert, wird aber bei fehlenden Treffern nie
+    // aufgerufen – die Basis-URL muss deshalb nicht real erreichbar sein.
+    await request(app).put('/api/admin/ai-config').set('Cookie', admin.cookie)
+      .send({ baseUrl: 'http://unused-in-this-test:9999/v1', model: 'test-model', timeoutMs: 20000 });
+
+    const res = await request(app).post('/api/ai/knowledge-query')
+      .set('Cookie', user.cookie)
+      .send({ question: 'Welche voellig-unbekannte-taktik123 haben wir gespeichert?' });
+    expect(res.status).toBe(200);
+    expect(res.body.data).toEqual({
+      hasMatches: false,
+      answerText: null,
+      sources: [],
+      model: null,
+      generatedAt: expect.any(String),
+      disclaimer: expect.any(String),
+    });
+  });
+});
+
 describe('Admin AI-Config', () => {
   afterEach(async () => {
     // Jeden Test mit einer leeren Konfiguration starten/beenden, damit sich

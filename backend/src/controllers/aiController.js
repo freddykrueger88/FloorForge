@@ -7,11 +7,23 @@
  * (AI_STRATEGY.md §19: KI erstellt, Trainer prüft, dann Speichern).
  */
 import { getAiProvider } from '../services/ai/aiProvider.js';
-import { renderTrainingPrompt, renderTacticsPrompt, renderAnalysisPrompt } from '../services/ai/promptLoader.js';
+import {
+  renderTrainingPrompt, renderTacticsPrompt, renderAnalysisPrompt, renderKnowledgePrompt,
+} from '../services/ai/promptLoader.js';
+import { findRelevantItems } from '../services/ai/knowledgeRetrieval.js';
 import { success, error } from '../utils/apiResponse.js';
 import logger from '../utils/logger.js';
 
 const SYSTEM_PROMPT = 'Du folgst den Anweisungen und Regeln aus der folgenden Vorlage exakt.';
+const AI_DISCLAIMER = 'Von KI generiert – bitte vor dem Einsatz prüfen und anpassen.';
+
+const KNOWLEDGE_TYPE_LABELS = { board: 'Board', training: 'Trainingseinheit', library: 'Bibliothekseintrag' };
+
+function buildKnowledgeContext(matches) {
+  return [...matches.boards, ...matches.trainings, ...matches.libraryEntries]
+    .map((item) => `- ${KNOWLEDGE_TYPE_LABELS[item.type]} "${item.name}"${item.excerpt ? ` – ${item.excerpt}` : ''}`)
+    .join('\n');
+}
 
 // GET /api/ai/status – Transparenz (AI_SYSTEM.md §2 "der Nutzer muss
 // erkennen, wann KI verwendet wird") + steuert im Frontend, ob der
@@ -98,5 +110,50 @@ export async function generateAnalysis(req, res) {
   } catch (err) {
     logger.error('[generateAnalysis]', err);
     res.status(502).json(error('KI-Anbieter konnte keinen Vorschlag liefern, bitte später erneut versuchen'));
+  }
+}
+
+// POST /api/ai/knowledge-query – AI_SYSTEM.md §5.4. Anders als die drei
+// anderen Assistenten: kein Entwurf zum Übernehmen, sondern eine reine
+// Frage-Antwort mit Quellenangaben aus den eigenen Daten dieser Instanz.
+// Ohne Treffer wird die KI gar nicht erst aufgerufen (kein Risiko einer
+// erfundenen Antwort, siehe AI_SYSTEM.md §2 Explainable AI).
+export async function generateKnowledgeAnswer(req, res) {
+  try {
+    const provider = await getAiProvider();
+    if (!provider) {
+      return res.status(503).json(error('KI-Assistent ist auf dieser Instanz nicht konfiguriert'));
+    }
+
+    const { question } = req.body;
+    const matches = await findRelevantItems(req.user.id, question);
+    const sources = [...matches.boards, ...matches.trainings, ...matches.libraryEntries]
+      .map(({ type, id, name }) => ({ type, id, name }));
+
+    if (sources.length === 0) {
+      return res.json(success({
+        hasMatches: false,
+        answerText: null,
+        sources: [],
+        model: null,
+        generatedAt: new Date().toISOString(),
+        disclaimer: AI_DISCLAIMER,
+      }));
+    }
+
+    const userPrompt = renderKnowledgePrompt({ question, context: buildKnowledgeContext(matches) });
+    const { text, model } = await provider.generate({ systemPrompt: SYSTEM_PROMPT, userPrompt });
+
+    res.json(success({
+      hasMatches: true,
+      answerText: text,
+      model,
+      sources,
+      generatedAt: new Date().toISOString(),
+      disclaimer: AI_DISCLAIMER,
+    }));
+  } catch (err) {
+    logger.error('[generateKnowledgeAnswer]', err);
+    res.status(502).json(error('KI-Anbieter konnte keine Antwort liefern, bitte später erneut versuchen'));
   }
 }

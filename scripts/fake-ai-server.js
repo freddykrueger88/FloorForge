@@ -5,8 +5,8 @@
  * komplette KI-Assistenten-Codepfad (Config lesen -> HTTP-Call -> Antwort
  * parsen -> UI anzeigen) ohne echtes Modell, ohne Kosten und ohne API-Key
  * verifiziert werden kann. Erkennt anhand eines Substrings im User-Prompt
- * grob, welcher der drei Assistenten (Training/Taktik/Analyse) gemeint
- * ist, und antwortet mit einem passenden statischen Beispieltext.
+ * grob, welcher der vier Assistenten (Training/Taktik/Analyse/Wissen)
+ * gemeint ist, und antwortet mit einem passenden statischen Beispieltext.
  *
  * Nutzung: `node scripts/fake-ai-server.js` (Port via PORT-Env, Default
  * 8080), dann AI_PROVIDER_BASE_URL=http://<host>:8080/v1 setzen.
@@ -62,8 +62,13 @@ Es könnte ein Muster sein, dass Ballverluste vor allem beim Übergang von der A
 
 Diese Einschätzung basiert ausschließlich auf deiner Beschreibung – bitte durch eigene Beobachtung ergänzen.`;
 
+const FAKE_KNOWLEDGE_ANSWER = `Dazu findet sich in den gespeicherten Einträgen dieser Instanz einiges: die passenden Boards und Trainingseinheiten sind unten als Quellen aufgeführt. Es könnte sich lohnen, dort zuerst nachzusehen, bevor eine neue Variante erstellt wird.
+
+Diese Antwort basiert ausschließlich auf den gefundenen Einträgen dieser Instanz.`;
+
 function pickFakeResponse(userPromptContent) {
   if (userPromptContent.includes('Beobachtungen:')) return FAKE_ANALYSIS;
+  if (userPromptContent.includes('Gefundene Einträge')) return FAKE_KNOWLEDGE_ANSWER;
   if (userPromptContent.includes('Frage/Kontext:')) return FAKE_TACTIC_SUGGESTION;
   return FAKE_TRAINING_PLAN;
 }

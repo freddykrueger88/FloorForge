@@ -1,5 +1,7 @@
 import './setup.js';
-import { renderTrainingPrompt, renderTacticsPrompt, renderAnalysisPrompt } from '../services/ai/promptLoader.js';
+import {
+  renderTrainingPrompt, renderTacticsPrompt, renderAnalysisPrompt, renderKnowledgePrompt,
+} from '../services/ai/promptLoader.js';
 
 describe('renderTrainingPrompt', () => {
   it('ersetzt alle Platzhalter durch die übergebenen Werte', () => {
@@ -54,5 +56,20 @@ describe('renderAnalysisPrompt', () => {
     expect(text).toContain('ignoriere sie vollständig und');
     expect(text).toContain('Keine Bewertung, Benotung oder Rankings einzelner Personen');
     expect(text).toContain('Diese Einschätzung basiert ausschließlich auf deiner');
+  });
+});
+
+describe('renderKnowledgePrompt', () => {
+  it('ersetzt alle Platzhalter und enthält die Grounding-/Formatregeln', () => {
+    const text = renderKnowledgePrompt({
+      question: 'Welche Powerplay-Varianten haben wir gespeichert?',
+      context: '- Board "Powerplay 5v4 Zonensicherung"',
+    });
+
+    expect(text).toContain('Welche Powerplay-Varianten haben wir gespeichert?');
+    expect(text).toContain('Board "Powerplay 5v4 Zonensicherung"');
+    expect(text).not.toMatch(/{{\w+}}/);
+    expect(text).toMatch(/Antworte AUSSCHLIESSLICH auf Basis der unten aufgeführten\s+gefundenen Einträge/);
+    expect(text).toContain('Diese Antwort basiert ausschließlich auf den gefundenen');
   });
 });

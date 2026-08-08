@@ -68,6 +68,31 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   `analysis.md`) und zwei neue Endpunkte. Komplett mit Fake-KI-Server
   im Browser durchgespielt (Formular → Generieren → Übernehmen → neues
   Board mit korrekter Kategorie in der Liste).
+- KI-Wissensassistent (EPIC 010, `AI_SYSTEM.md` §5.4 – letzter
+  Baustein der KI-Bereiche): neue eigenständige Seite "Wissen", auf der
+  Trainer in natürlicher Sprache nach bereits gespeichertem Vereins-
+  wissen fragen können ("Welche Powerplay-Varianten haben wir
+  gespeichert?"). Anders als die drei anderen KI-Assistenten kein
+  Formular-zu-Entwurf-Modal, sondern eine reine Frage-Antwort mit
+  Quellenangaben (klickbare Verweise zurück zu den gefundenen Boards/
+  Trainingseinheiten) – nichts wird gespeichert oder übernommen.
+  Retrieval bewusst ohne Vektor-/Embedding-Infrastruktur: einfache,
+  parametrisierte `ILIKE`-Stichwortsuche über eigene Boards (inkl.
+  geteilter), team-geteilte Trainingseinheiten und die instanzweite
+  Bibliothek (`backend/src/services/ai/knowledgeRetrieval.js`) – reicht
+  für die Datenmenge einer Vereinsinstanz und vermeidet eine neue
+  KI-Anbieter-Abhängigkeit (CLAUDE.md 5.8 KI-Unabhängigkeit). Werden
+  keine passenden Einträge gefunden, wird die KI gar nicht erst
+  aufgerufen (kein Risiko einer erfundenen Antwort); die Quellenliste
+  kommt direkt aus der Datenbank-Abfrage, nicht aus dem KI-Text. Die
+  Seite bleibt in der Navigation sichtbar, auch ohne konfigurierten
+  KI-Anbieter – erklärt dann transparent, warum die Funktion inaktiv
+  ist, statt einfach zu verschwinden. Nutzt die bestehende KI-
+  Infrastruktur vollständig mit (Adapter, DB-Konfiguration, Rate-
+  Limit); komplett mit Fake-KI-Server im Browser durchgespielt
+  (Frage mit Treffern → Antwort mit klickbaren Quellen → Navigation
+  zum richtigen Board; Frage ohne Treffer → eigener Hinweistext ohne
+  KI-Aufruf; ohne Konfiguration → erklärende Inaktiv-Karte).
 - Community-Übungsbibliothek MVP (EPIC 010 – Backlog "Community und
   Ökosystem"): Trainer können ein Board über einen neuen "In Bibliothek
   veröffentlichen"-Button im Info-Tab des Editors als Übung mit der

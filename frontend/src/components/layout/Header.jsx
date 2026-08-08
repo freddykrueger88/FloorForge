@@ -32,6 +32,7 @@ export default function Header() {
     { to: '/trainings', label: t('nav.trainings') },
     { to: '/roster',    label: t('nav.roster') },
     { to: '/library',   label: t('nav.library') },
+    { to: '/knowledge', label: t('nav.knowledge') },
     { to: '/settings',  label: t('nav.settings') },
   ];
 

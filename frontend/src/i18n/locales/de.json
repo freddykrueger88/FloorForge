@@ -11,7 +11,8 @@
     "brandHome": "Zur Startseite",
     "trainings": "Trainings",
     "roster": "Kader",
-    "library": "Übungsbibliothek"
+    "library": "Übungsbibliothek",
+    "knowledge": "Wissen"
   },
   "field": {
     "large": "Großfeld (40×20m)",
@@ -670,7 +671,21 @@
     "observationsPlaceholder": "z.B. Wir haben in der zweiten Drittelhälfte oft den Puck beim Übergang ins Angriffsdrittel verloren...",
     "analysisPrivacyHint": "Bitte keine Namen oder personenbezogenen Angaben eintragen – beschreibe Situationen und Muster, nicht einzelne Personen.",
     "focusOptionalLabel": "Fokus (optional)",
-    "useAsAnalysisBoard": "Als Analyse-Board übernehmen"
+    "useAsAnalysisBoard": "Als Analyse-Board übernehmen",
+    "knowledgeAssistant": "Wissen mit KI durchsuchen",
+    "knowledgeFormTitle": "Wissen der Instanz durchsuchen",
+    "questionLabel": "Frage",
+    "questionPlaceholder": "z.B. Welche Powerplay-Varianten haben wir gespeichert?",
+    "askButton": "Fragen",
+    "asking": "KI durchsucht deine Daten...",
+    "knowledgeNoMatches": "Keine passenden Einträge gefunden. Formuliere die Frage anders oder dokumentiere mehr Wissen in Boards, Trainings oder der Bibliothek.",
+    "knowledgeSourcesLabel": "Quellen",
+    "knowledgeSourceTypeBoard": "Board",
+    "knowledgeSourceTypeTraining": "Trainingseinheit",
+    "knowledgeSourceTypeLibrary": "Bibliothekseintrag",
+    "knowledgeInactiveTitle": "KI-Wissensassistent ist nicht konfiguriert",
+    "knowledgeInactiveDesc": "Diese Instanz hat noch keinen KI-Anbieter eingerichtet. Ohne Konfiguration bleibt diese Funktion inaktiv.",
+    "knowledgeInactiveAdminAction": "Zu den Einstellungen"
   },
   "dialogs": {
     "newBoard": {

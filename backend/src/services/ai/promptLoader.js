@@ -13,6 +13,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 let cachedTrainingTemplate = null;
 let cachedTacticsTemplate = null;
 let cachedAnalysisTemplate = null;
+let cachedKnowledgeTemplate = null;
 
 function renderTemplate(template, vars) {
   return Object.entries(vars).reduce(
@@ -38,4 +39,9 @@ export function renderTacticsPrompt(vars) {
 export function renderAnalysisPrompt(vars) {
   if (cachedAnalysisTemplate === null) cachedAnalysisTemplate = loadTemplate('analysis.md');
   return renderTemplate(cachedAnalysisTemplate, vars);
+}
+
+export function renderKnowledgePrompt(vars) {
+  if (cachedKnowledgeTemplate === null) cachedKnowledgeTemplate = loadTemplate('knowledge.md');
+  return renderTemplate(cachedKnowledgeTemplate, vars);
 }

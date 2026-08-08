@@ -109,13 +109,14 @@ if (process.env.NODE_ENV !== 'test') {
     // aufgebraucht, bevor überhaupt registriert/eingeloggt wurde – die
     // Fehlermeldung sagte dann wieder fälschlich "Zu viele Anfragen"
     // statt der eigentlich zutreffenden, spezifischeren Meldung.
-    // /ai/training-plan, /ai/tactic-suggestion und /ai/analysis haben
-    // unten jeweils ein eigenes, engeres Budget (KI-Aufrufe sind teuer/
-    // missbrauchsanfällig) – aus demselben Grund wie bei Login/
-    // Registrierung ausgenommen, sonst zählt derselbe Request doppelt.
+    // /ai/training-plan, /ai/tactic-suggestion, /ai/analysis und
+    // /ai/knowledge-query haben unten jeweils ein eigenes, engeres Budget
+    // (KI-Aufrufe sind teuer/missbrauchsanfällig) – aus demselben Grund wie
+    // bei Login/Registrierung ausgenommen, sonst zählt derselbe Request
+    // doppelt.
     skip: (req) => req.path === '/auth/login' || req.path === '/auth/register'
       || req.path === '/ai/training-plan' || req.path === '/ai/tactic-suggestion'
-      || req.path === '/ai/analysis',
+      || req.path === '/ai/analysis' || req.path === '/ai/knowledge-query',
   }));
 
   // Getrennt statt ein gemeinsamer Limiter für den ganzen /api/auth/-Pfad:
@@ -165,6 +166,13 @@ if (process.env.NODE_ENV !== 'test') {
     message: { success: false, message: 'Zu viele KI-Anfragen, bitte warten.' },
   }));
   app.use('/api/ai/analysis', rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 10,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { success: false, message: 'Zu viele KI-Anfragen, bitte warten.' },
+  }));
+  app.use('/api/ai/knowledge-query', rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 10,
     standardHeaders: true,

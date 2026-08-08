@@ -11,7 +11,8 @@
     "brandHome": "Go to homepage",
     "trainings": "Trainings",
     "roster": "Roster",
-    "library": "Exercise Library"
+    "library": "Exercise Library",
+    "knowledge": "Knowledge"
   },
   "field": {
     "large": "Full Field (40×20m)",
@@ -670,7 +671,21 @@
     "observationsPlaceholder": "e.g. We often lost the ball transitioning into the attacking third in the second half...",
     "analysisPrivacyHint": "Please don't enter names or personal details – describe situations and patterns, not individual people.",
     "focusOptionalLabel": "Focus (optional)",
-    "useAsAnalysisBoard": "Use as analysis board"
+    "useAsAnalysisBoard": "Use as analysis board",
+    "knowledgeAssistant": "Search knowledge with AI",
+    "knowledgeFormTitle": "Search this instance's knowledge",
+    "questionLabel": "Question",
+    "questionPlaceholder": "e.g. Which powerplay variants have we saved?",
+    "askButton": "Ask",
+    "asking": "AI is searching your data...",
+    "knowledgeNoMatches": "No matching entries found. Try rephrasing the question or document more knowledge in boards, trainings, or the library.",
+    "knowledgeSourcesLabel": "Sources",
+    "knowledgeSourceTypeBoard": "Board",
+    "knowledgeSourceTypeTraining": "Training session",
+    "knowledgeSourceTypeLibrary": "Library entry",
+    "knowledgeInactiveTitle": "AI knowledge assistant is not configured",
+    "knowledgeInactiveDesc": "This instance hasn't set up an AI provider yet. Without configuration, this feature stays inactive.",
+    "knowledgeInactiveAdminAction": "Go to settings"
   },
   "dialogs": {
     "newBoard": {
