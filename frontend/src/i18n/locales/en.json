@@ -89,6 +89,9 @@
     "fontSizeLarge": "Large",
     "reducedMotion": "Reduce motion",
     "dyslexiaFont": "Dyslexia-friendly font (OpenDyslexic)",
+    "tourSectionTitle": "Onboarding tour",
+    "restartTourDesc": "Show the short onboarding tour for new users again.",
+    "restartTour": "Restart tour",
     "defaultFieldType": "Default field type",
     "colorblindMode": "Colorblind Mode",
     "colorblindNone": "None",
@@ -964,5 +967,24 @@
     "addMarkerConfirm": "Save",
     "markerPlaceholder": "Label (e.g. \"Corner\")",
     "deleteMarkerAriaLabel": "Delete marker \"{{label}}\""
+  },
+  "tour": {
+    "welcomeTitle": "Welcome to OpenFloorball!",
+    "welcomeBody": "A short tour shows you the most important areas – skippable at any time.",
+    "boardsTitle": "Tactic boards",
+    "boardsBody": "Create and manage your tactic boards here.",
+    "trainingsTitle": "Training planning",
+    "trainingsBody": "Plan training sessions with exercises and a schedule.",
+    "libraryTitle": "Exercise library",
+    "libraryBody": "Browse your own and shared community exercises.",
+    "settingsTitle": "Settings",
+    "settingsBody": "Adjust default colors, language, accessibility and more – you can also restart this tour here at any time.",
+    "doneTitle": "You're all set!",
+    "doneBody": "You can restart this tour at any time from Settings.",
+    "stepCounter": "Step {{current}} of {{total}}",
+    "next": "Next",
+    "back": "Back",
+    "skip": "Skip",
+    "finish": "Finish"
   }
 }

@@ -10,6 +10,7 @@ import LiveRegion from './components/a11y/LiveRegion.jsx';
 import Header from './components/layout/Header.jsx';
 import Footer from './components/layout/Footer.jsx';
 import OfflineBanner from './components/layout/OfflineBanner.jsx';
+import TourOverlay from './components/layout/TourOverlay.jsx';
 import useOfflineStore from './store/offlineStore.js';
 import { syncOfflineQueue } from './utils/offlineSync.js';
 import { getQueueCounts } from './utils/offlineQueue.js';
@@ -112,6 +113,7 @@ export default function App() {
         <LiveRegion />
         <OfflineBanner />
         <Header />
+        <TourOverlay />
         <Suspense fallback={<Loader />}>
           <Routes>
             <Route path="/" element={<Navigate to="/boards" replace />} />

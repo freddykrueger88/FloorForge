@@ -89,6 +89,9 @@
     "fontSizeLarge": "Groß",
     "reducedMotion": "Bewegungen reduzieren",
     "dyslexiaFont": "Legasthenie-freundliche Schrift (OpenDyslexic)",
+    "tourSectionTitle": "Einführungstour",
+    "restartTourDesc": "Zeigt die kurze Einführungstour für neue Nutzer erneut an.",
+    "restartTour": "Tour erneut starten",
     "defaultFieldType": "Standard-Spielfeld-Typ",
     "colorblindMode": "Farbblind-Modus",
     "colorblindNone": "Keine",
@@ -964,5 +967,24 @@
     "addMarkerConfirm": "Speichern",
     "markerPlaceholder": "Beschriftung (z.B. \"Ecke\")",
     "deleteMarkerAriaLabel": "Marke „{{label}}“ löschen"
+  },
+  "tour": {
+    "welcomeTitle": "Willkommen bei OpenFloorball!",
+    "welcomeBody": "Eine kurze Tour zeigt dir die wichtigsten Bereiche – jederzeit überspringbar.",
+    "boardsTitle": "Taktikboards",
+    "boardsBody": "Hier erstellst und verwaltest du deine Taktikboards.",
+    "trainingsTitle": "Trainingsplanung",
+    "trainingsBody": "Plane Trainingseinheiten mit Übungen und Zeitplan.",
+    "libraryTitle": "Übungsbibliothek",
+    "libraryBody": "Durchsuche eigene und geteilte Übungen der Community.",
+    "settingsTitle": "Einstellungen",
+    "settingsBody": "Passe Standardfarben, Sprache, Barrierefreiheit und mehr an – hier kannst du diese Tour auch jederzeit erneut starten.",
+    "doneTitle": "Los geht's!",
+    "doneBody": "Du kannst diese Tour jederzeit in den Einstellungen erneut starten.",
+    "stepCounter": "Schritt {{current}} von {{total}}",
+    "next": "Weiter",
+    "back": "Zurück",
+    "skip": "Überspringen",
+    "finish": "Fertig"
   }
 }

@@ -14,6 +14,23 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ## [Unreleased]
 
 ### Added
+- Onboarding-Tour für neue Nutzer (Backlog-ISSUE 023, CLAUDE.md §15
+  "Einfach starten"): kurze, jederzeit überspringbare Spotlight-Tour
+  (Willkommen → Boards → Trainings → Übungsbibliothek → Einstellungen
+  → Fertig), die neuen Nutzern die wichtigsten Bereiche zeigt. Bewusst
+  kurz gehalten (Progressive Complexity) – Kader/Wissen werden
+  ausgelassen, um nicht mit jedem Nav-Punkt zu überfrachten. Läuft
+  ohne neues Tour-Framework (kein intro.js/shepherd/reactour als neue
+  Abhängigkeit) über einen leichtgewichtigen CSS-Spotlight-Trick;
+  Persistenz des "gesehen"-Status läuft über die bereits bestehende,
+  ungefilterte Settings-API (`preferences_json`) – keine neue
+  Datenbank-Migration, kein neuer Endpunkt nötig. Startet automatisch
+  beim ersten Login, ist per Escape/"Überspringen" jederzeit
+  abbrechbar und lässt sich in Einstellungen → Darstellung über
+  "Tour erneut starten" jederzeit wiederholen. Vollständig mit
+  Tastatur bedienbar (Fokus-Falle, Escape) und kündigt jeden
+  Schrittwechsel für Screenreader an (Accessibility First,
+  CLAUDE.md §16).
 - Offline-Konfliktlösung auf Trainingseinheiten und Kader-Einträge
   erweitert (bisher nur Boards/Frames): beide Ressourcen sind
   team-geteilt, zwei Co-Trainer können also real denselben Datensatz

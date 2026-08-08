@@ -1,0 +1,79 @@
+.wrapper {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+}
+
+/* Unsichtbarer Klick-Fänger über der ganzen Seite – die Tour ist bewusst
+   modal, Fortschritt nur über die Karten-Buttons. */
+.clickCatcher {
+  position: fixed;
+  inset: 0;
+  z-index: 301;
+  background: transparent;
+}
+
+.plainBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 302;
+  background: oklch(0 0 0 / 0.65);
+}
+
+/* box-shadow-Trick: das Element selbst bleibt am Zielrechteck transparent,
+   der riesige Spread verdunkelt den Rest des Viewports. */
+.spotlight {
+  position: fixed;
+  z-index: 302;
+  border-radius: var(--radius-md);
+  box-shadow: 0 0 0 4px var(--color-primary-highlight), 0 0 0 9999px oklch(0 0 0 / 0.65);
+  transition: top 200ms ease, left 200ms ease, width 200ms ease, height 200ms ease;
+}
+
+.card {
+  position: fixed;
+  bottom: var(--space-6);
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(420px, calc(100vw - var(--space-8)));
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  padding: var(--space-5) var(--space-6);
+  z-index: 303;
+}
+
+.stepCounter {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: var(--space-2);
+}
+
+.title {
+  font-size: var(--text-lg);
+  font-weight: 800;
+  color: var(--color-primary);
+  margin-bottom: var(--space-2);
+}
+
+.body {
+  font-size: var(--text-sm);
+  color: var(--color-text);
+  line-height: 1.5;
+  margin-bottom: var(--space-4);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.navButtons {
+  display: flex;
+  gap: var(--space-2);
+}

@@ -6,9 +6,11 @@
  */
 import { useTranslation } from 'react-i18next';
 import useThemeStore from '../../store/themeStore.js';
+import useTourStore from '../../store/tourStore.js';
 import { useSettings } from '../../hooks/useSettings.js';
 import { applyGlobalPreferences } from '../../utils/applyPreferences.js';
 import { IFF_FIELDS, IFF_BALL_COLORS, DEFAULT_TEAM_COLORS } from '../../constants/fieldConfig.js';
+import Button from '../common/Button.jsx';
 import styles from '../../pages/SettingsPage.module.css';
 
 export default function PreferencesSection() {
@@ -234,6 +236,14 @@ export default function PreferencesSection() {
           />
           {t('settings.adhdMode')}
         </label>
+      </section>
+
+      <section className={styles.section}>
+        <h2>{t('settings.tourSectionTitle')}</h2>
+        <p className={styles.fieldLabel}>{t('settings.restartTourDesc')}</p>
+        <Button variant="secondary" size="md" onClick={() => useTourStore.getState().start()}>
+          {t('settings.restartTour')}
+        </Button>
       </section>
     </>
   );

@@ -27,13 +27,16 @@ export default function Header() {
     }
   };
 
+  // tourId: Ziel-Attribut für die Onboarding-Tour (TourOverlay.jsx sucht
+  // per document.querySelector(`[data-tour="${target}"]`)) – nicht jeder
+  // Nav-Punkt hat einen Tour-Schritt (bewusst kurz gehalten, siehe dort).
   const navLinks = [
-    { to: '/boards',    label: t('nav.boards') },
-    { to: '/trainings', label: t('nav.trainings') },
+    { to: '/boards',    label: t('nav.boards'),    tourId: 'nav-boards' },
+    { to: '/trainings', label: t('nav.trainings'), tourId: 'nav-trainings' },
     { to: '/roster',    label: t('nav.roster') },
-    { to: '/library',   label: t('nav.library') },
+    { to: '/library',   label: t('nav.library'),   tourId: 'nav-library' },
     { to: '/knowledge', label: t('nav.knowledge') },
-    { to: '/settings',  label: t('nav.settings') },
+    { to: '/settings',  label: t('nav.settings'),  tourId: 'nav-settings' },
   ];
 
   return (
@@ -50,6 +53,7 @@ export default function Header() {
             <Link
               key={link.to}
               to={link.to}
+              data-tour={link.tourId}
               className={`${styles.navLink} ${location.pathname.startsWith(link.to) ? styles.navLinkActive : ''}`}
             >
               {link.label}
