@@ -457,6 +457,53 @@ Prüfen:
 
 ---
 
+# ISSUE 023
+
+## Onboarding-Tour für neue Nutzer
+
+### Beschreibung
+
+Ein neuer Nutzer soll ohne Schulung schnell verstehen, wie die
+wichtigsten Bereiche der Plattform funktionieren (Taktikboard
+anlegen, Trainingsplanung, Übungsbibliothek, KI-Assistenten) –
+passend zu CLAUDE.md Kapitel 15 "Einfach starten".
+
+### Aufgaben
+
+* Kurze, jederzeit überspringbare Schritt-für-Schritt-Tour beim
+  ersten Login (Hinweis-Overlay auf zentrale UI-Elemente: Neues
+  Board erstellen, Trainingsplanung, Übungsbibliothek,
+  Einstellungen).
+* Erneuter Aufruf der Tour über die Einstellungen möglich – kein
+  einmaliges Erlebnis, das man verpasst hat.
+* Speicherung eines minimalen "Tour gesehen"-Status pro Nutzer
+  (Datensparsamkeit, CLAUDE.md 5.1 – keine neue Tabelle nötig).
+
+### Technische Überlegungen
+
+* Kein externes Tour-Framework mit Telemetrie/Cloud-Abhängigkeit
+  (Open Source First) – eigene, leichte Overlay-Komponente oder eine
+  kleine, selbst gehostete Open-Source-Bibliothek ohne Tracking.
+* Muss mit dem bestehenden i18n-System (de/en) funktionieren.
+* Kein Pflichtschritt, der die Nutzung blockiert (keine Dark
+  Patterns, CLAUDE.md 5.11).
+
+### Akzeptanzkriterien
+
+* Ein neu registrierter Nutzer sieht beim ersten Login automatisch
+  die Tour.
+* Die Tour lässt sich jederzeit überspringen/abbrechen.
+* Ein bestehender Nutzer kann die Tour über die Einstellungen erneut
+  starten.
+* Tour ist per Tastatur bedienbar und mit Screenreader nutzbar
+  (Accessibility First, CLAUDE.md 16).
+
+Priorität:
+
+P1
+
+---
+
 # EPIC 009 – Nach MVP
 
 Priorität:
