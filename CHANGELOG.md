@@ -68,7 +68,11 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   einer laufenden Zeichen-Geste (Peers sehen ein Element erst fertig),
   Zustands-Snapshot für neu dazustoßende Mitbearbeiter (Basis ist der
   zuletzt autogespeicherte Stand, max. 30s alt), siehe
-  `presenceServer.js`-Kommentar.
+  `presenceServer.js`-Kommentar. Live mit zwei echten, parallelen
+  Browser-Sessions (zwei Accounts, ein Board, Owner + Kollaborator)
+  gegengecheckt: Präsenz-Badge, Live-Cursor-Punkt mit Namen und
+  Live-Merge eines gezeichneten Pfeils kamen jeweils sofort und ohne
+  Aktion der Gegenseite an.
 - Video-Integration MVP (ROADMAP-Backlog): bis zu 5 kurze Videoclips pro
   Board hochladen (MP4/WebM/MOV, je max. 200MB), nativer Player mit
   Scrubbing (Range-Requests). Neuer Tab "🎥 Video" im Board-Editor.
