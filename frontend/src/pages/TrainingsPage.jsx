@@ -5,10 +5,12 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { AlertTriangle, Clipboard, Plus } from 'lucide-react';
+import { AlertTriangle, Clipboard, Plus, Sparkles } from 'lucide-react';
 import { useTrainingSessions } from '../hooks/useTrainingSessions.js';
 import { useTeams } from '../hooks/useTeams.js';
+import { useAiApi } from '../hooks/useAiApi.js';
 import TrainingSessionCard from '../components/trainings/TrainingSessionCard.jsx';
+import AiTrainingPlanModal from '../components/trainings/AiTrainingPlanModal.jsx';
 import Button from '../components/common/Button.jsx';
 import styles from './TrainingsPage.module.css';
 
@@ -22,6 +24,11 @@ export default function TrainingsPage() {
   // ROADMAP Phase 2: eigene Teams laden, um Trainingseinheiten optional
   // team-geteilt statt rein persönlich anzulegen.
   const { teams, fetchTeams } = useTeams();
+  // EPIC 010 – KI-Trainingsassistent: Button nur sichtbar, wenn diese
+  // Instanz überhaupt einen KI-Anbieter konfiguriert hat.
+  const { fetchStatus: fetchAiStatus } = useAiApi();
+  const [aiStatus, setAiStatus] = useState(null);
+  const [showAiModal, setShowAiModal] = useState(false);
 
   const [creating, setCreating] = useState(false);
   const [newName,  setNewName ] = useState('');
@@ -33,6 +40,15 @@ export default function TrainingsPage() {
 
   useEffect(() => { load(); }, [load]);
   useEffect(() => { fetchTeams().catch(() => {}); }, [fetchTeams]);
+  useEffect(() => { fetchAiStatus().then(setAiStatus).catch(() => {}); }, [fetchAiStatus]);
+
+  const handleCreateFromAi = async ({ name, notes, goal }) => {
+    try {
+      const session = await createSession(name, null, { notes, goal });
+      setShowAiModal(false);
+      navigate(`/trainings/${session._id}`);
+    } catch { /* error via hook */ }
+  };
 
   const teamsICanShareWith = teams.filter((tm) => tm.role === 'owner' || tm.role === 'coach');
 
@@ -104,18 +120,39 @@ export default function TrainingsPage() {
             </Button>
           </form>
         ) : (
-          <Button
-            variant="primary"
-            size="md"
-            className={styles.newBtn}
-            onClick={() => setCreating(true)}
-            disabled={!canAddSession}
-            aria-label={t('trainings.newSessionAriaLabel')}
-          >
-            <Plus size={16} aria-hidden="true" /> {t('trainings.newSession')}
-          </Button>
+          <>
+            <Button
+              variant="primary"
+              size="md"
+              className={styles.newBtn}
+              onClick={() => setCreating(true)}
+              disabled={!canAddSession}
+              aria-label={t('trainings.newSessionAriaLabel')}
+            >
+              <Plus size={16} aria-hidden="true" /> {t('trainings.newSession')}
+            </Button>
+            {aiStatus?.configured && (
+              <Button
+                variant="secondary"
+                size="md"
+                className={styles.newBtn}
+                onClick={() => setShowAiModal(true)}
+                disabled={!canAddSession}
+              >
+                <Sparkles size={16} aria-hidden="true" /> {t('ai.planWithAi')}
+              </Button>
+            )}
+          </>
         )}
       </div>
+
+      {showAiModal && (
+        <AiTrainingPlanModal
+          onClose={() => setShowAiModal(false)}
+          onCreate={handleCreateFromAi}
+          creating={loading}
+        />
+      )}
 
       {error && (
         <div className={styles.errorBanner} role="alert">

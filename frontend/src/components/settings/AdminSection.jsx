@@ -7,7 +7,7 @@
  */
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, Check } from 'lucide-react';
 import useAuthStore from '../../store/authStore.js';
 import { apiFetch } from '../../utils/apiFetch.js';
 import { formatDate } from '../../utils/formatDate.js';
@@ -31,6 +31,42 @@ export default function AdminSection() {
     try { setBackupConfig(await apiFetch('/api/admin/backup-config')); } catch (err) { setBackupConfigError(err.message); }
   }, []);
   useEffect(() => { loadBackupConfig(); }, [loadBackupConfig]);
+
+  // EPIC 010 – KI-Trainingsassistent: über die Admin-UI konfigurierbar
+  // (statt nur per .env/Neustart wie SMTP). Der API-Key wird vom Backend
+  // nie zurückgegeben (nur apiKeySet) – das Feld bleibt beim Laden immer
+  // leer, ein leer gelassenes Feld beim Speichern lässt einen bereits
+  // gesetzten Key unverändert (siehe adminController.js updateAiConfig).
+  const [aiConfig, setAiConfig] = useState(null);
+  const [aiApiKeyDraft, setAiApiKeyDraft] = useState('');
+  const [aiError, setAiError] = useState(null);
+  const [aiSaved, setAiSaved] = useState(false);
+  const loadAiConfig = useCallback(async () => {
+    try { setAiConfig(await apiFetch('/api/admin/ai-config')); } catch (err) { setAiError(err.message); }
+  }, []);
+  useEffect(() => { loadAiConfig(); }, [loadAiConfig]);
+
+  const handleSaveAiConfig = async (e) => {
+    e.preventDefault();
+    setAiError(null);
+    setAiSaved(false);
+    const body = {
+      baseUrl: aiConfig.baseUrl.trim(),
+      model: aiConfig.model.trim(),
+      timeoutMs: aiConfig.timeoutMs,
+    };
+    // Nur mitsenden, wenn der Admin tatsächlich etwas eingetippt hat –
+    // sonst bliebe ein bereits gesetzter Key sonst versehentlich erhalten
+    // oder (bei fälschlich immer mitgesendetem Leerstring) gelöscht.
+    if (aiApiKeyDraft !== '') body.apiKey = aiApiKeyDraft;
+    try {
+      setAiConfig(await apiFetch('/api/admin/ai-config', { method: 'PUT', body: JSON.stringify(body) }));
+      setAiApiKeyDraft('');
+      setAiSaved(true);
+    } catch (err) {
+      setAiError(err.message);
+    }
+  };
 
   const patchBackupConfig = async (fields) => {
     setBackupConfigError(null);
@@ -95,6 +131,79 @@ export default function AdminSection() {
           ))}
         </tbody>
       </table>
+
+      <div className={styles.subForm}>
+        <h3 className={styles.subTitle}>{t('settings.aiAssistantTitle')}</h3>
+        <p>
+          {aiConfig?.baseUrl
+            ? t('settings.aiAssistantActive', { model: aiConfig.model || '–' })
+            : t('settings.aiAssistantInactive')}
+        </p>
+        {aiError && <p className={styles.msgError}><AlertTriangle size={16} aria-hidden="true" /> {aiError}</p>}
+        {aiConfig && (
+          <form onSubmit={handleSaveAiConfig}>
+            <div className={styles.field}>
+              <label className={styles.fieldLabel} htmlFor="ai-base-url">{t('settings.aiBaseUrlLabel')}</label>
+              <input
+                id="ai-base-url"
+                type="text"
+                className={styles.textInput}
+                value={aiConfig.baseUrl}
+                onChange={(e) => setAiConfig({ ...aiConfig, baseUrl: e.target.value })}
+                placeholder={t('settings.aiBaseUrlPlaceholder')}
+                maxLength={300}
+              />
+            </div>
+
+            <div className={styles.field}>
+              <label className={styles.fieldLabel} htmlFor="ai-model">{t('settings.aiModelLabel')}</label>
+              <input
+                id="ai-model"
+                type="text"
+                className={styles.textInput}
+                value={aiConfig.model}
+                onChange={(e) => setAiConfig({ ...aiConfig, model: e.target.value })}
+                placeholder={t('settings.aiModelPlaceholder')}
+                maxLength={150}
+              />
+            </div>
+
+            <div className={styles.field}>
+              <label className={styles.fieldLabel} htmlFor="ai-api-key">
+                {t('settings.aiApiKeyLabel')} {aiConfig.apiKeySet && `(${t('settings.aiApiKeySet')})`}
+              </label>
+              <input
+                id="ai-api-key"
+                type="password"
+                className={styles.textInput}
+                value={aiApiKeyDraft}
+                onChange={(e) => setAiApiKeyDraft(e.target.value)}
+                placeholder={t('settings.aiApiKeyPlaceholder')}
+                maxLength={500}
+                autoComplete="off"
+              />
+            </div>
+
+            <div className={styles.field}>
+              <label className={styles.fieldLabel} htmlFor="ai-timeout">{t('settings.aiTimeoutLabel')}</label>
+              <input
+                id="ai-timeout"
+                type="number"
+                className={styles.textInput}
+                min={1000}
+                max={120000}
+                step={1000}
+                value={aiConfig.timeoutMs}
+                onChange={(e) => setAiConfig({ ...aiConfig, timeoutMs: parseInt(e.target.value, 10) || 30000 })}
+              />
+            </div>
+
+            <Button type="submit" variant="primary" size="md" className={styles.smallBtn}>
+              {aiSaved ? <><Check size={16} aria-hidden="true" /> {t('settings.aiSaved')}</> : t('settings.aiSave')}
+            </Button>
+          </form>
+        )}
+      </div>
 
       <div className={styles.subForm}>
         <h3 className={styles.subTitle}>{t('settings.autoBackupsTitle')}</h3>

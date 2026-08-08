@@ -24,13 +24,19 @@ router.post  ('/',     [
   body('teamId').optional({ nullable: true }).isUUID().withMessage('Ungültige Team-ID'),
   body('scheduledDate').optional({ nullable: true }).isISO8601().withMessage('Ungültiges Datum').bail().isLength({ max: 10 }),
   body('goal').optional().isLength({ max: 200 }).withMessage('Ziel max. 200 Zeichen'),
+  // EPIC 010 – KI-Trainingsassistent: erlaubt, den generierten Plantext
+  // direkt beim Anlegen zu setzen, statt Create+Update nacheinander.
+  body('notes').optional().isLength({ max: 4000 }).withMessage('Notizen max. 4000 Zeichen'),
   validate,
 ], createSession);
 router.get   ('/:id',  [idParam, validate], getSession);
 router.put   ('/:id',  [
   idParam,
   body('name').optional().trim().notEmpty().withMessage('Name ist erforderlich').isLength({ max: 80 }),
-  body('notes').optional().isLength({ max: 1000 }).withMessage('Notizen max. 1000 Zeichen'),
+  // EPIC 010 – KI-Trainingsassistent: ein vollständiger 5-Phasen-Plan
+  // (Warm-up/Technik/Taktik/Spielform/Cool-down mit Übungen und
+  // Coachingpunkten) sprengt das vorherige 1000-Zeichen-Limit leicht.
+  body('notes').optional().isLength({ max: 4000 }).withMessage('Notizen max. 4000 Zeichen'),
   body('scheduledDate').optional({ nullable: true }).isISO8601().withMessage('Ungültiges Datum').bail().isLength({ max: 10 }),
   body('goal').optional().isLength({ max: 200 }).withMessage('Ziel max. 200 Zeichen'),
   validate,

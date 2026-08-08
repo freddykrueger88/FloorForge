@@ -29,9 +29,12 @@ export function useTrainingSessions() {
   const fetchSessions = useCallback(() =>
     request(async () => setSessions(await apiFetch(BASE))), [request]);
 
-  const createSession = useCallback((name, teamId = null) =>
+  // EPIC 010 – KI-Trainingsassistent: optionale zusätzliche Felder (notes,
+  // goal), damit "Als Trainingseinheit übernehmen" ein einzelner Request
+  // ist statt Create+Update.
+  const createSession = useCallback((name, teamId = null, extra = {}) =>
     request(async () => {
-      const newSession = await apiFetch(BASE, { method: 'POST', body: JSON.stringify({ name, teamId }) });
+      const newSession = await apiFetch(BASE, { method: 'POST', body: JSON.stringify({ name, teamId, ...extra }) });
       setSessions((prev) => [newSession, ...prev]);
       return newSession;
     }), [request]);

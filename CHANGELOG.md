@@ -14,6 +14,37 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ## [Unreleased]
 
 ### Added
+- KI-Trainingsassistent MVP (EPIC 010, `docs/planning/AI_SYSTEM.md`
+  §5.1): neuer "Mit KI planen"-Button auf der Trainings-Seite (nur
+  sichtbar, wenn diese Instanz einen KI-Anbieter konfiguriert hat).
+  Trainer geben Altersgruppe (feste Liste, keine Freitext-Personen-
+  daten), Trainingsziel, Schwerpunkt, Dauer und Spieleranzahl ein; die
+  KI liefert einen Textentwurf (Warm-up/Technik/Taktik/Spielform/
+  Cool-down mit Übungsideen und Coachingpunkten, Vorschlagscharakter
+  statt Tatsachenbehauptungen), der vor dem Übernehmen editierbar ist
+  und erst auf explizite Bestätigung als neue Trainingseinheit
+  gespeichert wird (`notes`-Feld) – kein Auto-Save, keine automatische
+  Board-Erzeugung. Architektur wie in `AI_SYSTEM.md` §3/§4 vorgesehen:
+  austauschbarer Adapter für ein generisches OpenAI-kompatibles
+  `/v1/chat/completions`-Schema (funktioniert mit selbst gehostetem
+  Ollama/LM Studio/vLLM ebenso wie mit kommerziellen Anbietern),
+  zentrale Prompt-Vorlage (`backend/src/services/ai/prompts/
+  training.md`) statt im Code verstreuter Prompts, komplett optional
+  – ohne Konfiguration ist der Button einfach nicht sichtbar, kein
+  Fehlerzustand. Konfiguration (Basis-URL, Modell, Timeout, API-Key)
+  läuft direkt über Einstellungen → Admin, ohne Server-Neustart
+  (`app_config`-Tabelle, `AI_PROVIDER_*`-Env-Vars bleiben als Fallback
+  für Erstinstallationen bestehen, DB-Werte haben Vorrang sobald ein
+  Admin sie über die UI setzt). Der API-Key wird dabei nie an die UI
+  zurückgegeben (nur ob einer gesetzt ist) – ein leer gelassenes Feld
+  beim Speichern lässt ihn unverändert, ein Klick auf "Speichern" ohne
+  Key-Eingabe kann ihn also nicht versehentlich löschen. Eigenes,
+  engeres Rate-Limit für `/api/ai/training-plan` (10/15min). Mit einem
+  selbstgeschriebenen Fake-OpenAI-Server im Browser durchgespielt
+  (kompletter Pfad ohne echte KI-Kosten/Zugangsdaten): Konfiguration
+  über die Admin-UI setzen → Formular → Generieren → editierbares
+  Ergebnis mit Transparenz-Hinweis (Modellname) → Übernehmen → neue
+  Trainingseinheit mit befülltem Text.
 - Community-Übungsbibliothek MVP (EPIC 010 – Backlog "Community und
   Ökosystem"): Trainer können ein Board über einen neuen "In Bibliothek
   veröffentlichen"-Button im Info-Tab des Editors als Übung mit der

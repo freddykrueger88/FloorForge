@@ -109,7 +109,12 @@ if (process.env.NODE_ENV !== 'test') {
     // aufgebraucht, bevor überhaupt registriert/eingeloggt wurde – die
     // Fehlermeldung sagte dann wieder fälschlich "Zu viele Anfragen"
     // statt der eigentlich zutreffenden, spezifischeren Meldung.
-    skip: (req) => req.path === '/auth/login' || req.path === '/auth/register',
+    // /ai/training-plan hat unten ebenfalls ein eigenes, engeres Budget
+    // (KI-Aufrufe sind teuer/missbrauchsanfällig) – aus demselben Grund
+    // wie bei Login/Registrierung ausgenommen, sonst zählt derselbe
+    // Request doppelt.
+    skip: (req) => req.path === '/auth/login' || req.path === '/auth/register'
+      || req.path === '/ai/training-plan',
   }));
 
   // Getrennt statt ein gemeinsamer Limiter für den ganzen /api/auth/-Pfad:
@@ -139,6 +144,18 @@ if (process.env.NODE_ENV !== 'test') {
   // /me, /name, /email, /password, /logout bleiben unter dem allgemeinen
   // /api/-Limit (100/15min) – die erfordern bereits eine gültige Session,
   // Brute-Force ist dort kein Thema wie bei Login/Registrierung.
+
+  // KI-Trainingsassistent: jeder Aufruf löst eine externe Modell-Anfrage
+  // aus (Kosten bei Cloud-Anbietern, Last bei selbst gehosteten Modellen)
+  // – deutlich engeres Budget als die allgemeine Regel. /ai/status bleibt
+  // bewusst unter dem allgemeinen Limit, das ist nur ein günstiger Read.
+  app.use('/api/ai/training-plan', rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 10,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { success: false, message: 'Zu viele KI-Anfragen, bitte warten.' },
+  }));
 }
 
 // ── Parser ────────────────────────────────────

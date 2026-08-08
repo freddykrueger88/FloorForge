@@ -7,6 +7,7 @@ import { authenticate, requireAdmin } from '../middleware/auth.js';
 import { validate } from '../middleware/validate.js';
 import {
   listUsers, deleteUser, updateUserRole, getBackupConfig, updateBackupConfig,
+  getAiConfig, updateAiConfig,
 } from '../controllers/adminController.js';
 import { listReportedLibraryEntries } from '../controllers/libraryController.js';
 
@@ -31,5 +32,14 @@ router.put('/backup-config', [
   body('retention').isInt({ min: 1, max: 90 }).withMessage('Aufbewahrung 1-90'),
   validate,
 ], updateBackupConfig);
+
+router.get('/ai-config', getAiConfig);
+router.put('/ai-config', [
+  body('baseUrl').trim().isLength({ max: 300 }).withMessage('Basis-URL max. 300 Zeichen'),
+  body('model').trim().isLength({ max: 150 }).withMessage('Modell max. 150 Zeichen'),
+  body('timeoutMs').isInt({ min: 1000, max: 120000 }).withMessage('Timeout 1000-120000ms'),
+  body('apiKey').optional().isLength({ max: 500 }).withMessage('API-Key max. 500 Zeichen'),
+  validate,
+], updateAiConfig);
 
 export default router;

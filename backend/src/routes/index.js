@@ -23,6 +23,7 @@ import rosterRoutes from './roster.js';
 import teamRoutes from './teams.js';
 import organizationRoutes from './organizations.js';
 import libraryRoutes from './library.js';
+import aiRoutes from './ai.js';
 import { createCommentRoutes } from './comments.js';
 import { assertBoardAccess } from '../utils/boardAccess.js';
 import { assertSessionRead, assertSessionWrite } from '../controllers/trainingSessionsController.js';
@@ -64,6 +65,7 @@ router.use('/roster', rosterRoutes);
 router.use('/teams', teamRoutes);
 router.use('/organizations', organizationRoutes);
 router.use('/library', libraryRoutes);
+router.use('/ai', aiRoutes);
 // router.use('/tactics', tacticsRoutes);
 
 export default router;

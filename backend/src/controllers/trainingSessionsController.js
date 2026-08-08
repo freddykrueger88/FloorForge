@@ -126,7 +126,7 @@ export async function getSessions(req, res) {
 // POST /api/trainings
 export async function createSession(req, res) {
   try {
-    const { name, teamId = null, scheduledDate = null, goal = '' } = req.body;
+    const { name, teamId = null, scheduledDate = null, goal = '', notes = '' } = req.body;
 
     if (teamId && !(await assertTeamAccess(teamId, req.user.id, 'coach'))) {
       return res.status(404).json(error('Team nicht gefunden'));
@@ -140,10 +140,13 @@ export async function createSession(req, res) {
       return res.status(400).json(error(`Maximal ${MAX_SESSIONS} Trainingseinheiten`));
     }
 
+    // EPIC 010 – KI-Trainingsassistent: notes optional direkt beim Anlegen
+    // setzbar, damit "Als Trainingseinheit übernehmen" ein einzelner
+    // Request ist statt Create+Update.
     const result = await pool.query(
-      `INSERT INTO training_sessions (user_id, name, team_id, scheduled_date, goal)
-       VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-      [req.user.id, name, teamId, scheduledDate, goal]
+      `INSERT INTO training_sessions (user_id, name, team_id, scheduled_date, goal, notes)
+       VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+      [req.user.id, name, teamId, scheduledDate, goal, notes]
     );
     res.status(201).json(created(toApiSession({ ...result.rows[0], item_count: 0, total_minutes: 0 })));
   } catch (err) {

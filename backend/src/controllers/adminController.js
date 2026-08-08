@@ -118,3 +118,59 @@ export async function updateBackupConfig(req, res) {
     res.status(500).json(error('Interner Serverfehler'));
   }
 }
+
+// GET /api/admin/ai-config – EPIC 010: KI-Anbieter über die Admin-UI
+// konfigurierbar statt nur per .env/Neustart. Der API-Key wird nie
+// zurückgegeben (nur ob einer gesetzt ist) – Schreiben ja, Lesen nie.
+export async function getAiConfig(req, res) {
+  try {
+    const result = await pool.query(
+      `SELECT ai_provider_base_url, ai_provider_api_key, ai_provider_model, ai_provider_timeout_ms
+       FROM app_config LIMIT 1`
+    );
+    const row = result.rows[0];
+    res.json(success({
+      baseUrl: row.ai_provider_base_url,
+      model: row.ai_provider_model,
+      timeoutMs: row.ai_provider_timeout_ms,
+      apiKeySet: row.ai_provider_api_key.length > 0,
+    }));
+  } catch (err) {
+    logger.error('[getAiConfig]', err);
+    res.status(500).json(error('Interner Serverfehler'));
+  }
+}
+
+// PUT /api/admin/ai-config   Body: { baseUrl, model, timeoutMs, apiKey? }
+// apiKey ist optional: fehlt es im Body, bleibt der bisherige Key
+// unverändert (Frontend zeigt den Key nie an, ein leer gelassenes Feld
+// darf einen bereits gesetzten Key also nicht versehentlich löschen).
+// Um einen Key gezielt zu entfernen, wird explizit apiKey: '' gesendet.
+export async function updateAiConfig(req, res) {
+  try {
+    const { baseUrl, model, timeoutMs, apiKey } = req.body;
+
+    const sets = ['ai_provider_base_url = $1', 'ai_provider_model = $2', 'ai_provider_timeout_ms = $3'];
+    const values = [baseUrl, model, timeoutMs];
+    if (apiKey !== undefined) {
+      sets.push(`ai_provider_api_key = $${values.length + 1}`);
+      values.push(apiKey);
+    }
+
+    const result = await pool.query(
+      `UPDATE app_config SET ${sets.join(', ')} RETURNING *`,
+      values
+    );
+    const row = result.rows[0];
+    logger.info(`Admin ${req.user.id} updated AI provider config`);
+    res.json(success({
+      baseUrl: row.ai_provider_base_url,
+      model: row.ai_provider_model,
+      timeoutMs: row.ai_provider_timeout_ms,
+      apiKeySet: row.ai_provider_api_key.length > 0,
+    }));
+  } catch (err) {
+    logger.error('[updateAiConfig]', err);
+    res.status(500).json(error('Interner Serverfehler'));
+  }
+}

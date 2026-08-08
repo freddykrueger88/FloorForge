@@ -20,6 +20,7 @@ docker/volumes/
 # Exports & Uploads
 exports/
 uploads/
+backend/videos/
 
 # Datenbank-Backups (können personenbezogene Daten enthalten – nie versionieren)
 .backups/

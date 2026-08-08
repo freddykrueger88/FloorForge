@@ -515,6 +515,17 @@ export async function runMigrations() {
       WHERE NOT EXISTS (SELECT 1 FROM app_config);
     `);
 
+    // ── app_config: KI-Anbieter-Konfiguration (EPIC 010) ──────────────────
+    // Admin-editierbar über Einstellungen -> Admin, statt nur per .env/
+    // Container-Neustart (AI_PROVIDER_*-Env-Vars bleiben als Fallback für
+    // Erstinstallationen bestehen, siehe services/ai/aiProvider.js – DB-
+    // Werte haben Vorrang, sobald ein Admin sie über die UI setzt).
+    // ai_provider_api_key wird nie an die UI zurückgegeben (nur ob gesetzt).
+    await client.query(`ALTER TABLE app_config ADD COLUMN IF NOT EXISTS ai_provider_base_url TEXT NOT NULL DEFAULT '';`);
+    await client.query(`ALTER TABLE app_config ADD COLUMN IF NOT EXISTS ai_provider_api_key TEXT NOT NULL DEFAULT '';`);
+    await client.query(`ALTER TABLE app_config ADD COLUMN IF NOT EXISTS ai_provider_model TEXT NOT NULL DEFAULT '';`);
+    await client.query(`ALTER TABLE app_config ADD COLUMN IF NOT EXISTS ai_provider_timeout_ms INTEGER NOT NULL DEFAULT 30000;`);
+
     // ── library_entries (EPIC 010 – Community-Übungsbibliothek MVP) ──────
     // Snapshot-Kopie statt Live-Verweis auf boards: beim Veröffentlichen
     // werden nur die taktischen Inhalte (Aufstellung Frame 0, Zeichnungen,
