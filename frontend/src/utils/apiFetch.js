@@ -53,7 +53,13 @@ export async function apiFetch(url, options = {}, offlineMeta = {}) {
 
   if (!res.ok) {
     const isAuthEndpoint = AUTH_ENDPOINTS.some((p) => url.includes(p));
-    if (res.status === 401 && !isAuthEndpoint) {
+    // Ohne diesen Guard löst ein 401 für einen nicht eingeloggten Besucher,
+    // der schon auf /login ist (z.B. durch einen global gemounteten Hook,
+    // der unbedingt beim Mount fetcht), einen window.location.href-Reload
+    // aus – der erneut denselben 401 provoziert: Reload-Endlosschleife.
+    // Siehe analoger Guard im Axios-Interceptor in utils/api.js.
+    const alreadyOnLogin = window.location.pathname === '/login';
+    if (res.status === 401 && !isAuthEndpoint && !alreadyOnLogin) {
       window.location.href = '/login';
     }
     throw new Error(json.message ?? `HTTP ${res.status}`);

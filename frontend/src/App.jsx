@@ -113,7 +113,7 @@ export default function App() {
         <LiveRegion />
         <OfflineBanner />
         <Header />
-        <TourOverlay />
+        {user && <TourOverlay />}
         <Suspense fallback={<Loader />}>
           <Routes>
             <Route path="/" element={<Navigate to="/boards" replace />} />

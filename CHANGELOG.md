@@ -385,6 +385,23 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   gemeinsamen, kanonischen Stand gebracht.
 
 ### Fixed
+- Reload-Endlosschleife für nicht eingeloggte Erstbesucher auf einem
+  neuen Gerät (u.a. auf dem Handy gemeldet): die neu eingeführte
+  `TourOverlay.jsx` (Onboarding-Tour) rief unbedingt `useSettings()`
+  beim Mounten auf – auch dann, wenn (noch) kein Nutzer eingeloggt
+  war, da die Komponente bisher immer gemountet war, unabhängig vom
+  Login-Status. Das dabei erwartete 401 auf `GET /api/settings` löste
+  in `apiFetch.js` einen harten `window.location.href = '/login'`-
+  Reload aus, selbst wenn man bereits auf `/login` war – jeder Reload
+  hat denselben 401 erneut provoziert: Endlosschleife (dieselbe
+  Fehlerklasse wie der `/auth/me`-Reload-Loop weiter unten, hier über
+  einen neuen Pfad erneut aufgetreten). Behoben durch zwei Änderungen:
+  `TourOverlay` wird in `App.jsx` jetzt nur noch gemountet, wenn ein
+  Nutzer eingeloggt ist (`{user && <TourOverlay />}`), und `apiFetch.js`
+  bekommt zusätzlich denselben `alreadyOnLogin`-Guard wie der
+  Axios-Interceptor in `api.js` (siehe unten) – verhindert diese
+  Fehlerklasse jetzt unabhängig davon, was den ersten unbeabsichtigten
+  401 auslöst.
 - Boards-Übersicht: drei vom `lucide-react`-Umzug übersehene Icons.
   Empty-State (vier gleiche Kästchen, `LayoutGrid`) wirkte für ein
   Taktikboard beliebig – jetzt `Presentation` (Whiteboard auf Ständer).
