@@ -9,6 +9,9 @@ als GIF/MP4/PDF/Link, Docker-basiert und IFF-konform.
 
 > 📌 Aktuelle Version: **v0.9.0** – siehe [Changelog](./Changelog.md)
 > für alle Änderungen und [Roadmap](./Roadmap.md) für Geplantes.
+>
+> 📸 [Screenshots](./Screenshots.md) – Spielfeld-Editor, Trainingsplaner,
+> Community-Bibliothek, KI-Wissensassistent und mehr im Bild.
 
 ## Hauptfunktionen
 

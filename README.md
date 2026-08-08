@@ -19,6 +19,7 @@ Ausführlicher, laufend aktualisierter Stand:
 ## 📋 Inhaltsverzeichnis
 
 - [Was ist OpenFloorball?](#-was-ist-openfloorball)
+- [Screenshots](#-screenshots)
 - [Aktueller Stand](#-aktueller-stand)
 - [Features](#-features)
 - [Roadmap](#-roadmap)
@@ -45,6 +46,18 @@ KI-Unterstützung bei Trainingsplanung, Taktikvarianten und Analyse.
 Die Plattform wird selbst gehostet (Docker Compose), nicht als
 Cloud-Dienst eines Anbieters – die Daten bleiben auf der eigenen
 Infrastruktur.
+
+## 📸 Screenshots
+
+<table>
+<tr>
+<td width="50%"><img src="docs/screenshots/02-board-editor-taktik.png" alt="Board-Editor mit gezeichneter Taktik" /></td>
+<td width="50%"><img src="docs/screenshots/07-ki-wissensassistent.png" alt="KI-Wissensassistent mit Quellenangaben" /></td>
+</tr>
+</table>
+
+Weitere Ansichten (Trainingsplaner, Kader, Community-Bibliothek,
+mobile Nutzung): **[docs/wiki/Screenshots.md](docs/wiki/Screenshots.md)**
 
 ## 📊 Aktueller Stand
 
